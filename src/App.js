@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import heroImage from "./assets/image.png";
 import "./App.css";
 
 export default function App() {
