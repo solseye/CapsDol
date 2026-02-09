@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import heroImage from "./assets/image.png";
 import "./App.css";
 
 export default function App() {
@@ -242,10 +241,6 @@ export default function App() {
               <div className="pill-row" aria-label="핵심 키워드">
               </div>
             </div>
-            </div>
-
-            {/* 👉 이미지 영역 */}
-            <div className="hero-image">
             </div>
         </section>
 
