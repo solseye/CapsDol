@@ -211,7 +211,10 @@ export default function App() {
                 <a href="#about">회사 개요</a>
               </li>
               <li>
-                <a href="#hearing">히어링 시트</a>
+                <a href="#flow">업무 흐름</a>
+              </li>
+              <li>
+                <a href="#faq">FAQ</a>
               </li>
               <li>
                 <a href="#consult" className="btn primary nav-cta">
@@ -228,54 +231,59 @@ export default function App() {
         <section className="hero">
           <div className="container hero-grid">
             <div>
-              <div className="kicker">Japan Market Entry Support</div>
+              <div className="kicker">한국 기업의 일본 현지 법인 설립 및 세무회계 고문</div>
               <h1 className="title">WVA</h1>
               <p className="subtitle">
-                이런 업무를 하고 이런 업무를 도와 일본 진출을 도와줄 수
+                저희 회사는 이런 업무를 하고 이런 업무를 도와 일본 진출을 도와줄 수
                 있습니다! 당신의 도약을 함께 하겠습니다!!!!
               </p>
 
-              <div className="hero-actions">
-                <a className="btn primary" href="#consult">
-                  지금 상담 시작
-                </a>
-                <a className="btn" href="#flow">
-                  진출 흐름 보기
-                </a>
-              </div>
-
               <div className="pill-row" aria-label="핵심 키워드">
-                <span className="pill">진출 설계</span>
-                <span className="pill">법인 형태 결정</span>
-                <span className="pill">초기 세팅</span>
-                <span className="pill">운영/기장</span>
-                <span className="pill">커뮤니케이션 지원</span>
               </div>
             </div>
+            </div>
+        </section>
 
-            <div className="card">
-              <h3 className="m0">빠른 안내</h3>
-              <p className="muted mt8 mb12">
-                아래 2가지 케이스 중 어디에 가까운지 선택하면, 필요한 단계와
-                준비물 체크리스트를 챗봇이 안내합니다.
-              </p>
-              <div className="grid2">
-                <button
-                  className="btn"
-                  onClick={() => openChatWithPreset("진출 설계/형태 결정")}
-                >
-                  진출 설계/형태 결정
-                </button>
-                <button
-                  className="btn"
-                  onClick={() => openChatWithPreset("운영/기장")}
-                >
-                  운영/기장
-                </button>
+        {/* Recommendation */}
+        <section id="recommendation">
+          <div className="container">
+            <h2 className="section-title">이런 기업에게 추천합니다</h2>
+
+            <div className="grid1">
+              <div className="card">
+                <h1>1</h1>
+                <h2 className="muted">
+                  일본에 진출하고자 하지만, 현지 법인 설립 절차가 복잡하게 느껴지는 기업
+                </h2>
               </div>
-              <p className="notice">
-                * 실제 계약/신고/세무 판단은 전문가 확인이 필요합니다.
-              </p>
+
+              <div className="card">
+                <h1>2</h1>
+                <h2 className="muted">
+                  회사 설립, 부동산 중개, 세무, 회계, 노무 등 종합적인 지원이 필요한 경우
+                </h2>
+              </div>
+
+              <div className="card">
+                <h1>3</h1>
+                <h2 className="muted">
+                  한국어로 상담부터 모든 과정이 진행되기를 원하는 기업
+                </h2>
+              </div>
+
+              <div className="card">
+                <h1>4</h1>
+                <h2 className="muted">
+                  일본 비즈니스 환경에 정통한 전문가의 컨설팅이 필요한 경우
+                </h2>
+              </div>
+
+              <div className="card">
+                <h1>5</h1>
+                <h2 className="muted">
+                  세무 리스크를 줄이고, 안정적인 일본 사업 운영을 원하시는 기업
+                </h2>
+              </div>
             </div>
           </div>
         </section>
@@ -288,39 +296,52 @@ export default function App() {
 
             <div className="grid3">
               <div className="card">
-                <h3>진출 설계</h3>
-                <p className="muted">
-                  일본 진출 목적/예산/인력/리스크에 맞춰 전체 로드맵을
-                  정리합니다.
-                </p>
+                <h3>법인 설립</h3>
                 <ul className="list">
-                  <li>목표/범위 정리</li>
-                  <li>일정/우선순위 설정</li>
-                  <li>필수 체크리스트 제공</li>
+                  <li>법인 설립 컨설팅</li>
+                  <li>정관 작성 및 인증</li>
+                  <li>법인 인감 제작</li>
                 </ul>
               </div>
 
               <div className="card">
-                <h3>형태 결정</h3>
-                <p className="muted">
-                  지점/현지법인/자회사 등 형태를 비교하고 의사결정을 돕습니다.
-                </p>
+                <h3>비자 발행</h3>
                 <ul className="list">
-                  <li>장단점 비교</li>
-                  <li>세금/비용 관점 정리</li>
-                  <li>의사결정 자료화</li>
+                  <li>취업 비자</li>
+                  <li>경영 관리 비자</li>
                 </ul>
               </div>
 
               <div className="card">
-                <h3>운영/기장</h3>
-                <p className="muted">
-                  자회사 설립·초기 세팅 이후, 운영과 기장 관리를 안정화합니다.
-                </p>
+                <h3>계좌 개설</h3>
                 <ul className="list">
-                  <li>월별 운영 루틴 정리</li>
-                  <li>기장 자료 준비 가이드</li>
-                  <li>커뮤니케이션 지원</li>
+                  <li>한국계 은생을 중심으로 법인 계좌 개설을 지원</li>
+                </ul>
+              </div>
+
+              <div className="card">
+                <h3>세무/회계</h3>
+                <ul className="list">
+                  <li>기장 대행</li>
+                  <li>세무 신고</li>
+                  <li>세무 상담</li>
+                </ul>
+              </div>
+
+              <div className="card">
+                <h3>인사/노무</h3>
+                <ul className="list">
+                  <li>사회 보험</li>
+                  <li>급여 계산</li>
+                  <li>취업 규칙 작성</li>
+                </ul>
+              </div>
+
+              <div className="card">
+                <h3>부동산 중개</h3>
+                <ul className="list">
+                  <li>투자용 부동산 중개</li>
+                  <li>상업용 부동산 중개</li>
                 </ul>
               </div>
             </div>
