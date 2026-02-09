@@ -10,10 +10,6 @@ export default function App() {
 
   // Chatbot
   const [chatOpen, setChatOpen] = useState(false);
-  const [context, setContext] = useState({
-    track: null,
-    hearing: {},
-  });
 
   const [messages, setMessages] = useState([]);
   const [chatInput, setChatInput] = useState("");
@@ -34,9 +30,8 @@ export default function App() {
     if (messages.length > 0) return;
 
     bot(
-      "안녕하세요! WVA 상담 챗봇입니다. 원하시는 상담 유형을 알려주세요: <b>진출 설계/형태 결정</b> 또는 <b>운영/기장</b>.",
+      "안녕하세요! WVA 상담 챗봇입니다.",
     );
-    bot("원하시면 회사명 / 목표 / 일정도 함께 적어주세요.");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatOpen]);
 
@@ -46,7 +41,6 @@ export default function App() {
 
   function openChatWithPreset(track) {
     setChatOpen(true);
-    setContext((prev) => ({ ...prev, track }));
     bot(`좋아요. <b>${track}</b> 상담으로 진행할게요.`);
     askNext({ nextTrack: track });
   }
@@ -74,122 +68,7 @@ export default function App() {
   }
 
   function askNext({ nextTrack } = {}) {
-    setContext((prevCtx) => {
-      const track = nextTrack ?? prevCtx.track;
-      const hearing = { ...(prevCtx.hearing || {}) };
-
-      if (!track) {
-        bot(
-          "상담 유형을 먼저 선택해 주세요: <b>진출 설계/형태 결정</b> / <b>운영/기장</b>",
-        );
-        return prevCtx;
-      }
-
-      // 1) company
-      if (!hearing.company) {
-        bot("1) 회사명(또는 프로젝트명)을 알려주세요.");
-        hearing.company = "__pending__";
-        return { track, hearing };
-      }
-      if (hearing.company === "__pending__") {
-        const last = lastUserTextRef.current?.trim();
-        if (last) hearing.company = last;
-      }
-
-      // 2) contact
-      if (!hearing.contact) {
-        bot("2) 담당자 연락처(메일/전화) 부탁드려요.");
-        hearing.contact = "__pending__";
-        return { track, hearing };
-      }
-      if (hearing.contact === "__pending__") {
-        const last = lastUserTextRef.current?.trim();
-        if (last) hearing.contact = last;
-      }
-
-      // 3) summary
-      if (!hearing.summary) {
-        if (track === "진출 설계/형태 결정") {
-          bot(
-            "3) 일본에서 하려는 일(판매/지사/채용/서비스 제공 등)과 목표 일정은요?",
-          );
-        } else {
-          bot(
-            "3) 현재 단계(설립 전/설립 완료/운영 중)와 월별 거래/증빙량(대략)을 알려주세요.",
-          );
-        }
-        hearing.summary = "__pending__";
-        return { track, hearing };
-      }
-      if (hearing.summary === "__pending__") {
-        const last = lastUserTextRef.current?.trim();
-        if (last) hearing.summary = last;
-      }
-
-      bot(
-        `정리해드릴게요 ✅<br/>
-        - 상담 유형: <b>${track}</b><br/>
-        - 회사명: <b>${escapeHtml(hearing.company)}</b><br/>
-        - 연락처: <b>${escapeHtml(hearing.contact)}</b><br/>
-        - 내용: <b>${escapeHtml(hearing.summary)}</b><br/><br/>
-        이 내용으로 상담 접수 진행할까요? (데모: “네”라고 입력)`,
-      );
-
-      return { track, hearing };
-    });
-  }
-
-  function sendMsg() {
-    const text = chatInput.trim();
-    if (!text) return;
-
-    me(text);
-    setChatInput("");
-
-    // 아주 단순한 intent parsing (원본과 동일 컨셉)
-    setContext((prev) => {
-      if (prev.track) return prev;
-      let track = null;
-      if (text.includes("진출") || text.includes("형태"))
-        track = "진출 설계/형태 결정";
-      else if (text.includes("기장") || text.includes("운영"))
-        track = "운영/기장";
-      if (!track) return prev;
-
-      // track 잡히면 바로 다음 질문 흐름
-      setTimeout(() => askNext({ nextTrack: track }), 0);
-      return { ...prev, track };
-    });
-
-    // 질문 진행
-    setTimeout(() => askNext(), 0);
-  }
-
-  function onHearingSubmit(e) {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const company = form.company.value.trim();
-    const contact = form.contact.value.trim();
-    const goal = form.goal.value.trim();
-
-    toggleChat(true);
-    // preset + 메시지 전송(원본 UX)
-    openChatWithPreset("진출 설계/형태 결정");
-    me(`회사명: ${company}`);
-    me(`연락처: ${contact}`);
-    me(`목표: ${goal}`);
-
-    setContext((prev) => ({
-      track: "진출 설계/형태 결정",
-      hearing: { company, contact, summary: goal },
-    }));
-
-    bot("폼 내용 확인했습니다. 위 내용 기준으로 1차 가이드를 정리해드릴게요.");
-    bot(
-      "추가로, 희망 일정(예: 3개월 내) / 예산 범위 / 예상 인력도 알려주시면 더 정확해요.",
-    );
-
-    form.reset();
+    
   }
 
   return (
@@ -390,7 +269,7 @@ export default function App() {
                   아래 내용만 입력해도 1차 로드맵을 잡을 수 있어요.
                 </p>
 
-                <form id="hearingForm" onSubmit={onHearingSubmit}>
+                <form id="hearingForm">
                   <div className="form-grid">
                     <input
                       className="btn input-like"
@@ -602,12 +481,12 @@ export default function App() {
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter") sendMsg();
+                if (e.key === "Enter");
               }}
               placeholder="메시지를 입력하세요 (예: 진출 설계 문의)"
               autoComplete="off"
             />
-            <button className="btn primary" onClick={sendMsg}>
+            <button className="btn primary">
               전송
             </button>
           </div>
