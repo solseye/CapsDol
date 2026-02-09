@@ -242,6 +242,10 @@ export default function App() {
               </div>
             </div>
             </div>
+
+            {/* 👉 이미지 영역 */}
+            <div className="hero-image">
+            </div>
         </section>
 
         {/* Recommendation */}
