@@ -383,7 +383,7 @@ export default function App() {
             <div className="kicker">Hearing Sheet</div>
             <h2 className="section-title">히어링 시트</h2>
 
-            <div className="grid2">
+            <div className="grid">
               <div className="card">
                 <h3>간단 입력</h3>
                 <p className="muted">
@@ -419,21 +419,6 @@ export default function App() {
                 <p className="notice">
                   * 제출 시 자동으로 챗봇에 내용이 전달됩니다(데모).
                 </p>
-              </div>
-
-              <div className="card">
-                <h3>추천 대상</h3>
-                <p className="muted">이건 기업들에게 추천합니다!!!!</p>
-                <ul className="list">
-                  <li>
-                    <b>진출 설계/형태 결정 그룹</b> → 시작하는 대표 + 형태
-                    결정이 급한 담당자
-                  </li>
-                  <li>
-                    <b>운영/기장 그룹</b> → 자회사 설립·초기 세팅 담당 +
-                    운영/정리 업무 담당
-                  </li>
-                </ul>
               </div>
             </div>
           </div>
@@ -480,7 +465,7 @@ export default function App() {
             <div className="kicker">FAQ</div>
             <h2 className="section-title">FAQ</h2>
 
-            <div className="grid2">
+            <div className="grid">
               {[
                 {
                   q: "1) 상담은 무료인가요?",
@@ -527,7 +512,7 @@ export default function App() {
             <div className="kicker">Consult</div>
             <h2 className="section-title">상담 신청</h2>
 
-            <div className="grid2">
+            <div className="grid">
               <div className="card">
                 <h3>챗봇으로 바로 상담</h3>
                 <p className="muted">
@@ -545,27 +530,6 @@ export default function App() {
                   등으로 확장 가능.
                 </p>
               </div>
-
-              <div className="card">
-                <h3>원하는 상담 유형</h3>
-                <div className="grid2">
-                  <button
-                    className="btn"
-                    onClick={() => openChatWithPreset("진출 설계/형태 결정")}
-                  >
-                    진출 설계/형태 결정
-                  </button>
-                  <button
-                    className="btn"
-                    onClick={() => openChatWithPreset("운영/기장")}
-                  >
-                    운영/기장
-                  </button>
-                </div>
-                <p className="notice">
-                  * 선택하면 챗봇이 필요한 질문을 순서대로 던집니다.
-                </p>
-              </div>
             </div>
           </div>
         </section>
@@ -578,7 +542,7 @@ export default function App() {
 
             <div className="card company-card">
               <h3>대표</h3>
-              <p className="muted m0">옥종 최</p>
+              <p className="muted m0">최옥종</p>
 
               <div className="spacer" />
 
