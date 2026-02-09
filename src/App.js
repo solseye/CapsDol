@@ -15,7 +15,6 @@ export default function App() {
   const [chatInput, setChatInput] = useState("");
 
   const chatBodyRef = useRef(null);
-  const lastUserTextRef = useRef("");
 
   // 스크롤 자동 하단
   useEffect(() => {
@@ -45,19 +44,6 @@ export default function App() {
 
   function bot(html) {
     addMsg(html, "bot");
-  }
-
-  function escapeHtml(str) {
-    return String(str)
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
-
-  function askNext({ nextTrack } = {}) {
-    
   }
 
   return (
