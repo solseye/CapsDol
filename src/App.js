@@ -39,23 +39,12 @@ export default function App() {
     setChatOpen(open);
   }
 
-  function openChatWithPreset(track) {
-    setChatOpen(true);
-    bot(`좋아요. <b>${track}</b> 상담으로 진행할게요.`);
-    askNext({ nextTrack: track });
-  }
-
   function addMsg(htmlOrText, who) {
     setMessages((prev) => [...prev, { who, content: htmlOrText }]);
   }
 
   function bot(html) {
     addMsg(html, "bot");
-  }
-
-  function me(text) {
-    lastUserTextRef.current = text;
-    addMsg(escapeHtml(text), "me");
   }
 
   function escapeHtml(str) {
