@@ -137,6 +137,7 @@ nav a:hover {
 section {
   padding: 56px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  scroll-margin-top: 65px;
 }
 
 .hero {
@@ -228,6 +229,12 @@ section {
   color: var(--muted);
 }
 
+.grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 14px;
+}
+
 .grid2 {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -237,6 +244,12 @@ section {
 .grid3 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.grid4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: 14px;
 }
 
@@ -273,6 +286,42 @@ section {
   color: rgba(255, 255, 255, 0.58);
 }
 
+/* Recommendation */
+.rec-title {
+  margin: 0 0 12px;
+  font-size: 24px;
+  letter-spacing: -0.2px;
+  margin-bottom: 30px;
+}
+.rec-card {
+  position: relative;
+  padding-top: 26px;
+}
+
+.rec-num {
+  position: absolute;
+  top: -18px;        
+  left: -22px;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+
+  display: grid;
+  place-items: center;
+
+  font-weight: 900;
+  font-size: 18px;
+
+  background: linear-gradient(135deg, var(--accent), #00c3ff);
+
+  box-shadow: 0 12px 30px rgba(124, 92, 255, 0.25);
+
+  color: rgba(255, 255, 255, 0.95);
+
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+
 /* Form */
 .form-grid {
   display: grid;
@@ -290,11 +339,18 @@ section {
 }
 
 /* FAQ */
+.faq-title {
+  margin: 0 0 12px;
+  font-size: 24px;
+  letter-spacing: -0.2px;
+  margin-bottom: 30px;
+}
 .faq-item {
   border: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.04);
   border-radius: 16px;
-  overflow: hidden;
+  overflow: visible;
+  margin-bottom: 10px;
 }
 
 .faq-q {
@@ -318,6 +374,75 @@ section {
   color: var(--muted);
   line-height: 1.7;
 }
+
+.faq-card {
+  position: relative;
+}
+
+.faq-badge {
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+
+  display: grid;
+  place-items: center;
+
+  font-weight: 900;
+  font-size: 20px;
+
+  background: linear-gradient(135deg, var(--accent), #00c3ff);
+  box-shadow: 0 12px 30px rgba(124, 92, 255, 0.25);
+
+  color: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  z-index: 2;
+}
+
+.faq-card .faq-q {
+  padding-top: 22px;
+}
+
+/* Flow */
+
+.flow-title {
+  margin: 0 0 12px;
+  font-size: 24px;
+  letter-spacing: -0.2px;
+  margin-bottom: 30px;
+}
+.flow-card {
+  position: relative;
+  padding-top: 26px;
+}
+
+.flow-num {
+  position: absolute;
+  top: -18px;
+  left: -22px;
+
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+
+  display: grid;
+  place-items: center;
+
+  font-weight: 900;
+  font-size: 18px;
+
+  background: linear-gradient(135deg, var(--accent), #00c3ff);
+  box-shadow: 0 12px 30px rgba(124, 92, 255, 0.25);
+  color: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.flow-card h3 {
+  margin: 0 0 8px;
+}
+
 
 /* Footer */
 footer {
@@ -457,10 +582,16 @@ footer {
   .hero-grid {
     grid-template-columns: 1fr;
   }
+  .grid4 {
+    grid-template-columns: 1fr;
+  }
   .grid3 {
     grid-template-columns: 1fr;
   }
   .grid2 {
+    grid-template-columns: 1fr;
+  }
+  .grid {
     grid-template-columns: 1fr;
   }
   .footer-grid {
@@ -469,4 +600,7 @@ footer {
   .footer-right {
     text-align: left;
   }
+}
+html {
+  scroll-behavior: smooth;
 }

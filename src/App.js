@@ -48,6 +48,7 @@ export default function App() {
 
   return (
     <div className="App">
+    <div id="top"></div>
       {/* Header */}
       <header>
         <div className="container nav">
@@ -88,8 +89,8 @@ export default function App() {
               <div className="kicker">한국 기업의 일본 현지 법인 설립 및 세무회계 고문</div>
               <h1 className="title">WVA</h1>
               <p className="subtitle">
-                저희 회사는 이런 업무를 하고 이런 업무를 도와 일본 진출을 도와줄 수
-                있습니다! 당신의 도약을 함께 하겠습니다!!!!
+                일본 진출 예정 또는 이미 진출한 한국 기업을 지원합니다.<br></br>
+“일본 현지법인 설립부터 세무·회계, 비자 취득 등의 절차 및 이후 사업 운영 전반까지 고민을 해소해 드립니다.”
               </p>
 
               <div className="pill-row" aria-label="핵심 키워드">
@@ -101,42 +102,42 @@ export default function App() {
         {/* Recommendation */}
         <section id="recommendation">
           <div className="container">
-            <h2 className="section-title">이런 기업에게 추천합니다</h2>
+            <h2 className="rec-title">이런 기업에게 추천합니다</h2>
 
-            <div className="grid1">
-              <div className="card">
-                <h1>1</h1>
-                <h2 className="muted">
+            <div className="grid">
+              <div className="card rec-card">
+                <div className="rec-num">1</div>
+                <h3 className="muted">
                   일본에 진출하고자 하지만, 현지 법인 설립 절차가 복잡하게 느껴지는 기업
-                </h2>
+                </h3>
               </div>
 
-              <div className="card">
-                <h1>2</h1>
-                <h2 className="muted">
+              <div className="card rec-card">
+                <div className="rec-num">2</div>
+                <h3 className="muted">
                   회사 설립, 부동산 중개, 세무, 회계, 노무 등 종합적인 지원이 필요한 경우
-                </h2>
+                </h3>
               </div>
 
-              <div className="card">
-                <h1>3</h1>
-                <h2 className="muted">
+              <div className="card rec-card">
+                <div className="rec-num">3</div>
+                <h3 className="muted">
                   한국어로 상담부터 모든 과정이 진행되기를 원하는 기업
-                </h2>
+                </h3>
               </div>
 
-              <div className="card">
-                <h1>4</h1>
-                <h2 className="muted">
+              <div className="card rec-card">
+                <div className="rec-num">4</div>
+                <h3 className="muted">
                   일본 비즈니스 환경에 정통한 전문가의 컨설팅이 필요한 경우
-                </h2>
+                </h3>
               </div>
 
-              <div className="card">
-                <h1>5</h1>
-                <h2 className="muted">
+              <div className="card rec-card">
+                <div className="rec-num">5</div>
+                <h3 className="muted">
                   세무 리스크를 줄이고, 안정적인 일본 사업 운영을 원하시는 기업
-                </h2>
+                </h3>
               </div>
             </div>
           </div>
@@ -210,7 +211,7 @@ export default function App() {
 
             <div className="grid2">
               <div className="card">
-                <h3>우리가 하는 일</h3>
+                <h3>회사에서 제공하는 서비스</h3>
                 <p className="muted">
                   한국 기업의 일본 진출 과정에서 “복잡한 절차를 이해하기 쉽게”
                   정리하고, 실행 단계에서 필요한 준비물을 빠르게 맞추도록
@@ -221,7 +222,7 @@ export default function App() {
               <div className="card">
                 <h3>작업 방식</h3>
                 <ul className="list">
-                  <li>상담 → 요구사항/목표 확인</li>
+                  <li>챗봇 상담 → 요구사항/목표 확인</li>
                   <li>히어링 시트 기반 정보 수집</li>
                   <li>진출 형태/일정/예산 가이드 제시</li>
                   <li>운영 단계 체크리스트 제공</li>
@@ -230,6 +231,108 @@ export default function App() {
             </div>
           </div>
         </section>
+
+        {/* Flow */}
+        <section id="flow">
+        <div className="container">
+            <div className="kicker">Flow</div>
+            <h2 className="flow-title">한국 기업의 일본 진출 흐름과 절차</h2>
+
+            <div className="grid4">
+            <div className="card flow-card">
+                <div className="flow-num">1</div>
+                <h3>상담부터 법인 설립까지 (약 2개월)</h3>
+                <ul className="list">
+                <li>상담, 체크리스트 작성</li>
+                <li>정관 작성 및 인증</li>
+                <li>등기 신청</li>
+                </ul>
+            </div>
+
+            <div className="card flow-card">
+                <div className="flow-num">2</div>
+                <h3>부동산 검토 및 소개</h3>
+                <ul className="list">
+                <li>부동산 상담, 검토 및 소개</li>
+                <li>부동산 중개</li>
+                </ul>
+            </div>
+
+            <div className="card flow-card">
+                <div className="flow-num">3</div>
+                <h3>법인 계좌 개설 지원 (약 1개월 반)</h3>
+                <ul className="list">
+                <li>서류 안내</li>
+                <li>서류 준비 및 제출 지원</li>
+                <li>은행 심사 대응 지원</li>
+                </ul>
+            </div>
+
+            <div className="card flow-card">
+                <div className="flow-num">4</div>
+                <h3>세무, 회계 고문 계약</h3>
+                <ul className="list">
+                <li>사회보험 가입</li>
+                <li>급여 계산</li>
+                <li>취업규칙 작성</li>
+                <li>세무 회계 자문</li>
+                </ul>
+            </div>
+            </div>
+        </div>
+        </section>
+
+
+        {/* FAQ */}
+        <section id="faq">
+        <div className="container">
+            <div className="kicker">FAQ</div>
+            <h2 className="faq-title">자주 묻는 질문</h2>
+
+            <div className="grid">
+            {[
+            {
+                q: "비거주자(일본에 거주하지 않는 사람)도 회사를 설립할 수 있나요?",
+                a: "네, 보통 법인을 설립할 때는 대표가 일본 비거주자여도 회사설립 절차를 진행할 수 있습니다. 단, 일본 지점을 설립할 경우에는 대표자(일본 책임자)가 반드시 일본 거주자여야 합니다.",
+            },
+            {
+                q: "자본금은 많은 것이 좋나요, 적은 것이 좋나요?",
+                a: "예를 들어, 자본금이 1,000만 엔 이상인지 미만인지에 따라 처음 2년간 소비세 면세사업자로 인정받을 수 있는지 여부가 달라지고, 자본금이 1억 엔 이상인지 미만인지에 따라 외형표준과세 적용 여부도 달라집니다. 이처럼 자본금의 규모에 따라 여러 가지 차이가 생길 수 있으니 주의가 필요합니다. 반면, 초기 단계에서 많은 자금이 필요한 사업이라면 그에 걸맞은 자본금이 필요하다고 볼 수 있습니다.",
+            },
+            {
+                q: "회사 설립 후에 해야 할 절차에는 어떤 것이 있나요?",
+                a: "회사 설립 후에는 세무서 및 지방자치단체에 대한 각종 신고에 더해, 사회보험 및 노동보험 관련 절차도 필요합니다. 직원을 고용하는 경우에는 노동기준감독서나 고용노동서(헬로워크)에도 신고해야 합니다. 이러한 절차는 복잡하며, 적절한 기한 관리가 매우 중요합니다.",
+            },
+            {
+                q: "한국 본사로부터 상품을 구매해 일본 자회사가 판매할 계획입니다. 이 경우 어떤 점에 유의해야 하나요?",
+                a: "이전가격(transfer pricing)에 대한 세무 리스크를 검토해야 하며, 본지점 간의 거래라도 정당한 거래가격 설정이 중요합니다.",
+            },
+            ].map((item, idx) => (
+            <div className="faq-item faq-card" key={idx}>
+                <div className="faq-badge">Q</div>
+
+                <button
+                className="faq-q"
+                type="button"
+                onClick={() =>
+                    setFaqOpen((prev) => {
+                    const next = [...prev];
+                    next[idx] = !next[idx];
+                    return next;
+                    })
+                }
+                >
+                {item.q}
+                <span className="chev">{faqOpen[idx] ? "–" : "+"}</span>
+                </button>
+
+                {faqOpen[idx] && <div className="faq-a">{item.a}</div>}
+            </div>
+            ))}
+            </div>
+        </div>
+        </section>
+
 
         {/* Hearing Sheet */}
         <section id="hearing">
@@ -271,91 +374,9 @@ export default function App() {
                 </form>
 
                 <p className="notice">
-                  * 제출 시 자동으로 챗봇에 내용이 전달됩니다(데모).
+                  * 제출 시 자동으로 챗봇에 내용이 전달됩니다.
                 </p>
               </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Flow */}
-        <section id="flow">
-          <div className="container">
-            <div className="kicker">Flow</div>
-            <h2 className="section-title">한국 기업의 일본 진출 흐름과 절차</h2>
-
-            <div className="card">
-              <ol className="list ol-tight">
-                <li>
-                  <b>목표/스코프 정의</b> (무엇을, 언제까지, 어느 규모로)
-                </li>
-                <li>
-                  <b>진출 형태 선택</b> (지점/현지법인/자회사 등 비교)
-                </li>
-                <li>
-                  <b>핵심 리스크 확인</b> (세무/노무/계약/지재권 등 큰 틀 체크)
-                </li>
-                <li>
-                  <b>설립·초기 세팅</b> (계좌/필수 등록/기본 운영 체계)
-                </li>
-                <li>
-                  <b>운영 루틴 구축</b> (월별 증빙/기장 준비/보고 체계)
-                </li>
-                <li>
-                  <b>지속 개선</b> (비용 구조, 절차 자동화, 내부 통제 강화)
-                </li>
-              </ol>
-              <p className="notice">
-                * 위 단계는 “대략적인 흐름”입니다. 업종/규모/형태에 따라 필요한
-                신고·서류가 달라질 수 있어요. (회계/법무 전문가 확인 권장)
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* FAQ */}
-        <section id="faq">
-          <div className="container">
-            <div className="kicker">FAQ</div>
-            <h2 className="section-title">FAQ</h2>
-
-            <div className="grid">
-              {[
-                {
-                  q: "1) 상담은 무료인가요?",
-                  a: "1차 방향성/체크리스트 수준의 간단 상담은 무료로 안내하고, 실제 실행/대행 범위는 케이스에 따라 안내합니다(데모 문구).",
-                },
-                {
-                  q: "2) 어떤 자료를 준비해야 하나요?",
-                  a: "회사 기본정보, 일본 진출 목적/일정, 예상 인력/예산, 거래 구조(판매/수출/현지 운영 등) 정도면 시작 가능합니다.",
-                },
-                {
-                  q: "3) 형태(지점/법인/자회사)는 어떻게 결정하나요?",
-                  a: "비용·세금·리스크·운영 난이도·향후 확장 계획을 기준으로 비교표를 만들고, 우선순위에 맞춰 추천안을 제시합니다.",
-                },
-                {
-                  q: "4) 일본어 대응/커뮤니케이션도 지원하나요?",
-                  a: "필요한 범위에서 커뮤니케이션을 정리하고(질문 리스트/메일 초안/요구사항 정리), 업무 진행이 막히지 않게 돕습니다.",
-                },
-              ].map((item, idx) => (
-                <div className="faq-item" key={idx}>
-                  <button
-                    className="faq-q"
-                    type="button"
-                    onClick={() =>
-                      setFaqOpen((prev) => {
-                        const next = [...prev];
-                        next[idx] = !next[idx];
-                        return next;
-                      })
-                    }
-                  >
-                    {item.q}
-                    <span className="chev">{faqOpen[idx] ? "–" : "+"}</span>
-                  </button>
-                  {faqOpen[idx] && <div className="faq-a">{item.a}</div>}
-                </div>
-              ))}
             </div>
           </div>
         </section>
