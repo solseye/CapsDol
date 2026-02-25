@@ -211,14 +211,12 @@ function MainPage() {
               <li>
                 <a href="#faq">FAQ</a>
               </li>
-
-              {/* ✅ 여기만 바꿈: #HearingSheet 앵커가 아니라 /hearing 라우팅으로 */}
+              <li></li>
               <li>
                 <Link to="/hearing" className="btn primary nav-cta">
                   히어링시트 작성
                 </Link>
               </li>
-
               <li>
                 <a href="#consult" className="btn primary nav-cta">
                   상담 신청 (챗봇)
