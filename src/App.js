@@ -5,9 +5,9 @@ import "./App.css";
 const I18N = {
   ko: {
     hero_eyebrow: "한국 기업의 일본 진출, 한국어로 끝까지",
-    hero_title: "일본 법인 설립부터 운영까지\n원스톱으로 지원합니다",
+    hero_title: "일본 법인 설립부터 운영까지 원스톱으로 지원합니다",
     hero_lead:
-      "정관 작성·등기·세무서 신고·비자·계좌개설·회계/세무·노무까지. 김명국 회계사와 사법서사/행정사 가네무라가 팀으로 지원합니다.",
+      "정관 작성·등기·세무서 신고·비자·계좌개설·회계/세무·노무까지.\n김명구 회계사와 사법서사/행정사 가네무라가 팀으로 지원합니다.",
     hero_cta_primary: "무료 상담 문의",
     hero_cta_secondary: "지원 범위 보기",
     trust_1: "한국어 상담·문서 안내",
@@ -106,7 +106,7 @@ const I18N = {
     experts_title: "전문가 소개",
     experts_subtitle:
       "각 분야 자격자가 한 팀으로 움직여 일정과 품질을 동시에 확보합니다.",
-    expert_1_name: "김명국 회계사",
+    expert_1_name: "김명구 회계사",
     expert_1_role: "공인회계사(CPA) · 세무/회계 · 국제세무",
     expert_1_b1: "일본 진출 구조 설계(설립/운영/세무 리스크)",
     expert_1_b2: "기장·결산·법인세/소비세 등 세무 신고",
@@ -239,7 +239,7 @@ export default function App() {
             <span className="brand-text">
               <span className="brand-title">일본</span>
               <span className="brand-sub">
-                Kim Myung-guk CPA · Kanemura Judicial/Administrative Scrivener
+                Kim Myung-gu CPA · Kanemura Judicial/Administrative Scrivener
               </span>
             </span>
           </a>
