@@ -7,13 +7,13 @@ export default function Footer() {
     <footer>
       <div className="container footer-grid">
         <div className="muted footer-left">
-          <b className="footer-brand">WVA</b>
+          <b className="footer-brand">Kim Myung-Koo CPA · Kanemura</b>
           <br />
-          일본 진출을 쉽게 설명하고 실행을 돕습니다.
+          일본 진출 원스톱 지원 · 법인설립/등기/비자/세무·회계/노무
         </div>
 
         <div className="muted footer-right">
-          © {year} WVA. All rights reserved.
+          © {year} Japan Expansion Desk
         </div>
       </div>
     </footer>

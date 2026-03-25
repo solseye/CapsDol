@@ -258,7 +258,7 @@ section {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 1px;
-  font-size: 12px;
+  font-size: 13px;
   margin-bottom: 10px;
 }
 
@@ -271,6 +271,13 @@ section {
 .list {
   margin: 10px 0 0;
   padding-left: 18px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.list_price {
+  margin: 10px 0 0;
+  padding-left: 0px;
   color: var(--muted);
   line-height: 1.7;
 }
@@ -415,7 +422,7 @@ section {
 }
 .flow-card {
   position: relative;
-  padding-top: 26px;
+  padding-top: 18px;
 }
 
 .flow-num {
@@ -472,22 +479,6 @@ footer {
 /* Company */
 .company-card h3 {
   margin: 0 0 6px;
-}
-
-.m0 {
-  margin: 0;
-}
-
-.mt8 {
-  margin-top: 8px;
-}
-
-.mb12 {
-  margin-bottom: 12px;
-}
-
-.spacer {
-  height: 14px;
 }
 
 /* Chatbot */
@@ -576,6 +567,41 @@ footer {
 .chat-input input::placeholder {
   color: rgba(255, 255, 255, 0.45);
 }
+
+/* Expert */
+.expert-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.expert-head h3 {
+  margin: 0;
+}
+
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  font-weight: 1000;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.12);
+  flex-shrink: 0;
+}
+
+/* Pricing */
+.pricing-card h3 {
+  margin: 0 0 8px;
+}
+
+.pricing-card {
+  position: relative;
+  padding-top: 18px;
+}
+
 
 /* Responsive */
 @media (max-width: 860px) {
