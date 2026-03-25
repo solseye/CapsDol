@@ -35,8 +35,9 @@ export default function Home() {
         {/* Recommendation */}
         <section id="recommendation">
           <div className="container">
-            <h2 className="rec-title">이런 기업에게 추천합니다</h2>
-
+            <h2 className="rec-title">이런 기업에게 추천드립니다</h2>
+            <div className="kicker">일본 진출은 “설립”보다 “운영”이 더 어렵습니다. 설립부터 운영 체계까지 함께 만듭니다.</div>
+            <br></br>
             <div className="grid">
               <div className="card rec-card">
                 <div className="rec-num">1</div>
@@ -55,7 +56,7 @@ export default function Home() {
               <div className="card rec-card">
                 <div className="rec-num">3</div>
                 <h3 className="muted">
-                  한국어로 상담부터 모든 과정이 진행되기를 원하는 기업
+                  상담부터 진행까지 한국어로 진행하길 원하는 경우
                 </h3>
               </div>
 
@@ -69,7 +70,7 @@ export default function Home() {
               <div className="card rec-card">
                 <div className="rec-num">5</div>
                 <h3 className="muted">
-                  세무 리스크를 줄이고, 안정적인 일본 사업 운영을 원하시는 기업
+                  세무 리스크를 줄이고, 안정적인 일본 사업 운영을 원하는 기업
                 </h3>
               </div>
             </div>
@@ -257,7 +258,8 @@ export default function Home() {
                 <h3>인사, 노무</h3>
                 <ul className="list_price">
                 <h3>12만 엔 ~</h3>
-                <p>사회보험 신규 적용 12만 엔~, 급여 계산 1만 엔 + 2천 엔/1인</p>
+                <p>사회보험 신규 적용 12만 엔~</p>
+                <p>급여 계산 1만 엔 + 2천 엔/1인</p>
                 <p>취업규칙 30만 엔~</p>
                 </ul>
             </div>
@@ -337,7 +339,7 @@ export default function Home() {
                 <ul className="list">
                   <li>일본 진출 구조 설계(설립/운영/세무 리스크)</li>
                   <li>기장·결산·법인세/소비세 등 세무 신고</li>
-                  <li>한·일 거래(이전가격 등) 이슈 점검</li>
+                  <li>한/일 거래(이전가격 등) 이슈 점검</li>
                 </ul>
               </div>
 

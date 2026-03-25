@@ -71,7 +71,7 @@ export default function Chat() {
 
               {loading && (
                 <div className="msg-row bot">
-                  <div className="bubble typing">AI가 생각중...</div>
+                  <div className="bubble typing">답변 생성중</div>
                 </div>
               )}
             </div>
