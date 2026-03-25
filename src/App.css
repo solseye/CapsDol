@@ -26,16 +26,6 @@ body {
     sans-serif;
   color: var(--text);
   background:
-    radial-gradient(
-      1200px 600px at 20% 0%,
-      rgba(124, 92, 255, 0.25),
-      transparent 60%
-    ),
-    radial-gradient(
-      900px 500px at 80% 10%,
-      rgba(0, 195, 255, 0.18),
-      transparent 55%
-    ),
     var(--bg);
 }
 
@@ -550,4 +540,106 @@ footer {
 }
 html {
   scroll-behavior: smooth;
+}
+.site-header {
+  width: 100%;
+}
+
+.container.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 78px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: auto;
+}
+
+.main-nav {
+  display: flex;
+  align-items: center;
+}
+
+.main-nav ul {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.main-nav li {
+  display: flex;
+  align-items: center;
+}
+
+.main-nav a {
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+/* 언어 토글 */
+.lang-toggle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100px;
+  height: 44px;
+  padding: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 18px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.lang-toggle::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 42px;
+  height: 34px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.12);
+  transition: transform 0.22s ease;
+}
+
+/* JA일 때 오른쪽으로 정확히 이동 */
+html[data-lang="ja"] .lang-toggle::before {
+  transform: translateX(46px);
+}
+
+.lang-option {
+  position: relative;
+  z-index: 1;
+  width: 46px;
+  height: 34px;
+  border: 0;
+  background: transparent;
+  border-radius: 999px;
+  color: var(--text);
+  font-weight: 800;
+  font-size: 0.84rem;
+  line-height: 1;
+  opacity: 0.72;
+  cursor: pointer;
+  padding: 0;
+}
+
+html[data-lang="ko"] .lang-option:first-child,
+html[data-lang="ja"] .lang-option:last-child {
+  opacity: 1;
 }
