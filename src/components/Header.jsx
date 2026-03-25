@@ -1,11 +1,19 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 export default function Header() {
+  const location = useLocation();
+
+  const handleLogoClick = (e) => {
+    if (location.pathname === "/") {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
   return (
     <header>
       <div className="container nav">
-        <Link to="/" className="brand">
+        <Link to="/" className="brand" onClick={handleLogoClick}>
           <span className="logo" aria-hidden="true" />
           <span>WVA</span>
         </Link>
