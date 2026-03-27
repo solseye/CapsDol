@@ -51,7 +51,7 @@ export default function Header() {
               </li>
               <li>
                 <Link to="/chat" className="btn primary nav-cta">
-                  상담 시트 작성
+                  챗봇
                 </Link>
               </li>
             </ul>
