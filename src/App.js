@@ -1,14 +1,16 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import MainPage from "./MainPage";
-import HearingSheet from "./Hearingsheet";
+import Home from "./pages/Home";
+import Chat from "./pages/Chat/Chat";
 
-export default function App() {
+function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<MainPage />} />
-        <Route path="/hearing-sheet" element={<HearingSheet />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/chat" element={<Chat />} />
       </Routes>
     </BrowserRouter>
   );
 }
+
+export default App;
