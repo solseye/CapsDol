@@ -25,8 +25,7 @@ body {
     "Apple SD Gothic Neo",
     sans-serif;
   color: var(--text);
-  background:
-    var(--bg);
+  background: var(--bg);
 }
 
 a {
@@ -140,7 +139,7 @@ section {
   background-size: cover;
   background-position: center;
 
-  min-height: 90vh; 
+  min-height: 90vh;
 }
 
 .hero::before {
@@ -297,7 +296,7 @@ section {
 
 .rec-num {
   position: absolute;
-  top: -18px;        
+  top: -18px;
   left: -22px;
   width: 44px;
   height: 44px;
@@ -317,7 +316,6 @@ section {
 
   border: 1px solid rgba(255, 255, 255, 0.14);
 }
-
 
 /* Form */
 .form-grid {
@@ -440,7 +438,6 @@ section {
   margin: 0 0 8px;
 }
 
-
 /* Footer */
 footer {
   padding: 26px 0 40px;
@@ -498,8 +495,8 @@ footer {
   display: grid;
   place-items: center;
   font-weight: 1000;
-  background: rgba(255,255,255,.08);
-  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   flex-shrink: 0;
 }
 
@@ -512,7 +509,6 @@ footer {
   position: relative;
   padding-top: 18px;
 }
-
 
 /* Responsive */
 @media (max-width: 860px) {
