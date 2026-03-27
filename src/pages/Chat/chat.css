@@ -1,0 +1,182 @@
+/* 전체 */
+.layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* 가운데 */
+.chat-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  overflow: hidden;
+}
+
+/* 카드 */
+.chat-inner {
+  width: 1200px;
+  height: 100%;
+
+  display: flex;
+  gap: 20px;
+
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+/* 좌측 */
+.summary {
+  width: 300px;
+  min-width: 260px;
+
+  padding: 20px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.06),
+    rgba(255,255,255,0.02)
+  );
+
+  border: 1px solid var(--line);
+  border-radius: 20px;
+}
+
+/* 채팅 */
+.chat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  height: 100%;
+  background: rgba(11,15,25,0.6);
+  border-radius: 20px;
+}
+
+/* 메시지 영역 */
+.chat-body {
+  flex: 1;
+  min-height: 0;
+
+  padding: 20px;
+  overflow-y: auto;
+}
+
+/* 박스 */
+.msg-row {
+  display: flex;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+/* 정렬 */
+.msg-row.bot {
+  justify-content: flex-start;
+  background: rgba(11,15,25,0);
+  border: none;
+}
+
+.msg-row.user {
+  justify-content: flex-end;
+}
+
+/* 말풍선 */
+.bubble {
+  max-width: 500px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  word-break: break-word;
+}
+
+/* bot */
+.msg-row.bot .bubble {
+  background: var(--card2);
+}
+
+/* user */
+.msg-row.user .bubble {
+  background: linear-gradient(135deg, var(--accent), #00c3ff);
+  color: white;
+}
+
+/* 하단 */
+.chat-bottom {
+  border-top: 1px solid var(--line);
+  padding: 10px;
+  flex-shrink: 0;
+}
+
+/* 버튼 */
+.chat-action-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.chat-action-bar button {
+  flex: 1;
+  padding: 8px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--line);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.chat-action-bar button.active {
+  background: linear-gradient(135deg, var(--accent), #00c3ff);
+  border: none;
+}
+
+/* 입력 */
+.chat-input {
+  display: flex;
+  gap: 10px;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.06);
+  color: var(--text);
+}
+
+.chat-input button {
+  padding: 0 20px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent), #00c3ff);
+  border: none;
+  color: white;
+}
+
+/* 타이핑 */
+.typing {
+  opacity: 0.7;
+  font-style: italic;
+}
+
+
+
+/* 스크롤 전체 */
+.chat-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+/* 배경 */
+.chat-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* 스크롤 바 */
+.chat-body::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.08);  /* ⭐ 기본 거의 안 보이게 */
+  border-radius: 999px;
+}
+
+/* hover 시 */
+.chat-body:hover::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.18);  /* ⭐ 살짝 강조 */
+}
