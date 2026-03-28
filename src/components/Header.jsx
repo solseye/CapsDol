@@ -1,12 +1,68 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 export default function Header() {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const animateScrollTo = (targetY, duration = 900) => {
+    const startY = window.pageYOffset;
+    const diff = targetY - startY;
+    const startTime = performance.now();
+
+    const easeInOutCubic = (t) => {
+      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    };
+
+    const step = (currentTime) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = easeInOutCubic(progress);
+
+      window.scrollTo(0, startY + diff * eased);
+
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      }
+    };
+
+    requestAnimationFrame(step);
+  };
 
   const handleLogoClick = (e) => {
     if (location.pathname === "/") {
       e.preventDefault();
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      animateScrollTo(0, 900);
+    }
+  };
+
+  const handleSectionClick = (e, id) => {
+    e.preventDefault();
+
+    const scrollToTarget = () => {
+      const target = document.getElementById(id);
+      if (!target) return;
+
+      const header = document.querySelector(".site-header");
+      const headerHeight = header ? header.offsetHeight : 0;
+
+      const targetTop =
+        target.getBoundingClientRect().top +
+        window.pageYOffset -
+        headerHeight -
+        12;
+
+      window.history.replaceState(null, "", `#${id}`);
+      animateScrollTo(targetTop, 900);
+    };
+
+    if (location.pathname === "/") {
+      scrollToTarget();
+    } else {
+      navigate("/");
+
+      setTimeout(() => {
+        scrollToTarget();
+      }, 120);
     }
   };
 
@@ -33,16 +89,30 @@ export default function Header() {
           <nav className="main-nav" aria-label="주요 메뉴">
             <ul>
               <li>
-                <a href="#about">회사 개요</a>
+                <a
+                  href="#about"
+                  onClick={(e) => handleSectionClick(e, "about")}
+                >
+                  회사 개요
+                </a>
               </li>
               <li>
-                <a href="#service">서비스</a>
+                <a
+                  href="#service"
+                  onClick={(e) => handleSectionClick(e, "service")}
+                >
+                  서비스
+                </a>
               </li>
               <li>
-                <a href="#flow">업무 흐름</a>
+                <a href="#flow" onClick={(e) => handleSectionClick(e, "flow")}>
+                  업무 흐름
+                </a>
               </li>
               <li>
-                <a href="#faq">FAQ</a>
+                <a href="#faq" onClick={(e) => handleSectionClick(e, "faq")}>
+                  FAQ
+                </a>
               </li>
               <li>
                 <Link to="/chat" className="btn primary nav-cta">
