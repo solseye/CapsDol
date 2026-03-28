@@ -45,11 +45,6 @@ export default function Header() {
                 <a href="#faq">FAQ</a>
               </li>
               <li>
-                <Link to="/hearing-sheet" className="btn primary nav-cta">
-                  히어링 시트
-                </Link>
-              </li>
-              <li>
                 <Link to="/chat" className="btn primary nav-cta">
                   챗봇
                 </Link>

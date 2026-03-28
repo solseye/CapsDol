@@ -76,11 +76,6 @@ export default function MainPage() {
                 <a href="#faq">FAQ</a>
               </li>
               <li>
-                <Link to="/hearing-sheet" className="btn nav-cta">
-                  히어링시트
-                </Link>
-              </li>
-              <li>
                 <a href="#consult" className="btn primary nav-cta">
                   상담 신청(챗봇)
                 </a>

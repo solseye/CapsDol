@@ -1,11 +1,13 @@
 :root {
-  --bg: #0b0f19;
-  --card: rgba(255, 255, 255, 0.06);
-  --card2: rgba(255, 255, 255, 0.08);
-  --text: rgba(255, 255, 255, 0.92);
-  --muted: rgba(255, 255, 255, 0.68);
-  --line: rgba(255, 255, 255, 0.12);
-  --accent: #7c5cff;
+  --bg: #f5f7fb; /* 완전 흰색 X, 약간 회색 */
+  --card: #ffffff;
+  --card2: #eef2f7;
+
+  --text: #1e293b; /* 완전 검정 X → 눈 피로 줄임 */
+  --muted: #64748b;
+
+  --line: #e5e9f2; /* 너무 진하지 않게 */
+  --accent: #4f46e5; /* 보라 → 신뢰감 + 덜 자극적 */
 }
 
 * {
@@ -40,11 +42,8 @@ a {
 
 /* Header */
 header {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  backdrop-filter: blur(10px);
-  background: rgba(11, 15, 25, 0.6);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--line);
 }
 
@@ -91,7 +90,7 @@ nav a {
 }
 
 nav a:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: #eff6ff;
   color: var(--text);
 }
 
@@ -101,31 +100,23 @@ nav a:hover {
 
 /* Buttons */
 .btn {
+  background: #ffffff;
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.06);
   color: var(--text);
-  padding: 10px 12px;
-  border-radius: 12px;
-  font-weight: 800;
-  cursor: pointer;
-  transition: 0.15s ease;
 }
 
 .btn:hover {
-  transform: translateY(-1px);
-  border-color: rgba(255, 255, 255, 0.22);
-  background: rgba(255, 255, 255, 0.08);
+  background: #f1f5f9;
 }
 
 .btn.primary {
-  border: 0;
-  background: linear-gradient(135deg, var(--accent), #00c3ff);
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
 }
 
 /* Sections */
 section {
   padding: 56px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid #e5e7eb;
   scroll-margin-top: 65px;
 }
 
@@ -143,19 +134,13 @@ section {
 }
 
 .hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-
   background: linear-gradient(
     to right,
-    rgba(11, 15, 25, 0.92) 0%,
-    rgba(11, 15, 25, 0.78) 35%,
-    rgba(11, 15, 25, 0.25) 65%,
-    rgba(11, 15, 25, 0.05) 100%
+    rgba(245, 247, 251, 0.92),
+    rgba(245, 247, 251, 0.7),
+    rgba(245, 247, 251, 0.3),
+    rgba(245, 247, 251, 0.1)
   );
-
-  pointer-events: none;
 }
 
 .hero .container {
@@ -179,8 +164,8 @@ section {
 
 .subtitle {
   margin: 0 0 18px;
-  color: var(--muted);
-  font-size: 16px;
+  color: black;
+  font-size: 18px;
   line-height: 1.7;
 }
 
@@ -198,13 +183,9 @@ section {
 }
 
 .pill {
-  padding: 8px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.05);
+  background: #f1f5f9;
   color: var(--muted);
-  font-weight: 700;
-  font-size: 13px;
+  border: 1px solid var(--line);
 }
 
 .card {
@@ -212,6 +193,8 @@ section {
   background: var(--card);
   border-radius: 18px;
   padding: 18px;
+
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
 }
 
 .muted {
@@ -342,7 +325,7 @@ section {
 }
 .faq-item {
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.04);
+  background: #ffffff;
   border-radius: 16px;
   overflow: visible;
   margin-bottom: 10px;
@@ -495,8 +478,8 @@ footer {
   display: grid;
   place-items: center;
   font-weight: 1000;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
   flex-shrink: 0;
 }
 
@@ -594,8 +577,8 @@ html {
   width: 100px;
   height: 44px;
   padding: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid #dbe3ee;
+  background: #ffffff;
   border-radius: 18px;
   box-sizing: border-box;
   flex-shrink: 0;
@@ -609,7 +592,7 @@ html {
   width: 42px;
   height: 34px;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.12);
+  background: #eaf2ff;
   transition: transform 0.22s ease;
 }
 
@@ -638,4 +621,74 @@ html[data-lang="ja"] .lang-toggle::before {
 html[data-lang="ko"] .lang-option:first-child,
 html[data-lang="ja"] .lang-option:last-child {
   opacity: 1;
+}
+
+.section-desc {
+  margin: 0 0 18px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.grid4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.hearing-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.hearing-shortcut-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 190px;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.hearing-shortcut-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 28px rgba(79, 70, 229, 0.1);
+  border-color: rgba(79, 70, 229, 0.28);
+}
+
+.hearing-shortcut-card h3 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.hearing-shortcut-card p {
+  margin: 0;
+  line-height: 1.7;
+  flex: 1;
+}
+
+.hearing-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  font-size: 20px;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--accent), #00c3ff);
+  box-shadow: 0 10px 24px rgba(79, 70, 229, 0.18);
+}
+
+.hearing-link {
+  font-weight: 800;
+  color: var(--accent);
+}
+
+@media (max-width: 860px) {
+  .hearing-grid {
+    grid-template-columns: 1fr;
+  }
 }
