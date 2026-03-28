@@ -40,6 +40,40 @@ export default function Home() {
     }
   }, []);
 
+  useEffect(() => {
+    const handleAnchorClick = (e) => {
+      const anchor = e.target.closest('a[href^="#"]');
+      if (!anchor) return;
+
+      const hash = anchor.getAttribute("href");
+      if (!hash || hash === "#") return;
+
+      const id = hash.replace("#", "");
+      const el = document.getElementById(id);
+      if (!el) return;
+
+      e.preventDefault();
+
+      window.history.replaceState(null, "", hash);
+
+      const headerEl = document.querySelector(".site-header");
+      const headerHeight = headerEl ? headerEl.offsetHeight : 0;
+      const top =
+        el.getBoundingClientRect().top + window.pageYOffset - headerHeight - 12;
+
+      window.scrollTo({
+        top,
+        behavior: "smooth",
+      });
+    };
+
+    document.addEventListener("click", handleAnchorClick);
+
+    return () => {
+      document.removeEventListener("click", handleAnchorClick);
+    };
+  }, []);
+
   return (
     <div className="App">
       {/* 숨겨진 Google Translate 위젯 */}

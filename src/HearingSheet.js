@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./App.css";
 
@@ -22,6 +22,10 @@ const initialForm = {
 };
 
 export default function HearingSheet() {
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, []);
+
   const [form, setForm] = useState(initialForm);
 
   const handleChange = (e) => {
