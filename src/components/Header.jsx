@@ -115,7 +115,7 @@ export default function Header() {
                 </a>
               </li>
               <li>
-                <Link to="/chat" className="btn primary nav-cta">
+                <Link to="/reservation" className="btn primary nav-cta">
                   상담 예약
                 </Link>
               </li>
