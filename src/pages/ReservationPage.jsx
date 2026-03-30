@@ -3,6 +3,16 @@ import { useMemo, useState } from "react";
 import "../App.css";
 
 const WEEK_DAYS = ["일", "월", "화", "수", "목", "금", "토"];
+const TIME_OPTIONS = [
+  "09:00",
+  "10:00",
+  "11:00",
+  "13:00",
+  "14:00",
+  "15:00",
+  "16:00",
+  "17:00",
+];
 
 function isSameDate(a, b) {
   return (
@@ -53,6 +63,7 @@ export default function ReservationPage() {
   );
 
   const [selectedField, setSelectedField] = useState("");
+  const [selectedTime, setSelectedTime] = useState("");
   const [selectedDate, setSelectedDate] = useState(
     new Date(today.getFullYear(), today.getMonth(), today.getDate()),
   );
@@ -61,7 +72,8 @@ export default function ReservationPage() {
     name: "",
     phone: "",
     email: "",
-    note: "",
+    CName: "",
+    kind: "",
   });
 
   const calendarDays = useMemo(() => buildCalendarDays(viewDate), [viewDate]);
@@ -79,11 +91,19 @@ export default function ReservationPage() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleDateClick = (date, isPast, isToday) => {
+    if (!isPast || isToday) {
+      setSelectedDate(date);
+      setSelectedTime("");
+    }
+  };
+
   const handleSubmit = () => {
     console.log("예약 정보", {
       ...form,
       field: selectedField,
       selectedDate,
+      selectedTime,
     });
     alert("예약 정보가 전송되었습니다.");
   };
@@ -139,6 +159,24 @@ export default function ReservationPage() {
                   onChange={handleChange}
                 />
 
+                <input
+                  type="text"
+                  name="CName"
+                  placeholder="회사 이름"
+                  className="reservation-input"
+                  value={form.CName}
+                  onChange={handleChange}
+                />
+
+                <input
+                  type="text"
+                  name="kind"
+                  placeholder="직종"
+                  className="reservation-input"
+                  value={form.kind}
+                  onChange={handleChange}
+                />
+
                 <div className="reservation-field-group">
                   <div className="reservation-field-title">상담 분야 선택</div>
 
@@ -168,16 +206,10 @@ export default function ReservationPage() {
                       {selectedDate.getMonth() + 1}월 {selectedDate.getDate()}일
                     </strong>
                   </div>
+                  <div>
+                    선택한 시간: <strong>{selectedTime || "선택 안 됨"}</strong>
+                  </div>
                 </div>
-
-                <textarea
-                  name="note"
-                  placeholder="기타 요청사항"
-                  className="reservation-textarea"
-                  rows={5}
-                  value={form.note}
-                  onChange={handleChange}
-                />
               </div>
 
               <button
@@ -240,11 +272,7 @@ export default function ReservationPage() {
                       <div
                         key={date.toISOString()}
                         className={`calendar-day ${isSelected ? "selected" : ""} ${isPast ? "past" : ""}`}
-                        onClick={() => {
-                          if (!isPast || isToday) {
-                            setSelectedDate(date);
-                          }
-                        }}
+                        onClick={() => handleDateClick(date, isPast, isToday)}
                       >
                         <div className="calendar-day-inner">
                           <span className="calendar-day-number">
@@ -258,6 +286,23 @@ export default function ReservationPage() {
                       </div>
                     );
                   })}
+                </div>
+              </div>
+
+              <div className="reservation-time card">
+                <div className="reservation-time-head">상담 시간</div>
+
+                <div className="reservation-time-grid">
+                  {TIME_OPTIONS.map((time) => (
+                    <button
+                      key={time}
+                      type="button"
+                      className={`time-button ${selectedTime === time ? "active" : ""}`}
+                      onClick={() => setSelectedTime(time)}
+                    >
+                      {time}
+                    </button>
+                  ))}
                 </div>
               </div>
             </section>

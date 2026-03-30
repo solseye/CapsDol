@@ -748,7 +748,7 @@ html[data-lang="ja"] .lang-option:last-child {
   background: #ffffff;
   color: var(--text);
   border-radius: 20px;
-  padding: 16px 18px;
+  padding: 10px;
   font: inherit;
   outline: none;
 }
@@ -947,5 +947,50 @@ html[data-lang="ja"] .lang-option:last-child {
   .reservation-left,
   .reservation-calendar {
     min-height: auto;
+  }
+}
+
+.reservation-time {
+  width: 100%;
+  border-radius: 28px;
+  padding: 20px;
+}
+
+.reservation-time-head {
+  font-size: 16px;
+  font-weight: 800;
+  margin-bottom: 14px;
+}
+
+.reservation-time-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.time-button {
+  border: 2px solid #111827;
+  background: #ffffff;
+  color: var(--text);
+  border-radius: 14px;
+  padding: 12px 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.time-button:hover {
+  background: #f8fafc;
+}
+
+.time-button.active {
+  background: linear-gradient(135deg, var(--accent), #00c3ff);
+  color: #ffffff;
+  border-color: transparent;
+}
+
+@media (max-width: 960px) {
+  .reservation-time-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
