@@ -1,9 +1,9 @@
 import { Routes, Route, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import Home from "./pages/Home";
-import HearingSheet from "./HearingSheet";
+import HearingSheet from "./pages/HearingSheet";
 import ReservationPage from "./pages/ReservationPage";
-// import Chat from "./pages/Chat/Chat"; // chat도 쓰면 이것도 추가
+import Chat from "./pages/Chat/Chat";
 
 function App() {
   const { pathname } = useLocation();
@@ -17,7 +17,7 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route path="/hearing-sheet" element={<HearingSheet />} />
       <Route path="/reservation" element={<ReservationPage />} />
-      {/* <Route path="/chat" element={<Chat />} /> */}
+      <Route path="/chat" element={<Chat />} />
     </Routes>
   );
 }

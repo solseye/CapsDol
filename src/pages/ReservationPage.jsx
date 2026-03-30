@@ -194,6 +194,23 @@ export default function ReservationPage() {
                   </div>
                 </div>
 
+                <div className="reservation-summary">
+                  <div className="reservation-summary-title">선택 내용</div>
+                  <div className="reservation-summary-item">
+                    상담 분야: <strong>{selectedField || "선택 안 됨"}</strong>
+                  </div>
+                  <div className="reservation-summary-item">
+                    날짜:{" "}
+                    <strong>
+                      {selectedDate.getFullYear()}년{" "}
+                      {selectedDate.getMonth() + 1}월 {selectedDate.getDate()}일
+                    </strong>
+                  </div>
+                  <div className="reservation-summary-item">
+                    시간: <strong>{selectedTime || "선택 안 됨"}</strong>
+                  </div>
+                </div>
+
                 <div className="reservation-selected-info">
                   <div>
                     선택한 상담 분야:{" "}
