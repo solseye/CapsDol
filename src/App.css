@@ -780,7 +780,7 @@ html[data-lang="ja"] .lang-option:last-child {
 
 .reservation-field-buttons {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 12px;
 }
 
