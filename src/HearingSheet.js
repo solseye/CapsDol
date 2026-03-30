@@ -383,6 +383,9 @@ export default function HearingSheet() {
                   <button className="btn primary" type="submit">
                     제출하기
                   </button>
+                  <Link to="/reservation" className="btn" type="button">
+                    상담 예약하러 가기
+                  </Link>
                   <button className="btn" type="button" onClick={handleReset}>
                     초기화
                   </button>
