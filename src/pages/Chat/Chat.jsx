@@ -1,10 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Navigate } from "react-router-dom";
-import { onAuthStateChanged } from "firebase/auth";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import { sendQuestion } from "../../api/chatApi";
-import { auth } from "../../firebase";
 import "./chat.css";
 
 export default function Chat() {
@@ -21,14 +19,10 @@ export default function Chat() {
   const chatBodyRef = useRef(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setIsLoggedIn(!!user);
-    });
-
-    return () => unsubscribe();
+    const token = localStorage.getItem("Token");
+    setIsLoggedIn(!!token);
   }, []);
 
-  // 자동 스크롤
   useEffect(() => {
     if (chatBodyRef.current) {
       chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
@@ -73,12 +67,16 @@ export default function Chat() {
 
       <div className="chat-container">
         <div className="chat-inner">
+
+          {/* 좌측 요약 */}
           <div className="summary">
             <h3>주요 채팅 요약</h3>
             <div className="summary-content">내용내용</div>
           </div>
 
+          {/* 채팅 */}
           <div className="chat">
+
             <div className="chat-body" ref={chatBodyRef}>
               {messages.map((m, i) => (
                 <div key={i} className={`msg-row ${m.type}`}>
@@ -94,6 +92,7 @@ export default function Chat() {
             </div>
 
             <div className="chat-bottom">
+
               <div className="chat-action-bar">
                 {["세무", "법무", "비자", "행정"].map((b, i) => (
                   <button
@@ -114,8 +113,10 @@ export default function Chat() {
                 />
                 <button type="submit">전송</button>
               </form>
+
             </div>
           </div>
+
         </div>
       </div>
 

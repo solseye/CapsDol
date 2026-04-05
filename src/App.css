@@ -1254,3 +1254,129 @@ footer {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ===== 로그인 페이지 ===== */
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 0;
+}
+
+.login-container {
+  max-width: 520px;
+}
+
+.login-card {
+  padding: 28px;
+  border-radius: 22px;
+}
+
+.login-title {
+  margin-bottom: 8px;
+}
+
+.login-desc {
+  margin-bottom: 24px;
+}
+
+.google-login-section {
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+  margin-bottom: 22px;
+}
+
+.google-login-button {
+  min-height: 44px;
+}
+
+.login-subtitle {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.login-helper-text {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.login-divider {
+  position: relative;
+  text-align: center;
+  margin: 8px 0 20px;
+}
+
+.login-divider::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  border-top: 1px solid var(--line);
+  transform: translateY(-50%);
+}
+
+.login-divider span {
+  position: relative;
+  z-index: 1;
+  padding: 0 12px;
+  background: var(--bg);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.login-form {
+  display: grid;
+  gap: 18px;
+}
+
+.login-field {
+  display: grid;
+  gap: 8px;
+}
+
+.login-label {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.login-error {
+  margin: 0;
+  font-size: 14px;
+  color: #f87171;
+  font-weight: 700;
+}
+
+.login-submit {
+  min-height: 52px;
+  font-size: 15px;
+}
+
+/* ===== 회원가입 페이지 ===== */
+
+.signup-redirect {
+  margin-top: 18px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.signup-link {
+  margin-left: 6px;
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.signup-link:hover {
+  text-decoration: underline;
+}

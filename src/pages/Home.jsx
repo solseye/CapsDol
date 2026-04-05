@@ -3,8 +3,6 @@ import "../App.css";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { Link } from "react-router-dom";
-import { auth } from "../firebase";
-import { onAuthStateChanged } from "firebase/auth";
 
 export default function Home() {
   // FAQ open states (4개)
@@ -45,11 +43,8 @@ export default function Home() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
-      const unsubscribe = onAuthStateChanged(auth, (user) => {
-        setIsLoggedIn(!!user);
-      });
-
-    return () => unsubscribe();
+      const token = localStorage.getItem("accessToken");
+      setIsLoggedIn(!!token);
   }, []);
 
   return (

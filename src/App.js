@@ -5,6 +5,7 @@ import HearingSheet from "./pages/HearingSheet";
 import ReservationPage from "./pages/ReservationPage";
 import Chat from "./pages/Chat/Chat";
 import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 
 function App() {
   const { pathname } = useLocation();
@@ -20,6 +21,7 @@ function App() {
       <Route path="/hearing-sheet" element={<HearingSheet />} />
       <Route path="/reservation" element={<ReservationPage />} />
       <Route path="/chat" element={<Chat />} />
+      <Route path="/signup" element={<Signup />} />
     </Routes>
   );
 }

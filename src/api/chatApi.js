@@ -1,10 +1,14 @@
 export async function sendQuestion(question) {
+  const token = localStorage.getItem("accessToken");
+
   const res = await fetch("http://localhost:5000/chat", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ question })
+    body: JSON.stringify({ question }),
+    credentials: "include",
   });
 
   if (!res.ok) {

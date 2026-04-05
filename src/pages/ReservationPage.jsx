@@ -1,9 +1,7 @@
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { useMemo, useState, useEffect } from "react";
 import "../App.css";
 import Header from "../components/Header";
-import { auth } from "../firebase";
-import { onAuthStateChanged } from "firebase/auth";
 
 const WEEK_DAYS = ["일", "월", "화", "수", "목", "금", "토"];
 const TIME_OPTIONS = [
@@ -60,14 +58,11 @@ function buildCalendarDays(viewDate) {
 
 export default function ReservationPage() {
   const today = useMemo(() => new Date(), []);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(null);
 
   useEffect(() => {
-  const unsubscribe = onAuthStateChanged(auth, (user) => {
-    setIsLoggedIn(!!user);
-  });
-
-  return () => unsubscribe();
+    const token = localStorage.getItem("accessToken");
+    setIsLoggedIn(!!token);
   }, []);
 
   const [viewDate, setViewDate] = useState(
@@ -120,9 +115,18 @@ export default function ReservationPage() {
     alert("예약 정보가 전송되었습니다.");
   };
 
+  if (isLoggedIn === null) {
+    return <div>로딩 중...</div>;
+  }
+
+  if (!isLoggedIn) {
+    return <Navigate to="/login" replace />;
+  }
+
   return (
     <div className="App">
       <Header isLoggedIn={isLoggedIn} />
+
       <main className="reservation-page">
         <div className="container reservation-container">
           <div className="reservation-head">
