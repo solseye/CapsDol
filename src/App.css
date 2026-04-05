@@ -30,16 +30,6 @@ body {
     sans-serif;
   color: var(--text);
   background:
-    radial-gradient(
-      1200px 600px at 20% 0%,
-      rgba(124, 92, 255, 0.25),
-      transparent 60%
-    ),
-    radial-gradient(
-      900px 500px at 80% 10%,
-      rgba(0, 195, 255, 0.18),
-      transparent 55%
-    ),
     var(--bg);
 }
 
@@ -389,6 +379,27 @@ section {
   color: rgba(255, 255, 255, 0.58);
 }
 
+/* Service */
+
+.service-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  font-weight: 1000;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  flex-shrink: 0;
+}
+
 /* Recommendation */
 .rec-title {
   margin: 0 0 12px;
@@ -441,6 +452,10 @@ section {
   font-size: 24px;
   letter-spacing: -0.2px;
   margin-bottom: 30px;
+}
+
+.faq-card {
+  white-space: pre-line;
 }
 
 .faq-item {
@@ -637,13 +652,13 @@ footer {
 }
 
 .hearing-icon {
-  width: 52px;
-  height: 52px;
+  width: 44px;
+  height: 44px;
   border-radius: 16px;
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  font-weight: 900;
+  font-weight: 1000;
   font-size: 20px;
   line-height: 1;
   color: #ffffff;

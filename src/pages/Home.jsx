@@ -167,7 +167,12 @@ export default function Home() {
 
             <div className="grid3">
               <div className="card">
-                <h3>법인 설립</h3>
+                <div className="service-head">
+                <div className="avatar" aria-hidden="true">
+                    B
+                  </div>
+                  <h3>법인 설립</h3>
+                </div>
                 <ul className="list">
                   <li>법인 설립 컨설팅</li>
                   <li>정관 작성 및 인증</li>
@@ -176,7 +181,12 @@ export default function Home() {
               </div>
 
               <div className="card">
-                <h3>비자 발행</h3>
+                <div className="service-head">
+                  <div className="avatar" aria-hidden="true">
+                    V
+                  </div>
+                  <h3>비자 발행</h3>
+                </div>
                 <ul className="list">
                   <li>취업 비자</li>
                   <li>경영 관리 비자</li>
@@ -184,35 +194,70 @@ export default function Home() {
               </div>
 
               <div className="card">
-                <h3>계좌 개설</h3>
+                <div className="service-head">
+                  <div className="avatar" aria-hidden="true">
+                    G
+                  </div>
+                  <h3>계좌 개설</h3>
+                </div>
                 <ul className="list">
-                  <li>한국계 은생을 중심으로 법인 계좌 개설을 지원</li>
+                  <li>한국계 은행과의 중개</li>
                 </ul>
               </div>
 
               <div className="card">
-                <h3>세무/회계</h3>
+                <div className="service-head">
+                  <div className="avatar" aria-hidden="true">
+                    S
+                  </div>
+                  <h3>세무 · 회계</h3>
+                </div>
                 <ul className="list">
-                  <li>기장 대행</li>
-                  <li>세무 신고</li>
-                  <li>세무 상담</li>
+                  <li>기장 및 재무보고</li>
+                  <li>세무 신고 (법인·소득·소비)</li>
+                  <li>세무 컨설팅 및 스킴 설계</li>
+                  <li>국제조세 (PE 판정, 조세조약)</li>
+                  <li>세무조사 동행</li>
                 </ul>
               </div>
 
               <div className="card">
-                <h3>인사/노무</h3>
+                <div className="service-head">
+                  <div className="avatar" aria-hidden="true">
+                    I
+                  </div>
+                  <h3>인사 · 노무</h3>
+                </div>
                 <ul className="list">
-                  <li>사회 보험</li>
                   <li>급여 계산</li>
-                  <li>취업 규칙 작성</li>
+                  <li>사회보험 가입 절차</li>
+                  <li>노동보험 가입 절차</li>
                 </ul>
               </div>
 
               <div className="card">
-                <h3>부동산 중개</h3>
+                <div className="service-head">
+                  <div className="avatar" aria-hidden="true">
+                    B
+                  </div>
+                  <h3>부동산 중개</h3>
+                </div>
                 <ul className="list">
-                  <li>투자용 부동산 중개</li>
-                  <li>상업용 부동산 중개</li>
+                  <li>부동산 관련 업체 중개</li>
+                </ul>
+              </div>
+
+              <div className="card">
+                <div className="service-head">
+                  <div className="avatar" aria-hidden="true">
+                    H
+                  </div>
+                  <h3>회계 · 감사</h3>
+                </div>
+                <ul className="list">
+                  <li>임의 감사</li>
+                  <li>회사법 감사</li>
+                  <li>일본 자회사의 PKG 감사</li>
                 </ul>
               </div>
             </div>
@@ -276,7 +321,7 @@ export default function Home() {
 
               <div className="card flow-card">
                 <div className="flow-num">3</div>
-                <h3>법인 계좌 개설 지원 (약 1개월 반)</h3>
+                <h3>법인 계좌 개설 지원 (약 1개월)</h3>
                 <ul className="list">
                   <li>서류 안내</li>
                   <li>서류 준비 및 제출 지원</li>
@@ -286,7 +331,7 @@ export default function Home() {
 
               <div className="card flow-card">
                 <div className="flow-num">4</div>
-                <h3>세무, 회계 고문 계약</h3>
+                <h3>세무 · 회계 고문 계약</h3>
                 <ul className="list">
                   <li>사회보험 가입</li>
                   <li>급여 계산</li>
@@ -335,7 +380,7 @@ export default function Home() {
               </div>
 
               <div className="card pricing-card">
-                <h3>회계,세무 고문</h3>
+                <h3>회계 · 세무 고문</h3>
                 <ul className="list_price">
                   <h3>월 7만 엔 ~</h3>
                   <p>체류자격 종류/난이도에 따라 상이</p>
@@ -369,20 +414,16 @@ export default function Home() {
             <div className="grid">
               {[
                 {
-                  q: "비거주자(일본에 거주하지 않는 사람)도 회사를 설립할 수 있나요?",
-                  a: "일반적으로 대표가 일본 비거주자여도 법인 설립 절차 진행은 가능합니다. 다만 지점(支店) 설립의 경우 일본 거주 책임자가 필요할 수 있습니다.",
+                  q: "일본 법인에 소비세 납부 의무에 대하여.납부 의무 요건",
+                  a: "1. 전전 사업연도(기준 기간).의 과세 매출액이 1,000만 엔 이상인 경우 \n 2. 과세 사업자를 스스로 선택한 경우 \n 3. 인보이스 등록(적격 청구 사업자)을 한 경우",
                 },
                 {
-                  q: "자본금은 많을수록 좋은가요?",
-                  a: "자본금 규모에 따라 소비세 면세 여부, 과세 방식 등 달라질 수 있습니다. 사업 모델과 초기 투자 계획을 함께 검토해 적정 자본금을 설계합니다.",
+                  q: "2.일본 법인에서 한국 본사로 이자를 송금할 때 원천징수 세율은 몇 퍼센트인가?",
+                  a: "1. 원칙적으로 20.42% \n 2. 조세조약 특례(조세조약 특례 적용 신고가 필요) 10%",
                 },
                 {
-                  q: "회사 설립 후에 해야 할 절차에는 어떤 것이 있나요?",
-                  a: "회사 설립 후에는 세무서 및 지방자치단체에 대한 각종 신고에 더해, 사회보험 및 노동보험 관련 절차도 필요합니다. 직원을 고용하는 경우에는 노동기준감독서나 고용노동서(헬로워크)에도 신고해야 합니다. 이러한 절차는 복잡하며, 적절한 기한 관리가 매우 중요합니다.",
-                },
-                {
-                  q: "한국 본사로부터 상품을 구매해 일본 자회사가 판매할 계획입니다. 이 경우 어떤 점에 유의해야 하나요?",
-                  a: "이전가격(Transfer Pricing)에 대한 세무 리스크를 검토해야 하며, 거래 조건과 가격 산정 근거를 갖추는 것이 중요합니다.",
+                  q: "3.국경을 넘는 EC(아마존·Qoo10)를 활용한 일본 진출 시, 납세 관리인과 인보이스 등록 여부",
+                  a: "1. 일본 국내에서 과세 매출액이 1,000만 엔을 초과한 경우(기준 기간의 원칙). \n 2. 인보이스 등록을 하는 경우(면세 사업자라도 등록하면 납세 의무가 발생하기 때문에).",
                 },
               ].map((item, idx) => (
                 <div className="faq-item faq-card" key={idx}>
@@ -426,16 +467,34 @@ export default function Home() {
                   <div className="avatar" aria-hidden="true">
                     K
                   </div>
-                  <h3>김명국 회계사</h3>
+                  <h3>김명구 회계사</h3>
                 </div>
 
-                <p className="muted m0">
-                  공인회계사(CPA) · 세무/회계 · 국제세무
+                <p className="head">
+                  공인회계사 · 세무사
                 </p>
                 <ul className="list">
-                  <li>일본 진출 구조 설계(설립/운영/세무 리스크)</li>
-                  <li>기장·결산·법인세/소비세 등 세무 신고</li>
-                  <li>한/일 거래(이전가격 등) 이슈 점검</li>
+                  <p className="muted m0">
+                    약력 및 경력
+                  </p>
+                  <li>2008년공인회계사 시험 합격</li>
+                  <li>2008년~2014년 아라타 감사법인<br></br>(현 PwC Japan 유한책임감사법인)</li>
+                  <li>2014년공인회계사 등록</li>
+                  <li>2014년김공인회계사사무소 설립</li>
+                  <li>2015년세무사 등록</li>
+                  <li>2015년김공인회계사·세무사사무소 설립</li>
+                </ul>
+                <ul className="list">
+                  <p className="muted m0">
+                    전문분야
+                  </p>
+                  <li>일본 · 국제 세무</li>
+                  <li>회계 감사</li>
+                  <li>내부통제 구축 지원</li>
+                  <li>조직 재편 · M&A</li>
+                  <li>경영계획 수립 · 사업 재생</li>
+                  <li>주식 공개(IPO) 지원</li>
+                  <li>회계 · 재무 지원</li>
                 </ul>
               </div>
 
@@ -444,14 +503,30 @@ export default function Home() {
                   <div className="avatar" aria-hidden="true">
                     G
                   </div>
-                  <h3>가네무라 사법서사 · 행정사</h3>
+                  <h3>카네무라 미츠아키</h3>
                 </div>
 
-                <p className="muted m0">사법서사(등기) · 행정사(비자/허가)</p>
+                <p className="head">사법서사 행정서사</p>
                 <ul className="list">
-                  <li>정관/등기 서류 작성 및 설립 등기</li>
-                  <li>비자(취업/경영·관리) 신청 서류 준비</li>
-                  <li>각종 행정 절차, 허가/신고 대응</li>
+                  <p className="muted m0">
+                    약력 및 경력
+                  </p>
+                  <li>2011년 오사카 체육대학 건강복지학부 졸업</li>
+                  <li>2016년 한일을 연결하는 사법서사 사무소 근무</li>
+                  <li>2023년 사법서기 시험 합격</li>
+                  <li>2024년 히카리 사법서사 사무소 개업</li>
+                  <li>2024년 행정서사 시험 합격</li>
+                  <li>2025년 히카리 행정서사 사무소 개업</li>
+                </ul>
+                <ul className="list">
+                  <p className="muted m0">
+                    전문분야
+                  </p>
+                  <li>회사 설립</li>
+                  <li>비자 취득</li>
+                  <li>상속</li>
+                  <li>부동산 매매</li>
+                  <li>M&A</li>
                 </ul>
               </div>
             </div>
