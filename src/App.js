@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import HearingSheet from "./pages/HearingSheet";
 import ReservationPage from "./pages/ReservationPage";
 import Chat from "./pages/Chat/Chat";
+import Login from "./pages/Login";
 
 function App() {
   const { pathname } = useLocation();
@@ -15,6 +16,7 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
       <Route path="/hearing-sheet" element={<HearingSheet />} />
       <Route path="/reservation" element={<ReservationPage />} />
       <Route path="/chat" element={<Chat />} />

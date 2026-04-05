@@ -1,6 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
+import { signOut } from "firebase/auth";
+import { auth } from "../firebase";
 
-export default function Header() {
+export default function Header({ isLoggedIn }) {
   const location = useLocation();
 
   const handleLogoClick = (e) => {
@@ -21,6 +23,16 @@ export default function Header() {
     window.location.reload();
   };
 
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      localStorage.removeItem("user");
+      window.location.href = "/";
+    } catch (error) {
+      console.error("로그아웃 실패:", error);
+    }
+  };
+
   return (
     <header className="site-header">
       <div className="container nav">
@@ -32,16 +44,32 @@ export default function Header() {
         <div className="nav-right">
           <nav className="main-nav" aria-label="주요 메뉴">
             <ul>
-              <li><a href="#about">회사 개요</a></li>
-              <li><a href="#service">서비스</a></li>
-              <li><a href="#flow">업무 흐름</a></li>
-              <li><a href="#faq">FAQ</a></li>
-              <li>
-                <Link to="/chat" className="btn primary nav-cta">
+            <li><a href="#about">회사 개요</a></li>
+            <li><a href="#service">서비스</a></li>
+            <li><a href="#flow">업무 흐름</a></li>
+            <li><a href="#faq">FAQ</a></li>
+
+            {/* 로그인 / 상담예약 */}
+            <li>
+              {!isLoggedIn ? (
+                <Link to="/login" className="btn primary nav-cta">
+                  로그인
+                </Link>
+              ) : (
+                <Link to="/reservation" className="btn primary nav-cta">
                   상담 예약
                 </Link>
+              )}
+            </li>
+
+            {isLoggedIn && (
+              <li>
+                <button onClick={handleLogout} className="nav-logout">
+                  로그아웃
+                </button>
               </li>
-            </ul>
+            )}
+          </ul>
           </nav>
 
           <div className="lang-toggle" aria-label="언어 전환">

@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import "../App.css";
+import Header from "../components/Header";
+import { auth } from "../firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
 const WEEK_DAYS = ["일", "월", "화", "수", "목", "금", "토"];
 const TIME_OPTIONS = [
@@ -57,6 +60,15 @@ function buildCalendarDays(viewDate) {
 
 export default function ReservationPage() {
   const today = useMemo(() => new Date(), []);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, (user) => {
+    setIsLoggedIn(!!user);
+  });
+
+  return () => unsubscribe();
+  }, []);
 
   const [viewDate, setViewDate] = useState(
     new Date(today.getFullYear(), today.getMonth(), 1),
@@ -110,6 +122,7 @@ export default function ReservationPage() {
 
   return (
     <div className="App">
+      <Header isLoggedIn={isLoggedIn} />
       <main className="reservation-page">
         <div className="container reservation-container">
           <div className="reservation-head">

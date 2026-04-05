@@ -70,6 +70,21 @@ header {
   min-height: 78px;
 }
 
+.nav-logout {
+  padding: 8px 10px;
+  border-radius: 10px;
+  color: var(--muted);
+  font-weight: 600;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.nav-logout:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+}
+
 .brand {
   display: flex;
   align-items: center;

@@ -3,6 +3,8 @@ import "../App.css";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { Link } from "react-router-dom";
+import { auth } from "../firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
 export default function Home() {
   // FAQ open states (4개)
@@ -40,6 +42,16 @@ export default function Home() {
     }
   }, []);
 
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    useEffect(() => {
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        setIsLoggedIn(!!user);
+      });
+
+    return () => unsubscribe();
+  }, []);
+
   return (
     <div className="App">
       {/* 숨겨진 Google Translate 위젯 */}
@@ -58,7 +70,7 @@ export default function Home() {
       <div id="top"></div>
 
       {/* Header */}
-      <Header />
+      <Header isLoggedIn={isLoggedIn} />
 
       {/* Hero */}
       <main id="top">
