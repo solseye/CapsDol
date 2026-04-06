@@ -24,7 +24,7 @@ export default function Header({ isLoggedIn }) {
 
   const handleLogout = async () => {
     try {
-      await logoutUser(); // 🔥 백엔드 호출
+      await logoutUser();
 
       localStorage.removeItem("accessToken");
       localStorage.removeItem("user");
@@ -33,7 +33,6 @@ export default function Header({ isLoggedIn }) {
     } catch (err) {
       console.error("로그아웃 실패:", err);
 
-      // 👉 실패해도 일단 프론트는 로그아웃 처리
       localStorage.removeItem("accessToken");
       localStorage.removeItem("user");
 
@@ -63,7 +62,7 @@ export default function Header({ isLoggedIn }) {
                     로그인
                   </Link>
                 ) : (
-                  <Link to="/chat" className="btn primary nav-cta">
+                  <Link to="/reservation" className="btn primary nav-cta">
                     상담 예약
                   </Link>
                 )}

@@ -1,0 +1,118 @@
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes floatSoft {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.hero .kicker,
+.hero .title,
+.hero .subtitle,
+.hero .pill-row,
+section .card,
+section .hearing-shortcut-card,
+section .faq-item,
+section .reservation-left,
+section .reservation-calendar,
+section .reservation-time,
+.login-card,
+.summary,
+.chat {
+  animation: fadeUp 0.8s var(--ease) both;
+}
+
+.hero .title {
+  animation-delay: 0.08s;
+}
+
+.hero .subtitle {
+  animation-delay: 0.14s;
+}
+
+.grid .card:nth-child(1),
+.grid2 .card:nth-child(1),
+.grid3 .card:nth-child(1),
+.grid4 .card:nth-child(1) {
+  animation-delay: 0.05s;
+}
+
+.grid .card:nth-child(2),
+.grid2 .card:nth-child(2),
+.grid3 .card:nth-child(2),
+.grid4 .card:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.grid .card:nth-child(3),
+.grid2 .card:nth-child(3),
+.grid3 .card:nth-child(3),
+.grid4 .card:nth-child(3) {
+  animation-delay: 0.15s;
+}
+
+.grid .card:nth-child(4),
+.grid2 .card:nth-child(4),
+.grid3 .card:nth-child(4),
+.grid4 .card:nth-child(4) {
+  animation-delay: 0.2s;
+}
+
+.logo,
+.rec-num,
+.flow-num,
+.faq-badge,
+.hearing-icon {
+  animation: floatSoft 5s ease-in-out infinite;
+}
+
+.card,
+.hearing-shortcut-card,
+.faq-item,
+.reservation-left,
+.reservation-calendar,
+.reservation-time,
+.summary,
+.chat {
+  transition:
+    transform 0.35s var(--ease),
+    box-shadow 0.35s var(--ease),
+    border-color 0.35s var(--ease);
+}
+
+.card:hover,
+.hearing-shortcut-card:hover,
+.faq-item:hover,
+.reservation-left:hover,
+.reservation-calendar:hover,
+.reservation-time:hover,
+.summary:hover,
+.chat:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(24, 92, 55, 0.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

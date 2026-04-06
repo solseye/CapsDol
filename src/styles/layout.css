@@ -1,0 +1,69 @@
+.container {
+  width: min(var(--container), calc(100% - 40px));
+  margin: 0 auto;
+  background: none;
+}
+
+section {
+  position: relative;
+  padding: 78px 0;
+  scroll-margin-top: 92px;
+}
+
+section:nth-of-type(even):not(.hero) {
+  position: relative;
+  overflow: hidden;
+}
+
+section:nth-of-type(even):not(.hero)::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 220px;
+  background: linear-gradient(
+    180deg,
+    rgba(237, 247, 240, 0.9) 0%,
+    rgba(237, 247, 240, 0.6) 35%,
+    rgba(237, 247, 240, 0.2) 60%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+section:nth-of-type(even):not(.hero) > .container {
+  position: relative;
+  z-index: 1;
+}
+
+.grid,
+.grid2,
+.grid3,
+.grid4,
+.form-grid,
+.hs-grid,
+.reservation-container {
+  gap: 18px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.grid4 {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}

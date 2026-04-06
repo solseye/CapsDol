@@ -7,7 +7,7 @@ export default function Footer() {
     <footer>
       <div className="container footer-grid">
         <div className="muted footer-left">
-          <b className="footer-brand">Kim Myung-Koo CPA · Kanemura</b>
+          <b className="footer-brand">Kim MyungKoo · Kanemura</b>
           <br />
           일본 진출 원스톱 지원 · 법인설립/등기/비자/세무·회계/노무
         </div>

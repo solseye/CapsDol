@@ -1,0 +1,174 @@
+.hero .kicker {
+  margin-bottom: 20px;
+}
+
+.hero .subtitle {
+  max-width: 640px;
+  margin: 0 0 28px;
+  font-size: 18px;
+}
+
+#recommendation .container,
+#about .container,
+#service .container,
+#flow .container,
+#faq .container,
+#reservation .container,
+#hearing-shortcuts .container {
+  position: relative;
+}
+
+.hearing-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  align-items: stretch;
+}
+
+.hearing-shortcut-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  min-height: 220px;
+  padding: 28px;
+}
+
+.hearing-link {
+  margin-top: auto;
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--accent);
+}
+
+/* page layouts */
+.hs-page {
+  min-height: 100vh;
+  padding: 56px 0 72px;
+}
+
+.reservation-page,
+.login-page {
+  min-height: 100vh;
+  padding: 104px 0 80px;
+}
+
+.hs-container {
+  max-width: 1080px;
+}
+
+.login-container {
+  max-width: 560px;
+}
+
+.login-page .card,
+.login-card {
+  padding: 34px;
+}
+
+/* hearing sheet layout */
+.hs-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.hs-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.hs-block {
+  padding: 32px;
+}
+
+.hs-block-title {
+  margin: 0 0 20px;
+  font-size: 22px;
+  line-height: 1.3;
+}
+
+.hs-grid,
+.hs-grid2 {
+  display: grid;
+  gap: 18px;
+}
+
+.hs-grid {
+  grid-template-columns: 1fr;
+}
+
+.hs-grid2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.hs-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hs-subcard {
+  padding: 22px 24px;
+  margin-top: 16px;
+}
+
+.hs-subcard:first-of-type {
+  margin-top: 0;
+}
+
+.hs-subtitle {
+  margin-bottom: 14px;
+}
+
+.hs-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+/* responsive */
+@media (max-width: 1100px) {
+  .hearing-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .hs-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .hs-grid2 {
+    grid-template-columns: 1fr;
+  }
+
+  .hs-block {
+    padding: 24px;
+  }
+
+  .hs-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hs-actions .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .hearing-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hs-page {
+    padding: 40px 0 56px;
+  }
+}

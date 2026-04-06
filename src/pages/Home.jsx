@@ -3,6 +3,13 @@ import "../App.css";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { Link } from "react-router-dom";
+import image1 from "../assets/image1.png";
+import image2 from "../assets/image2.png";
+import image3 from "../assets/image3.png";
+import InsaIcon from "../assets/icons/insa.svg";
+import LawIcon from "../assets/icons/law.svg";
+import AccountingIcon from "../assets/icons/accounting.svg";
+import LaborIcon from "../assets/icons/labor.svg";
 
 export default function Home() {
   // FAQ open states (4개)
@@ -70,6 +77,12 @@ export default function Home() {
       {/* Hero */}
       <main id="top">
         <section className="hero">
+          <div className="hero-slideshow" aria-hidden="true">
+            <div className="hero-slide slide-1" style={{ backgroundImage: `url(${image1})` }} />
+            <div className="hero-slide slide-2" style={{ backgroundImage: `url(${image2})` }} />
+            <div className="hero-slide slide-3" style={{ backgroundImage: `url(${image3})` }} />
+          </div>
+
           <div className="container hero-grid">
             <div>
               <div className="kicker">
@@ -77,7 +90,8 @@ export default function Home() {
               </div>
               <h1 className="title">WVA</h1>
               <p className="subtitle">
-                일본 진출 예정 또는 이미 진출한 한국 기업을 지원합니다.<br></br>
+                일본 진출 예정 또는 이미 진출한 한국 기업을 지원합니다.
+                <br />
                 “일본 현지법인 설립부터 세무·회계, 비자 취득 등의 절차 및 이후
                 사업 운영 전반까지 고민을 해소해 드립니다.”
               </p>
@@ -85,7 +99,7 @@ export default function Home() {
               <div className="pill-row" aria-label="핵심 키워드"></div>
             </div>
           </div>
-        </section>
+      </section>
 
         {/* Recommendation */}
         <section id="recommendation">
@@ -95,6 +109,7 @@ export default function Home() {
               일본 진출은 “설립”보다 “운영”이 더 어렵습니다. 설립부터 운영
               체계까지 함께 만듭니다.
             </div>
+            <br></br>
             <br></br>
             <div className="grid">
               <div className="card rec-card">
@@ -272,25 +287,28 @@ export default function Home() {
         </section>
 
         {/*hearing sheet*/}
+        <br></br><br></br>
         <section id="hearing-shortcuts">
           <div className="container">
             <div className="kicker">Hearing Sheet</div>
             <h2 className="section-title">분야별 히어링 시트</h2>
-            <p className="section-desc">상담이 필요한 분야를 선택해 주세요.</p>
+            <p className="section-desc">상담이 필요한 분야를 선택해 주세요</p>
 
             <div className="hearing-grid">
               {[
-                { title: "인사", desc: "채용 및 인사 운영 관련 상담" },
-                { title: "법무", desc: "계약 및 법률 검토 관련 상담" },
-                { title: "회계", desc: "세무 및 회계 관리 관련 상담" },
-                { title: "노무", desc: "노동 및 급여 관련 상담" },
+                { title: "인사", desc: "채용 및 인사 운영 관련 상담", icon: InsaIcon },
+                { title: "법무", desc: "계약 및 법률 검토 관련 상담", icon: LawIcon },
+                { title: "회계", desc: "세무 및 회계 관리 관련 상담", icon: AccountingIcon },
+                { title: "노무", desc: "노동 및 급여 관련 상담", icon: LaborIcon },
               ].map((item) => (
                 <Link
                   key={item.title}
                   to="/hearing-sheet"
                   className="card hearing-shortcut-card"
                 >
-                  <div className="hearing-icon">{item.title[0]}</div>
+                  <div className="hearing-icon">
+                    <img src={item.icon} alt={item.title} />
+                  </div>
                   <h3>{item.title}</h3>
                   <p className="muted">{item.desc}</p>
                   <span className="hearing-link">히어링 시트 작성 →</span>
@@ -305,7 +323,7 @@ export default function Home() {
           <div className="container">
             <div className="kicker">Flow</div>
             <h2 className="flow-title">한국 기업의 일본 진출 흐름과 절차</h2>
-
+            <br></br>
             <div className="grid4">
               <div className="card flow-card">
                 <div className="flow-num">1</div>
@@ -359,7 +377,7 @@ export default function Home() {
               <div className="card pricing-card">
                 <h3>법인 설립</h3>
                 <ul className="list_price">
-                  <h3>약 45만 엔 ~</h3>
+                  <h4>약 45만 엔 ~</h4>
                   <p> 세금 및 사법서사 설립 보수 포함 (상황에 따라 변동)</p>
                 </ul>
               </div>
@@ -367,7 +385,7 @@ export default function Home() {
               <div className="card pricing-card">
                 <h3>설립 관련 업무(한국어 지원/계좌개설 지원 등)</h3>
                 <ul className="list_price">
-                  <h3>20만 엔 ~</h3>
+                  <h4>20만 엔 ~</h4>
                   <p>
                     설립 후 세무서 제출 서류는 고문 계약 범위에 포함될 수
                     있습니다.
@@ -378,7 +396,7 @@ export default function Home() {
               <div className="card pricing-card">
                 <h3>비자 발행</h3>
                 <ul className="list_price">
-                  <h3>상담 후 안내</h3>
+                  <h4>상담 후 안내</h4>
                   <p>
                     설립 후 세무서 제출 서류는 고문 계약 범위에 포함될 수
                     있습니다.
@@ -389,7 +407,7 @@ export default function Home() {
               <div className="card pricing-card">
                 <h3>회계 · 세무 고문</h3>
                 <ul className="list_price">
-                  <h3>월 7만 엔 ~</h3>
+                  <h4>월 7만 엔 ~</h4>
                   <p>체류자격 종류/난이도에 따라 상이</p>
                 </ul>
               </div>
@@ -397,7 +415,7 @@ export default function Home() {
               <div className="card pricing-card">
                 <h3>인사, 노무</h3>
                 <ul className="list_price">
-                  <h3>12만 엔 ~</h3>
+                  <h4>12만 엔 ~</h4>
                   <p>사회보험 신규 적용 12만 엔~</p>
                   <p>급여 계산 1만 엔 + 2천 엔/1인</p>
                   <p>취업규칙 30만 엔~</p>
@@ -417,7 +435,7 @@ export default function Home() {
           <div className="container">
             <div className="kicker">FAQ</div>
             <h2 className="faq-title">자주 묻는 질문</h2>
-
+            <br></br>
             <div className="grid">
               {[
                 {
@@ -464,9 +482,7 @@ export default function Home() {
             <div className="kicker">Expert Info</div>
 
             <h2 className="section-title">전문가 소개</h2>
-            <h3 className="kicker">
-              각 분야 자격자가 한 팀으로 움직여 일정과 품질을 동시에 확보합니다.
-            </h3>
+            
 
             <div className="grid2">
               <div className="card expert-card">
@@ -513,7 +529,7 @@ export default function Home() {
                   <h3>카네무라 미츠아키</h3>
                 </div>
 
-                <p className="head">사법서사 행정서사</p>
+                <p className="head">사법서사 · 행정서사</p>
                 <ul className="list">
                   <p className="muted m0">
                     약력 및 경력
@@ -524,6 +540,7 @@ export default function Home() {
                   <li>2024년 히카리 사법서사 사무소 개업</li>
                   <li>2024년 행정서사 시험 합격</li>
                   <li>2025년 히카리 행정서사 사무소 개업</li>
+                  <br></br>
                 </ul>
                 <ul className="list">
                   <p className="muted m0">
@@ -537,6 +554,9 @@ export default function Home() {
                 </ul>
               </div>
             </div>
+            <h3 className="kicker">
+              각 분야 자격자가 한 팀으로 움직여 일정과 품질을 동시에 확보합니다.
+            </h3>
           </div>
         </section>
 
@@ -545,7 +565,7 @@ export default function Home() {
 
       {/* Chatbot Floating Button */}
       <div className="chat-fab">
-        <Link to="/chat" className="btn primary nav-cta">
+        <Link to="/chat" className="btn btnchat primary nav-cta">
           상담 (챗봇)
         </Link>
       </div>

@@ -19,7 +19,7 @@ export default function Chat() {
   const chatBodyRef = useRef(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("Token");
+    const token = localStorage.getItem("accessToken");
     setIsLoggedIn(!!token);
   }, []);
 
