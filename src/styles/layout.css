@@ -10,12 +10,12 @@ section {
   scroll-margin-top: 92px;
 }
 
-section:nth-of-type(even):not(.hero) {
+.home-page section:nth-of-type(even):not(.hero) {
   position: relative;
   overflow: hidden;
 }
 
-section:nth-of-type(even):not(.hero)::before {
+.home-page section:nth-of-type(even):not(.hero)::before {
   content: "";
   position: absolute;
   top: 0;
@@ -33,7 +33,7 @@ section:nth-of-type(even):not(.hero)::before {
   z-index: 0;
 }
 
-section:nth-of-type(even):not(.hero) > .container {
+.home-page section:nth-of-type(even):not(.hero) > .container {
   position: relative;
   z-index: 1;
 }

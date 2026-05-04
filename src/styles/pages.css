@@ -139,7 +139,11 @@ nav a:hover,
   width: 46px;
   height: 36px;
   border-radius: 999px;
-  background: linear-gradient(135deg, rgba(24, 92, 55, 0.98), rgba(51, 160, 95, 0.98));
+  background: linear-gradient(
+    135deg,
+    rgba(24, 92, 55, 0.98),
+    rgba(51, 160, 95, 0.98)
+  );
   box-shadow: 0 10px 22px rgba(24, 92, 55, 0.22);
   transition: transform 0.28s var(--ease);
 }
@@ -162,7 +166,9 @@ html[data-lang="ja"] .lang-toggle::before {
   line-height: 1;
   cursor: pointer;
   padding: 0;
-  transition: color 0.25s var(--ease), opacity 0.25s var(--ease);
+  transition:
+    color 0.25s var(--ease),
+    opacity 0.25s var(--ease);
 }
 
 html[data-lang="ko"] .lang-option:first-child,
@@ -300,11 +306,15 @@ html[data-lang="ja"] .lang-option:last-child {
 .reservation-summary,
 .hs-subcard {
   border: 1px solid rgba(15, 23, 42, 0.07);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 252, 248, 0.98));
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.98),
+    rgba(247, 252, 248, 0.98)
+  );
   box-shadow: var(--shadow-sm);
 }
 
-.hearing-shortcut-card h3{
+.hearing-shortcut-card h3 {
   margin: 8px 0 6px;
 }
 
@@ -388,14 +398,13 @@ html[data-lang="ja"] .lang-option:last-child {
   inset: 0;
   z-index: 1;
 
-  background:
-    linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0.92) 0%,
-      rgba(248, 252, 249, 0.78) 34%,
-      rgba(248, 252, 249, 0.24) 66%,
-      rgba(248, 252, 249, 0.08) 100%
-    );
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(248, 252, 249, 0.78) 34%,
+    rgba(248, 252, 249, 0.24) 66%,
+    rgba(248, 252, 249, 0.08) 100%
+  );
 }
 
 .hero::after {
@@ -423,11 +432,26 @@ html[data-lang="ja"] .lang-option:last-child {
 }
 
 @keyframes heroFade {
-  0% { opacity: 0; transform: scale(1.06); }
-  10% { opacity: 1; transform: scale(1.03); }
-  30% { opacity: 1; transform: scale(1); }
-  40% { opacity: 0; transform: scale(1.02); }
-  100% { opacity: 0; transform: scale(1.06); }
+  0% {
+    opacity: 0;
+    transform: scale(1.06);
+  }
+  10% {
+    opacity: 1;
+    transform: scale(1.03);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  40% {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.06);
+  }
 }
 
 .service-head,
@@ -444,17 +468,21 @@ html[data-lang="ja"] .lang-option:last-child {
   align-items: center;
 }
 
-.avatar, 
+.avatar,
 .rec-num,
 .flow-num,
 .faq-badge {
-  background: linear-gradient(135deg, rgba(24, 92, 55, 0.08), rgba(51, 160, 95, 0.2));
+  background: linear-gradient(
+    135deg,
+    rgba(24, 92, 55, 0.08),
+    rgba(51, 160, 95, 0.2)
+  );
   color: var(--accent);
   border: 1px solid rgba(24, 92, 55, 0.1);
   box-shadow: none;
 }
 
-.avatar{
+.avatar {
   width: 45px;
   height: 45px;
   border-radius: 12px;
@@ -722,4 +750,17 @@ html[data-lang="ja"] .lang-option:last-child {
 
 .signup-link:hover {
   text-decoration: underline;
+}
+
+.hs-section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.hs-section-head .hs-block-title {
+  margin-bottom: 0;
 }
