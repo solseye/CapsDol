@@ -19,7 +19,8 @@ export default function Login() {
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (token) {
-      navigate("/");
+      const role = localStorage.getItem("role");
+      navigate(role === "admin" ? "/admin" : "/");
     }
   }, [navigate]);
 
@@ -120,7 +121,8 @@ export default function Login() {
       }
 
       localStorage.setItem("accessToken", data.accessToken);
-      navigate("/");
+      localStorage.setItem("role", data.role);
+      navigate(data.role === "admin" ? "/admin" : "/");
     } catch (err) {
       console.error("로그인 실패:", err);
       setError("아이디 또는 비밀번호를 다시 확인해 주세요.");

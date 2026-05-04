@@ -4,6 +4,8 @@ import { logoutUser } from "../api/authApi";
 export default function Header({ isLoggedIn }) {
   const location = useLocation();
 
+  const role = localStorage.getItem("role");
+
   const handleLogoClick = (e) => {
     if (location.pathname === "/") {
       e.preventDefault();
@@ -28,6 +30,7 @@ export default function Header({ isLoggedIn }) {
 
       localStorage.removeItem("accessToken");
       localStorage.removeItem("user");
+      localStorage.removeItem("role");
 
       window.location.href = "/";
     } catch (err) {
@@ -35,6 +38,7 @@ export default function Header({ isLoggedIn }) {
 
       localStorage.removeItem("accessToken");
       localStorage.removeItem("user");
+      localStorage.removeItem("role");
 
       window.location.href = "/";
     }
@@ -56,25 +60,37 @@ export default function Header({ isLoggedIn }) {
               <li><a href="#flow">업무 흐름</a></li>
               <li><a href="#faq">FAQ</a></li>
 
+            {!isLoggedIn && (
               <li>
-                {!isLoggedIn ? (
-                  <Link to="/login" className="btn primary nav-cta">
-                    로그인
-                  </Link>
-                ) : (
-                  <Link to="/reservation" className="btn primary nav-cta">
-                    상담 예약
-                  </Link>
-                )}
+                <Link to="/login" className="btn primary nav-cta">
+                  로그인
+                </Link>
               </li>
+            )}
 
-              {isLoggedIn && (
-                <li>
-                  <button onClick={handleLogout} className="nav-logout">
-                    로그아웃
-                  </button>
-                </li>
-              )}
+            {isLoggedIn && role === "admin" && (
+              <li>
+                <Link to="/admin" className="btn primary nav-cta">
+                  관리자 페이지
+                </Link>
+              </li>
+            )}
+
+            {isLoggedIn && role !== "admin" && (
+              <li>
+                <Link to="/reservation" className="btn primary nav-cta">
+                  상담 예약
+                </Link>
+              </li>
+            )}
+
+            {isLoggedIn && (
+              <li>
+                <button onClick={handleLogout} className="nav-logout">
+                  로그아웃
+                </button>
+              </li>
+            )}
             </ul>
           </nav>
 

@@ -172,3 +172,37 @@
     padding: 40px 0 56px;
   }
 }
+
+/* Reservation page */
+
+.calendar-day.past,
+.calendar-day.disabled {
+  background: #eef1ee;
+  color: rgba(12, 48, 32, 0.28);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.calendar-day.past:hover,
+.calendar-day.disabled:hover {
+  transform: none;
+}
+
+.calendar-day.past .calendar-day-number,
+.calendar-day.disabled .calendar-day-number {
+  color: rgba(12, 48, 32, 0.28);
+}
+
+.time-button.disabled,
+.time-button:disabled {
+  background: #eef1ee;
+  color: rgba(12, 48, 32, 0.28);
+  cursor: not-allowed;
+  box-shadow: none;
+  border-color: rgba(12, 48, 32, 0.08);
+}
+
+.time-button.disabled:hover,
+.time-button:disabled:hover {
+  transform: none;
+}

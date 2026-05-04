@@ -4,6 +4,7 @@ import "../App.css";
 import Header from "../components/Header";
 
 const WEEK_DAYS = ["일", "월", "화", "수", "목", "금", "토"];
+
 const TIME_OPTIONS = [
   "09:00",
   "10:00",
@@ -56,23 +57,53 @@ function buildCalendarDays(viewDate) {
   return cells;
 }
 
+function formatDate(date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+    2,
+    "0"
+  )}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+function getBlockedTimesByReservations(reservedTimes = []) {
+  const blocked = new Set();
+
+  reservedTimes.forEach((time) => {
+    const index = TIME_OPTIONS.indexOf(time);
+
+    if (index !== -1) {
+      blocked.add(TIME_OPTIONS[index]);
+
+      if (TIME_OPTIONS[index + 1]) {
+        blocked.add(TIME_OPTIONS[index + 1]);
+      }
+    }
+  });
+
+  return blocked;
+}
+
 export default function ReservationPage() {
   const today = useMemo(() => new Date(), []);
+
   const [isLoggedIn, setIsLoggedIn] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
+    const role = localStorage.getItem("role");
+
     setIsLoggedIn(!!token);
+    setIsAdmin(role === "admin");
   }, []);
 
   const [viewDate, setViewDate] = useState(
-    new Date(today.getFullYear(), today.getMonth(), 1),
+    new Date(today.getFullYear(), today.getMonth(), 1)
   );
 
   const [selectedField, setSelectedField] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
   const [selectedDate, setSelectedDate] = useState(
-    new Date(today.getFullYear(), today.getMonth(), today.getDate()),
+    new Date(today.getFullYear(), today.getMonth(), today.getDate())
   );
 
   const [form, setForm] = useState({
@@ -83,7 +114,18 @@ export default function ReservationPage() {
     kind: "",
   });
 
+  const [submitError, setSubmitError] = useState("");
+  const [submitSuccess, setSubmitSuccess] = useState("");
+
   const calendarDays = useMemo(() => buildCalendarDays(viewDate), [viewDate]);
+
+  // 나중에 백엔드에서 선택한 날짜의 예약 시간을 받아서 여기에 넣으면 됨
+  const reservedTimesForSelectedDate = [];
+
+  const blockedTimes = useMemo(
+    () => getBlockedTimesByReservations(reservedTimesForSelectedDate),
+    [reservedTimesForSelectedDate]
+  );
 
   const handlePrevMonth = () => {
     setViewDate((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
@@ -95,24 +137,69 @@ export default function ReservationPage() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
     setForm((prev) => ({ ...prev, [name]: value }));
+    setSubmitError("");
+    setSubmitSuccess("");
   };
 
   const handleDateClick = (date, isPast, isToday) => {
-    if (!isPast || isToday) {
-      setSelectedDate(date);
-      setSelectedTime("");
-    }
+    if (isPast && !isToday) return;
+
+    setSelectedDate(date);
+    setSelectedTime("");
+    setSubmitError("");
+    setSubmitSuccess("");
   };
 
   const handleSubmit = () => {
-    console.log("예약 정보", {
+    setSubmitError("");
+    setSubmitSuccess("");
+
+    if (!form.name.trim()) {
+      setSubmitError("이름을 입력해 주세요.");
+      return;
+    }
+
+    if (!form.phone.trim()) {
+      setSubmitError("전화번호를 입력해 주세요.");
+      return;
+    }
+
+    if (!form.email.trim()) {
+      setSubmitError("이메일을 입력해 주세요.");
+      return;
+    }
+
+    if (!form.CName.trim()) {
+      setSubmitError("회사 이름을 입력해 주세요.");
+      return;
+    }
+
+    if (!form.kind.trim()) {
+      setSubmitError("직종을 입력해 주세요.");
+      return;
+    }
+
+    if (!selectedField) {
+      setSubmitError("상담 분야를 선택해 주세요.");
+      return;
+    }
+
+    if (!selectedTime) {
+      setSubmitError("상담 시간을 선택해 주세요.");
+      return;
+    }
+
+    const reservationData = {
       ...form,
       field: selectedField,
-      selectedDate,
-      selectedTime,
-    });
-    alert("예약 정보가 전송되었습니다.");
+      date: formatDate(selectedDate),
+      time: selectedTime,
+    };
+
+    console.log("예약 정보", reservationData);
+    setSubmitSuccess("예약 정보가 정상적으로 준비되었습니다.");
   };
 
   if (isLoggedIn === null) {
@@ -121,6 +208,10 @@ export default function ReservationPage() {
 
   if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
+  }
+
+  if (isAdmin) {
+    return <Navigate to="/admin" replace />;
   }
 
   return (
@@ -202,8 +293,14 @@ export default function ReservationPage() {
                       <button
                         key={field}
                         type="button"
-                        className={`field-button ${selectedField === field ? "active" : ""}`}
-                        onClick={() => setSelectedField(field)}
+                        className={`field-button ${
+                          selectedField === field ? "active" : ""
+                        }`}
+                        onClick={() => {
+                          setSelectedField(field);
+                          setSubmitError("");
+                          setSubmitSuccess("");
+                        }}
                       >
                         {field}
                       </button>
@@ -213,9 +310,11 @@ export default function ReservationPage() {
 
                 <div className="reservation-summary">
                   <div className="reservation-summary-title">선택 내용</div>
+
                   <div className="reservation-summary-item">
                     상담 분야: <strong>{selectedField || "선택 안 됨"}</strong>
                   </div>
+
                   <div className="reservation-summary-item">
                     날짜:{" "}
                     <strong>
@@ -223,6 +322,7 @@ export default function ReservationPage() {
                       {selectedDate.getMonth() + 1}월 {selectedDate.getDate()}일
                     </strong>
                   </div>
+
                   <div className="reservation-summary-item">
                     시간: <strong>{selectedTime || "선택 안 됨"}</strong>
                   </div>
@@ -245,6 +345,11 @@ export default function ReservationPage() {
                   </div>
                 </div>
               </div>
+
+              {submitError && <p className="login-error">{submitError}</p>}
+              {submitSuccess && (
+                <p className="login-success">{submitSuccess}</p>
+              )}
 
               <button
                 type="button"
@@ -301,21 +406,20 @@ export default function ReservationPage() {
                     const isSelected = isSameDate(date, selectedDate);
                     const isPast = isPastDate(date, today);
                     const isToday = isSameDate(date, today);
+                    const isDisabled = isPast && !isToday;
 
                     return (
                       <div
                         key={date.toISOString()}
-                        className={`calendar-day ${isSelected ? "selected" : ""} ${isPast ? "past" : ""}`}
+                        className={`calendar-day ${
+                          isSelected ? "selected" : ""
+                        } ${isDisabled ? "disabled past" : ""}`}
                         onClick={() => handleDateClick(date, isPast, isToday)}
                       >
                         <div className="calendar-day-inner">
                           <span className="calendar-day-number">
                             {date.getDate()}
                           </span>
-
-                          {isPast && !isToday && (
-                            <span className="calendar-day-x">✕</span>
-                          )}
                         </div>
                       </div>
                     );
@@ -327,16 +431,29 @@ export default function ReservationPage() {
                 <div className="reservation-time-head">상담 시간</div>
 
                 <div className="reservation-time-grid">
-                  {TIME_OPTIONS.map((time) => (
-                    <button
-                      key={time}
-                      type="button"
-                      className={`time-button ${selectedTime === time ? "active" : ""}`}
-                      onClick={() => setSelectedTime(time)}
-                    >
-                      {time}
-                    </button>
-                  ))}
+                  {TIME_OPTIONS.map((time) => {
+                    const isBlocked = blockedTimes.has(time);
+
+                    return (
+                      <button
+                        key={time}
+                        type="button"
+                        disabled={isBlocked}
+                        className={`time-button ${
+                          selectedTime === time ? "active" : ""
+                        } ${isBlocked ? "disabled" : ""}`}
+                        onClick={() => {
+                          if (isBlocked) return;
+
+                          setSelectedTime(time);
+                          setSubmitError("");
+                          setSubmitSuccess("");
+                        }}
+                      >
+                        {time}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </section>

@@ -6,7 +6,12 @@ import ReservationPage from "./pages/ReservationPage";
 import Chat from "./pages/Chat/Chat";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import AdminDashboard from "./admin/AdminDashboard";
+import AdminLayout from "./pages/admin/AdminLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminCalendarPage from "./pages/admin/pages/AdminCalendarPage";
+import AdminChatbotPage from "./pages/admin/pages/AdminChatbotPage";
+import PdfUploadPage from "./pages/admin/pages/PdfUploadPage";
+import PdfListPage from "./pages/admin/pages/PdfListPage";
 import LostId from "./pages/lostid";
 import LostPw from "./pages/lostpw";
 import ResetPassword from "./pages/ResetPassword";
@@ -26,10 +31,16 @@ function App() {
       <Route path="/reservation" element={<ReservationPage />} />
       <Route path="/chat" element={<Chat />} />
       <Route path="/signup" element={<Signup />} />
-      <Route path="/admin/*" element={<AdminDashboard />} />
       <Route path="/lostid" element={<LostId />} />
       <Route path="/lostpw" element={<LostPw />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+
+      <Route path="/admin" element={<AdminLayout />}>
+      <Route index element={<AdminDashboard />} />
+      <Route path="calendar" element={<AdminCalendarPage />} />
+      <Route path="chatbot" element={<AdminChatbotPage />} />
+      <Route path="pdf-upload" element={<PdfUploadPage />} />
+      <Route path="pdf-list" element={<PdfListPage />} /></Route>
     </Routes>
   );
 }
