@@ -6,6 +6,7 @@ import ReservationPage from "./pages/ReservationPage";
 import Chat from "./pages/Chat/Chat";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import AdminDashboard from "./admin/AdminDashboard";
 
 function App() {
   const { pathname } = useLocation();
@@ -22,6 +23,7 @@ function App() {
       <Route path="/reservation" element={<ReservationPage />} />
       <Route path="/chat" element={<Chat />} />
       <Route path="/signup" element={<Signup />} />
+      <Route path="/admin/*" element={<AdminDashboard />} />
     </Routes>
   );
 }
