@@ -30,7 +30,7 @@ export default function Signup() {
     e.preventDefault();
 
     if (!form.email.trim() || !form.username.trim() || !form.password.trim()) {
-      setError("모든 항목을 입력해 주세요.");
+      setError("이메일, 아이디, 비밀번호를 모두 입력해 주세요.");
       return;
     }
 
@@ -39,26 +39,20 @@ export default function Signup() {
       setError("");
 
       const data = await signupUser(
-        form.email,
-        form.username,
+        form.email.trim(),
+        form.username.trim(),
         form.password
       );
 
-      console.log("회원가입 응답:", data);
-
-      // 👉 성공 처리 (백엔드 success 기준)
       if (!data.success) {
-        throw new Error("회원가입 실패");
+        throw new Error(data.error || data.msg || "회원가입 실패");
       }
 
-      alert("회원가입이 완료되었습니다!");
-
-      // 로그인 페이지로 이동
+      alert("회원가입이 완료되었습니다. 로그인해 주세요.");
       navigate("/login");
-
     } catch (err) {
       console.error("회원가입 실패:", err);
-      setError("회원가입에 실패했습니다.");
+      setError(err.message || "회원가입에 실패했습니다.");
     } finally {
       setLoading(false);
     }
@@ -69,48 +63,59 @@ export default function Signup() {
       <div className="container login-container">
         <div className="login-card card">
           <div className="kicker">Create Account</div>
+
           <h1 className="section-title login-title">회원가입</h1>
+
           <p className="section-desc login-desc">
             계정을 생성하고 서비스를 이용해보세요.
           </p>
 
           <form className="login-form" onSubmit={handleSignup}>
-            {/* Email */}
             <div className="login-field">
-              <label className="login-label">이메일</label>
+              <label className="login-label" htmlFor="email">
+                이메일
+              </label>
               <input
+                id="email"
                 type="email"
                 name="email"
                 placeholder="이메일을 입력하세요"
                 value={form.email}
                 onChange={handleChange}
                 className="reservation-input"
+                autoComplete="email"
               />
             </div>
 
-            {/* Username */}
             <div className="login-field">
-              <label className="login-label">아이디</label>
+              <label className="login-label" htmlFor="username">
+                아이디
+              </label>
               <input
+                id="username"
                 type="text"
                 name="username"
                 placeholder="아이디를 입력하세요"
                 value={form.username}
                 onChange={handleChange}
                 className="reservation-input"
+                autoComplete="username"
               />
             </div>
 
-            {/* Password */}
             <div className="login-field">
-              <label className="login-label">비밀번호</label>
+              <label className="login-label" htmlFor="password">
+                비밀번호
+              </label>
               <input
+                id="password"
                 type="password"
                 name="password"
                 placeholder="비밀번호를 입력하세요"
                 value={form.password}
                 onChange={handleChange}
                 className="reservation-input"
+                autoComplete="new-password"
               />
             </div>
 
@@ -125,7 +130,6 @@ export default function Signup() {
             </button>
           </form>
 
-          {/* 로그인 이동 */}
           <div className="signup-redirect">
             <span>이미 계정이 있으신가요?</span>
             <button

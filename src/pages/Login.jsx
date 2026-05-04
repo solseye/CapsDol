@@ -205,6 +205,25 @@ export default function Login() {
                 가입하기
             </button>
         </div>
+        <div className="signup-redirect">
+          <button
+            type="button"
+            className="signup-link"
+            onClick={() => navigate("/lostid")}
+          >
+            아이디 찾기
+          </button>
+
+          <span className="auth-link-divider">|</span>
+
+          <button
+            type="button"
+            className="signup-link"
+            onClick={() => navigate("/lostpw")}
+          >
+            비밀번호 찾기
+          </button>
+        </div>
         </div>
       </div>
     </div>

@@ -439,3 +439,15 @@ footer {
     padding: 22px;
   }
 }
+
+.login-success {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.auth-link-divider {
+  margin: 0 8px;
+  color: var(--muted);
+}
