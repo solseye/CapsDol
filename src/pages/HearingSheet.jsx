@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import "../App.css";
 
-
 export default function HearingSheet() {
   return (
     <div className="App">
@@ -12,7 +11,7 @@ export default function HearingSheet() {
               <div className="kicker">Hearing Sheet</div>
               <h1 className="section-title hs-title">히어링 시트</h1>
               <p className="section-desc hs-intro">
-                상담 전 필요한 기본 정보를 미리 작성해 주세요.
+                법인 설립에 필요한 정보를 입력해 주세요.
               </p>
             </div>
 
@@ -22,187 +21,171 @@ export default function HearingSheet() {
           </div>
 
           <form className="hs-form">
+            {/* 1. 상호 */}
             <section className="hs-block">
-              <h2 className="hs-block-title">기본 정보</h2>
+              <h2 className="hs-block-title">1. 상호</h2>
+
               <div className="hs-grid2">
                 <div className="hs-field">
-                  <label className="hs-label">회사명</label>
+                  <label className="hs-label">상호</label>
                   <input
                     className="hs-input"
                     placeholder="회사명을 입력하세요"
                   />
                 </div>
+
                 <div className="hs-field">
-                  <label className="hs-label">영문 회사명</label>
+                  <label className="hs-label">영문 표기 선택</label>
                   <input
                     className="hs-input"
                     placeholder="영문 회사명을 입력하세요"
                   />
                 </div>
-                <div className="hs-field">
-                  <label className="hs-label">담당자명</label>
-                  <input
-                    className="hs-input"
-                    placeholder="담당자명을 입력하세요"
-                  />
-                </div>
-                <div className="hs-field">
-                  <label className="hs-label">연락처</label>
-                  <input
-                    className="hs-input"
-                    placeholder="연락처를 입력하세요"
-                  />
-                </div>
               </div>
             </section>
 
+            {/* 2. 사업 목적 */}
             <section className="hs-block">
-              <h2 className="hs-block-title">설립 목적 및 개요</h2>
+              <h2 className="hs-block-title">2. 사업 목적</h2>
+
               <div className="hs-grid">
-                <div className="hs-field">
-                  <label className="hs-label">설립 목적</label>
-                  <textarea
-                    className="hs-textarea"
-                    placeholder="법인 설립 목적과 배경을 작성해 주세요"
-                  />
-                </div>
-                <div className="hs-field">
-                  <label className="hs-label">사업 개요</label>
-                  <textarea
-                    className="hs-textarea"
-                    placeholder="예정 사업 내용과 주요 활동을 작성해 주세요"
-                  />
-                </div>
+                {[1, 2, 3, 4, 5, 6].map((num) => (
+                  <div className="hs-field" key={num}>
+                    <label className="hs-label">사업 목적 {num}</label>
+                    <input
+                      className="hs-input"
+                      placeholder={`${num}. 사업 목적을 입력하세요`}
+                    />
+                  </div>
+                ))}
               </div>
             </section>
 
+            {/* 3. 자본금 */}
             <section className="hs-block">
-              <h2 className="hs-block-title">자본금 및 은행 정보</h2>
+              <h2 className="hs-block-title">3. 자본금</h2>
+
+              <div className="hs-field">
+                <label className="hs-label">자본금</label>
+                <input className="hs-input" placeholder="예: 5,000,000엔" />
+              </div>
+            </section>
+
+            {/* 4. 자본금 납입 은행 */}
+            <section className="hs-block">
+              <h2 className="hs-block-title">4. 자본금 납입 은행</h2>
+
               <div className="hs-grid2">
                 <div className="hs-field">
-                  <label className="hs-label">자본금</label>
-                  <input className="hs-input" placeholder="예: 500만 엔" />
-                </div>
-                <div className="hs-field">
-                  <label className="hs-label">희망 은행</label>
+                  <label className="hs-label">은행명</label>
                   <input
                     className="hs-input"
-                    placeholder="희망 은행명을 입력하세요"
+                    placeholder="은행명을 입력하세요"
                   />
                 </div>
+
                 <div className="hs-field">
                   <label className="hs-label">지점명</label>
                   <input
                     className="hs-input"
-                    placeholder="희망 지점명을 입력하세요"
+                    placeholder="지점명을 입력하세요"
                   />
                 </div>
               </div>
             </section>
 
+            {/* 5. 발기인 */}
             <section className="hs-block">
-              <h2 className="hs-block-title">발기인 정보</h2>
+              <h2 className="hs-block-title">5. 발기인 / 출자자</h2>
 
-              <div className="hs-subcard">
-                <div className="hs-subtitle">발기인 1</div>
-                <div className="hs-grid2">
-                  <div className="hs-field">
-                    <label className="hs-label">주소</label>
-                    <input
-                      className="hs-input"
-                      placeholder="주소를 입력하세요"
-                    />
-                  </div>
-                  <div className="hs-field">
-                    <label className="hs-label">성명</label>
-                    <input
-                      className="hs-input"
-                      placeholder="성명을 입력하세요"
-                    />
-                  </div>
-                  <div className="hs-field">
-                    <label className="hs-label">출자금액</label>
-                    <input
-                      className="hs-input"
-                      placeholder="출자금액을 입력하세요"
-                    />
+              {[1, 2].map((num) => (
+                <div className="hs-subcard" key={num}>
+                  <div className="hs-subtitle">발기인 {num}</div>
+
+                  <div className="hs-grid2">
+                    <div className="hs-field">
+                      <label className="hs-label">주소</label>
+                      <input
+                        className="hs-input"
+                        placeholder="주소를 입력하세요"
+                      />
+                    </div>
+
+                    <div className="hs-field">
+                      <label className="hs-label">성명</label>
+                      <input
+                        className="hs-input"
+                        placeholder="성명을 입력하세요"
+                      />
+                    </div>
+
+                    <div className="hs-field">
+                      <label className="hs-label">출자 금액</label>
+                      <input
+                        className="hs-input"
+                        placeholder="예: 2,500,000엔"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
+              ))}
+            </section>
 
-              <div className="hs-subcard">
-                <div className="hs-subtitle">발기인 2</div>
-                <div className="hs-grid2">
-                  <div className="hs-field">
-                    <label className="hs-label">주소</label>
-                    <input
-                      className="hs-input"
-                      placeholder="주소를 입력하세요"
-                    />
-                  </div>
-                  <div className="hs-field">
-                    <label className="hs-label">성명</label>
-                    <input
-                      className="hs-input"
-                      placeholder="성명을 입력하세요"
-                    />
-                  </div>
-                  <div className="hs-field">
-                    <label className="hs-label">출자금액</label>
-                    <input
-                      className="hs-input"
-                      placeholder="출자금액을 입력하세요"
-                    />
+            {/* 6. 이사 */}
+            <section className="hs-block">
+              <h2 className="hs-block-title">6. 이사</h2>
+              <p className="hs-note">
+                성명은 로마자 병기를 함께 입력해 주세요.
+              </p>
+
+              {[1, 2].map((num) => (
+                <div className="hs-subcard" key={num}>
+                  <div className="hs-subtitle">이사 {num}</div>
+
+                  <div className="hs-grid2">
+                    <div className="hs-field">
+                      <label className="hs-label">주소</label>
+                      <input
+                        className="hs-input"
+                        placeholder="주소를 입력하세요"
+                      />
+                    </div>
+
+                    <div className="hs-field">
+                      <label className="hs-label">성명</label>
+                      <input
+                        className="hs-input"
+                        placeholder="예: 홍길동 / HONG GILDONG"
+                      />
+                    </div>
                   </div>
                 </div>
+              ))}
+            </section>
+
+            {/* 7. 대표이사 */}
+            <section className="hs-block">
+              <h2 className="hs-block-title">7. 대표이사</h2>
+
+              <div className="hs-field">
+                <label className="hs-label">대표이사 성명</label>
+                <input
+                  className="hs-input"
+                  placeholder="대표이사 성명을 입력하세요"
+                />
               </div>
             </section>
 
+            {/* 8. 이사의 임기 */}
             <section className="hs-block">
-              <h2 className="hs-block-title">이사 정보</h2>
+              <h2 className="hs-block-title">8. 이사의 임기</h2>
 
-              <div className="hs-subcard">
-                <div className="hs-subtitle">이사 1</div>
-                <div className="hs-grid2">
-                  <div className="hs-field">
-                    <label className="hs-label">주소</label>
-                    <input
-                      className="hs-input"
-                      placeholder="주소를 입력하세요"
-                    />
-                  </div>
-                  <div className="hs-field">
-                    <label className="hs-label">성명</label>
-                    <input
-                      className="hs-input"
-                      placeholder="성명을 입력하세요"
-                    />
-                  </div>
-                  <div className="hs-field">
-                    <label className="hs-label">영문명</label>
-                    <input
-                      className="hs-input"
-                      placeholder="영문명을 입력하세요"
-                    />
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <section className="hs-block">
-              <h2 className="hs-block-title">추가 정보</h2>
-              <div className="hs-grid2">
-                <div className="hs-field">
-                  <label className="hs-label">대표이사</label>
-                  <input
-                    className="hs-input"
-                    placeholder="대표이사를 입력하세요"
-                  />
-                </div>
-                <div className="hs-field">
-                  <label className="hs-label">이사 임기</label>
-                  <input className="hs-input" placeholder="예: 2년" />
-                </div>
+              <div className="hs-field">
+                <label className="hs-label">이사의 임기</label>
+                <input
+                  className="hs-input"
+                  placeholder="1년 이상 10년 이하에서 입력하세요"
+                />
               </div>
             </section>
 
@@ -210,9 +193,11 @@ export default function HearingSheet() {
               <button type="button" className="btn">
                 임시 저장
               </button>
+
               <Link to="/reservation" className="btn primary nav-cta">
                 상담 예약페이지로 이동
               </Link>
+
               <button type="submit" className="btn primary">
                 제출하기
               </button>
