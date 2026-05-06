@@ -237,6 +237,24 @@
   border-color: #27ae60;
 }
 
+.adm-day.today {
+  background: #f0f9ff;
+  border-color: #38bdf8;
+}
+
+.adm-day.today span::after {
+  content: "오늘";
+  display: block;
+  margin-top: 4px;
+  color: #0284c7;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.adm-day.has-items {
+  background: #f7fef9;
+}
+
 .adm-day.empty {
   background: #f8fafc;
   cursor: default;
@@ -368,6 +386,21 @@
   color: #657185;
 }
 
+.adm-upload-status.success {
+  color: #1f8f4f;
+  font-weight: 900;
+}
+
+.adm-upload-status.error {
+  color: #dc2626;
+  font-weight: 900;
+}
+
+.adm-upload-status.loading {
+  color: #2563eb;
+  font-weight: 900;
+}
+
 .adm-file-picker {
   position: relative;
   display: inline-flex;
@@ -462,6 +495,11 @@
   color: #172033;
 }
 
+.adm-message.loading {
+  color: #657185;
+  font-weight: 800;
+}
+
 .adm-message.user {
   align-self: flex-end;
   background: #27ae60;
@@ -480,6 +518,34 @@
   border: 1px solid #dfe5ee;
   border-radius: 10px;
   padding: 0 14px;
+}
+
+.adm-chat-error {
+  margin-top: 12px;
+  color: #dc2626;
+  font-weight: 900;
+}
+
+.adm-confirm {
+  display: grid;
+  gap: 14px;
+}
+
+.adm-confirm p {
+  margin: 0;
+  color: #172033;
+}
+
+.adm-confirm span {
+  color: #657185;
+  font-weight: 800;
+}
+
+.adm-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 6px;
 }
 
 .adm-stat-card {

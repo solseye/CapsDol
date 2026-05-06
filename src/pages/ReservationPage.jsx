@@ -57,6 +57,9 @@ function buildCalendarDays(viewDate) {
   return cells;
 }
 
+// 기존 reservationData.date 생성에 쓰던 함수입니다.
+// 새 payload는 selectedDate ISO 문자열을 쓰지만, 기존 코드 복원을 위해 함수는 보관합니다.
+// eslint-disable-next-line no-unused-vars
 function formatDate(date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
     2,
@@ -191,11 +194,23 @@ export default function ReservationPage() {
       return;
     }
 
+    // 기존 전송 준비 데이터입니다.
+    // const reservationData = {
+    //   ...form,
+    //   field: selectedField,
+    //   date: formatDate(selectedDate),
+    //   time: selectedTime,
+    // };
+
+    // 변경 이유: 백엔드와 협업할 때 예약 데이터 필드명을 공통으로 맞추기 위해
+    // phone, CName, kind, field, selectedDate, selectedTime 형태로 준비합니다.
     const reservationData = {
-      ...form,
+      phone: form.phone,
+      CName: form.CName,
+      kind: form.kind,
       field: selectedField,
-      date: formatDate(selectedDate),
-      time: selectedTime,
+      selectedDate: selectedDate.toISOString(),
+      selectedTime,
     };
 
     console.log("예약 정보", reservationData);

@@ -1,7 +1,13 @@
+// API 주소를 한 곳에서 관리합니다.
+// 비워두면 package.json의 proxy 설정을 통해 백엔드로 요청됩니다.
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "";
+
+const apiUrl = (path) => `${API_BASE_URL}${path}`;
+
 export async function sendQuestion(question) {
   const token = localStorage.getItem("accessToken");
 
-  const res = await fetch("http://localhost:5000/chat", {
+  const res = await fetch(apiUrl("/chat"), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -19,7 +25,7 @@ export async function sendQuestion(question) {
 }
 
 export async function loginUser(username, password) {
-  const res = await fetch("http://localhost:5000/login", {
+  const res = await fetch(apiUrl("/login"), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -41,7 +47,7 @@ export async function loginUser(username, password) {
 }
 
 export async function loginWithGoogle(idToken) {
-  const res = await fetch("http://localhost:5000/auth/google", {
+  const res = await fetch(apiUrl("/auth/google"), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -60,7 +66,7 @@ export async function loginWithGoogle(idToken) {
 }
 
 export async function signupUser(email, username, password) {
-  const res = await fetch("http://localhost:5000/signup", {
+  const res = await fetch(apiUrl("/signup"), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -84,7 +90,7 @@ export async function signupUser(email, username, password) {
 }
 
 export async function logoutUser() {
-  const res = await fetch("http://localhost:5000/logout", {
+  const res = await fetch(apiUrl("/logout"), {
     method: "POST",
     credentials: "include",
   });
@@ -99,7 +105,7 @@ export async function logoutUser() {
 }
 
 export async function findId(email) {
-  const res = await fetch("http://localhost:5000/find_id", {
+  const res = await fetch(apiUrl("/find_id"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -116,7 +122,7 @@ export async function findId(email) {
 }
 
 export async function findPassword(uid) {
-  const res = await fetch("http://localhost:5000/find_password", {
+  const res = await fetch(apiUrl("/find_password"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -133,7 +139,7 @@ export async function findPassword(uid) {
 }
 
 export async function verifyResetToken(token) {
-  const res = await fetch("http://localhost:5000/verify_token", {
+  const res = await fetch(apiUrl("/verify_token"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -150,7 +156,7 @@ export async function verifyResetToken(token) {
 }
 
 export async function resetPassword(token, newPassword) {
-  const res = await fetch("http://localhost:5000/reset_password", {
+  const res = await fetch(apiUrl("/reset_password"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",

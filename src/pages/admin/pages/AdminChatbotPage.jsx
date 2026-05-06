@@ -5,6 +5,8 @@ import { mockPdfs } from "../mockData";
 
 export default function AdminChatbotPage() {
   const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const [messages, setMessages] = useState([
     {
       role: "bot",
@@ -17,15 +19,37 @@ export default function AdminChatbotPage() {
     const text = input.trim();
     if (!text) return;
 
+    setError("");
+    setIsLoading(true);
+
+    // 기존 mock 답변 추가 방식입니다.
+    // setMessages((prev) => [
+    //   ...prev,
+    //   { role: "user", text },
+    //   {
+    //     role: "bot",
+    //     text: `"${text}"에 대한 mock 답변입니다. 실제 백엔드 연결 전 UI 확인용입니다.`,
+    //   },
+    // ]);
+    // setInput("");
+
+    // 변경 이유: 실제 백엔드 연결 전에도 챗봇 요청 중/응답 완료/에러 상태 UI를 확인할 수 있게 합니다.
     setMessages((prev) => [
       ...prev,
       { role: "user", text },
-      {
-        role: "bot",
-        text: `"${text}"에 대한 mock 답변입니다. 실제 백엔드 연결 전 UI 확인용입니다.`,
-      },
     ]);
     setInput("");
+
+    window.setTimeout(() => {
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "bot",
+          text: `"${text}"에 대한 mock 답변입니다. 실제 백엔드 연결 전 UI 확인용입니다.`,
+        },
+      ]);
+      setIsLoading(false);
+    }, 500);
   };
 
   return (
@@ -46,15 +70,21 @@ export default function AdminChatbotPage() {
                 {message.text}
               </div>
             ))}
+            {isLoading && <div className="adm-message bot loading">답변 생성 중...</div>}
           </div>
+
+          {error && <div className="adm-chat-error">{error}</div>}
 
           <form className="adm-chat-form" onSubmit={handleSubmit}>
             <input
               value={input}
               onChange={(event) => setInput(event.target.value)}
               placeholder="질문을 입력하세요"
+              disabled={isLoading}
             />
-            <AdminButton type="submit">전송</AdminButton>
+            <AdminButton type="submit" disabled={isLoading}>
+              {isLoading ? "대기" : "전송"}
+            </AdminButton>
           </form>
         </AdminCard>
 

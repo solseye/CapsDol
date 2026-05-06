@@ -7,7 +7,34 @@ const weekDays = ["일", "월", "화", "수", "목", "금", "토"];
 
 function toDateKey(date) {
   if (typeof date === "string") return date.slice(0, 10);
-  return date.toISOString().slice(0, 10);
+  // 기존 ISO 기준 변환입니다.
+  // return date.toISOString().slice(0, 10);
+
+  // 변경 이유: toISOString은 브라우저 타임존에 따라 날짜가 하루 밀릴 수 있어
+  // 달력 칸과 오늘/선택 날짜 표시가 어긋나지 않도록 로컬 날짜 기준으로 변환합니다.
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(
+    date.getDate()
+  ).padStart(2, "0")}`;
+}
+
+function getApplicationDateKey(item) {
+  return toDateKey(item.selectedDate || item.date);
+}
+
+function getApplicationTime(item) {
+  return item.selectedTime || item.time || "-";
+}
+
+function getApplicationTitle(item) {
+  return item.CName || item.name || "회사명 없음";
+}
+
+function getApplicationSubtitle(item) {
+  return `${item.field || item.type || "상담 분야 없음"} · ${getApplicationTime(item)}`;
+}
+
+function getTodayKey() {
+  return toDateKey(new Date());
 }
 
 function buildCalendarDays(viewDate) {
@@ -33,13 +60,24 @@ function buildCalendarDays(viewDate) {
 }
 
 export default function AdminCalendarPage() {
-  const [viewDate, setViewDate] = useState(new Date(2026, 3, 1));
-  const [selectedDate, setSelectedDate] = useState("2026-04-30");
+  // 기존 고정 월/날짜입니다.
+  // const [viewDate, setViewDate] = useState(new Date(2026, 3, 1));
+  // const [selectedDate, setSelectedDate] = useState("2026-04-30");
+
+  // 변경 이유: ADMIN에 들어왔을 때 항상 현재 월과 오늘 날짜를 먼저 확인할 수 있게 합니다.
+  const todayKey = getTodayKey();
+  const [viewDate, setViewDate] = useState(() => new Date());
+  const [selectedDate, setSelectedDate] = useState(todayKey);
   const [selectedApplication, setSelectedApplication] = useState(null);
 
   const applicationsByDate = useMemo(() => {
     return mockApplications.reduce((acc, item) => {
-      acc[item.date] = [...(acc[item.date] || []), item];
+      // 기존 date 필드 기준 분류입니다.
+      // acc[item.date] = [...(acc[item.date] || []), item];
+
+      // 변경 이유: 백엔드 예약 데이터가 selectedDate 필드로 들어올 예정이라 같은 기준으로 묶습니다.
+      const dateKey = getApplicationDateKey(item);
+      acc[dateKey] = [...(acc[dateKey] || []), item];
       return acc;
     }, {});
   }, []);
@@ -80,6 +118,16 @@ export default function AdminCalendarPage() {
             >
               다음
             </button>
+            <button
+              type="button"
+              onClick={() => {
+                const today = new Date();
+                setViewDate(today);
+                setSelectedDate(todayKey);
+              }}
+            >
+              오늘
+            </button>
           </div>
         }
       >
@@ -98,16 +146,25 @@ export default function AdminCalendarPage() {
 
               const key = toDateKey(date);
               const items = applicationsByDate[key] || [];
+              const isToday = key === todayKey;
+              const hasItems = items.length > 0;
 
               return (
                 <button
                   type="button"
                   key={key}
-                  className={`adm-day ${selectedDate === key ? "selected" : ""}`}
+                  className={[
+                    "adm-day",
+                    selectedDate === key ? "selected" : "",
+                    isToday ? "today" : "",
+                    hasItems ? "has-items" : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
                   onClick={() => setSelectedDate(key)}
                 >
                   <span>{date.getDate()}</span>
-                  {items.length > 0 && <b>{items.length}</b>}
+                  {hasItems && <b>{items.length}</b>}
                 </button>
               );
             })}
@@ -130,11 +187,17 @@ export default function AdminCalendarPage() {
                     key={item.id}
                     onClick={() => setSelectedApplication(item)}
                   >
-                    <strong>{item.name}</strong>
+                    {/* 기존 표시 방식입니다. */}
+                    {/* <strong>{item.name}</strong>
                     <span>
                       {item.type} · {item.time}
                     </span>
-                    <small>{item.memo}</small>
+                    <small>{item.memo}</small> */}
+
+                    {/* 변경 이유: 새 백엔드 예약 데이터 필드(CName, kind, field, selectedTime)를 그대로 보여주기 위함입니다. */}
+                    <strong>{getApplicationTitle(item)}</strong>
+                    <span>{getApplicationSubtitle(item)}</span>
+                    <small>{item.kind || "직종 정보 없음"}</small>
                   </button>
                 ))}
               </div>
@@ -146,28 +209,42 @@ export default function AdminCalendarPage() {
       {selectedApplication && (
         <AdminModal title="신청 상세 정보" onClose={() => setSelectedApplication(null)}>
           <dl className="adm-detail-list">
-            <div>
+            {/* 기존 상세 항목입니다. */}
+            {/* <div>
               <dt>이름</dt>
               <dd>{selectedApplication.name}</dd>
-            </div>
+            </div> */}
             <div>
               <dt>연락처</dt>
               <dd>{selectedApplication.phone}</dd>
             </div>
             <div>
-              <dt>신청일</dt>
-              <dd>
-                {selectedApplication.date} {selectedApplication.time}
-              </dd>
+              <dt>회사명</dt>
+              <dd>{selectedApplication.CName || "-"}</dd>
             </div>
             <div>
+              <dt>직종</dt>
+              <dd>{selectedApplication.kind || "-"}</dd>
+            </div>
+            <div>
+              <dt>상담 분야</dt>
+              <dd>{selectedApplication.field || selectedApplication.type || "-"}</dd>
+            </div>
+            <div>
+              <dt>예약일</dt>
+              <dd>
+                {getApplicationDateKey(selectedApplication)} {getApplicationTime(selectedApplication)}
+              </dd>
+            </div>
+            {/* 기존 상세 항목입니다. */}
+            {/* <div>
               <dt>상담 유형</dt>
               <dd>{selectedApplication.type}</dd>
             </div>
             <div>
               <dt>메모</dt>
               <dd>{selectedApplication.memo}</dd>
-            </div>
+            </div> */}
           </dl>
         </AdminModal>
       )}

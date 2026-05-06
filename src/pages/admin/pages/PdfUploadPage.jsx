@@ -6,14 +6,29 @@ export default function PdfUploadPage() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState("대기 중");
+  const [statusType, setStatusType] = useState("idle");
 
   const handleMockUpload = () => {
     if (!selectedFile) {
       setStatus("PDF 파일을 먼저 선택해 주세요.");
+      setStatusType("error");
       return;
     }
 
+    if (selectedFile.type && selectedFile.type !== "application/pdf") {
+      setStatus("PDF 파일만 업로드할 수 있습니다.");
+      setStatusType("error");
+      setProgress(0);
+      return;
+    }
+
+    // 기존 mock 업로드 상태 처리입니다.
+    // setStatus("업로드 준비 완료");
+    // setProgress(35);
+
+    // 변경 이유: 업로드 성공/실패 상태를 화면에서 명확히 구분하기 위해 상태 타입을 함께 관리합니다.
     setStatus("업로드 준비 완료");
+    setStatusType("loading");
     setProgress(35);
 
     window.setTimeout(() => {
@@ -24,6 +39,7 @@ export default function PdfUploadPage() {
     window.setTimeout(() => {
       setProgress(100);
       setStatus("업로드 완료");
+      setStatusType("success");
     }, 900);
   };
 
@@ -53,6 +69,7 @@ export default function PdfUploadPage() {
                 setSelectedFile(file);
                 setProgress(0);
                 setStatus(file ? "파일 선택됨" : "대기 중");
+                setStatusType(file ? "idle" : "idle");
               }}
             />
           </label>
@@ -64,7 +81,7 @@ export default function PdfUploadPage() {
           <div className="adm-progress">
             <span style={{ width: `${progress}%` }} />
           </div>
-          <div className="adm-upload-status">{status}</div>
+          <div className={`adm-upload-status ${statusType}`}>{status}</div>
 
           <AdminButton onClick={handleMockUpload}>업로드</AdminButton>
         </div>
