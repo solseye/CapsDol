@@ -80,6 +80,7 @@ export default function HearingSheet() {
       return acc;
     }, {});
   };
+
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
