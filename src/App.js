@@ -15,6 +15,7 @@ import PdfListPage from "./pages/admin/pages/PdfListPage";
 import LostId from "./pages/lostid";
 import LostPw from "./pages/lostpw";
 import ResetPassword from "./pages/ResetPassword";
+import ArticlesPreview from "./pages/ArticlesPreview";
 
 function App() {
   const { pathname } = useLocation();
@@ -34,13 +35,15 @@ function App() {
       <Route path="/lostid" element={<LostId />} />
       <Route path="/lostpw" element={<LostPw />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/articles-result" element={<ArticlesPreview />} />
 
       <Route path="/admin" element={<AdminLayout />}>
-      <Route index element={<AdminDashboard />} />
-      <Route path="calendar" element={<AdminCalendarPage />} />
-      <Route path="chatbot" element={<AdminChatbotPage />} />
-      <Route path="pdf-upload" element={<PdfUploadPage />} />
-      <Route path="pdf-list" element={<PdfListPage />} /></Route>
+        <Route index element={<AdminDashboard />} />
+        <Route path="calendar" element={<AdminCalendarPage />} />
+        <Route path="chatbot" element={<AdminChatbotPage />} />
+        <Route path="pdf-upload" element={<PdfUploadPage />} />
+        <Route path="pdf-list" element={<PdfListPage />} />
+      </Route>
     </Routes>
   );
 }

@@ -451,3 +451,19 @@ footer {
   margin: 0 8px;
   color: var(--muted);
 }
+
+/*           정관 변환 Css            */
+.articles-preview-block {
+  display: grid;
+  gap: 20px;
+}
+
+.articles-content {
+  white-space: pre-wrap;
+  word-break: keep-all;
+  line-height: 1.9;
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--text-strong);
+  margin: 0;
+}

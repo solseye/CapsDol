@@ -71,7 +71,7 @@ export default function SupportInfo() {
           </div>
 
           <h3 className="kicker">
-            각 분야 자격자가 한 팀으로 움직여 일정과 품질을 동시에 확보합니다.
+            각 분야 전문가가 한 팀으로 움직여 일정과 품질을 동시에 확보합니다.
           </h3>
         </div>
       </section>
