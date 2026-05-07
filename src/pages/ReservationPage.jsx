@@ -60,7 +60,7 @@ function buildCalendarDays(viewDate) {
 function formatDate(date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
     2,
-    "0"
+    "0",
   )}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
@@ -97,13 +97,13 @@ export default function ReservationPage() {
   }, []);
 
   const [viewDate, setViewDate] = useState(
-    new Date(today.getFullYear(), today.getMonth(), 1)
+    new Date(today.getFullYear(), today.getMonth(), 1),
   );
 
   const [selectedField, setSelectedField] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
   const [selectedDate, setSelectedDate] = useState(
-    new Date(today.getFullYear(), today.getMonth(), today.getDate())
+    new Date(today.getFullYear(), today.getMonth(), today.getDate()),
   );
 
   const [form, setForm] = useState({
@@ -119,12 +119,12 @@ export default function ReservationPage() {
 
   const calendarDays = useMemo(() => buildCalendarDays(viewDate), [viewDate]);
 
-  // 나중에 백엔드에서 선택한 날짜의 예약 시간을 받아서 여기에 넣으면 됨
+  // 나중에 백엔드에서 선택한 날짜의 예약 시간을 받는곳
   const reservedTimesForSelectedDate = [];
 
   const blockedTimes = useMemo(
     () => getBlockedTimesByReservations(reservedTimesForSelectedDate),
-    [reservedTimesForSelectedDate]
+    [reservedTimesForSelectedDate],
   );
 
   const handlePrevMonth = () => {

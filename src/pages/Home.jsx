@@ -5,9 +5,14 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 
 import MainIntro from "./home/MainIntro";
+import Recommendation from "./home/Recommendation";
+import About from "./home/About";
 import ServiceInfo from "./home/ServiceInfo";
-import UsageInfo from "./home/UsageInfo";
+import Hearing from "./home/Hearing";
 import SupportInfo from "./home/SupportInfo";
+import UsageInfo from "./home/UsageInfo";
+import Pricing from "./home/Pricing";
+import FAQ from "./home/FAQ";
 import ChatFab from "./home/Chatbot";
 
 export default function Home() {
@@ -68,8 +73,13 @@ export default function Home() {
 
       <main id="top">
         <MainIntro />
+        <Recommendation />
+        <About />
         <ServiceInfo />
+        <Hearing />
         <UsageInfo />
+        <Pricing />
+        <FAQ />
         <SupportInfo />
         <Footer />
       </main>
