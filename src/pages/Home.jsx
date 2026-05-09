@@ -18,6 +18,47 @@ import ChatFab from "./home/Chatbot";
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  const handleSectionClick = (e, sectionId) => {
+    e.preventDefault();
+
+    const target = document.getElementById(sectionId);
+
+    if (!target) return;
+
+    const startPosition = window.pageYOffset;
+
+    const targetPosition =
+      target.getBoundingClientRect().top + window.pageYOffset - 80;
+
+    const distance = targetPosition - startPosition;
+
+    const duration = 1400;
+
+    let start = null;
+
+    const easeInOutCubic = (t) => {
+      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    };
+
+    const animation = (currentTime) => {
+      if (start === null) start = currentTime;
+
+      const timeElapsed = currentTime - start;
+
+      const progress = Math.min(timeElapsed / duration, 1);
+
+      const ease = easeInOutCubic(progress);
+
+      window.scrollTo(0, startPosition + distance * ease);
+
+      if (timeElapsed < duration) {
+        requestAnimationFrame(animation);
+      }
+    };
+
+    requestAnimationFrame(animation);
+  };
+
   useEffect(() => {
     const currentLang = document.cookie.includes("/ko/ja") ? "ja" : "ko";
     document.documentElement.setAttribute("data-lang", currentLang);
@@ -69,9 +110,9 @@ export default function Home() {
         }}
       />
 
-      <Header isLoggedIn={isLoggedIn} />
+      <Header isLoggedIn={isLoggedIn} onSectionClick={handleSectionClick} />
 
-      <main id="top">
+      <main id="top" className="home-page">
         <MainIntro />
         <Recommendation />
         <About />

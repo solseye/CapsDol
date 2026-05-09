@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { logoutUser } from "../api/authApi";
 
-export default function Header({ isLoggedIn }) {
+export default function Header({ isLoggedIn, onSectionClick = () => {} }) {
   const location = useLocation();
 
   const role = localStorage.getItem("role");
@@ -9,7 +9,11 @@ export default function Header({ isLoggedIn }) {
   const handleLogoClick = (e) => {
     if (location.pathname === "/") {
       e.preventDefault();
-      window.scrollTo({ top: 0, behavior: "smooth" });
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
     }
   };
 
@@ -56,16 +60,30 @@ export default function Header({ isLoggedIn }) {
           <nav className="main-nav" aria-label="주요 메뉴">
             <ul>
               <li>
-                <a href="#about">회사 개요</a>
+                <a href="#about" onClick={(e) => onSectionClick(e, "about")}>
+                  회사 개요
+                </a>
               </li>
+
               <li>
-                <a href="#service">서비스</a>
+                <a
+                  href="#service"
+                  onClick={(e) => onSectionClick(e, "service")}
+                >
+                  서비스
+                </a>
               </li>
+
               <li>
-                <a href="#flow">업무 흐름</a>
+                <a href="#flow" onClick={(e) => onSectionClick(e, "flow")}>
+                  업무 흐름
+                </a>
               </li>
+
               <li>
-                <a href="#faq">FAQ</a>
+                <a href="#faq" onClick={(e) => onSectionClick(e, "faq")}>
+                  FAQ
+                </a>
               </li>
 
               {!isLoggedIn && (
@@ -110,6 +128,7 @@ export default function Header({ isLoggedIn }) {
             >
               KO
             </button>
+
             <button
               type="button"
               className="lang-option"
