@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "../App.css";
 
 export default function HearingSheet() {
@@ -80,6 +81,67 @@ export default function HearingSheet() {
     }, {});
   };
 
+  const formatList = (items, formatter) => {
+    return items.map((item, index) => formatter(item, index)).join("\n");
+  };
+
+  const buildArticlesContent = (data) => {
+    const purposeText = formatList(
+      Object.values(data.Purpose),
+      (purpose, index) => `  ${index + 1}. ${purpose.content || "미입력"}`
+    );
+
+    const founderText = formatList(
+      Object.values(data.Founder),
+      (founder, index) =>
+        `  ${index + 1}. 주소: ${founder.address || "미입력"} / 성명: ${
+          founder.name || "미입력"
+        } / 출자금액: ${founder.investmentAmount || "미입력"}`
+    );
+
+    const directorText = formatList(
+      Object.values(data.Director),
+      (director, index) =>
+        `  ${index + 1}. 주소: ${director.address || "미입력"} / 성명: ${
+          director.name || "미입력"
+        } / 로마자 성명: ${director.romanizedName || "미입력"}`
+    );
+
+    return `정관 초안
+
+제1조 (상호)
+본 회사의 상호는 ${data.companyName || "미입력"}로 한다.
+영문 표기는 ${data.companyNameEn || "미입력"}로 한다.
+
+제2조 (목적)
+본 회사는 다음 사업을 목적으로 한다.
+${purposeText}
+
+제3조 (자본금)
+본 회사의 자본금은 ${data.capital || "미입력"}로 한다.
+
+제4조 (자본금 납입 은행)
+자본금 납입 은행은 ${data.capitalPaymentBank.bankName || "미입력"} ${
+      data.capitalPaymentBank.branchName || "미입력"
+    } 지점으로 한다.
+
+제5조 (발기인 및 출자자)
+${founderText}
+
+제6조 (이사)
+${directorText}
+
+제7조 (대표이사)
+본 회사의 대표이사는 ${data.representativeDirector || "미입력"}로 한다.
+
+제8조 (이사의 임기)
+이사의 임기는 ${data.directorTerm || "미입력"}로 한다.
+
+※ 본 문서는 히어링 시트 입력값을 바탕으로 생성된 확인용 정관 초안입니다.`;
+  };
+
+  const navigate = useNavigate();
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -98,7 +160,21 @@ export default function HearingSheet() {
       directorTerm,
     };
 
+    // 기존 동작입니다.
+    // console.log("Backend로 보낼 JSON:", hearingSheetData);
+
+    // 변경 이유: 히어링 시트 제출 후 정관 확인 페이지에서 입력값 기반 초안을 확인할 수 있도록
+    // ArticlesPreview 페이지로 정관 텍스트를 전달합니다.
     console.log("Backend로 보낼 JSON:", hearingSheetData);
+
+    const articlesData = {
+      source: hearingSheetData,
+      content: buildArticlesContent(hearingSheetData),
+    };
+
+    navigate("/articles-result", {
+      state: { articlesData },
+    });
 
     /*
       axios 또는 fetch 예시

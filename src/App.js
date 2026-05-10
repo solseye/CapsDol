@@ -15,6 +15,7 @@ import PdfListPage from "./pages/admin/pages/PdfListPage";
 import LostId from "./pages/lostid";
 import LostPw from "./pages/lostpw";
 import ResetPassword from "./pages/ResetPassword";
+import ArticlesPreview from "./pages/ArticlesPreview";
 
 function App() {
   const { pathname } = useLocation();
@@ -34,6 +35,7 @@ function App() {
       <Route path="/lostid" element={<LostId />} />
       <Route path="/lostpw" element={<LostPw />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/articles-result" element={<ArticlesPreview />} />
 
       <Route path="/admin" element={<AdminLayout />}>
       <Route index element={<AdminDashboard />} />
