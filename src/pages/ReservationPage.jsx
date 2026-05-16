@@ -120,12 +120,11 @@ export default function ReservationPage() {
   const calendarDays = useMemo(() => buildCalendarDays(viewDate), [viewDate]);
 
   // 나중에 백엔드에서 선택한 날짜의 예약 시간을 받아서 여기에 넣으면 됨
-  const reservedTimesForSelectedDate = [];
+  const blockedTimes = useMemo(() => {
+    const reservedTimesForSelectedDate = [];
 
-  const blockedTimes = useMemo(
-    () => getBlockedTimesByReservations(reservedTimesForSelectedDate),
-    [reservedTimesForSelectedDate]
-  );
+    return getBlockedTimesByReservations(reservedTimesForSelectedDate);
+  }, [selectedDate]);
 
   const handlePrevMonth = () => {
     setViewDate((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
