@@ -1,7 +1,15 @@
+const BASE_URL =
+  process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+
+async function parseJsonResponse(res) {
+  const data = await res.json().catch(() => ({}));
+  return data;
+}
+
 export async function sendQuestion(question) {
   const token = localStorage.getItem("accessToken");
 
-  const res = await fetch("http://localhost:5000/chat", {
+  const res = await fetch(`${BASE_URL}/chat`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -11,15 +19,17 @@ export async function sendQuestion(question) {
     body: JSON.stringify({ question }),
   });
 
+  const data = await parseJsonResponse(res);
+
   if (!res.ok) {
-    throw new Error("서버 오류");
+    throw new Error(data.error || data.msg || "서버 오류");
   }
 
-  return res.json();
+  return data;
 }
 
 export async function loginUser(username, password) {
-  const res = await fetch("http://localhost:5000/login", {
+  const res = await fetch(`${BASE_URL}/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -31,7 +41,7 @@ export async function loginUser(username, password) {
     }),
   });
 
-  const data = await res.json();
+  const data = await parseJsonResponse(res);
 
   if (!res.ok) {
     throw new Error(data.error || data.msg || "로그인 실패");
@@ -41,7 +51,7 @@ export async function loginUser(username, password) {
 }
 
 export async function loginWithGoogle(idToken) {
-  const res = await fetch("http://localhost:5000/auth/google", {
+  const res = await fetch(`${BASE_URL}/auth/google`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -52,15 +62,17 @@ export async function loginWithGoogle(idToken) {
     }),
   });
 
+  const data = await parseJsonResponse(res);
+
   if (!res.ok) {
-    throw new Error("구글 로그인 실패");
+    throw new Error(data.error || data.msg || "구글 로그인 실패");
   }
 
-  return res.json();
+  return data;
 }
 
 export async function signupUser(email, username, password) {
-  const res = await fetch("http://localhost:5000/signup", {
+  const res = await fetch(`${BASE_URL}/signup`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -68,13 +80,13 @@ export async function signupUser(email, username, password) {
     credentials: "include",
     body: JSON.stringify({
       uid: username,
-      username: username,
+      username,
       email,
       password,
     }),
   });
 
-  const data = await res.json();
+  const data = await parseJsonResponse(res);
 
   if (!res.ok) {
     throw new Error(data.error || data.msg || "회원가입 실패");
@@ -84,63 +96,63 @@ export async function signupUser(email, username, password) {
 }
 
 export async function logoutUser() {
-  const res = await fetch("http://localhost:5000/logout", {
+  const res = await fetch(`${BASE_URL}/logout`, {
     method: "POST",
     credentials: "include",
   });
 
-  const data = await res.json();
+  const data = await parseJsonResponse(res);
 
   if (!res.ok) {
-    throw new Error(data.error || "로그아웃 실패");
+    throw new Error(data.error || data.msg || "로그아웃 실패");
   }
 
   return data;
 }
 
 export async function findId(email) {
-  const res = await fetch("http://localhost:5000/find_id", {
+  const res = await fetch(`${BASE_URL}/find_id`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
     body: JSON.stringify({ email }),
   });
 
-  const data = await res.json();
+  const data = await parseJsonResponse(res);
 
   if (!res.ok) {
-    throw new Error(data.error || "아이디 찾기에 실패했습니다.");
+    throw new Error(data.error || data.msg || "아이디 찾기에 실패했습니다.");
   }
 
   return data;
 }
 
 export async function findPassword(uid) {
-  const res = await fetch("http://localhost:5000/find_password", {
+  const res = await fetch(`${BASE_URL}/find_password`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
     body: JSON.stringify({ uid }),
   });
 
-  const data = await res.json();
+  const data = await parseJsonResponse(res);
 
   if (!res.ok) {
-    throw new Error(data.error || "비밀번호 찾기 요청에 실패했습니다.");
+    throw new Error(data.error || data.msg || "비밀번호 찾기 요청에 실패했습니다.");
   }
 
   return data;
 }
 
 export async function verifyResetToken(token) {
-  const res = await fetch("http://localhost:5000/verify_token", {
+  const res = await fetch(`${BASE_URL}/verify_token`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
     body: JSON.stringify({ token }),
   });
 
-  const data = await res.json();
+  const data = await parseJsonResponse(res);
 
   if (!res.ok) {
     throw new Error(data.error || data.msg || "유효하지 않은 토큰입니다.");
@@ -150,14 +162,14 @@ export async function verifyResetToken(token) {
 }
 
 export async function resetPassword(token, newPassword) {
-  const res = await fetch("http://localhost:5000/reset_password", {
+  const res = await fetch(`${BASE_URL}/reset_password`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
     body: JSON.stringify({ token, newPassword }),
   });
 
-  const data = await res.json();
+  const data = await parseJsonResponse(res);
 
   if (!res.ok) {
     throw new Error(data.error || data.msg || "비밀번호 변경에 실패했습니다.");
