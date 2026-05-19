@@ -15,6 +15,7 @@ import PdfListPage from "./pages/admin/pages/PdfListPage";
 import LostId from "./pages/lostid";
 import LostPw from "./pages/lostpw";
 import ResetPassword from "./pages/ResetPassword";
+import ArticlesPreview from "./pages/ArticlesPreview";
 
 function App() {
   const { pathname } = useLocation();
@@ -41,6 +42,7 @@ function App() {
       <Route path="chatbot" element={<AdminChatbotPage />} />
       <Route path="pdf-upload" element={<PdfUploadPage />} />
       <Route path="pdf-list" element={<PdfListPage />} /></Route>
+      <Route path="/articles-result" element={<ArticlesPreview />} />
     </Routes>
   );
 }
