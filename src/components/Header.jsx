@@ -70,7 +70,7 @@ export default function Header({ isLoggedIn }) {
 
             {isLoggedIn && role === "admin" && (
               <li>
-                <Link to="/admin" className="btn primary nav-cta">
+                <Link to="/admin/calendar" className="btn primary nav-cta">
                   관리자 페이지
                 </Link>
               </li>

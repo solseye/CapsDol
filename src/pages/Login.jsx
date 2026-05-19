@@ -34,12 +34,14 @@ export default function Login() {
 
         const data = await loginWithGoogle(idToken);
 
-        if (!data.accessToken) {
+        if (!data.success || !data.accessToken) {
           throw new Error("구글 로그인 실패");
         }
 
         localStorage.setItem("accessToken", data.accessToken);
-        navigate("/");
+        localStorage.setItem("role", data.role);
+
+        navigate(data.role === "admin" ? "/admin" : "/");
       } catch (err) {
         console.error("구글 로그인 에러:", err);
         setError("구글 로그인에 실패했습니다.");
