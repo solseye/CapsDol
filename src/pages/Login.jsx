@@ -124,7 +124,7 @@ export default function Login() {
 
       localStorage.setItem("accessToken", data.accessToken);
       localStorage.setItem("role", data.role);
-      navigate(data.role === "admin" ? "/admin" : "/");
+      navigate(data.role === "admin" ? "/admin/calendar" : "/");
     } catch (err) {
       console.error("로그인 실패:", err);
       setError("아이디 또는 비밀번호를 다시 확인해 주세요.");
