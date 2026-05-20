@@ -362,8 +362,16 @@
 }
 
 .adm-day.blocked em {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+
   color: #ef4444;
-  font-weight: 900;
+  font-size: 12px;
+  font-weight: 800;
+  font-style: normal;
+
+  letter-spacing: 0.02em;
 }
 
 /* 관리자 달력 우측 상세 정보 사이드 패널 */

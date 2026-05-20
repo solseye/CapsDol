@@ -539,7 +539,7 @@ export default function AdminCalendarPage() {
                   >
                     <span>{Number(date.slice(8, 10))}</span>
                     {reservationCount > 0 && <b>{reservationCount}</b>}
-                    {blockCount > 0 && <em>BLOCK</em>}
+                    {blockCount > 0 && <em>BLOCKED</em>}
                   </button>
                 );
               })}
