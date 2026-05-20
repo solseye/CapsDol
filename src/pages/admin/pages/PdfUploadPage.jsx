@@ -1,6 +1,17 @@
 import { useState } from "react";
-import AdminButton from "../components/AdminButton";
-import AdminCard from "../components/AdminCard";
+
+// 페이지 내부에서 사용할 카드 컴포넌트
+function AdminCard({ title, action, children }) {
+  return (
+    <section className="adm-card">
+      <div className="adm-card-head">
+        <h2>{title}</h2>
+        {action}
+      </div>
+      {children}
+    </section>
+  );
+}
 
 export default function PdfUploadPage() {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -66,7 +77,14 @@ export default function PdfUploadPage() {
           </div>
           <div className="adm-upload-status">{status}</div>
 
-          <AdminButton onClick={handleMockUpload}>업로드</AdminButton>
+          {/* 💡 변경 포인트: AdminButton 대신 순수 버튼 태그와 admin.css 클래스 결합 */}
+          <button
+            type="button"
+            className="adm-btn primary"
+            onClick={handleMockUpload}
+          >
+            업로드
+          </button>
         </div>
       </AdminCard>
     </div>

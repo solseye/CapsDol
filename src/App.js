@@ -1,21 +1,24 @@
 import { Routes, Route, useLocation } from "react-router-dom";
 import { useEffect } from "react";
+
 import Home from "./pages/Home";
 import HearingSheet from "./pages/HearingSheet";
-import ReservationPage from "./pages/ReservationPage";
 import Chat from "./pages/Chat/Chat";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+
 import AdminLayout from "./pages/admin/AdminLayout";
-import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminCalendarPage from "./pages/admin/pages/AdminCalendarPage";
 import AdminChatbotPage from "./pages/admin/pages/AdminChatbotPage";
 import PdfUploadPage from "./pages/admin/pages/PdfUploadPage";
 import PdfListPage from "./pages/admin/pages/PdfListPage";
+
 import LostId from "./pages/lostid";
 import LostPw from "./pages/lostpw";
 import ResetPassword from "./pages/ResetPassword";
 import ArticlesPreview from "./pages/ArticlesPreview";
+
+import MyReservations from "./pages/home/MyReservationPage";
 
 function App() {
   const { pathname } = useLocation();
@@ -26,23 +29,52 @@ function App() {
 
   return (
     <Routes>
+      {/* 일반 사용자 페이지 라우트 */}
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/hearing-sheet" element={<HearingSheet />} />
-      <Route path="/reservation" element={<ReservationPage />} />
+      <Route path="/reservation" element={<MyReservations />} />
       <Route path="/chat" element={<Chat />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/lostid" element={<LostId />} />
       <Route path="/lostpw" element={<LostPw />} />
       <Route path="/reset-password" element={<ResetPassword />} />
-
-      <Route path="/admin" element={<AdminLayout />}>
-      <Route index element={<AdminDashboard />} />
-      <Route path="calendar" element={<AdminCalendarPage />} />
-      <Route path="chatbot" element={<AdminChatbotPage />} />
-      <Route path="pdf-upload" element={<PdfUploadPage />} />
-      <Route path="pdf-list" element={<PdfListPage />} /></Route>
       <Route path="/articles-result" element={<ArticlesPreview />} />
+
+      {/* 💡 관리자 페이지 라우트 구조 정상화 
+          자식 컴포넌트들을 AdminLayout의 children으로 깔끔하게 전달합니다. */}
+      <Route
+        path="/admin/calendar"
+        element={
+          <AdminLayout>
+            <AdminCalendarPage />
+          </AdminLayout>
+        }
+      />
+      <Route
+        path="/admin/pdf-upload"
+        element={
+          <AdminLayout>
+            <PdfUploadPage />
+          </AdminLayout>
+        }
+      />
+      <Route
+        path="/admin/pdf-list"
+        element={
+          <AdminLayout>
+            <PdfListPage />
+          </AdminLayout>
+        }
+      />
+      <Route
+        path="/admin/chatbot"
+        element={
+          <AdminLayout>
+            <AdminChatbotPage />
+          </AdminLayout>
+        }
+      />
     </Routes>
   );
 }

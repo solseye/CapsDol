@@ -1,3 +1,6 @@
+/* ==========================================================================
+   [공통] 1. 관리자 레이아웃 (전체 화면 틀, 사이드바, 헤더 메뉴)
+   ========================================================================== */
 .adm-shell {
   min-height: 100vh;
   display: grid;
@@ -31,15 +34,18 @@
   place-items: center;
   border-radius: 12px;
   background: #27ae60;
+  color: #ffffff;
   font-weight: 900;
 }
 
-.adm-brand strong,
-.adm-brand small {
+.adm-brand strong {
   display: block;
+  color: #ffffff;
+  font-weight: 900;
 }
 
 .adm-brand small {
+  display: block;
   margin-top: 2px;
   color: #9ca9bd;
   font-size: 12px;
@@ -47,7 +53,7 @@
 
 .adm-menu {
   display: grid;
-  gap: 8px;
+  gap: 12px;
 }
 
 .adm-menu-link {
@@ -56,9 +62,9 @@
   min-height: 46px;
   padding: 0 14px;
   border-radius: 12px;
-  color: #c9d3e2;
+  color: #e5eaf1;
   text-decoration: none;
-  font-weight: 800;
+  font-weight: 900;
 }
 
 .adm-menu-link:hover,
@@ -121,6 +127,9 @@
   padding: 32px;
 }
 
+/* ==========================================================================
+   [공통] 2. 범용 UI 디자인 (기본 카드 상자, 버튼 종류, 팝업창 모달)
+   ========================================================================== */
 .adm-page {
   display: grid;
   gap: 22px;
@@ -184,6 +193,64 @@
   color: #dc2626;
 }
 
+.adm-icon-btn {
+  min-height: 34px;
+}
+
+.adm-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.42);
+}
+
+.adm-modal {
+  width: min(520px, 100%);
+  border-radius: 20px;
+  background: #ffffff;
+  padding: 22px;
+  box-shadow: 0 30px 90px rgba(15, 23, 42, 0.22);
+}
+
+.adm-modal-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.adm-modal-head h3 {
+  margin: 0;
+}
+
+.adm-confirm {
+  display: grid;
+  gap: 14px;
+}
+
+.adm-confirm p {
+  margin: 0;
+  color: #172033;
+}
+
+.adm-confirm span {
+  color: #657185;
+  font-weight: 800;
+}
+
+.adm-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+/* ==========================================================================
+   [페이지] 3. 관리자 달력 화면 (AdminCalendarPage - 메인 캘린더 및 우측 패널)
+   ========================================================================== */
 .adm-calendar-layout {
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
@@ -283,6 +350,24 @@
   font-size: 12px;
 }
 
+/* 관리자 달력 내 과거일 및 차단(블락) 날짜 차단막 효과 */
+.adm-day.past,
+.adm-day.blocked {
+  opacity: 0.35;
+  filter: blur(1px);
+  background: #e5e7eb;
+}
+
+.adm-day.blocked em {
+  display: block;
+  margin-top: 4px;
+  color: #dc2626;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+/* 관리자 달력 우측 상세 정보 사이드 패널 */
 .adm-side-panel {
   display: grid;
   gap: 14px;
@@ -352,6 +437,39 @@
   color: #172033;
 }
 
+/* ==========================================================================
+   [페이지] 4. 관리자 통합 예약 제어 (AdminReservations - 차단 목록 및 일괄 결재)
+   ========================================================================== */
+.adm-block-list {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.adm-block-item {
+  padding: 12px;
+  border-radius: 12px;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+}
+
+.adm-block-item strong,
+.adm-block-item small {
+  display: block;
+}
+
+.adm-block-item strong {
+  color: #991b1b;
+  margin-bottom: 4px;
+}
+
+.adm-block-item small {
+  color: #7f1d1d;
+}
+
+/* ==========================================================================
+   [페이지] 5. PDF 서류 업로드 화면 (PdfUploadPage - 드래그 앤 드롭 영역 및 프로그레스 바)
+   ========================================================================== */
 .adm-upload-box {
   min-height: 440px;
   display: grid;
@@ -390,12 +508,10 @@
   color: #1f8f4f;
   font-weight: 900;
 }
-
 .adm-upload-status.error {
   color: #dc2626;
   font-weight: 900;
 }
-
 .adm-upload-status.loading {
   color: #2563eb;
   font-weight: 900;
@@ -438,6 +554,9 @@
   transition: width 0.25s ease;
 }
 
+/* ==========================================================================
+   [페이지] 6. PDF 리스트 & 메인 지표 (PdfListPage / AdminDashboard 데이터 리스트 및 스탯)
+   ========================================================================== */
 .adm-table-wrap {
   overflow-x: auto;
 }
@@ -460,6 +579,24 @@
   font-size: 13px;
 }
 
+.adm-stat-card {
+  display: grid;
+  gap: 8px;
+}
+
+.adm-stat-card span,
+.adm-stat-card p {
+  color: #657185;
+}
+
+.adm-stat-card strong {
+  color: #172033;
+  font-size: 48px;
+}
+
+/* ==========================================================================
+   [페이지] 7. 관리자 챗봇 화면 (AdminChatbotPage - 메시지 윈도우 및 대화창)
+   ========================================================================== */
 .adm-chat-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 280px;
@@ -526,120 +663,216 @@
   font-weight: 900;
 }
 
-.adm-confirm {
+/* ==========================================================================
+   [페이지] 8. 일반 유저 전용 상담 관리 (My Reservations 화면 정렬)
+   ========================================================================== */
+.reserve-page {
+  min-height: 100vh;
+  padding: 48px 32px 72px;
+  background: linear-gradient(180deg, #f5f7fb 0%, #eef3f8 100%);
+}
+
+.reserve-hero {
+  max-width: 980px;
+  margin: 0 auto 24px;
+  padding: 40px 34px;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #ffffff 0%, #ecfdf3 100%);
+  box-shadow: 0 18px 50px rgba(23, 32, 51, 0.08);
+  text-align: center;
+}
+
+.reserve-hero h2 {
+  margin: 0;
+  color: #172033;
+  font-size: 36px;
+  font-weight: 900;
+}
+
+.reserve-hero span {
+  display: block;
+  margin-top: 10px;
+  color: #657185;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.reserve-history-card {
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+/* 두 카드 사이 띄우는 마진 여백 */
+.reserve-query-section {
+  margin-top: 40px !important;
+}
+
+.reserve-list {
   display: grid;
   gap: 14px;
 }
 
-.adm-confirm p {
-  margin: 0;
-  color: #172033;
-}
-
-.adm-confirm span {
-  color: #657185;
-  font-weight: 800;
-}
-
-.adm-confirm-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 6px;
-}
-
-.adm-stat-card {
-  display: grid;
-  gap: 8px;
-}
-
-.adm-stat-card span,
-.adm-stat-card p {
-  color: #657185;
-}
-
-.adm-stat-card strong {
-  color: #172033;
-  font-size: 48px;
-}
-
-.adm-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  display: grid;
-  place-items: center;
-  padding: 20px;
-  background: rgba(15, 23, 42, 0.42);
-}
-
-.adm-modal {
-  width: min(520px, 100%);
-  border-radius: 20px;
-  background: #ffffff;
-  padding: 22px;
-  box-shadow: 0 30px 90px rgba(15, 23, 42, 0.22);
-}
-
-.adm-modal-head {
+.reserve-item {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 18px;
+  align-items: center;
+  gap: 18px;
+  padding: 18px 20px;
+  border: 1px solid #e6eaf0;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 10px 24px rgba(23, 32, 51, 0.04);
 }
 
-.adm-modal-head h3 {
-  margin: 0;
+.reserve-item strong,
+.reserve-item span,
+.reserve-item small {
+  display: block;
 }
 
-.adm-icon-btn {
-  min-height: 34px;
+.reserve-item strong {
+  margin-bottom: 6px;
+  color: #172033;
+  font-size: 17px;
+  font-weight: 900;
 }
 
-/* sonny 브랜치의 ADMIN 캘린더 블락 일정 표시 스타일입니다. */
-.adm-day.past,
-.adm-day.blocked {
-  opacity: 0.35;
-  filter: blur(1px);
+.reserve-item span {
+  color: #657185;
+  font-weight: 700;
+}
+
+.reserve-item small {
+  margin-top: 5px;
+  color: #27ae60;
+  font-weight: 900;
+}
+
+.reserve-item.blocked {
+  opacity: 0.45;
   background: #e5e7eb;
 }
 
-.adm-day.blocked em {
-  display: block;
-  margin-top: 4px;
+.reserve-item.blocked small {
   color: #dc2626;
-  font-size: 11px;
-  font-style: normal;
-  font-weight: 800;
 }
 
-.adm-block-list {
-  display: grid;
+.reserve-item.blocked .adm-btn {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* 💡 [성진님 피드백 반영] 날짜 인풋들과 새로고침 버튼을 한 줄로 정렬하는 핵심 폼 */
+.reserve-range-form-custom {
+  margin-bottom: 24px;
+}
+
+.range-inputs-group {
+  display: flex;
+  align-items: flex-end; /* 날짜 글씨와 버튼 높낮이 하단 정렬선 일치 */
+  gap: 16px;
+}
+
+.range-inputs-group label {
+  flex: 1;
+  max-width: 240px; /* 블랭크 크기 단축 */
+  display: flex;
+  flex-direction: column;
   gap: 8px;
-  margin-bottom: 14px;
+  color: #172033;
+  font-size: 14px;
+  font-weight: 900;
 }
 
-.adm-block-item {
-  padding: 12px;
+.range-inputs-group input {
+  min-height: 44px;
+  border: 1px solid #dfe5ee;
   border-radius: 12px;
-  background: #fee2e2;
-  border: 1px solid #fecaca;
+  padding: 0 14px;
+  background: #ffffff;
+  color: #172033;
+  font: inherit;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.adm-block-item strong,
-.adm-block-item small {
-  display: block;
+.range-inputs-group input:focus {
+  outline: none;
+  border-color: #27ae60;
+  box-shadow: 0 0 0 4px rgba(39, 174, 96, 0.12);
 }
 
-.adm-block-item strong {
-  color: #991b1b;
-  margin-bottom: 4px;
+/* 💡 새로고침 버튼 크기를 인풋창 높이(44px)와 맞춰서 종료일 우측에 나란히 안착 */
+.reserve-refresh-btn-custom {
+  height: 44px;
+  min-width: 80px;
+  font-size: 14px;
+  font-weight: 900;
+  border-radius: 12px;
+  white-space: nowrap;
+
+  margin-left: auto;
+  margin-right: 10px;
 }
 
-.adm-block-item small {
-  color: #7f1d1d;
+.reserve-empty-box {
+  padding: 24px;
+  border: 1px dashed #cad4e2;
+  border-radius: 16px;
+  background: #f8fafc;
+  color: #657185;
+  font-weight: 800;
+  text-align: center;
 }
 
+.reserve-brand-card {
+  max-width: 980px;
+  margin: 22px auto 0;
+}
+
+.reserve-brand-empty {
+  min-height: 240px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  gap: 10px;
+}
+
+.adm-brand-mark {
+  width: 70px;
+  height: 70px;
+  display: grid;
+  place-items: center;
+  border-radius: 22px;
+  background: #27ae60;
+  color: #ffffff;
+  font-size: 32px;
+  font-weight: 900;
+}
+
+.reserve-brand-empty h2 {
+  margin: 0;
+  color: #172033;
+  font-size: 38px;
+  font-weight: 900;
+}
+
+.reserve-brand-empty p {
+  margin: 0;
+  color: #172033;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.reserve-brand-empty small {
+  color: #657185;
+  line-height: 1.6;
+}
+
+/* ==========================================================================
+   [반응형] 9. 디바이스 해상도별 미디어 쿼리 (태블릿, 모바일 기기 대응)
+   ========================================================================== */
+/* 태블릿 환경 제어 (가로폭 920px 이하) */
 @media (max-width: 920px) {
   .adm-shell {
     grid-template-columns: 1fr;
@@ -660,6 +893,40 @@
   }
 }
 
+/* 일반 모바일 환경 제어 (가로폭 760px 이하) */
+@media (max-width: 760px) {
+  .reserve-page {
+    padding: 32px 18px 56px;
+  }
+
+  .reserve-hero {
+    padding: 32px 22px;
+  }
+
+  .reserve-hero h2 {
+    font-size: 30px;
+  }
+
+  .reserve-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .reserve-item .adm-btn {
+    width: 100%;
+  }
+
+  .range-inputs-group {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .range-inputs-group label {
+    max-width: 100%;
+  }
+}
+
+/* 초소형 스마트폰 환경 제어 (가로폭 640px 이하) */
 @media (max-width: 640px) {
   .adm-header,
   .adm-content {
@@ -688,47 +955,4 @@
     grid-template-columns: 1fr;
     gap: 4px;
   }
-}
-
-.adm-day.past,
-.adm-day.blocked {
-  opacity: 0.35;
-  filter: blur(1px);
-  background: #e5e7eb;
-}
-
-.adm-day.blocked em {
-  display: block;
-  margin-top: 4px;
-  color: #dc2626;
-  font-size: 11px;
-  font-style: normal;
-  font-weight: 800;
-}
-
-.adm-block-list {
-  display: grid;
-  gap: 8px;
-  margin-bottom: 14px;
-}
-
-.adm-block-item {
-  padding: 12px;
-  border-radius: 12px;
-  background: #fee2e2;
-  border: 1px solid #fecaca;
-}
-
-.adm-block-item strong,
-.adm-block-item small {
-  display: block;
-}
-
-.adm-block-item strong {
-  color: #991b1b;
-  margin-bottom: 4px;
-}
-
-.adm-block-item small {
-  color: #7f1d1d;
 }

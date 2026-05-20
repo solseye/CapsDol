@@ -55,42 +55,57 @@ export default function Header({ isLoggedIn }) {
         <div className="nav-right">
           <nav className="main-nav" aria-label="주요 메뉴">
             <ul>
-              <li><a href="#about">회사 개요</a></li>
-              <li><a href="#service">서비스</a></li>
-              <li><a href="#flow">업무 흐름</a></li>
-              <li><a href="#faq">FAQ</a></li>
-
-            {!isLoggedIn && (
               <li>
-                <Link to="/login" className="btn primary nav-cta">
-                  로그인
-                </Link>
+                <a href="#about">회사 개요</a>
               </li>
-            )}
-
-            {isLoggedIn && role === "admin" && (
               <li>
-                <Link to="/admin/calendar" className="btn primary nav-cta">
-                  관리자 페이지
-                </Link>
+                <a href="#service">서비스</a>
               </li>
-            )}
-
-            {isLoggedIn && role !== "admin" && (
               <li>
-                <Link to="/reservation" className="btn primary nav-cta">
-                  상담 예약
-                </Link>
+                <a href="#flow">업무 흐름</a>
               </li>
-            )}
-
-            {isLoggedIn && (
               <li>
-                <button onClick={handleLogout} className="nav-logout">
-                  로그아웃
-                </button>
+                <a href="#faq">FAQ</a>
               </li>
-            )}
+
+              {!isLoggedIn && (
+                <li>
+                  <Link to="/login" className="btn primary nav-cta">
+                    로그인
+                  </Link>
+                </li>
+              )}
+
+              {isLoggedIn && role === "admin" && (
+                <li>
+                  <Link to="/admin/calendar" className="btn primary nav-cta">
+                    관리자 페이지
+                  </Link>
+                </li>
+              )}
+
+              {isLoggedIn && role !== "admin" && (
+                <li>
+                  {/* 주소를 /reservation 으로 정확히 맞춰줍니다 */}
+                  <Link to="/reservation" className="btn primary nav-cta">
+                    상담 예약
+                  </Link>
+                </li>
+              )}
+
+              {isLoggedIn && role !== "admin" && (
+                <li>
+                  <Link to="/reservation">상담 내역</Link>
+                </li>
+              )}
+
+              {isLoggedIn && (
+                <li>
+                  <button onClick={handleLogout} className="nav-logout">
+                    로그아웃
+                  </button>
+                </li>
+              )}
             </ul>
           </nav>
 
