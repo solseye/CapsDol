@@ -1,6 +1,16 @@
-import { Link } from "react-router-dom"; // 💡 1. 렌더링 에러를 막기 위해 Link 임포트 추가!
+import { Link, useNavigate } from "react-router-dom";
 
 export default function AdminHeader() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("user");
+    localStorage.removeItem("role");
+
+    navigate("/");
+  };
+
   return (
     <header className="adm-header">
       <div>
@@ -8,19 +18,18 @@ export default function AdminHeader() {
         <h1>관리자 페이지</h1>
       </div>
 
-      {/* 💡 2. 기존 admin.css 스타일에 맞게 우측 상단 '홈으로' 버튼 레이아웃 정돈 */}
-      <div style={{ marginLeft: "auto", marginRight: "16px" }}>
-        <Link
-          to="/"
-          className="adm-btn ghost"
-          style={{
-            textDecoration: "none",
-            display: "inline-flex",
-            alignItems: "center",
-          }}
-        >
+      <div className="adm-header-actions">
+        <Link to="/" className="adm-btn ghost adm-link-btn">
           홈으로
         </Link>
+
+        <button
+          type="button"
+          className="adm-btn ghost"
+          onClick={handleLogout}
+        >
+          로그아웃
+        </button>
       </div>
 
       <div className="adm-header-user">

@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import Header from "../../components/Header";
 import { Link } from "react-router-dom";
 import "../../App.css";
 import "../admin/admin.css";
 import {
   cancelReservation,
+  deleteReservation,
   getMyReservations,
 } from "../../api/reservationApi";
 
@@ -12,11 +14,11 @@ function formatDate(dateString) {
 
   const date = new Date(dateString);
 
-  if (Number.isNaN(date.getTime())) {
-    return "-";
-  }
+  if (Number.isNaN(date.getTime())) return "-";
 
-  return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
+  return `${date.getFullYear()}년 ${
+    date.getMonth() + 1
+  }월 ${date.getDate()}일`;
 }
 
 function formatTime(timeString) {
@@ -63,10 +65,23 @@ function canCancel(status) {
   return status === "pending" || status === "approved";
 }
 
+function getStatusClass(status) {
+  if (status === "approved") return "approved";
+  if (status === "rejected") return "rejected";
+  if (status === "cancelled") return "cancelled";
+
+  return "pending";
+}
+
 export default function MyReservations() {
+  const [isLoggedIn, setIsLoggedIn] = useState(null);
+
   const [reservations, setReservations] = useState([]);
+  const [localCancelReasons, setLocalCancelReasons] = useState({});
+
   const [isLoading, setIsLoading] = useState(true);
   const [cancelLoadingId, setCancelLoadingId] = useState(null);
+
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -86,7 +101,15 @@ export default function MyReservations() {
   };
 
   useEffect(() => {
-    fetchReservations();
+    const token = localStorage.getItem("accessToken");
+
+    setIsLoggedIn(!!token);
+
+    if (token) {
+      fetchReservations();
+    } else {
+      setIsLoading(false);
+    }
   }, []);
 
   const handleCancel = async (reservationId) => {
@@ -98,19 +121,41 @@ export default function MyReservations() {
       ""
     );
 
+    if (cancelReason === null) return;
+
+    const trimmedReason = cancelReason.trim();
+
     try {
       setError("");
       setSuccess("");
       setCancelLoadingId(reservationId);
 
-      const data = await cancelReservation(reservationId, cancelReason || "");
+      const data = await cancelReservation(
+        reservationId,
+        trimmedReason || null
+      );
 
       if (data.success) {
-        setSuccess("상담 예약이 취소되었습니다.");
+        setLocalCancelReasons((prev) => ({
+          ...prev,
+          [reservationId]: trimmedReason,
+        }));
+
         await fetchReservations();
-      } else {
+
+        setReservations((prev) =>
+          prev.map((item) =>
+            item.reservation_id === reservationId
+              ? {
+                  ...item,
+                  status: "cancelled",
+                  cancel_reason: trimmedReason,
+                }
+              : item
+          )
+        );
+
         setSuccess("상담 예약이 취소되었습니다.");
-        await fetchReservations();
       }
     } catch (err) {
       setError(err.message || "상담 예약 취소에 실패했습니다.");
@@ -119,100 +164,170 @@ export default function MyReservations() {
     }
   };
 
+  const handleDeleteReservation = async (reservationId) => {
+    const ok = window.confirm("이 상담 내역을 삭제하시겠습니까?");
+    if (!ok) return;
+
+    try {
+      setError("");
+      setSuccess("");
+
+      const data = await deleteReservation(reservationId);
+
+      if (data.success) {
+        setSuccess("상담 내역이 삭제되었습니다.");
+      }
+
+      await fetchReservations();
+    } catch (err) {
+      setError(err.message || "상담 내역 삭제에 실패했습니다.");
+    }
+  };
+
+  const sortedReservations = [...reservations].sort((a, b) => {
+    const dateA = new Date(a.selected_date).getTime();
+    const dateB = new Date(b.selected_date).getTime();
+
+    if (dateB !== dateA) return dateB - dateA;
+
+    return String(b.selected_time).localeCompare(
+      String(a.selected_time)
+    );
+  });
+
   return (
-    <main className="reserve-page">
-      <section className="reserve-hero">
-        <p className="adm-eyebrow">My Reservations</p>
-        <h2>내 상담 내역</h2>
+    <>
+      <Header isLoggedIn={isLoggedIn} />
 
-      </section>
+      <main className="reserve-page">
+        <section className="reserve-hero">
+          <p className="adm-eyebrow">My Reservations</p>
+          <h2>내 상담 내역</h2>
+        </section>
 
-      <section className="adm-card reserve-history-card">
-        <div className="adm-card-head">
-          <div>
-            <h2>예약 정보</h2>
+        <section className="adm-card reserve-history-card">
+          <div className="adm-card-head">
+            <div>
+              <h2>예약 정보</h2>
+            </div>
+
+            <Link to="/" className="adm-btn ghost">
+              홈으로
+            </Link>
           </div>
 
-          <Link to="/" className="adm-btn ghost">
-            홈으로
-          </Link>
-        </div>
+          {error && <p className="login-error">{error}</p>}
+          {success && <p className="login-success">{success}</p>}
 
-        {error && <p className="login-error">{error}</p>}
-        {success && <p className="login-success">{success}</p>}
+          {isLoading ? (
+            <div className="reserve-empty-box">
+              예약 정보를 불러오는 중입니다.
+            </div>
+          ) : sortedReservations.length === 0 ? (
+            <div className="reserve-empty-box">
+              아직 신청한 상담 예약이 없습니다.
+            </div>
+          ) : (
+            <div className="reserve-list">
+              {sortedReservations.map((item) => {
+                const reservationId = item.reservation_id;
 
-        {isLoading ? (
-          <div className="reserve-empty-box">예약 정보를 불러오는 중입니다.</div>
-        ) : reservations.length === 0 ? (
-          <div className="reserve-empty-box">
-            아직 신청한 상담 예약이 없습니다.
-          </div>
-        ) : (
-          <div className="reserve-list">
-            {reservations.map((item) => {
-              const reservationId = item.reservation_id;
-              const statusLabel = getStatusLabel(item.status);
-              const fieldLabel = getFieldLabel(item.field);
-              const dateLabel = formatDate(item.selected_date);
-              const timeLabel = formatTime(item.selected_time);
-              const isCancelAvailable = canCancel(item.status);
-              const isCancelling = cancelLoadingId === reservationId;
+                const statusLabel = getStatusLabel(item.status);
 
-              return (
-                <article
-                  className={`reserve-item reserve-status-${item.status}`}
-                  key={reservationId}
-                >
-                  <div>
-                    <strong>
-                      {fieldLabel} · {timeLabel}
-                    </strong>
+                const fieldLabel = getFieldLabel(item.field);
 
-                    <span>
-                      {dateLabel} · 일정 ID {item.schedule_id}
-                    </span>
+                const dateLabel = formatDate(item.selected_date);
 
-                  <small>
-                    상태: {statusLabel}
+                const timeLabel = formatTime(item.selected_time);
 
-                    {item.reject_reason && (
-                      <>
-                        <br />
-                        불허 사유: {item.reject_reason}
-                      </>
-                    )}
+                const cancelAvailable = canCancel(item.status);
 
-                    {item.cancel_reason && (
-                      <>
-                        <br />
-                        취소 사유: {item.cancel_reason}
-                      </>
-                    )}
-                  </small>
-                  </div>
+                const cancelling =
+                  cancelLoadingId === reservationId;
 
-                  <button
-                    type="button"
-                    className="adm-btn ghost"
-                    onClick={() => handleCancel(reservationId)}
-                    disabled={!isCancelAvailable || isCancelling}
+                const cancelReason =
+                  item.cancel_reason ||
+                  localCancelReasons[reservationId];
+
+                return (
+                  <article
+                    className={`reserve-item reserve-status-${item.status}`}
+                    key={reservationId}
                   >
-                    {isCancelling ? "취소 중..." : "상담 취소"}
-                  </button>
-                </article>
-              );
-            })}
-          </div>
-        )}
-      </section>
+                    <div>
+                      <strong>
+                        {fieldLabel} · {dateLabel} · {timeLabel}
+                      </strong>
 
-      <section className="adm-card reserve-brand-card">
-        <div className="reserve-brand-empty">
-          <span className="adm-brand-mark">W</span>
-          <h2>WVA</h2>
-          <p>예약 상태와 상담 일정을 이곳에서 확인할 수 있습니다.</p>
-        </div>
-      </section>
-    </main>
+                      <small
+                        className={`reservation-status ${getStatusClass(
+                          item.status
+                        )}`}
+                      >
+                        상태: {statusLabel}
+
+                        {item.reject_reason && (
+                          <>
+                            <br />
+                            불허 사유: {item.reject_reason}
+                          </>
+                        )}
+
+                        {cancelReason && (
+                          <>
+                            <br />
+                            취소 사유: {cancelReason}
+                          </>
+                        )}
+                      </small>
+                    </div>
+
+                    {cancelAvailable ? (
+                      <button
+                        type="button"
+                        className="adm-btn ghost"
+                        onClick={() =>
+                          handleCancel(reservationId)
+                        }
+                        disabled={cancelling}
+                      >
+                        {cancelling
+                          ? "취소 중..."
+                          : "상담 취소"}
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="adm-btn danger"
+                        onClick={() =>
+                          handleDeleteReservation(
+                            reservationId
+                          )
+                        }
+                      >
+                        삭제
+                      </button>
+                    )}
+                  </article>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
+        <section className="adm-card reserve-brand-card">
+          <div className="reserve-brand-empty">
+            <span className="adm-brand-mark">W</span>
+
+            <h2>WVA</h2>
+
+            <p>
+              예약 상태와 상담 일정을 이곳에서 확인할 수
+              있습니다.
+            </p>
+          </div>
+        </section>
+      </main>
+    </>
   );
 }

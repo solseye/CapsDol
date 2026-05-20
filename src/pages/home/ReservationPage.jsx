@@ -74,7 +74,10 @@ function buildCalendarDays(viewDate) {
 function getDateKey(dateValue) {
   const date = new Date(dateValue);
   if (Number.isNaN(date.getTime())) return "";
-  return date.toISOString().slice(0, 10);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
 function getTimeKey(timeValue) {
@@ -82,7 +85,9 @@ function getTimeKey(timeValue) {
 }
 
 function getMonthStartIso(date) {
-  return new Date(date.getFullYear(), date.getMonth(), 1).toISOString();
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  return `${year}-${month}-01T00:00:00.000Z`;
 }
 
 function addTwoHourBlock(blockedSet, time) {
@@ -94,6 +99,14 @@ function addTwoHourBlock(blockedSet, time) {
   if (TIME_OPTIONS[index + 1]) {
     blockedSet.add(TIME_OPTIONS[index + 1]);
   }
+}
+
+function getLocalDateIso(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}T00:00:00.000Z`;
 }
 
 export default function ReservationPage() {
@@ -112,7 +125,7 @@ export default function ReservationPage() {
     today.getMonth() + 1
   );
 
-  const [selectedField, setSelectedField] = useState("");
+  const [selectedField, setSelectedField] = useState("hr");
   const [selectedTime, setSelectedTime] = useState("");
   const [selectedDate, setSelectedDate] = useState(
     new Date(today.getFullYear(), today.getMonth(), today.getDate())
@@ -206,7 +219,9 @@ export default function ReservationPage() {
       const itemDateKey = getDateKey(item.blocked_date);
       const itemTime = getTimeKey(item.blocked_time);
 
-      if (itemDateKey === selectedDateKey && item.field === selectedField) {
+      const isSameField = item.field === null || item.field === selectedField;
+
+      if (itemDateKey === selectedDateKey && isSameField) {
         addTwoHourBlock(blocked, itemTime);
       }
     });
@@ -287,13 +302,8 @@ export default function ReservationPage() {
   if (!selectedDate || !selectedField) return false;
 
     return blocks.some((block) => {
-      const blockDate = new Date(block.blocked_date)
-        .toISOString()
-        .slice(0, 10);
-
-      const selectedDateKey = new Date(selectedDate)
-        .toISOString()
-        .slice(0, 10);
+      const blockDate = getDateKey(block.blocked_date);
+      const selectedDateKey = getDateKey(selectedDate);
 
       const blockTime = String(block.blocked_time).slice(0, 5);
 
@@ -350,7 +360,7 @@ export default function ReservationPage() {
         CName: form.CName.trim(),
         kind: form.kind.trim(),
         field: selectedField,
-        selectedDate: selectedDate.toISOString(),
+        selectedDate: getLocalDateIso(selectedDate),
         selectedTime,
       });
 

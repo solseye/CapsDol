@@ -264,6 +264,29 @@
   gap: 12px;
 }
 
+.reservation-status {
+  display: block;
+  margin-top: 6px;
+  font-weight: 900;
+  line-height: 1.5;
+}
+
+.reservation-status.approved {
+  color: #16a34a;
+}
+
+.reservation-status.pending {
+  color: #2563eb;
+}
+
+.reservation-status.rejected {
+  color: #dc2626;
+}
+
+.reservation-status.cancelled {
+  color: #dc2626;
+}
+
 footer {
   padding: 30px 0 48px;
 }
@@ -707,4 +730,17 @@ footer {
 .time-button.blocked:hover {
   transform: none;
   box-shadow: none;
+}
+
+.time-button.selected {
+  background: #23834f;
+  color: #ffffff;
+  border-color: #23834f;
+  box-shadow: 0 10px 24px rgba(35, 131, 79, 0.22);
+}
+
+.time-button.selected:hover {
+  background: #23834f;
+  color: #ffffff;
+  border-color: #23834f;
 }

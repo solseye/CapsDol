@@ -41,7 +41,7 @@ export async function createReservation({
   return data;
 }
 
-export async function cancelReservation(reservationId, cancelReason = "") {
+export async function cancelReservation(reservationId, cancelReason) {
   const token = localStorage.getItem("accessToken");
 
   const res = await fetch(`${BASE_URL}/reserv/cancel`, {
@@ -61,6 +61,30 @@ export async function cancelReservation(reservationId, cancelReason = "") {
 
   if (!res.ok) {
     throw new Error(data.error || "상담 취소에 실패했습니다.");
+  }
+
+  return data;
+}
+
+export async function deleteReservation(reservationId) {
+  const token = localStorage.getItem("accessToken");
+
+  const res = await fetch(`${BASE_URL}/reserv/delete`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    credentials: "include",
+    body: JSON.stringify({
+      reservationId,
+    }),
+  });
+
+  const data = await parseJsonResponse(res);
+
+  if (!res.ok) {
+    throw new Error(data.error || "상담 내역 삭제에 실패했습니다.");
   }
 
   return data;

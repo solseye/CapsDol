@@ -20,7 +20,7 @@ export default function Login() {
     const token = localStorage.getItem("accessToken");
     if (token) {
       const role = localStorage.getItem("role");
-      navigate(role === "admin" ? "/admin" : "/");
+      navigate(role === "admin" ? "/admin/calendar" : "/");
     }
   }, [navigate]);
 
@@ -41,7 +41,7 @@ export default function Login() {
         localStorage.setItem("accessToken", data.accessToken);
         localStorage.setItem("role", data.role);
 
-        navigate(data.role === "admin" ? "/admin" : "/");
+        navigate(data.role === "admin" ? "/admin/calendar" : "/");
       } catch (err) {
         console.error("구글 로그인 에러:", err);
         setError("구글 로그인에 실패했습니다.");

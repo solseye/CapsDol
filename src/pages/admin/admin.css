@@ -357,18 +357,13 @@
 /* 관리자 달력 내 과거일 및 차단(블락) 날짜 차단막 효과 */
 .adm-day.past,
 .adm-day.blocked {
-  opacity: 0.35;
-  filter: blur(1px);
-  background: #e5e7eb;
+  background: #fff;
+  color: #172033;
 }
 
 .adm-day.blocked em {
-  display: block;
-  margin-top: 4px;
-  color: #dc2626;
-  font-size: 11px;
-  font-style: normal;
-  font-weight: 800;
+  color: #ef4444;
+  font-weight: 900;
 }
 
 /* 관리자 달력 우측 상세 정보 사이드 패널 */
@@ -1140,4 +1135,16 @@
   min-height: 32px;
   padding: 0 14px;
   font-size: 12px;
+}
+
+.adm-header-actions {
+  margin-left: auto;
+  margin-right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.adm-link-btn {
+  text-decoration: none;
 }

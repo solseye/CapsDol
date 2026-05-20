@@ -34,8 +34,14 @@ const FIELD_OPTIONS = [
 
 function getDateKey(dateValue) {
   const date = new Date(dateValue);
+
   if (Number.isNaN(date.getTime())) return "";
-  return date.toISOString().slice(0, 10);
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
 }
 
 function getMonthStartIso(date) {
@@ -509,9 +515,10 @@ export default function AdminCalendarPage() {
                   return <div key={`empty-${index}`} className="adm-day empty" />;
                 }
 
-                const reservationCount = (reservationsByDate[date] || []).length;
+                const reservationCount = (reservationsByDate[date] || []).filter(
+                  (reservation) => reservation.status === "approved"
+                ).length;
                 const blockCount = (blocksByDate[date] || []).length;
-                const isPast = date < todayKey;
 
                 return (
                   <button
@@ -520,7 +527,6 @@ export default function AdminCalendarPage() {
                     className={[
                       "adm-day",
                       selectedDate === date ? "selected" : "",
-                      isPast ? "past" : "",
                       blockCount > 0 ? "blocked" : "",
                     ].join(" ")}
                     onClick={() => {
@@ -626,7 +632,7 @@ export default function AdminCalendarPage() {
                         [{getFieldLabel(block.field)}] {formatTime(block.blocked_time)}
                       </strong>
 
-                      <small>사유: {block.reason || "-"}</small>
+                      <strong> 사유: {block.reason || "-"}</strong>
                     </div>
 
                     <button
