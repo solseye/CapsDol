@@ -621,3 +621,90 @@ footer {
     grid-template-columns: 1fr;
   }
 }
+
+.ym-picker {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.ym-select-wrap {
+  position: relative;
+}
+
+.ym-select-button {
+  min-width: 120px;
+  height: 48px;
+  border: 1px solid rgba(17, 59, 38, 0.12);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--text);
+  border-radius: 16px;
+  padding: 0 14px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 0 12px 30px rgba(22, 78, 50, 0.08);
+}
+
+.ym-select-button.active {
+  border-color: rgba(47, 158, 95, 0.42);
+  box-shadow: 0 0 0 4px rgba(47, 158, 95, 0.12);
+}
+
+.ym-select-button span {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+.ym-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 50;
+  width: 140px;
+  padding: 8px;
+  border: 1px solid rgba(17, 59, 38, 0.12);
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 18px;
+  box-shadow: 0 18px 40px rgba(16, 50, 34, 0.16);
+}
+
+.ym-dropdown.month {
+  width: 120px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.ym-dropdown button {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-weight: 800;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ym-dropdown button:hover,
+.ym-dropdown button.selected {
+  background: rgba(47, 158, 95, 0.12);
+  color: #1f7a46;
+}
+
+.time-button.blocked {
+  background: #f3f4f6;
+  color: #9ca3af;
+  border: 1px solid #e5e7eb;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.time-button.blocked:hover {
+  transform: none;
+  box-shadow: none;
+}

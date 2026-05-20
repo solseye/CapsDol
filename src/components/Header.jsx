@@ -95,7 +95,9 @@ export default function Header({ isLoggedIn }) {
 
               {isLoggedIn && role !== "admin" && (
                 <li>
-                  <Link to="/reservation">상담 내역</Link>
+                  <Link to="/myreservations" className="btn primary nav-cta">
+                    상담 내역
+                  </Link>
                 </li>
               )}
 

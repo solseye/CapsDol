@@ -186,6 +186,10 @@
 .adm-btn.ghost {
   background: #f2f5f9;
   color: #344054;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
 .adm-btn.danger {
@@ -955,4 +959,185 @@
     grid-template-columns: 1fr;
     gap: 4px;
   }
+}
+
+.admin-calendar-tools {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 14px;
+}
+
+.admin-calendar-picker-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.admin-alert {
+  margin-bottom: 20px;
+}
+
+.admin-alert.error {
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.admin-alert.success {
+  border: 1px solid #bbf7d0;
+  background: #f0fdf4;
+  color: #166534;
+}
+
+.admin-block-panel {
+  padding: 14px;
+  border: 1px solid #e6eaf0;
+  border-radius: 14px;
+  background: #fff;
+  margin-bottom: 16px;
+}
+
+.admin-block-panel h4 {
+  margin: 0 0 12px;
+  font-size: 15px;
+  color: #172033;
+}
+
+.admin-block-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-block-label {
+  display: block;
+  margin-bottom: 6px;
+  color: #657185;
+  font-weight: 800;
+}
+
+.admin-block-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.admin-block-grid.time-grid {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.admin-block-grid.field-grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.admin-block-grid .adm-btn {
+  min-height: 34px;
+  padding: 0 8px;
+  font-size: 12px;
+}
+
+.admin-block-reason {
+  min-height: 40px;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  padding: 0 12px;
+  font-weight: 700;
+  color: #991b1b;
+  background: #fff7f7;
+}
+
+.admin-block-reason:focus {
+  outline: none;
+  border-color: #dc2626;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.12);
+}
+
+.admin-block-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-block-item .adm-btn {
+  min-height: 32px;
+  padding: 0 12px;
+  font-size: 12px;
+  background: #fff;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
+.admin-decision-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.admin-decision-actions .adm-btn {
+  min-height: 32px;
+  padding: 0 14px;
+  font-size: 12px;
+}
+
+.admin-reservation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-reservation-card {
+  padding: 16px;
+  border: 1px solid #e6eaf0;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+}
+
+.admin-reservation-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.admin-reservation-name {
+  display: block;
+  font-size: 15px;
+  color: #172033;
+  margin-bottom: 4px;
+}
+
+.admin-reservation-field {
+  display: block;
+  font-size: 13px;
+  color: #1f7a46;
+  font-weight: 800;
+}
+
+.admin-reservation-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 10px;
+  font-size: 13px;
+  color: #657185;
+}
+
+.admin-decision-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #eef2f7;
+}
+
+.admin-decision-actions .adm-btn {
+  min-height: 32px;
+  padding: 0 14px;
+  font-size: 12px;
 }

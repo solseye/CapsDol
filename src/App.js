@@ -18,6 +18,7 @@ import LostPw from "./pages/lostpw";
 import ResetPassword from "./pages/ResetPassword";
 import ArticlesPreview from "./pages/ArticlesPreview";
 
+import Reservations from "./pages/home/ReservationPage";
 import MyReservations from "./pages/home/MyReservationPage";
 
 function App() {
@@ -29,11 +30,11 @@ function App() {
 
   return (
     <Routes>
-      {/* 일반 사용자 페이지 라우트 */}
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/hearing-sheet" element={<HearingSheet />} />
-      <Route path="/reservation" element={<MyReservations />} />
+      <Route path="/reservation" element={<Reservations />} />
+      <Route path="/myreservations" element={<MyReservations />} />
       <Route path="/chat" element={<Chat />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/lostid" element={<LostId />} />
@@ -41,8 +42,6 @@ function App() {
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/articles-result" element={<ArticlesPreview />} />
 
-      {/* 💡 관리자 페이지 라우트 구조 정상화 
-          자식 컴포넌트들을 AdminLayout의 children으로 깔끔하게 전달합니다. */}
       <Route
         path="/admin/calendar"
         element={
