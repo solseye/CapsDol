@@ -194,22 +194,16 @@ export default function ReservationPage() {
       const itemDateKey = getDateKey(item.selected_date);
       const itemTime = getTimeKey(item.selected_time);
 
-      const isActiveReservation =
-        item.myReservationStatus !== "cancelled" &&
-        item.myReservationStatus !== "rejected";
+      const isSameField = item.field === selectedField;
+
+      const isTakenReservation = item.approved;
+
+      const isBlockedSchedule = item.block;
 
       if (
         itemDateKey === selectedDateKey &&
-        item.field === selectedField &&
-        isActiveReservation
-      ) {
-        addTwoHourBlock(blocked, itemTime);
-      }
-
-      if (
-        itemDateKey === selectedDateKey &&
-        item.field === selectedField &&
-        item.block
+        isSameField &&
+        (isTakenReservation || isBlockedSchedule)
       ) {
         addTwoHourBlock(blocked, itemTime);
       }
@@ -219,7 +213,8 @@ export default function ReservationPage() {
       const itemDateKey = getDateKey(item.blocked_date);
       const itemTime = getTimeKey(item.blocked_time);
 
-      const isSameField = item.field === null || item.field === selectedField;
+      const isSameField =
+        item.field === null || item.field === selectedField;
 
       if (itemDateKey === selectedDateKey && isSameField) {
         addTwoHourBlock(blocked, itemTime);
@@ -296,26 +291,6 @@ export default function ReservationPage() {
     setSelectedTime("");
     setSubmitError("");
     setSubmitSuccess("");
-  };
-
-  const isBlockedTime = (time) => {
-  if (!selectedDate || !selectedField) return false;
-
-    return blocks.some((block) => {
-      const blockDate = getDateKey(block.blocked_date);
-      const selectedDateKey = getDateKey(selectedDate);
-
-      const blockTime = String(block.blocked_time).slice(0, 5);
-
-      const sameDate = blockDate === selectedDateKey;
-      const sameTime = blockTime === time;
-
-      const sameField =
-        block.field === null ||
-        block.field === selectedField;
-
-      return sameDate && sameTime && sameField;
-    });
   };
 
   const handleSubmit = async () => {
@@ -517,21 +492,21 @@ export default function ReservationPage() {
 
                 <div className="reservation-selected-info">
                   <div>
-                    선택한 상담 분야:{" "}
+                    분야:{" "}
                     <strong>
                       {FIELD_OPTIONS.find((item) => item.value === selectedField)
                         ?.label || "선택 안 됨"}
                     </strong>
                   </div>
                   <div>
-                    선택한 날짜:{" "}
+                    날짜:{" "}
                     <strong>
                       {selectedDate.getFullYear()}년{" "}
                       {selectedDate.getMonth() + 1}월 {selectedDate.getDate()}일
                     </strong>
                   </div>
                   <div>
-                    선택한 시간: <strong>{selectedTime || "선택 안 됨"}</strong>
+                    시간: <strong>{selectedTime || "선택 안 됨"}</strong>
                   </div>
                 </div>
               </div>
@@ -653,7 +628,7 @@ export default function ReservationPage() {
 
                 <div className="reservation-time-grid">
                   {TIME_OPTIONS.map((time) => {
-                  const blocked = isBlockedTime(time);
+                  const blocked = blockedTimes.has(time);
 
                   return (
                     <button

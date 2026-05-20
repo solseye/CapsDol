@@ -516,7 +516,9 @@ export default function AdminCalendarPage() {
                 }
 
                 const reservationCount = (reservationsByDate[date] || []).filter(
-                  (reservation) => reservation.status === "approved"
+                  (reservation) =>
+                    reservation.status === "approved" ||
+                    reservation.status === "pending"
                 ).length;
                 const blockCount = (blocksByDate[date] || []).length;
 
