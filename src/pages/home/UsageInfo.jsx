@@ -24,25 +24,6 @@ export default function UsageInfo() {
 
             <div className="card flow-card">
               <div className="flow-num">2</div>
-              <h3>부동산 검토 및 소개</h3>
-              <ul className="list">
-                <li>부동산 상담, 검토 및 소개</li>
-                <li>부동산 중개</li>
-              </ul>
-            </div>
-
-            <div className="card flow-card">
-              <div className="flow-num">3</div>
-              <h3>법인 계좌 개설 지원 (약 1개월)</h3>
-              <ul className="list">
-                <li>서류 안내</li>
-                <li>서류 준비 및 제출 지원</li>
-                <li>은행 심사 대응 지원</li>
-              </ul>
-            </div>
-
-            <div className="card flow-card">
-              <div className="flow-num">4</div>
               <h3>세무 · 회계 고문 계약</h3>
               <ul className="list">
                 <li>사회보험 가입</li>
@@ -113,52 +94,6 @@ export default function UsageInfo() {
           <div className="kicker">
             은행 심사 기준에 따라 계좌 개설이 불가할 수 있습니다. 정확한 견적은
             상담 후 제시드립니다.
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <section id="faq">
-        <div className="container">
-          <div className="kicker">FAQ</div>
-          <h2 className="faq-title">자주 묻는 질문</h2>
-          <br></br>
-          <div className="grid">
-            {[
-              {
-                q: "일본 법인에 소비세 납부 의무에 대하여.납부 의무 요건",
-                a: "1. 전전 사업연도(기준 기간).의 과세 매출액이 1,000만 엔 이상인 경우 \n 2. 과세 사업자를 스스로 선택한 경우 \n 3. 인보이스 등록(적격 청구 사업자)을 한 경우",
-              },
-              {
-                q: "2.일본 법인에서 한국 본사로 이자를 송금할 때 원천징수 세율은 몇 퍼센트인가?",
-                a: "1. 원칙적으로 20.42% \n 2. 조세조약 특례(조세조약 특례 적용 신고가 필요) 10%",
-              },
-              {
-                q: "3.국경을 넘는 EC(아마존·Qoo10)를 활용한 일본 진출 시, 납세 관리인과 인보이스 등록 여부",
-                a: "1. 일본 국내에서 과세 매출액이 1,000만 엔을 초과한 경우(기준 기간의 원칙). \n 2. 인보이스 등록을 하는 경우(면세 사업자라도 등록하면 납세 의무가 발생하기 때문에).",
-              },
-            ].map((item, idx) => (
-              <div className="faq-item faq-card" key={idx}>
-                <div className="faq-badge">Q</div>
-
-                <button
-                  className="faq-q"
-                  type="button"
-                  onClick={() =>
-                    setFaqOpen((prev) => {
-                      const next = [...prev];
-                      next[idx] = !next[idx];
-                      return next;
-                    })
-                  }
-                >
-                  {item.q}
-                  <span className="chev">{faqOpen[idx] ? "–" : "+"}</span>
-                </button>
-
-                {faqOpen[idx] && <div className="faq-a">{item.a}</div>}
-              </div>
-            ))}
           </div>
         </div>
       </section>

@@ -45,18 +45,6 @@ export default function ServiceInfo() {
             <div className="card">
               <div className="service-head">
                 <div className="avatar" aria-hidden="true">
-                  G
-                </div>
-                <h3>계좌 개설</h3>
-              </div>
-              <ul className="list">
-                <li>한국계 은행과의 중개</li>
-              </ul>
-            </div>
-
-            <div className="card">
-              <div className="service-head">
-                <div className="avatar" aria-hidden="true">
                   S
                 </div>
                 <h3>세무 · 회계</h3>
@@ -87,18 +75,6 @@ export default function ServiceInfo() {
             <div className="card">
               <div className="service-head">
                 <div className="avatar" aria-hidden="true">
-                  B
-                </div>
-                <h3>부동산 중개</h3>
-              </div>
-              <ul className="list">
-                <li>부동산 관련 업체 중개</li>
-              </ul>
-            </div>
-
-            <div className="card">
-              <div className="service-head">
-                <div className="avatar" aria-hidden="true">
                   H
                 </div>
                 <h3>회계 · 감사</h3>
@@ -107,6 +83,46 @@ export default function ServiceInfo() {
                 <li>임의 감사</li>
                 <li>회사법 감사</li>
                 <li>일본 자회사의 PKG 감사</li>
+              </ul>
+            </div>
+
+            <div className="card">
+              <div className="service-head">
+                <div className="avatar" aria-hidden="true">
+                  ?
+                </div>
+                <h3>듀 달리전스 지원</h3>
+              </div>
+              <ul className="list">
+                <li>재무/회계 실사</li>
+                <li>법무/계약 리스크 조사</li>
+                <li>세무 컨플라이언스 확인</li>
+                <li>사업/시장 리스크 분석</li>
+                <li>M&A/투자 판단 지원</li>
+              </ul>
+            </div>
+
+            <div className="card">
+              <div className="service-head">
+                <div className="avatar" aria-hidden="true">
+                  G
+                </div>
+                <h3>계좌 개설</h3>
+              </div>
+              <ul className="list">
+                <li>한국계 은행과의 중개</li>
+              </ul>
+            </div>
+
+            <div className="card">
+              <div className="service-head">
+                <div className="avatar" aria-hidden="true">
+                  B
+                </div>
+                <h3>부동산 중개</h3>
+              </div>
+              <ul className="list">
+                <li>부동산 관련 업체 중개</li>
               </ul>
             </div>
           </div>
