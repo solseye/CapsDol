@@ -10,7 +10,7 @@ export default function MainIntro() {
   //검색어 변수
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
-  //
+
   useEffect(() => {
     const handleScroll = () => {
       const currentScroll = window.scrollY;
@@ -22,21 +22,18 @@ export default function MainIntro() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // 검색 제출 시 실행
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    if (searchQuery.trim() === "") return; // 아무것도 안 쳤으면 무시
+    if (searchQuery.trim() === "") return;
 
-    // 로그인 여부 확인 (보통 localStorage의 accessToken이나 user 정보로 확인합니다)
     const isLoggedIn = !!localStorage.getItem("accessToken");
 
     if (!isLoggedIn) {
-      // 경우 1: 로그인이 안 되어 있을 때
+      // 로그인이 안되어있을 때
       alert("로그인이 필요한 서비스입니다.");
       navigate("/login");
     } else {
-      // 경우 2: 로그인이 되어 있을 때 -> 챗봇 페이지(/chat)로 검색어를 싸들고 이동!
-      // ⚠️ 만약 챗봇 페이지 주소가 /chat 이 아니라면 상황에 맞게 변경해주세요.
+      // 로그인이 되어있는 상황
       navigate("/chat", { state: { initialQuery: searchQuery } });
     }
   };
@@ -68,16 +65,15 @@ export default function MainIntro() {
             </div>
             <h1 className="title">WVA</h1>
 
-            {/* 💡 4. 검색 폼 부분 업데이트 */}
             <form
               className="hero-search"
-              onSubmit={handleSearchSubmit} // 👈 폼 제출 함수 연결
+              onSubmit={handleSearchSubmit} //폼 제출 함수 연결
             >
               <input
                 type="text"
                 placeholder="일본 진출 서비스 챗봇 (예: 법인 설립, 비자 관련 내용)"
-                value={searchQuery} // 👈 입력창 값 연결
-                onChange={(e) => setSearchQuery(e.target.value)} // 👈 글자 칠 때마다 상태 업데이트
+                value={searchQuery} // 입력창 값 연결
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
               <button type="submit" aria-label="검색">
                 <svg
