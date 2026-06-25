@@ -334,23 +334,6 @@ html[data-lang="ja"] .lang-option:last-child {
   padding: 28px;
 }
 
-.pill-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 18px;
-}
-
-.pill {
-  padding: 10px 14px;
-  border-radius: 999px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  background: rgba(255, 255, 255, 0.84);
-  color: var(--muted);
-  font-weight: 700;
-  font-size: 13px;
-}
-
 .hero {
   position: relative;
   overflow: hidden;
@@ -424,11 +407,99 @@ html[data-lang="ja"] .lang-option:last-child {
   z-index: 2;
 }
 
-.hero-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 0.78fr) minmax(0, 0.22fr);
-  gap: 18px;
+/* --- 새로 추가된 검색창 디자인 --- */
+.hero-search {
+  display: flex;
   align-items: center;
+  width: 90%;
+  max-width: 500px;
+  margin: 15px auto 25px;
+  padding: 12px 24px;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 50px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.hero-search input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  background-color: transparent;
+  color: #333;
+  text-align: center;
+}
+
+.hero-search button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 0 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-grid {
+  /* 2단 그리드를 없애고 중앙 정렬을 위한 Flexbox로 변경 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+/* 추가: 내부 콘텐츠를 완벽히 가운데 정렬하는 속성 */
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+}
+
+/* --- 하단 Scroll Down 애니메이션 버튼 --- */
+.scroll-down-btn {
+  position: absolute;
+  bottom: 35px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #00810b;
+  cursor: pointer;
+  user-select: none;
+  z-index: 100;
+}
+
+.scroll-down-btn span {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  letter-spacing: 1.5px;
+  text-shadow: 0px 2px 4px rgba(0, 105, 47, 0.8);
+}
+
+.scroll-down-btn svg {
+  filter: drop-shadow(0px 2px 3px rgba(0, 0, 0, 0.8));
+}
+
+.pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* 👈 키워드들도 가운데로 모이도록 추가 */
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.pill {
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.84);
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 13px;
 }
 
 @keyframes heroFade {

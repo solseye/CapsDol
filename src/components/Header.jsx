@@ -64,9 +64,6 @@ export default function Header({ isLoggedIn }) {
               <li>
                 <a href="#flow">업무 흐름</a>
               </li>
-              <li>
-                <a href="#faq">FAQ</a>
-              </li>
 
               {!isLoggedIn && (
                 <li>
