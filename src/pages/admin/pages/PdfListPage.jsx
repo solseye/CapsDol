@@ -137,13 +137,19 @@ export default function PdfListPage() {
         expiresIn: 600,
       });
 
-      // 새 탭에서 PDF 열기
-      window.open(data.signedUrl, "_blank");
+      const link = document.createElement("a");
+      link.href = data.signedUrl;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     } catch (err) {
       setError(err.message || "파일 미리보기에 실패했습니다.");
     }
   };
-  
+
   const handleDownload = async (file) => {
     try {
       setError("");
