@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   getRagFiles,
   getRagFileSignedUrl,
+  deleteRagFile,
 } from "../../../api/adminApi";
 
 const FOLDER_OPTIONS = [
@@ -181,12 +182,23 @@ export default function PdfListPage() {
     }
   };
 
-  const handleDelete = (file) => {
+  const handleDelete = async (file) => {
     const ok = window.confirm(`${file.name} 파일을 삭제하시겠습니까?`);
 
     if (!ok) return;
 
-    alert("파일 삭제 API 연결 예정입니다.");
+    try {
+      setError("");
+      setSuccess("");
+
+      await deleteRagFile(getFilePath(selectedFolder, file.name));
+
+      setSuccess("파일이 삭제되었습니다.");
+
+      await fetchSelectedFolderFiles();
+    } catch (err) {
+      setError(err.message || "파일 삭제에 실패했습니다.");
+    }
   };
 
   return (

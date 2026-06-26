@@ -84,3 +84,27 @@ export async function getRagFileSignedUrl({ path, expiresIn = 600 }) {
 
   return data;
 }
+
+export async function deleteRagFile(path) {
+  const token = localStorage.getItem("accessToken");
+
+  const res = await fetch(`${BASE_URL}/chat/rag/files`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    credentials: "include",
+    body: JSON.stringify({
+      path,
+    }),
+  });
+
+  const data = await parseJsonResponse(res);
+
+  if (!res.ok) {
+    throw new Error(data.error || "파일 삭제에 실패했습니다.");
+  }
+
+  return data;
+}
