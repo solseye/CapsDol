@@ -137,12 +137,13 @@ export default function PdfListPage() {
         expiresIn: 600,
       });
 
+      // 새 탭에서 PDF 열기
       window.open(data.signedUrl, "_blank");
     } catch (err) {
       setError(err.message || "파일 미리보기에 실패했습니다.");
     }
   };
-
+  
   const handleDownload = async (file) => {
     try {
       setError("");
