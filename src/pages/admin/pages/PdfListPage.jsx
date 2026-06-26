@@ -56,6 +56,10 @@ function getFolderGroup(folder) {
   return FOLDER_OPTIONS.find((item) => item.value === folder)?.group || "-";
 }
 
+function getDisplayFileName(fileName) {
+  return String(fileName || "").replace(/^\d+-/, "");
+}
+
 export default function PdfListPage() {
   const [selectedFolder, setSelectedFolder] = useState("normal");
   const [filesByFolder, setFilesByFolder] = useState({});
@@ -298,7 +302,7 @@ export default function PdfListPage() {
                     </td>
 
                     <td>{getFolderLabel(selectedFolder)}</td>
-                    <td>{file.name}</td>
+                    <td>{getDisplayFileName(file.name)}</td>
                     <td>{formatDate(file.created_at || file.updated_at)}</td>
                     <td>{formatFileSize(file.metadata?.size)}</td>
                     <td>{file.metadata?.mimetype || "-"}</td>
