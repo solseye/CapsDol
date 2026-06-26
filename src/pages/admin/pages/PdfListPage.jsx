@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { getRagFiles } from "../../../api/adminApi";
+import {
+  getRagFiles,
+  getRagFileSignedUrl,
+} from "../../../api/adminApi";
 
 const FOLDER_OPTIONS = [
   { label: "통합 챗봇", value: "normal", group: "통합" },
@@ -38,6 +41,10 @@ function formatFileSize(size) {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
 
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+}
+
+function getFilePath(folder, fileName) {
+  return `${folder}/${fileName}`;
 }
 
 function getFolderLabel(folder) {
@@ -117,14 +124,46 @@ export default function PdfListPage() {
 
   useEffect(() => {
     fetchAllFolders();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handlePreview = (file) => {
-    alert("파일 미리보기 API 연결 예정입니다.");
+  const handlePreview = async (file) => {
+    try {
+      setError("");
+      setSuccess("");
+
+      const data = await getRagFileSignedUrl({
+        path: getFilePath(selectedFolder, file.name),
+        expiresIn: 600,
+      });
+
+      window.open(data.signedUrl, "_blank", "noopener,noreferrer");
+    } catch (err) {
+      setError(err.message || "파일 미리보기에 실패했습니다.");
+    }
   };
 
-  const handleDownload = (file) => {
-    alert("파일 다운로드 API 연결 예정입니다.");
+  const handleDownload = async (file) => {
+    try {
+      setError("");
+      setSuccess("");
+
+      const data = await getRagFileSignedUrl({
+        path: getFilePath(selectedFolder, file.name),
+        expiresIn: 600,
+      });
+
+      const link = document.createElement("a");
+      link.href = data.signedUrl;
+      link.download = file.name;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      setError(err.message || "파일 다운로드에 실패했습니다.");
+    }
   };
 
   const handleDelete = (file) => {

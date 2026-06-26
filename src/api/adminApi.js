@@ -59,3 +59,28 @@ export async function getRagFiles({ folder = "normal", limit = 100, offset = 0 }
 
   return data;
 }
+
+export async function getRagFileSignedUrl({ path, expiresIn = 600 }) {
+  const token = localStorage.getItem("accessToken");
+
+  const res = await fetch(`${BASE_URL}/chat/rag/files/signed-url`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    credentials: "include",
+    body: JSON.stringify({
+      path,
+      expires_in: expiresIn,
+    }),
+  });
+
+  const data = await parseJsonResponse(res);
+
+  if (!res.ok) {
+    throw new Error(data.error || "파일 URL 발급에 실패했습니다.");
+  }
+
+  return data;
+}
