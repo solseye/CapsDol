@@ -12,6 +12,9 @@ export default function UsageInfo() {
           <h2 className="flow-title">한국 기업의 일본 진출 흐름과 절차</h2>
           <br></br>
           <div className="grid4">
+            {/* 기존 2단계 흐름은 삭제하지 않고 보존합니다.
+                요청 이미지처럼 상담 준비부터 노무까지 전체 흐름을 한눈에 보여주기 위해
+                아래에 4단계 버전으로 확장했습니다.
             <div className="card flow-card">
               <div className="flow-num">1</div>
               <h3>상담부터 법인 설립까지 (약 2개월)</h3>
@@ -30,6 +33,50 @@ export default function UsageInfo() {
                 <li>급여 계산</li>
                 <li>취업규칙 작성</li>
                 <li>세무 회계 자문</li>
+              </ul>
+            </div>
+            */}
+
+            <div className="card flow-card">
+              <div className="flow-num">1</div>
+              <h3>상담 및 사전 준비</h3>
+              <ul className="list">
+                <li>초기 상담 및 진출 전략 협의</li>
+                <li>체크리스트 작성 및 서류 안내</li>
+                <li>법인 형태 결정 (KK / GK)</li>
+                <li>자본금 · 사업 목적 설정</li>
+              </ul>
+            </div>
+
+            <div className="card flow-card">
+              <div className="flow-num">2</div>
+              <h3>법인 설립 절차</h3>
+              <ul className="list">
+                <li>정관 작성 및 인증</li>
+                <li>자본금 납입</li>
+                <li>등기 신청</li>
+                <li>법인 인감 등록</li>
+              </ul>
+            </div>
+
+            <div className="card flow-card">
+              <div className="flow-num">3</div>
+              <h3>세무 · 회계 고문</h3>
+              <ul className="list">
+                <li>세무 · 회계 자문</li>
+                <li>기장 대행 및 결산</li>
+                <li>세무 신고 (법인세 · 소비세)</li>
+                <li>정기 재무 리포트</li>
+              </ul>
+            </div>
+
+            <div className="card flow-card">
+              <div className="flow-num">4</div>
+              <h3>노무 · 사회보험</h3>
+              <ul className="list">
+                <li>사회보험 가입 절차</li>
+                <li>급여 계산 체계 구축</li>
+                <li>연말정산</li>
               </ul>
             </div>
           </div>
