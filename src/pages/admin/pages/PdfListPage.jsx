@@ -137,7 +137,7 @@ export default function PdfListPage() {
         expiresIn: 600,
       });
 
-      window.open(data.signedUrl, "_blank", "noopener,noreferrer");
+      window.open(data.signedUrl, "_blank");
     } catch (err) {
       setError(err.message || "파일 미리보기에 실패했습니다.");
     }
@@ -153,14 +153,19 @@ export default function PdfListPage() {
         expiresIn: 600,
       });
 
+      const response = await fetch(data.signedUrl);
+      const blob = await response.blob();
+
+      const blobUrl = window.URL.createObjectURL(blob);
+
       const link = document.createElement("a");
-      link.href = data.signedUrl;
+      link.href = blobUrl;
       link.download = file.name;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
       document.body.appendChild(link);
       link.click();
+
       document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
     } catch (err) {
       setError(err.message || "파일 다운로드에 실패했습니다.");
     }
