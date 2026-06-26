@@ -95,9 +95,7 @@ export async function deleteRagFile(path) {
       Authorization: `Bearer ${token}`,
     },
     credentials: "include",
-    body: JSON.stringify({
-      path,
-    }),
+    body: JSON.stringify({ path }),
   });
 
   const data = await parseJsonResponse(res);
