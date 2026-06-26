@@ -1,6 +1,14 @@
 import { useState } from "react";
+import { uploadRagFile } from "../../../api/adminApi";
 
-// 페이지 내부에서 사용할 카드 컴포넌트
+const FOLDER_OPTIONS = [
+  { label: "통합 챗봇", value: "normal" },
+  { label: "인사", value: "human" },
+  { label: "노무", value: "labor" },
+  { label: "회계", value: "accounting" },
+  { label: "법무", value: "law" },
+];
+
 function AdminCard({ title, action, children }) {
   return (
     <section className="adm-card">
@@ -15,27 +23,50 @@ function AdminCard({ title, action, children }) {
 
 export default function PdfUploadPage() {
   const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFolder, setSelectedFolder] = useState("normal");
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState("대기 중");
+  const [isUploading, setIsUploading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [isFolderOpen, setIsFolderOpen] = useState(false);
 
-  const handleMockUpload = () => {
+  const selectedFolderLabel =
+    FOLDER_OPTIONS.find((option) => option.value === selectedFolder)?.label ||
+    "통합 챗봇";
+
+  const handleUpload = async () => {
     if (!selectedFile) {
-      setStatus("PDF 파일을 먼저 선택해 주세요.");
+      setError("PDF 파일을 먼저 선택해 주세요.");
+      setSuccess("");
       return;
     }
 
-    setStatus("업로드 준비 완료");
-    setProgress(35);
+    try {
+      setIsUploading(true);
+      setError("");
+      setSuccess("");
+      setStatus("업로드 중");
+      setProgress(35);
 
-    window.setTimeout(() => {
-      setProgress(72);
-      setStatus("자료 분석 중");
-    }, 400);
+      const data = await uploadRagFile({
+        folder: selectedFolder,
+        file: selectedFile,
+      });
 
-    window.setTimeout(() => {
       setProgress(100);
       setStatus("업로드 완료");
-    }, 900);
+      setSuccess(
+        `${data.file?.originalName || selectedFile.name} 파일이 업로드되었습니다.`
+      );
+      setSelectedFile(null);
+    } catch (err) {
+      setProgress(0);
+      setStatus("업로드 실패");
+      setError(err.message || "파일 업로드에 실패했습니다.");
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return (
@@ -51,19 +82,60 @@ export default function PdfUploadPage() {
       <AdminCard title="PDF 자료 추가">
         <div className="adm-upload-box">
           <div className="adm-upload-icon">PDF</div>
+
           <h3>파일을 선택해 주세요</h3>
-          <p>실제 업로드는 하지 않고 UI 상태만 mock으로 처리합니다.</p>
+          <p>업로드할 챗봇 분야를 선택한 뒤 PDF 파일을 등록합니다.</p>
+
+          <div className="adm-upload-field">
+            <label>자료 분야</label>
+
+            <div className="custom-select">
+              <button
+                type="button"
+                className={`custom-select-trigger ${isFolderOpen ? "open" : ""}`}
+                onClick={() => setIsFolderOpen((prev) => !prev)}
+                disabled={isUploading}
+              >
+                {selectedFolderLabel}
+                <span>▾</span>
+              </button>
+
+              {isFolderOpen && (
+                <div className="custom-select-menu">
+                  {FOLDER_OPTIONS.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      className={`custom-select-option ${
+                        selectedFolder === option.value ? "selected" : ""
+                      }`}
+                      onClick={() => {
+                        setSelectedFolder(option.value);
+                        setIsFolderOpen(false);
+                      }}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
 
           <label className="adm-file-picker">
             파일 선택
             <input
               type="file"
               accept="application/pdf,.pdf"
+              disabled={isUploading}
               onChange={(event) => {
                 const file = event.target.files?.[0] || null;
+
                 setSelectedFile(file);
                 setProgress(0);
                 setStatus(file ? "파일 선택됨" : "대기 중");
+                setError("");
+                setSuccess("");
               }}
             />
           </label>
@@ -75,15 +147,19 @@ export default function PdfUploadPage() {
           <div className="adm-progress">
             <span style={{ width: `${progress}%` }} />
           </div>
+
           <div className="adm-upload-status">{status}</div>
 
-          {/* 💡 변경 포인트: AdminButton 대신 순수 버튼 태그와 admin.css 클래스 결합 */}
+          {error && <p className="adm-upload-status error">{error}</p>}
+          {success && <p className="adm-upload-status success">{success}</p>}
+
           <button
             type="button"
             className="adm-btn primary"
-            onClick={handleMockUpload}
+            onClick={handleUpload}
+            disabled={isUploading}
           >
-            업로드
+            {isUploading ? "업로드 중..." : "업로드"}
           </button>
         </div>
       </AdminCard>
