@@ -128,6 +128,8 @@ export default function PdfListPage() {
   }, []);
 
   const handlePreview = async (file) => {
+    const previewWindow = window.open("", "_blank");
+
     try {
       setError("");
       setSuccess("");
@@ -137,15 +139,16 @@ export default function PdfListPage() {
         expiresIn: 600,
       });
 
-      const link = document.createElement("a");
-      link.href = data.signedUrl;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
-
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      if (previewWindow) {
+        previewWindow.location.href = data.signedUrl;
+      } else {
+        window.location.href = data.signedUrl;
+      }
     } catch (err) {
+      if (previewWindow) {
+        previewWindow.close();
+      }
+
       setError(err.message || "파일 미리보기에 실패했습니다.");
     }
   };
