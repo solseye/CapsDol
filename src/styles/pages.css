@@ -121,7 +121,9 @@ nav a:hover,
   position: relative;
   display: flex;
   align-items: center;
-  width: 108px;
+  /* 기존 KO/JA 2개 버튼 기준 폭: 108px */
+  /* KO/EN/JA 3개 언어를 지원하기 위해 토글 폭을 확장합니다. */
+  width: 158px;
   height: 46px;
   padding: 4px;
   border: 1px solid rgba(15, 23, 42, 0.08);
@@ -149,6 +151,10 @@ nav a:hover,
 }
 
 html[data-lang="ja"] .lang-toggle::before {
+  transform: translateX(100px);
+}
+
+html[data-lang="en"] .lang-toggle::before {
   transform: translateX(50px);
 }
 
@@ -172,6 +178,7 @@ html[data-lang="ja"] .lang-toggle::before {
 }
 
 html[data-lang="ko"] .lang-option:first-child,
+html[data-lang="en"] .lang-option:nth-child(2),
 html[data-lang="ja"] .lang-option:last-child {
   color: #ffffff;
 }

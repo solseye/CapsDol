@@ -2,8 +2,12 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
+import { getCurrentLanguage, translate } from "../i18n/translations";
 
 export default function HearingSheet() {
+  const language = getCurrentLanguage();
+  const t = (key, variables) => translate(language, key, variables);
+
   const [companyName, setCompanyName] = useState("");
   const [companyNameEn, setCompanyNameEn] = useState("");
   const [capital, setCapital] = useState("");
@@ -269,39 +273,39 @@ ${directorText}
           <div className="hs-head">
             <div>
               <div className="kicker">Hearing Sheet</div>
-              <h1 className="section-title hs-title">히어링 시트</h1>
+              <h1 className="section-title hs-title">{t("hearing.title")}</h1>
               <p className="section-desc hs-intro">
-                법인 설립에 필요한 정보를 입력해 주세요.
+                {t("hearing.intro")}
               </p>
             </div>
 
             <Link to="/" className="btn">
-              메인으로 돌아가기
+              {t("common.backHome")}
             </Link>
           </div>
 
           <form className="hs-form" onSubmit={handleSubmit}>
             <section className="hs-block">
-              <h2 className="hs-block-title">1. 상호</h2>
+              <h2 className="hs-block-title">{t("hearing.companySection")}</h2>
 
               <div className="hs-grid2">
                 <div className="hs-field">
-                  <label className="hs-label">상호</label>
+                  <label className="hs-label">{t("hearing.companyName")}</label>
                   <input
                     className="hs-input"
                     value={companyName}
                     onChange={(e) => setCompanyName(e.target.value)}
-                    placeholder="회사명을 입력하세요"
+                    placeholder={t("hearing.companyNamePlaceholder")}
                   />
                 </div>
 
                 <div className="hs-field">
-                  <label className="hs-label">영문 표기 선택</label>
+                  <label className="hs-label">{t("hearing.companyNameEn")}</label>
                   <input
                     className="hs-input"
                     value={companyNameEn}
                     onChange={(e) => setCompanyNameEn(e.target.value)}
-                    placeholder="영문 회사명을 입력하세요"
+                    placeholder={t("hearing.companyNameEnPlaceholder")}
                   />
                 </div>
               </div>
@@ -309,22 +313,26 @@ ${directorText}
 
             <section className="hs-block">
               <div className="hs-section-head">
-                <h2 className="hs-block-title">2. 사업 목적</h2>
+                <h2 className="hs-block-title">{t("hearing.purposeSection")}</h2>
 
                 <button type="button" className="btn" onClick={addPurpose}>
-                  + 사업 목적 추가
+                  {t("hearing.addPurpose")}
                 </button>
               </div>
 
               <div className="hs-grid">
                 {purposes.map((purpose, index) => (
                   <div className="hs-field" key={index}>
-                    <label className="hs-label">사업 목적 {index + 1}</label>
+                    <label className="hs-label">
+                      {t("hearing.purposeLabel", { count: index + 1 })}
+                    </label>
                     <input
                       className="hs-input"
                       value={purpose.content}
                       onChange={(e) => updatePurpose(index, e.target.value)}
-                      placeholder={`${index + 1}. 사업 목적을 입력하세요`}
+                      placeholder={t("hearing.purposePlaceholder", {
+                        count: index + 1,
+                      })}
                     />
                   </div>
                 ))}
@@ -332,40 +340,40 @@ ${directorText}
             </section>
 
             <section className="hs-block">
-              <h2 className="hs-block-title">3. 자본금</h2>
+              <h2 className="hs-block-title">{t("hearing.capitalSection")}</h2>
 
               <div className="hs-field">
-                <label className="hs-label">자본금</label>
+                <label className="hs-label">{t("hearing.capital")}</label>
                 <input
                   className="hs-input"
                   value={capital}
                   onChange={(e) => setCapital(e.target.value)}
-                  placeholder="예: 5,000,000엔"
+                  placeholder={t("hearing.capitalPlaceholder")}
                 />
               </div>
             </section>
 
             <section className="hs-block">
-              <h2 className="hs-block-title">4. 자본금 납입 은행</h2>
+              <h2 className="hs-block-title">{t("hearing.bankSection")}</h2>
 
               <div className="hs-grid2">
                 <div className="hs-field">
-                  <label className="hs-label">은행명</label>
+                  <label className="hs-label">{t("hearing.bankName")}</label>
                   <input
                     className="hs-input"
                     value={bankName}
                     onChange={(e) => setBankName(e.target.value)}
-                    placeholder="은행명을 입력하세요"
+                    placeholder={t("hearing.bankNamePlaceholder")}
                   />
                 </div>
 
                 <div className="hs-field">
-                  <label className="hs-label">지점명</label>
+                  <label className="hs-label">{t("hearing.branchName")}</label>
                   <input
                     className="hs-input"
                     value={branchName}
                     onChange={(e) => setBranchName(e.target.value)}
-                    placeholder="지점명을 입력하세요"
+                    placeholder={t("hearing.branchNamePlaceholder")}
                   />
                 </div>
               </div>
@@ -373,44 +381,48 @@ ${directorText}
 
             <section className="hs-block">
               <div className="hs-section-head">
-                <h2 className="hs-block-title">5. 발기인 / 출자자</h2>
+                <h2 className="hs-block-title">{t("hearing.founderSection")}</h2>
 
                 <button type="button" className="btn" onClick={addFounder}>
-                  + 발기인 추가
+                  {t("hearing.addFounder")}
                 </button>
               </div>
 
               {founders.map((founder, index) => (
                 <div className="hs-subcard" key={index}>
-                  <div className="hs-subtitle">발기인 {index + 1}</div>
+                  <div className="hs-subtitle">
+                    {t("hearing.founderTitle", { count: index + 1 })}
+                  </div>
 
                   <div className="hs-grid2">
                     <div className="hs-field">
-                      <label className="hs-label">주소</label>
+                      <label className="hs-label">{t("hearing.address")}</label>
                       <input
                         className="hs-input"
                         value={founder.address}
                         onChange={(e) =>
                           updateFounder(index, "address", e.target.value)
                         }
-                        placeholder="주소를 입력하세요"
+                        placeholder={t("hearing.addressPlaceholder")}
                       />
                     </div>
 
                     <div className="hs-field">
-                      <label className="hs-label">성명</label>
+                      <label className="hs-label">{t("hearing.name")}</label>
                       <input
                         className="hs-input"
                         value={founder.name}
                         onChange={(e) =>
                           updateFounder(index, "name", e.target.value)
                         }
-                        placeholder="성명을 입력하세요"
+                        placeholder={t("hearing.namePlaceholder")}
                       />
                     </div>
 
                     <div className="hs-field">
-                      <label className="hs-label">출자 금액</label>
+                      <label className="hs-label">
+                        {t("hearing.investmentAmount")}
+                      </label>
                       <input
                         className="hs-input"
                         value={founder.investmentAmount}
@@ -421,7 +433,7 @@ ${directorText}
                             e.target.value,
                           )
                         }
-                        placeholder="예: 2,500,000엔"
+                        placeholder={t("hearing.investmentPlaceholder")}
                       />
                     </div>
                   </div>
@@ -432,55 +444,61 @@ ${directorText}
             <section className="hs-block">
               <div className="hs-section-head">
                 <div>
-                  <h2 className="hs-block-title">6. 이사</h2>
+                  <h2 className="hs-block-title">
+                    {t("hearing.directorSection")}
+                  </h2>
                   <p className="hs-note">
-                    성명은 로마자 병기를 함께 입력해 주세요.
+                    {t("hearing.directorNote")}
                   </p>
                 </div>
 
                 <button type="button" className="btn" onClick={addDirector}>
-                  + 이사 추가
+                  {t("hearing.addDirector")}
                 </button>
               </div>
 
               {directors.map((director, index) => (
                 <div className="hs-subcard" key={index}>
-                  <div className="hs-subtitle">이사 {index + 1}</div>
+                  <div className="hs-subtitle">
+                    {t("hearing.directorTitle", { count: index + 1 })}
+                  </div>
 
                   <div className="hs-grid2">
                     <div className="hs-field">
-                      <label className="hs-label">주소</label>
+                      <label className="hs-label">{t("hearing.address")}</label>
                       <input
                         className="hs-input"
                         value={director.address}
                         onChange={(e) =>
                           updateDirector(index, "address", e.target.value)
                         }
-                        placeholder="주소를 입력하세요"
+                        placeholder={t("hearing.addressPlaceholder")}
                       />
                     </div>
 
                     <div className="hs-field">
-                      <label className="hs-label">성명</label>
+                      <label className="hs-label">{t("hearing.name")}</label>
                       <input
                         className="hs-input"
                         value={director.name}
                         onChange={(e) =>
                           updateDirector(index, "name", e.target.value)
                         }
-                        placeholder="성명을 입력하세요"
+                        placeholder={t("hearing.namePlaceholder")}
                       />
                     </div>
 
                     <div className="hs-field">
-                      <label className="hs-label">로마자 성명</label>
+                      <label className="hs-label">
+                        {t("hearing.romanizedName")}
+                      </label>
                       <input
                         className="hs-input"
                         value={director.romanizedName}
                         onChange={(e) =>
                           updateDirector(index, "romanizedName", e.target.value)
                         }
-                        placeholder="예: HONG GILDONG"
+                        placeholder={t("hearing.romanizedNamePlaceholder")}
                       />
                     </div>
                   </div>
@@ -489,44 +507,50 @@ ${directorText}
             </section>
 
             <section className="hs-block">
-              <h2 className="hs-block-title">7. 대표이사</h2>
+              <h2 className="hs-block-title">
+                {t("hearing.representativeSection")}
+              </h2>
 
               <div className="hs-field">
-                <label className="hs-label">대표이사 성명</label>
+                <label className="hs-label">
+                  {t("hearing.representativeName")}
+                </label>
                 <input
                   className="hs-input"
                   value={representativeDirector}
                   onChange={(e) => setRepresentativeDirector(e.target.value)}
-                  placeholder="대표이사 성명을 입력하세요"
+                  placeholder={t("hearing.representativePlaceholder")}
                 />
               </div>
             </section>
 
             <section className="hs-block">
-              <h2 className="hs-block-title">8. 이사의 임기</h2>
+              <h2 className="hs-block-title">
+                {t("hearing.directorTermSection")}
+              </h2>
 
               <div className="hs-field">
-                <label className="hs-label">이사의 임기</label>
+                <label className="hs-label">{t("hearing.directorTerm")}</label>
                 <input
                   className="hs-input"
                   value={directorTerm}
                   onChange={(e) => setDirectorTerm(e.target.value)}
-                  placeholder="1년 이상 10년 이하에서 입력하세요"
+                  placeholder={t("hearing.directorTermPlaceholder")}
                 />
               </div>
             </section>
 
             <div className="hs-actions">
               <button type="button" className="btn">
-                임시 저장
+                {t("common.temporarySave")}
               </button>
 
               <Link to="/reservation" className="btn primary nav-cta">
-                상담 예약페이지로 이동
+                {t("hearing.moveReservation")}
               </Link>
 
               <button type="submit" className="btn primary">
-                제출하기
+                {t("common.submit")}
               </button>
             </div>
           </form>
