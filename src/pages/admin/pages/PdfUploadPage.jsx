@@ -9,6 +9,10 @@ const FOLDER_OPTIONS = [
   { label: "법무", value: "law" },
 ];
 
+const ACCEPTED_FILE_TYPES = ".pdf,.docx,.xlsx,.csv,.txt,.md";
+
+const ALLOWED_EXTENSIONS = ["pdf", "docx", "xlsx", "csv", "txt", "md"];
+
 function AdminCard({ title, action, children }) {
   return (
     <section className="adm-card">
@@ -19,6 +23,14 @@ function AdminCard({ title, action, children }) {
       {children}
     </section>
   );
+}
+
+function isAllowedFile(file) {
+  if (!file) return false;
+
+  const extension = file.name.split(".").pop()?.toLowerCase();
+
+  return ALLOWED_EXTENSIONS.includes(extension);
 }
 
 export default function PdfUploadPage() {
@@ -37,7 +49,13 @@ export default function PdfUploadPage() {
 
   const handleUpload = async () => {
     if (!selectedFile) {
-      setError("PDF 파일을 먼저 선택해 주세요.");
+      setError("업로드할 파일을 먼저 선택해 주세요.");
+      setSuccess("");
+      return;
+    }
+
+    if (!isAllowedFile(selectedFile)) {
+      setError("업로드 가능한 파일 형식은 PDF, DOCX, XLSX, CSV, TXT, MD입니다.");
       setSuccess("");
       return;
     }
@@ -50,8 +68,10 @@ export default function PdfUploadPage() {
       setProgress(35);
 
       const data = await uploadRagFile({
+        bucket: "chat",
         folder: selectedFolder,
         file: selectedFile,
+        fileStatus: "active",
       });
 
       setProgress(100);
@@ -74,25 +94,25 @@ export default function PdfUploadPage() {
       <div className="adm-page-head">
         <div>
           <p className="adm-eyebrow">Knowledge Base</p>
-          <h2>PDF 업로드</h2>
-          <span>챗봇이 참고할 PDF 자료를 등록합니다.</span>
+          <h2>자료 업로드</h2>
+          <span>챗봇이 참고할 자료 파일을 등록합니다.</span>
         </div>
       </div>
 
-      <AdminCard title="PDF 자료 추가">
+      <AdminCard title="자료 파일 추가">
         <div className="adm-upload-box">
-          <div className="adm-upload-icon">PDF</div>
+          <div className="adm-upload-icon">FILE</div>
 
           <h3>파일을 선택해 주세요</h3>
-          <p>업로드할 챗봇 분야를 선택한 뒤 PDF 파일을 등록합니다.</p>
 
           <div className="adm-upload-field">
-            <label>자료 분야</label>
 
             <div className="custom-select">
               <button
                 type="button"
-                className={`custom-select-trigger ${isFolderOpen ? "open" : ""}`}
+                className={`custom-select-trigger ${
+                  isFolderOpen ? "open" : ""
+                }`}
                 onClick={() => setIsFolderOpen((prev) => !prev)}
                 disabled={isUploading}
               >
@@ -126,10 +146,22 @@ export default function PdfUploadPage() {
             파일 선택
             <input
               type="file"
-              accept="application/pdf,.pdf"
+              accept={ACCEPTED_FILE_TYPES}
               disabled={isUploading}
               onChange={(event) => {
                 const file = event.target.files?.[0] || null;
+
+                if (file && !isAllowedFile(file)) {
+                  setSelectedFile(null);
+                  setProgress(0);
+                  setStatus("대기 중");
+                  setSuccess("");
+                  setError(
+                    "업로드 가능한 파일 형식은 PDF, DOCX, XLSX, CSV, TXT, MD입니다."
+                  );
+                  event.target.value = "";
+                  return;
+                }
 
                 setSelectedFile(file);
                 setProgress(0);

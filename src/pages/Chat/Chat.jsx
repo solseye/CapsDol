@@ -5,20 +5,24 @@ import Footer from "../../components/Footer";
 import { sendQuestion } from "../../api/chatApi";
 import "./chat.css";
 
+const DEFAULT_SYSTEM_PROMPT =
+  "너는 CapsDol의 상담 보조 챗봇이다. 사용자가 다른 언어를 요청하지 않는 한 한국어로 답변한다. 답변은 명확하고 실무적으로 작성하며, 법률·판례·사실관계를 지어내지 않는다.";
+
 export default function Chat() {
   const [isLoggedIn, setIsLoggedIn] = useState(null);
-
   const [messages, setMessages] = useState([
-    { type: "bot", text: "안녕하세요. 무엇을 도와드릴까요?" },
+    {
+      type: "bot",
+      text: "안녕하세요. CapsDol 상담 챗봇입니다. 질문을 입력해 주세요.",
+      sources: [],
+    },
   ]);
 
   const [input, setInput] = useState("");
-  const [active, setActive] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const chatBodyRef = useRef(null);
-
-  // mainintro에서 보낸 문구 받아오는 변수
   const location = useLocation();
   const initialQuery = location.state?.initialQuery;
 
@@ -31,28 +35,50 @@ export default function Chat() {
     if (chatBodyRef.current) {
       chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, loading]);
 
-  const sendMessage = async (textToSent) => {
-    if (!textToSent.trim() || loading) return;
+  const sendMessage = async (textToSend) => {
+    const message = textToSend.trim();
 
-    setMessages((prev) => [...prev, { type: "user", text: textToSent }]);
+    if (!message || loading) return;
+
+    setMessages((prev) => [...prev, { type: "user", text: message }]);
+    setInput("");
     setLoading(true);
+    setError("");
 
     try {
-      const data = await sendQuestion(textToSent);
+      const data = await sendQuestion({
+        message,
+        ragPrefix: "normal",
+        ragMatchCount: 5,
+        system: DEFAULT_SYSTEM_PROMPT,
+      });
+
       setMessages((prev) => [
         ...prev,
-        { type: "bot", text: data.success ? data.answer : "응답 실패" },
+        {
+          type: "bot",
+          text: data.answer || "답변을 생성하지 못했습니다.",
+          sources: data.sources || [],
+        },
       ]);
-    } catch {
-      setMessages((prev) => [...prev, { type: "bot", text: "서버 오류" }]);
-    }
 
-    setLoading(false);
+    } catch (err) {
+      setError(err.message || "챗봇 응답 생성에 실패했습니다.");
+      setMessages((prev) => [
+        ...prev,
+        {
+          type: "bot",
+          text: "죄송합니다. 현재 답변을 생성하지 못했습니다.",
+          sources: [],
+        },
+      ]);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // 메인 인트로에서 가져온 질문 바로 답변하기
   useEffect(() => {
     if (initialQuery && isLoggedIn) {
       sendMessage(initialQuery);
@@ -60,12 +86,22 @@ export default function Chat() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialQuery, isLoggedIn]);
 
-  // 원래 채팅창에서 바로 물어봤을 때
-  function handleSubmit(e) {
-    e.preventDefault();
+  const handleSubmit = (event) => {
+    event.preventDefault();
     sendMessage(input);
+  };
+
+  const handleReset = () => {
+    setMessages([
+      {
+        type: "bot",
+        text: "대화를 초기화했습니다. 새 질문을 입력해 주세요.",
+        sources: [],
+      },
+    ]);
     setInput("");
-  }
+    setError("");
+  };
 
   if (isLoggedIn === null) {
     return <div>로딩 중...</div>;
@@ -81,51 +117,56 @@ export default function Chat() {
 
       <div className="chat-container">
         <div className="chat-inner">
-          {/* 좌측 요약 */}
-          <div className="summary">
-            <h3>주요 채팅 요약</h3>
-            <div className="summary-content">내용내용</div>
-          </div>
 
-          {/* 채팅 */}
-          <div className="chat">
+          <section className="chat card">
+            <div className="chat-top">
+              <div>
+                <p className="kicker">Chatbot</p>
+                <h2>상담</h2>
+              </div>
+
+              <button
+                type="button"
+                className="chat-reset-btn"
+                onClick={handleReset}
+              >
+                대화 초기화
+              </button>
+            </div>
+
             <div className="chat-body" ref={chatBodyRef}>
-              {messages.map((m, i) => (
-                <div key={i} className={`msg-row ${m.type}`}>
-                  <div className="bubble">{m.text}</div>
+              {messages.map((message, index) => (
+                <div key={index} className={`msg-row ${message.type}`}>
+                  <div className="bubble">
+                    <div className="bubble-text">{message.text}</div>
+                  </div>
                 </div>
               ))}
 
               {loading && (
                 <div className="msg-row bot">
-                  <div className="bubble typing">답변 생성중</div>
+                  <div className="bubble typing">답변 생성 중...</div>
                 </div>
               )}
             </div>
 
             <div className="chat-bottom">
-              <div className="chat-action-bar">
-                {["세무", "법무", "비자", "행정"].map((b, i) => (
-                  <button
-                    key={i}
-                    className={active === i ? "active" : ""}
-                    onClick={() => setActive(i)}
-                  >
-                    {b}
-                  </button>
-                ))}
-              </div>
+              {error && <p className="chat-error">{error}</p>}
 
               <form className="chat-input" onSubmit={handleSubmit}>
                 <input
                   value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder="메시지를 입력하세요..."
+                  onChange={(event) => setInput(event.target.value)}
+                  placeholder="상담 관련 질문을 입력하세요..."
+                  disabled={loading}
                 />
-                <button type="submit">전송</button>
+
+                <button type="submit" disabled={loading || !input.trim()}>
+                  {loading ? "생성 중" : "전송"}
+                </button>
               </form>
             </div>
-          </div>
+          </section>
         </div>
       </div>
 

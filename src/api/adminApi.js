@@ -8,12 +8,45 @@ async function parseJsonResponse(res) {
   }
 }
 
-export async function uploadRagFile({ folder = "normal", file }) {
+export async function uploadRagFile({
+  bucket = "chat",
+  folder = "normal",
+  file,
+  fileStatus = "active",
+  sourceName = "",
+  sourceUrl = "",
+  version = "",
+  effectiveFrom = "",
+  effectiveTo = "",
+}) {
   const token = localStorage.getItem("accessToken");
 
   const formData = new FormData();
-  formData.append("folder", folder);
+
   formData.append("file", file);
+  formData.append("bucket", bucket);
+  formData.append("folder", folder);
+  formData.append("file_status", fileStatus);
+
+  if (sourceName.trim()) {
+    formData.append("source_name", sourceName.trim());
+  }
+
+  if (sourceUrl.trim()) {
+    formData.append("source_url", sourceUrl.trim());
+  }
+
+  if (version.trim()) {
+    formData.append("version", version.trim());
+  }
+
+  if (effectiveFrom) {
+    formData.append("effective_from", effectiveFrom);
+  }
+
+  if (effectiveTo) {
+    formData.append("effective_to", effectiveTo);
+  }
 
   const res = await fetch(`${BASE_URL}/chat/rag/files`, {
     method: "POST",
@@ -34,13 +67,12 @@ export async function uploadRagFile({ folder = "normal", file }) {
 }
 
 
-export async function getRagFiles({ folder = "normal", limit = 100, offset = 0 }) {
+export async function getRagFiles({ bucket = "chat", folder = "normal" }) {
   const token = localStorage.getItem("accessToken");
 
   const params = new URLSearchParams({
+    bucket,
     folder,
-    limit: String(limit),
-    offset: String(offset),
   });
 
   const res = await fetch(`${BASE_URL}/chat/rag/files?${params.toString()}`, {
@@ -53,7 +85,7 @@ export async function getRagFiles({ folder = "normal", limit = 100, offset = 0 }
 
   const data = await parseJsonResponse(res);
 
-  if (!res.ok) {
+  if (!res.ok || data.success === false) {
     throw new Error(data.error || "파일 목록 조회에 실패했습니다.");
   }
 
@@ -102,6 +134,71 @@ export async function deleteRagFile(path) {
 
   if (!res.ok) {
     throw new Error(data.error || "파일 삭제에 실패했습니다.");
+  }
+
+  return data;
+}
+
+export async function updateRagFileStatus({
+  bucket = "chat",
+  path,
+  fileStatus = "active",
+  sourceName = "",
+  sourceUrl = "",
+  version = "",
+  effectiveFrom = "",
+  effectiveTo = "",
+}) {
+  const token = localStorage.getItem("accessToken");
+
+  const res = await fetch(`${BASE_URL}/chat/rag/files/status`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    credentials: "include",
+    body: JSON.stringify({
+      bucket,
+      path,
+      file_status: fileStatus,
+      source_name: sourceName,
+      source_url: sourceUrl,
+      version,
+      effective_from: effectiveFrom,
+      effective_to: effectiveTo,
+    }),
+  });
+
+  const data = await parseJsonResponse(res);
+
+  if (!res.ok) {
+    throw new Error(data.error || "파일 상태 변경에 실패했습니다.");
+  }
+
+  return data;
+}
+
+export async function createRagIndex({ bucket = "chat", prefix = "normal" }) {
+  const token = localStorage.getItem("accessToken");
+
+  const res = await fetch(`${BASE_URL}/chat/rag/index`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    credentials: "include",
+    body: JSON.stringify({
+      bucket,
+      prefix,
+    }),
+  });
+
+  const data = await parseJsonResponse(res);
+
+  if (!res.ok) {
+    throw new Error(data.error || "벡터 DB 제작에 실패했습니다.");
   }
 
   return data;

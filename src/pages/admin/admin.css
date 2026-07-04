@@ -153,6 +153,7 @@
   border-radius: 18px;
   background: #ffffff;
   box-shadow: 0 18px 50px rgba(23, 32, 51, 0.06);
+  overflow: visible;
 }
 
 .adm-card-head {
@@ -161,12 +162,14 @@
   justify-content: space-between;
   gap: 16px;
   margin-bottom: 20px;
+  overflow: visible;
 }
 
 .adm-card-head h2 {
   margin: 0;
   color: #172033;
   font-size: 22px;
+  overflow: visible;
 }
 
 .adm-btn {
@@ -186,6 +189,15 @@
 .adm-btn.ghost {
   background: #f2f5f9;
   color: #344054;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.adm-btn.ghost2 {
+  background: #657185;
+  color:  #f2f5f9;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -565,7 +577,7 @@
    [페이지] 6. PDF 리스트 & 메인 지표 (PdfListPage / AdminDashboard 데이터 리스트 및 스탯)
    ========================================================================== */
 .adm-table-wrap {
-  overflow-x: auto;
+  overflow: visible;
 }
 
 .adm-table {
@@ -579,6 +591,7 @@
   border-bottom: 1px solid #e6eaf0;
   padding: 15px 12px;
   text-align: left;
+  position: relative;
 }
 
 .adm-table th {
@@ -1330,4 +1343,105 @@
   text-align: center !important;
   color: #657185;
   font-weight: 900;
+}
+
+.admin-file-status-select {
+  min-height: 34px;
+  border: 1px solid #dfe5ee;
+  border-radius: 10px;
+  padding: 0 10px;
+  background: #ffffff;
+  color: #172033;
+  font-weight: 900;
+}
+
+.admin-file-status-select:focus {
+  outline: none;
+  border-color: #27ae60;
+  box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.12);
+}
+
+.adm-table-wrap {
+  overflow: visible !important;
+}
+
+.adm-table,
+.adm-table tbody,
+.adm-table tr,
+.adm-table td {
+  overflow: visible !important;
+}
+
+.adm-table td {
+  position: relative;
+}
+
+.admin-file-status-dropdown {
+  position: relative;
+  width: 100px;
+  z-index: 1000;
+}
+
+.admin-file-status-dropdown .custom-select-trigger {
+  min-height: 34px;
+  border-radius: 10px;
+  padding: 0 10px;
+  font-size: 12px;
+}
+
+.admin-file-status-dropdown .custom-select-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: auto;
+  width: 100px;
+  min-width: 100px;
+  z-index: 99999;
+}
+
+.admin-file-status-dropdown .custom-select-option {
+  min-height: 34px;
+  font-size: 12px;
+}
+
+.adm-table tr:has(.admin-file-status-dropdown .custom-select-trigger.open) {
+  position: relative;
+  z-index: 9999;
+}
+
+.adm-table td:has(.admin-file-status-dropdown .custom-select-trigger.open) {
+  position: relative;
+  z-index: 9999;
+}
+
+.admin-index-result {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 18px;
+  padding: 14px;
+  border: 1px solid #bbf7d0;
+  border-radius: 14px;
+  background: #f0fdf4;
+  color: #166534;
+  font-weight: 900;
+}
+
+.admin-index-result strong {
+  width: 100%;
+  color: #14532d;
+}
+
+.admin-index-result span {
+  font-size: 13px;
+}
+
+.admin-page-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-page-actions .adm-btn {
+  min-height: 44px;
 }

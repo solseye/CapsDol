@@ -3,6 +3,8 @@ import {
   getRagFiles,
   getRagFileSignedUrl,
   deleteRagFile,
+  updateRagFileStatus,
+  createRagIndex,
 } from "../../../api/adminApi";
 
 const FOLDER_OPTIONS = [
@@ -11,6 +13,13 @@ const FOLDER_OPTIONS = [
   { label: "노무", value: "labor", group: "심화" },
   { label: "회계", value: "accounting", group: "심화" },
   { label: "법무", value: "law", group: "심화" },
+];
+
+const FILE_STATUS_OPTIONS = [
+  { label: "사용 중", value: "active" },
+  { label: "사용 안 함", value: "inactive" },
+  { label: "예약 자료", value: "future" },
+  { label: "보관됨", value: "archived" },
 ];
 
 function AdminCard({ title, action, children }) {
@@ -44,10 +53,6 @@ function formatFileSize(size) {
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 }
 
-function getFilePath(folder, fileName) {
-  return `${folder}/${fileName}`;
-}
-
 function getFolderLabel(folder) {
   return FOLDER_OPTIONS.find((item) => item.value === folder)?.label || folder;
 }
@@ -60,12 +65,19 @@ function getDisplayFileName(fileName) {
   return String(fileName || "").replace(/^\d+-/, "");
 }
 
+function getFilePath(file, folder) {
+  return file.path || `${folder}/${file.name}`;
+}
+
 export default function PdfListPage() {
   const [selectedFolder, setSelectedFolder] = useState("normal");
   const [filesByFolder, setFilesByFolder] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [openStatusMenuId, setOpenStatusMenuId] = useState(null);
+  const [isIndexing, setIsIndexing] = useState(false);
+  const [indexResult, setIndexResult] = useState(null);
 
   const selectedFiles = filesByFolder[selectedFolder] || [];
 
@@ -80,9 +92,8 @@ export default function PdfListPage() {
 
   const fetchFilesByFolder = async (folder) => {
     const data = await getRagFiles({
+      bucket: "chat",
       folder,
-      limit: 100,
-      offset: 0,
     });
 
     return data.files || [];
@@ -140,7 +151,7 @@ export default function PdfListPage() {
       setSuccess("");
 
       const data = await getRagFileSignedUrl({
-        path: getFilePath(selectedFolder, file.name),
+        path: getFilePath(file, selectedFolder),
         expiresIn: 600,
       });
 
@@ -164,7 +175,7 @@ export default function PdfListPage() {
       setSuccess("");
 
       const data = await getRagFileSignedUrl({
-        path: getFilePath(selectedFolder, file.name),
+        path: getFilePath(file, selectedFolder),
         expiresIn: 600,
       });
 
@@ -175,7 +186,7 @@ export default function PdfListPage() {
 
       const link = document.createElement("a");
       link.href = blobUrl;
-      link.download = file.name;
+      link.download = getDisplayFileName(file.name);
       document.body.appendChild(link);
       link.click();
 
@@ -195,13 +206,76 @@ export default function PdfListPage() {
       setError("");
       setSuccess("");
 
-      await deleteRagFile(getFilePath(selectedFolder, file.name));
+      await deleteRagFile(getFilePath(file, selectedFolder));
 
       setSuccess("파일이 삭제되었습니다.");
 
       await fetchSelectedFolderFiles();
     } catch (err) {
       setError(err.message || "파일 삭제에 실패했습니다.");
+    }
+  };
+
+  const handleChangeStatus = async (file, nextStatus) => {
+    const currentStatus = file.ragMetadata?.file_status || "active";
+
+    if (currentStatus === nextStatus) return;
+
+    const ok = window.confirm(
+      `${getDisplayFileName(file.name)} 파일 상태를 ${nextStatus}로 변경하시겠습니까?`
+    );
+
+    if (!ok) return;
+
+    try {
+      setError("");
+      setSuccess("");
+
+      await updateRagFileStatus({
+        bucket: "chat",
+        path: getFilePath(file, selectedFolder),
+        fileStatus: nextStatus,
+        sourceName: file.ragMetadata?.source_name || "",
+        sourceUrl: file.ragMetadata?.source_url || "",
+        version: file.ragMetadata?.version || "",
+        effectiveFrom: file.ragMetadata?.effective_from || "",
+        effectiveTo: file.ragMetadata?.effective_to || "",
+      });
+
+      setSuccess("파일 상태가 변경되었습니다.");
+
+      await fetchSelectedFolderFiles();
+    } catch (err) {
+      setError(err.message || "파일 상태 변경에 실패했습니다.");
+    }
+  };
+
+  const handleCreateIndex = async () => {
+    const folderLabel = getFolderLabel(selectedFolder);
+
+    const ok = window.confirm(
+      `${folderLabel} 자료를 기준으로 벡터 DB를 제작하시겠습니까?`
+    );
+
+    if (!ok) return;
+
+    try {
+      setIsIndexing(true);
+      setError("");
+      setSuccess("");
+      setIndexResult(null);
+
+      const data = await createRagIndex({
+        bucket: "chat",
+        prefix: selectedFolder,
+      });
+
+      setIndexResult(data);
+      setSuccess("벡터 DB 제작이 완료되었습니다.");
+    } catch (err) {
+      setError(err.message || "벡터 DB 제작에 실패했습니다.");
+    } finally {
+      setIsIndexing(false);
     }
   };
 
@@ -214,14 +288,25 @@ export default function PdfListPage() {
           <span>현재 챗봇에 등록된 자료를 확인합니다.</span>
         </div>
 
-        <button
-          type="button"
-          className="adm-btn ghost"
-          onClick={fetchAllFolders}
-          disabled={isLoading}
-        >
-          {isLoading ? "조회 중..." : "새로고침"}
-        </button>
+        <div className="admin-page-actions">
+          <button
+            type="button"
+            className="adm-btn ghost2"
+            onClick={fetchAllFolders}
+            disabled={isLoading}
+          >
+            {isLoading ? "조회 중..." : "새로고침"}
+          </button>
+
+          <button
+            type="button"
+            className="adm-btn primary"
+            onClick={handleCreateIndex}
+            disabled={isIndexing || isLoading}
+          >
+            {isIndexing ? "제작 중..." : "벡터 DB 제작"}
+          </button>
+        </div>
       </div>
 
       {error && <section className="adm-card admin-alert error">{error}</section>}
@@ -247,14 +332,6 @@ export default function PdfListPage() {
               </button>
             ))}
 
-            <button
-              type="button"
-              className="adm-btn ghost"
-              onClick={fetchSelectedFolderFiles}
-              disabled={isLoading}
-            >
-              선택 폴더 조회
-            </button>
           </div>
         }
       >
@@ -264,6 +341,16 @@ export default function PdfListPage() {
             {getFolderGroup(selectedFolder)} 자료 · {selectedFiles.length}개
           </span>
         </div>
+
+        {indexResult && (
+          <div className="admin-index-result">
+            <strong>벡터 DB 제작 결과</strong>
+            <span>전체 파일: {indexResult.fileCount ?? 0}개</span>
+            <span>인덱싱 완료: {indexResult.indexedCount ?? 0}개</span>
+            <span>건너뜀: {indexResult.skippedCount ?? 0}개</span>
+            <span>총 청크 수: {indexResult.totalChunkCount ?? 0}개</span>
+          </div>
+        )}
 
         <div className="adm-table-wrap">
           <table className="adm-table">
@@ -275,6 +362,7 @@ export default function PdfListPage() {
                 <th>업로드 날짜</th>
                 <th>파일 크기</th>
                 <th>형식</th>
+                <th>상태</th>
                 <th>관리</th>
               </tr>
             </thead>
@@ -282,7 +370,7 @@ export default function PdfListPage() {
             <tbody>
               {selectedFiles.length === 0 ? (
                 <tr>
-                  <td colSpan="7" className="admin-file-empty">
+                  <td colSpan="8" className="admin-file-empty">
                     등록된 PDF 자료가 없습니다.
                   </td>
                 </tr>
@@ -303,9 +391,52 @@ export default function PdfListPage() {
 
                     <td>{getFolderLabel(selectedFolder)}</td>
                     <td>{getDisplayFileName(file.name)}</td>
-                    <td>{formatDate(file.created_at || file.updated_at)}</td>
+                    <td>{formatDate(file.created_at || file.updated_at || file.ragMetadata?.created_at)}</td>
                     <td>{formatFileSize(file.metadata?.size)}</td>
-                    <td>{file.metadata?.mimetype || "-"}</td>
+                    <td>{file.metadata?.mimetype || file.fileType || "-"}</td>
+                    <td>
+                      <div className="custom-select admin-file-status-dropdown">
+                        <button
+                          type="button"
+                          className={`custom-select-trigger ${
+                            openStatusMenuId === file.id ? "open" : ""
+                          }`}
+                          onClick={() =>
+                            setOpenStatusMenuId((prev) => (prev === file.id ? null : file.id))
+                          }
+                        >
+                          {
+                            FILE_STATUS_OPTIONS.find(
+                              (status) =>
+                                status.value === (file.ragMetadata?.file_status || "active")
+                            )?.label
+                          }
+                          <span>▾</span>
+                        </button>
+
+                        {openStatusMenuId === file.id && (
+                          <div className="custom-select-menu">
+                            {FILE_STATUS_OPTIONS.map((status) => (
+                              <button
+                                key={status.value}
+                                type="button"
+                                className={`custom-select-option ${
+                                  (file.ragMetadata?.file_status || "active") === status.value
+                                    ? "selected"
+                                    : ""
+                                }`}
+                                onClick={() => {
+                                  setOpenStatusMenuId(null);
+                                  handleChangeStatus(file, status.value);
+                                }}
+                              >
+                                {status.label}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </td>
 
                     <td>
                       <div className="admin-file-actions">
