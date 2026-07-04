@@ -12,13 +12,20 @@
   background: linear-gradient(180deg, #f5f7fb 0%, #eef3f8 100%);
 }
 
-.chat-inner {
+.chat-inner.user-chat {
   width: min(1240px, 100%);
   min-height: calc(100vh - 220px);
   display: grid;
-  gap: 22px;
   grid-template-columns: minmax(0, 980px);
   justify-content: center;
+}
+
+.chat-inner.admin-chat {
+  width: min(1240px, 100%);
+  min-height: calc(100vh - 220px);
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 22px;
 }
 
 .summary {

@@ -116,7 +116,7 @@ export default function Chat() {
       <Header isLoggedIn={isLoggedIn} />
 
       <div className="chat-container">
-        <div className="chat-inner">
+        <div className="chat-inner user-chat">
 
           <section className="chat card">
             <div className="chat-top">

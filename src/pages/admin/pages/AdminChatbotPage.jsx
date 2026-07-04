@@ -100,16 +100,13 @@ export default function AdminChatbotPage() {
       </div>
 
       <div className="chat-container admin-chat-container">
-        <div className="chat-inner">
+        <div className="chat-inner admin-chat">
           <aside className="summary card">
             <p className="kicker">RAG Chatbot</p>
             <h3>관리자 상담 챗봇</h3>
 
             <div className="summary-content">
               등록된 상담 자료를 기준으로 답변합니다.
-              <br />
-              답변은 참고용이며, 중요한 법률·세무 판단은 전문가 검토가
-              필요합니다.
             </div>
 
             {lastUsage && (
