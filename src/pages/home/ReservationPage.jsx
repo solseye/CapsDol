@@ -7,8 +7,22 @@ import {
   createReservation,
   getReservationListByRange,
 } from "../../api/reservationApi";
+import {
+  formatTranslatedDate,
+  formatTranslatedMonth,
+  getCurrentLanguage,
+  translate,
+} from "../../i18n/translations";
 
-const WEEK_DAYS = ["일", "월", "화", "수", "목", "금", "토"];
+const WEEK_DAYS = [
+  "weekdaySun",
+  "weekdayMon",
+  "weekdayTue",
+  "weekdayWed",
+  "weekdayThu",
+  "weekdayFri",
+  "weekdaySat",
+];
 
 const TIME_OPTIONS = [
   "09:00",
@@ -22,10 +36,10 @@ const TIME_OPTIONS = [
 ];
 
 const FIELD_OPTIONS = [
-  { label: "인사", value: "hr" },
-  { label: "노무", value: "labor" },
-  { label: "회계", value: "accounting" },
-  { label: "법무", value: "law" },
+  { labelKey: "fieldHr", value: "hr" },
+  { labelKey: "fieldLabor", value: "labor" },
+  { labelKey: "fieldAccounting", value: "accounting" },
+  { labelKey: "fieldLaw", value: "law" },
 ];
 
 const MONTHS_TO_FETCH = 7;
@@ -110,6 +124,9 @@ function getLocalDateIso(date) {
 }
 
 export default function ReservationPage() {
+  const language = getCurrentLanguage();
+  const t = (key, variables) => translate(language, key, variables);
+
   const today = useMemo(() => new Date(), []);
 
   const [isLoggedIn, setIsLoggedIn] = useState(null);
@@ -170,14 +187,16 @@ export default function ReservationPage() {
         setBlocks(data.blocks || []);
       } catch (err) {
         console.error("예약 일정 조회 실패:", err);
-        setListError(err.message || "예약 일정을 불러오지 못했습니다.");
+        setListError(
+          err.message || translate(language, "reservation.listLoadError")
+        );
       }
     };
 
     if (isLoggedIn === true && !isAdmin) {
       fetchReservationList();
     }
-  }, [isLoggedIn, isAdmin, viewDate]);
+  }, [isLoggedIn, isAdmin, viewDate, language]);
 
   const calendarDays = useMemo(() => buildCalendarDays(viewDate), [viewDate]);
 
@@ -246,7 +265,7 @@ export default function ReservationPage() {
 
   const handleRefreshReservationList = async () => {
     if (!requestMonth) {
-      setListError("조회 기준 월을 선택해 주세요.");
+      setListError(t("reservation.selectMonthError"));
       return;
     }
 
@@ -270,7 +289,7 @@ export default function ReservationPage() {
       setBlocks(data.blocks || []);
     } catch (err) {
       console.error("예약 일정 재조회 실패:", err);
-      setListError(err.message || "예약 일정 조회에 실패했습니다.");
+      setListError(err.message || t("reservation.listRefreshError"));
     } finally {
       setIsRefreshingList(false);
     }
@@ -298,32 +317,32 @@ export default function ReservationPage() {
     setSubmitSuccess("");
 
     if (!form.phone.trim()) {
-      setSubmitError("전화번호를 입력해 주세요.");
+      setSubmitError(t("reservation.phoneError"));
       return;
     }
 
     if (!form.CName.trim()) {
-      setSubmitError("회사 이름을 입력해 주세요.");
+      setSubmitError(t("reservation.companyError"));
       return;
     }
 
     if (!form.kind.trim()) {
-      setSubmitError("상담 종류를 입력해 주세요.");
+      setSubmitError(t("reservation.kindError"));
       return;
     }
 
     if (!selectedField) {
-      setSubmitError("상담 분야를 선택해 주세요.");
+      setSubmitError(t("reservation.fieldError"));
       return;
     }
 
     if (!selectedTime) {
-      setSubmitError("상담 시간을 선택해 주세요.");
+      setSubmitError(t("reservation.timeError"));
       return;
     }
 
     if (blockedTimes.has(selectedTime)) {
-      setSubmitError("이미 예약되었거나 예약이 불가능한 시간입니다.");
+      setSubmitError(t("reservation.blockedError"));
       return;
     }
 
@@ -340,7 +359,7 @@ export default function ReservationPage() {
       });
 
       if (data.success) {
-        setSubmitSuccess("상담 예약 신청이 완료되었습니다. 승인 대기 상태입니다.");
+        setSubmitSuccess(t("reservation.submitSuccess"));
 
         const listData = await getReservationListByRange(
           getMonthStartIso(viewDate),
@@ -350,17 +369,17 @@ export default function ReservationPage() {
         setSchedules(listData.schedules || []);
         setBlocks(listData.blocks || []);
       } else {
-        setSubmitSuccess("상담 예약 신청이 완료되었습니다.");
+        setSubmitSuccess(t("reservation.submitFallbackSuccess"));
       }
     } catch (err) {
-      setSubmitError(err.message || "상담 예약에 실패했습니다.");
+      setSubmitError(err.message || t("reservation.submitError"));
     } finally {
       setIsSubmitting(false);
     }
   };
 
   if (isLoggedIn === null) {
-    return <div>로딩 중...</div>;
+    return <div>{t("common.loading")}</div>;
   }
 
   if (!isLoggedIn) {
@@ -381,26 +400,26 @@ export default function ReservationPage() {
             <div>
               <div className="kicker">Consult Reservation</div>
               <h1 className="section-title reservation-title">
-                상담 예약 페이지
+                {t("reservation.title")}
               </h1>
             </div>
 
             <Link to="/" className="btn">
-              메인으로 돌아가기
+              {t("common.backHome")}
             </Link>
           </div>
 
           <div className="reservation-layout">
             <section className="reservation-left card">
               <h2 className="reservation-subtitle">
-                상담 예약에 필요한 기본 정보
+                {t("reservation.infoTitle")}
               </h2>
 
               <div className="reservation-form">
                 <input
                   type="text"
                   name="name"
-                  placeholder="이름"
+                  placeholder={t("reservation.name")}
                   className="reservation-input"
                   value={form.name}
                   onChange={handleChange}
@@ -409,7 +428,7 @@ export default function ReservationPage() {
                 <input
                   type="text"
                   name="phone"
-                  placeholder="전화번호"
+                  placeholder={t("reservation.phone")}
                   className="reservation-input"
                   value={form.phone}
                   onChange={handleChange}
@@ -418,7 +437,7 @@ export default function ReservationPage() {
                 <input
                   type="email"
                   name="email"
-                  placeholder="이메일"
+                  placeholder={t("reservation.email")}
                   className="reservation-input"
                   value={form.email}
                   onChange={handleChange}
@@ -427,7 +446,7 @@ export default function ReservationPage() {
                 <input
                   type="text"
                   name="CName"
-                  placeholder="회사 이름"
+                  placeholder={t("reservation.company")}
                   className="reservation-input"
                   value={form.CName}
                   onChange={handleChange}
@@ -436,14 +455,16 @@ export default function ReservationPage() {
                 <input
                   type="text"
                   name="kind"
-                  placeholder="직종"
+                  placeholder={t("reservation.job")}
                   className="reservation-input"
                   value={form.kind}
                   onChange={handleChange}
                 />
 
                 <div className="reservation-field-group">
-                  <div className="reservation-field-title">상담 분야 선택</div>
+                  <div className="reservation-field-title">
+                    {t("reservation.fieldTitle")}
+                  </div>
 
                   <div className="reservation-field-buttons">
                     {FIELD_OPTIONS.map((field) => (
@@ -460,53 +481,65 @@ export default function ReservationPage() {
                           setSubmitSuccess("");
                         }}
                       >
-                        {field.label}
+                        {t(`reservation.${field.labelKey}`)}
                       </button>
                     ))}
                   </div>
                 </div>
 
                 <div className="reservation-summary">
-                  <div className="reservation-summary-title">선택 내용</div>
+                  <div className="reservation-summary-title">
+                    {t("reservation.summaryTitle")}
+                  </div>
 
                   <div className="reservation-summary-item">
-                    상담 분야:{" "}
+                    {t("reservation.field")}:{" "}
                     <strong>
                       {FIELD_OPTIONS.find((item) => item.value === selectedField)
-                        ?.label || "선택 안 됨"}
+                        ? t(
+                            `reservation.${
+                              FIELD_OPTIONS.find(
+                                (item) => item.value === selectedField
+                              ).labelKey
+                            }`
+                          )
+                        : t("common.notSelected")}
                     </strong>
                   </div>
 
                   <div className="reservation-summary-item">
-                    날짜:{" "}
-                    <strong>
-                      {selectedDate.getFullYear()}년{" "}
-                      {selectedDate.getMonth() + 1}월 {selectedDate.getDate()}일
-                    </strong>
+                    {t("reservation.date")}:{" "}
+                    <strong>{formatTranslatedDate(language, selectedDate)}</strong>
                   </div>
 
                   <div className="reservation-summary-item">
-                    시간: <strong>{selectedTime || "선택 안 됨"}</strong>
+                    {t("reservation.time")}:{" "}
+                    <strong>{selectedTime || t("common.notSelected")}</strong>
                   </div>
                 </div>
 
                 <div className="reservation-selected-info">
                   <div>
-                    분야:{" "}
+                    {t("reservation.field")}:{" "}
                     <strong>
                       {FIELD_OPTIONS.find((item) => item.value === selectedField)
-                        ?.label || "선택 안 됨"}
+                        ? t(
+                            `reservation.${
+                              FIELD_OPTIONS.find(
+                                (item) => item.value === selectedField
+                              ).labelKey
+                            }`
+                          )
+                        : t("common.notSelected")}
                     </strong>
                   </div>
                   <div>
-                    날짜:{" "}
-                    <strong>
-                      {selectedDate.getFullYear()}년{" "}
-                      {selectedDate.getMonth() + 1}월 {selectedDate.getDate()}일
-                    </strong>
+                    {t("reservation.date")}:{" "}
+                    <strong>{formatTranslatedDate(language, selectedDate)}</strong>
                   </div>
                   <div>
-                    시간: <strong>{selectedTime || "선택 안 됨"}</strong>
+                    {t("reservation.time")}:{" "}
+                    <strong>{selectedTime || t("common.notSelected")}</strong>
                   </div>
                 </div>
               </div>
@@ -523,7 +556,7 @@ export default function ReservationPage() {
                 onClick={handleSubmit}
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "전송 중..." : "전송하기"}
+                {isSubmitting ? t("common.sending") : t("common.send")}
               </button>
             </section>
 
@@ -553,7 +586,9 @@ export default function ReservationPage() {
                   onClick={handleRefreshReservationList}
                   disabled={isRefreshingList}
                 >
-                  {isRefreshingList ? "조회 중..." : "일정 조회"}
+                  {isRefreshingList
+                    ? t("reservation.refreshing")
+                    : t("reservation.refresh")}
                 </button>
               </div>
 
@@ -562,20 +597,20 @@ export default function ReservationPage() {
                   type="button"
                   className="calendar-arrow"
                   onClick={handlePrevMonth}
-                  aria-label="이전 달"
+                  aria-label={t("reservation.previousMonth")}
                 >
                   ◀
                 </button>
 
                 <div className="calendar-month">
-                  {viewDate.getFullYear()}년 {viewDate.getMonth() + 1}월
+                  {formatTranslatedMonth(language, viewDate)}
                 </div>
 
                 <button
                   type="button"
                   className="calendar-arrow"
                   onClick={handleNextMonth}
-                  aria-label="다음 달"
+                  aria-label={t("reservation.nextMonth")}
                 >
                   ▶
                 </button>
@@ -585,7 +620,7 @@ export default function ReservationPage() {
                 <div className="calendar-board">
                   {WEEK_DAYS.map((day) => (
                     <div key={day} className="calendar-weekday">
-                      {day}
+                      {t(`reservation.${day}`)}
                     </div>
                   ))}
 
@@ -624,7 +659,9 @@ export default function ReservationPage() {
               </div>
 
               <div className="reservation-time card">
-                <div className="reservation-time-head">상담 시간</div>
+                <div className="reservation-time-head">
+                  {t("reservation.consultTime")}
+                </div>
 
                 <div className="reservation-time-grid">
                   {TIME_OPTIONS.map((time) => {

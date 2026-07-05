@@ -1,10 +1,22 @@
 import { Link, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import { logoutUser } from "../api/authApi";
+import {
+  getCurrentLanguage,
+  setCurrentLanguage,
+  translate,
+} from "../i18n/translations";
 
 export default function Header({ isLoggedIn }) {
   const location = useLocation();
 
   const role = localStorage.getItem("role");
+  const language = getCurrentLanguage();
+  const t = (key) => translate(language, key);
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-lang", getCurrentLanguage());
+  }, []);
 
   const handleLogoClick = (e) => {
     if (location.pathname === "/") {
@@ -14,13 +26,19 @@ export default function Header({ isLoggedIn }) {
   };
 
   const switchToLanguage = (lang) => {
-    const value = lang === "ja" ? "/ko/ja" : "/ko/ko";
+    // 기존 Google Translate 쿠키 방식입니다.
+    // const languageMap = {
+    //   ko: "/ko/ko",
+    //   en: "/ko/en",
+    //   ja: "/ko/ja",
+    // };
+    // const value = languageMap[lang] || languageMap.ko;
+    // document.cookie = `googtrans=${value}; path=/`;
+    // document.cookie = `googtrans=${value}; path=/; domain=${window.location.hostname}`;
+    // document.documentElement.setAttribute("data-lang", lang);
 
-    document.cookie = `googtrans=${value}; path=/`;
-    document.cookie = `googtrans=${value}; path=/; domain=${window.location.hostname}`;
-
-    document.documentElement.setAttribute("data-lang", lang);
-
+    // 변경 이유: 법무/세무 용어는 자동 번역보다 직접 관리하는 번역 사전이 더 안전합니다.
+    setCurrentLanguage(lang);
     window.location.reload();
   };
 
@@ -56,19 +74,19 @@ export default function Header({ isLoggedIn }) {
           <nav className="main-nav" aria-label="주요 메뉴">
             <ul>
               <li>
-                <a href="#about">회사 개요</a>
+                <a href="#about">{t("common.navCompany")}</a>
               </li>
               <li>
-                <a href="#service">서비스</a>
+                <a href="#service">{t("common.navService")}</a>
               </li>
               <li>
-                <a href="#flow">업무 흐름</a>
+                <a href="#flow">{t("common.navFlow")}</a>
               </li>
 
               {!isLoggedIn && (
                 <li>
                   <Link to="/login" className="btn primary nav-cta">
-                    로그인
+                    {t("common.navLogin")}
                   </Link>
                 </li>
               )}
@@ -76,7 +94,7 @@ export default function Header({ isLoggedIn }) {
               {isLoggedIn && role === "admin" && (
                 <li>
                   <Link to="/admin/calendar" className="btn primary nav-cta">
-                    관리자 페이지
+                    {t("common.navAdmin")}
                   </Link>
                 </li>
               )}
@@ -85,7 +103,7 @@ export default function Header({ isLoggedIn }) {
                 <li>
                   {/* 주소를 /reservation 으로 정확히 맞춰줍니다 */}
                   <Link to="/reservation" className="btn primary nav-cta">
-                    상담 예약
+                    {t("common.navReservation")}
                   </Link>
                 </li>
               )}
@@ -93,7 +111,7 @@ export default function Header({ isLoggedIn }) {
               {isLoggedIn && role !== "admin" && (
                 <li>
                   <Link to="/myreservations" className="btn primary nav-cta">
-                    상담 내역
+                    {t("common.navMyReservations")}
                   </Link>
                 </li>
               )}
@@ -101,7 +119,7 @@ export default function Header({ isLoggedIn }) {
               {isLoggedIn && (
                 <li>
                   <button onClick={handleLogout} className="nav-logout">
-                    로그아웃
+                    {t("common.navLogout")}
                   </button>
                 </li>
               )}
@@ -115,6 +133,13 @@ export default function Header({ isLoggedIn }) {
               onClick={() => switchToLanguage("ko")}
             >
               KO
+            </button>
+            <button
+              type="button"
+              className="lang-option"
+              onClick={() => switchToLanguage("en")}
+            >
+              EN
             </button>
             <button
               type="button"
