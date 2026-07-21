@@ -143,6 +143,31 @@ export default function ArticlesPreview() {
               <p>이사의 임기는 ${printValue(source.directorTerm)}로 한다.</p>
             </article>
 
+            <article>
+              <h2>제9조 (본점 소재지)</h2>
+              <p>본 회사의 본점은 ${printValue(source.headOfficeAddress)}에 둔다.</p>
+            </article>
+
+            <article>
+              <h2>제10조 (발행 가능 주식 총수)</h2>
+              <p>본 회사가 발행할 수 있는 주식의 총수는 ${printValue(source.totalSharesAuthorized)}로 한다.</p>
+            </article>
+
+            <article>
+              <h2>제11조 (사업 연도)</h2>
+              <p>본 회사의 사업 연도는 매년 ${printValue(source.businessYear?.start)}부터 ${printValue(source.businessYear?.end)}까지로 한다.</p>
+            </article>
+
+            <article>
+              <h2>제12조 (설립 시 발행 주식 수)</h2>
+              <p>본 회사의 설립 시 발행하는 주식의 총수는 ${printValue(source.initialIssuedShares)}로 한다.</p>
+            </article>
+
+            <article>
+              <h2>제13조 (최초 사업 연도)</h2>
+              <p>본 회사의 최초 사업 연도는 ${printValue(source.firstBusinessYear?.start)}부터 ${printValue(source.firstBusinessYear?.end)}까지로 한다.</p>
+            </article>
+
             <p class="note">본 문서는 히어링 시트 입력값을 바탕으로 생성된 확인용 정관 초안입니다.</p>
           </main>
         </body>
@@ -293,6 +318,48 @@ export default function ArticlesPreview() {
                   <p>
                     이사의 임기는 <Highlight>{displayValue(source.directorTerm)}</Highlight>
                     로 한다.
+                  </p>
+                </article>
+
+                <article className="articles-clause">
+                  <h3>제9조 (본점 소재지)</h3>
+                  <p>
+                    본 회사의 본점은{" "}
+                    <Highlight>{displayValue(source.headOfficeAddress)}</Highlight>에 둔다.
+                  </p>
+                </article>
+
+                <article className="articles-clause">
+                  <h3>제10조 (발행 가능 주식 총수)</h3>
+                  <p>
+                    본 회사가 발행할 수 있는 주식의 총수는{" "}
+                    <Highlight>{displayValue(source.totalSharesAuthorized)}</Highlight>로 한다.
+                  </p>
+                </article>
+
+                <article className="articles-clause">
+                  <h3>제11조 (사업 연도)</h3>
+                  <p>
+                    본 회사의 사업 연도는 매년{" "}
+                    <Highlight>{displayValue(source.businessYear?.start)}</Highlight>부터{" "}
+                    <Highlight>{displayValue(source.businessYear?.end)}</Highlight>까지로 한다.
+                  </p>
+                </article>
+
+                <article className="articles-clause">
+                  <h3>제12조 (설립 시 발행 주식 수)</h3>
+                  <p>
+                    본 회사의 설립 시 발행하는 주식의 총수는{" "}
+                    <Highlight>{displayValue(source.initialIssuedShares)}</Highlight>로 한다.
+                  </p>
+                </article>
+
+                <article className="articles-clause">
+                  <h3>제13조 (최초 사업 연도)</h3>
+                  <p>
+                    본 회사의 최초 사업 연도는{" "}
+                    <Highlight>{displayValue(source.firstBusinessYear?.start)}</Highlight>부터{" "}
+                    <Highlight>{displayValue(source.firstBusinessYear?.end)}</Highlight>까지로 한다.
                   </p>
                 </article>
               </div>

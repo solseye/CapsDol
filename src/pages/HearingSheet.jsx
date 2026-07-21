@@ -10,9 +10,16 @@ export default function HearingSheet() {
 
   const [companyName, setCompanyName] = useState("");
   const [companyNameEn, setCompanyNameEn] = useState("");
+  const [headOfficeAddress, setHeadOfficeAddress] = useState("");
   const [capital, setCapital] = useState("");
+  const [totalSharesAuthorized, setTotalSharesAuthorized] = useState("");
+  const [initialIssuedShares, setInitialIssuedShares] = useState("");
   const [bankName, setBankName] = useState("");
   const [branchName, setBranchName] = useState("");
+  const [businessYearStart, setBusinessYearStart] = useState("");
+  const [businessYearEnd, setBusinessYearEnd] = useState("");
+  const [firstBusinessYearStart, setFirstBusinessYearStart] = useState("");
+  const [firstBusinessYearEnd, setFirstBusinessYearEnd] = useState("");
   const [representativeDirector, setRepresentativeDirector] = useState("");
   const [directorTerm, setDirectorTerm] = useState("");
 
@@ -38,6 +45,13 @@ export default function HearingSheet() {
     setPurposes([...purposes, { content: "" }]);
   };
 
+  // 추가한 사업 목적을 제출 전에 개별적으로 제거할 수 있도록 한다.
+  const removePurpose = (indexToRemove) => {
+    setPurposes((currentPurposes) =>
+      currentPurposes.filter((_, index) => index !== indexToRemove)
+    );
+  };
+
   const addFounder = () => {
     setFounders([
       ...founders,
@@ -49,6 +63,13 @@ export default function HearingSheet() {
     ]);
   };
 
+  // 추가한 발기인 입력 묶음을 제출 전에 개별적으로 제거할 수 있도록 한다.
+  const removeFounder = (indexToRemove) => {
+    setFounders((currentFounders) =>
+      currentFounders.filter((_, index) => index !== indexToRemove)
+    );
+  };
+
   const addDirector = () => {
     setDirectors([
       ...directors,
@@ -58,6 +79,13 @@ export default function HearingSheet() {
         romanizedName: "",
       },
     ]);
+  };
+
+  // 추가한 이사 입력 묶음을 제출 전에 개별적으로 제거할 수 있도록 한다.
+  const removeDirector = (indexToRemove) => {
+    setDirectors((currentDirectors) =>
+      currentDirectors.filter((_, index) => index !== indexToRemove)
+    );
   };
 
   const updatePurpose = (index, value) => {
@@ -141,6 +169,29 @@ ${directorText}
 제8조 (이사의 임기)
 이사의 임기는 ${data.directorTerm || "미입력"}로 한다.
 
+제9조 (본점 소재지)
+본 회사의 본점은 ${data.headOfficeAddress || "미입력"}에 둔다.
+
+제10조 (발행 가능 주식 총수)
+본 회사가 발행할 수 있는 주식의 총수는 ${
+      data.totalSharesAuthorized || "미입력"
+    }로 한다.
+
+제11조 (사업 연도)
+본 회사의 사업 연도는 매년 ${
+      data.businessYear.start || "미입력"
+    }부터 ${data.businessYear.end || "미입력"}까지로 한다.
+
+제12조 (설립 시 발행 주식 수)
+본 회사의 설립 시 발행하는 주식의 총수는 ${
+      data.initialIssuedShares || "미입력"
+    }로 한다.
+
+제13조 (최초 사업 연도)
+본 회사의 최초 사업 연도는 ${
+      data.firstBusinessYear.start || "미입력"
+    }부터 ${data.firstBusinessYear.end || "미입력"}까지로 한다.
+
 ※ 본 문서는 히어링 시트 입력값을 바탕으로 생성된 확인용 정관 초안입니다.`;
   };
 
@@ -213,6 +264,49 @@ ${directorText}
         body: "이사의 임기는 다음과 같이 정한다.",
         highlights: [{ label: "임기", value: data.directorTerm || "미입력" }],
       },
+      {
+        title: "제9조 (본점 소재지)",
+        body: "본 회사의 본점은 다음과 같이 정한다.",
+        highlights: [
+          { label: "본점 소재지", value: data.headOfficeAddress || "미입력" },
+        ],
+      },
+      {
+        title: "제10조 (발행 가능 주식 총수)",
+        body: "본 회사가 발행할 수 있는 주식의 총수는 다음과 같이 정한다.",
+        highlights: [
+          {
+            label: "주식 발행 총 수",
+            value: data.totalSharesAuthorized || "미입력",
+          },
+        ],
+      },
+      {
+        title: "제11조 (사업 연도)",
+        body: "본 회사의 사업 연도는 다음과 같이 정한다.",
+        highlights: [
+          { label: "시작일", value: data.businessYear.start || "미입력" },
+          { label: "종료일", value: data.businessYear.end || "미입력" },
+        ],
+      },
+      {
+        title: "제12조 (설립 시 발행 주식 수)",
+        body: "본 회사의 설립 시 발행하는 주식의 총수는 다음과 같이 정한다.",
+        highlights: [
+          {
+            label: "초기 발행 주식 총 수",
+            value: data.initialIssuedShares || "미입력",
+          },
+        ],
+      },
+      {
+        title: "제13조 (최초 사업 연도)",
+        body: "본 회사의 최초 사업 연도는 다음과 같이 정한다.",
+        highlights: [
+          { label: "시작일", value: data.firstBusinessYear.start || "미입력" },
+          { label: "종료일", value: data.firstBusinessYear.end || "미입력" },
+        ],
+      },
     ];
   };
 
@@ -234,6 +328,17 @@ ${directorText}
       Director: convertArrayToObject(directors),
       representativeDirector,
       directorTerm,
+      headOfficeAddress,
+      totalSharesAuthorized,
+      businessYear: {
+        start: businessYearStart,
+        end: businessYearEnd,
+      },
+      initialIssuedShares,
+      firstBusinessYear: {
+        start: firstBusinessYearStart,
+        end: firstBusinessYearEnd,
+      },
     };
 
     // 기존 동작입니다.
@@ -323,9 +428,26 @@ ${directorText}
               <div className="hs-grid">
                 {purposes.map((purpose, index) => (
                   <div className="hs-field" key={index}>
-                    <label className="hs-label">
-                      {t("hearing.purposeLabel", { count: index + 1 })}
-                    </label>
+                    <div className="hs-removable-row">
+                      <label className="hs-label">
+                        {t("hearing.purposeLabel", { count: index + 1 })}
+                      </label>
+                      {purposes.length > 1 && (
+                        <button
+                          type="button"
+                          className="hs-remove-button"
+                          onClick={() => removePurpose(index)}
+                          aria-label={t("hearing.removePurpose", {
+                            count: index + 1,
+                          })}
+                          title={t("hearing.removePurpose", {
+                            count: index + 1,
+                          })}
+                        >
+                          &minus;
+                        </button>
+                      )}
+                    </div>
                     <input
                       className="hs-input"
                       value={purpose.content}
@@ -390,8 +512,25 @@ ${directorText}
 
               {founders.map((founder, index) => (
                 <div className="hs-subcard" key={index}>
-                  <div className="hs-subtitle">
-                    {t("hearing.founderTitle", { count: index + 1 })}
+                  <div className="hs-removable-row hs-subtitle-row">
+                    <div className="hs-subtitle">
+                      {t("hearing.founderTitle", { count: index + 1 })}
+                    </div>
+                    {founders.length > 1 && (
+                      <button
+                        type="button"
+                        className="hs-remove-button"
+                        onClick={() => removeFounder(index)}
+                        aria-label={t("hearing.removeFounder", {
+                          count: index + 1,
+                        })}
+                        title={t("hearing.removeFounder", {
+                          count: index + 1,
+                        })}
+                      >
+                        &minus;
+                      </button>
+                    )}
                   </div>
 
                   <div className="hs-grid2">
@@ -459,8 +598,25 @@ ${directorText}
 
               {directors.map((director, index) => (
                 <div className="hs-subcard" key={index}>
-                  <div className="hs-subtitle">
-                    {t("hearing.directorTitle", { count: index + 1 })}
+                  <div className="hs-removable-row hs-subtitle-row">
+                    <div className="hs-subtitle">
+                      {t("hearing.directorTitle", { count: index + 1 })}
+                    </div>
+                    {directors.length > 1 && (
+                      <button
+                        type="button"
+                        className="hs-remove-button"
+                        onClick={() => removeDirector(index)}
+                        aria-label={t("hearing.removeDirector", {
+                          count: index + 1,
+                        })}
+                        title={t("hearing.removeDirector", {
+                          count: index + 1,
+                        })}
+                      >
+                        &minus;
+                      </button>
+                    )}
                   </div>
 
                   <div className="hs-grid2">
@@ -537,6 +693,120 @@ ${directorText}
                   onChange={(e) => setDirectorTerm(e.target.value)}
                   placeholder={t("hearing.directorTermPlaceholder")}
                 />
+              </div>
+            </section>
+
+            <section className="hs-block">
+              <h2 className="hs-block-title">
+                {t("hearing.headOfficeSection")}
+              </h2>
+
+              <div className="hs-field">
+                <label className="hs-label">{t("hearing.headOfficeAddress")}</label>
+                <input
+                  className="hs-input"
+                  value={headOfficeAddress}
+                  onChange={(e) => setHeadOfficeAddress(e.target.value)}
+                  placeholder={t("hearing.headOfficeAddressPlaceholder")}
+                />
+              </div>
+            </section>
+
+            <section className="hs-block">
+              <h2 className="hs-block-title">
+                {t("hearing.totalSharesSection")}
+              </h2>
+
+              <div className="hs-field">
+                <label className="hs-label">
+                  {t("hearing.totalSharesAuthorized")}
+                </label>
+                <input
+                  className="hs-input"
+                  value={totalSharesAuthorized}
+                  onChange={(e) => setTotalSharesAuthorized(e.target.value)}
+                  placeholder={t("hearing.totalSharesAuthorizedPlaceholder")}
+                />
+              </div>
+            </section>
+
+            <section className="hs-block">
+              <h2 className="hs-block-title">
+                {t("hearing.businessYearSection")}
+              </h2>
+
+              <div className="hs-grid2">
+                <div className="hs-field">
+                  <label className="hs-label">
+                    {t("hearing.businessYearStart")}
+                  </label>
+                  <input
+                    className="hs-input"
+                    value={businessYearStart}
+                    onChange={(e) => setBusinessYearStart(e.target.value)}
+                    placeholder={t("hearing.businessYearStartPlaceholder")}
+                  />
+                </div>
+
+                <div className="hs-field">
+                  <label className="hs-label">{t("hearing.businessYearEnd")}</label>
+                  <input
+                    className="hs-input"
+                    value={businessYearEnd}
+                    onChange={(e) => setBusinessYearEnd(e.target.value)}
+                    placeholder={t("hearing.businessYearEndPlaceholder")}
+                  />
+                </div>
+              </div>
+            </section>
+
+            <section className="hs-block">
+              <h2 className="hs-block-title">
+                {t("hearing.initialIssuedSharesSection")}
+              </h2>
+
+              <div className="hs-field">
+                <label className="hs-label">
+                  {t("hearing.initialIssuedShares")}
+                </label>
+                <input
+                  className="hs-input"
+                  value={initialIssuedShares}
+                  onChange={(e) => setInitialIssuedShares(e.target.value)}
+                  placeholder={t("hearing.initialIssuedSharesPlaceholder")}
+                />
+              </div>
+            </section>
+
+            <section className="hs-block">
+              <h2 className="hs-block-title">
+                {t("hearing.firstBusinessYearSection")}
+              </h2>
+
+              <div className="hs-grid2">
+                <div className="hs-field">
+                  <label className="hs-label">
+                    {t("hearing.firstBusinessYearStart")}
+                  </label>
+                  <input
+                    className="hs-input"
+                    value={firstBusinessYearStart}
+                    onChange={(e) => setFirstBusinessYearStart(e.target.value)}
+                    placeholder={t("hearing.firstBusinessYearStartPlaceholder")}
+                  />
+                </div>
+
+                <div className="hs-field">
+                  <label className="hs-label">
+                    {t("hearing.firstBusinessYearEnd")}
+                  </label>
+                  <input
+                    className="hs-input"
+                    value={firstBusinessYearEnd}
+                    onChange={(e) => setFirstBusinessYearEnd(e.target.value)}
+                    placeholder={t("hearing.firstBusinessYearEndPlaceholder")}
+                  />
+                </div>
               </div>
             </section>
 
