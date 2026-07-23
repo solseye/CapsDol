@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import "../App.css";
+import "../styles/articles-result-visily.css";
 
 export default function ArticlesPreview() {
   const location = useLocation();
@@ -192,204 +193,210 @@ export default function ArticlesPreview() {
 
   if (!articlesData) {
     return (
-      <div className="App">
-        <main className="hs-page">
-          <div className="container hs-container">
-            <h1 className="section-title">정관 확인</h1>
-            <p className="section-desc">
-              표시할 정관 데이터가 없습니다. 히어링 시트를 먼저 작성해 주세요.
-            </p>
-
-            <Link to="/hearing-sheet" className="btn primary">
-              히어링 시트로 이동
-            </Link>
-          </div>
-        </main>
+      <div className="arv-empty-page">
+        <div className="arv-empty-card">
+          <span>Draft Articles</span>
+          <h1>표시할 정관 데이터가 없습니다</h1>
+          <p>히어링 시트를 먼저 작성하면 입력값이 반영된 정관 초안을 확인할 수 있습니다.</p>
+          <Link to="/hearing-sheet">히어링 시트 작성하기</Link>
+        </div>
       </div>
     );
   }
 
-  return (
-    <div className="App">
-      <main className="hs-page">
-        <div className="container hs-container">
-          <div className="hs-head">
-            <div>
-              <div className="kicker">Articles Preview</div>
-              <h1 className="section-title hs-title">정관 확인</h1>
-              <p className="section-desc hs-intro">
-                히어링 시트 내용을 바탕으로 채워진 정관입니다. 입력 정보가
-                맞는지 확인해 주세요.
-              </p>
-            </div>
+  const summaryGroups = source
+    ? [
+        {
+          title: "기본 정보",
+          items: [
+            ["상호", source.companyName],
+            ["영문명", source.companyNameEn],
+            ["본점 소재지", source.headOfficeAddress],
+          ],
+        },
+        {
+          title: "자본·주식",
+          items: [
+            ["자본금", source.capital],
+            [
+              "납입 은행",
+              source.capitalPaymentBank?.bankName || source.capitalPaymentBank?.branchName
+                ? `${source.capitalPaymentBank?.bankName || ""} ${
+                    source.capitalPaymentBank?.branchName || ""
+                  }`
+                : "",
+            ],
+            ["발행 가능 주식", source.totalSharesAuthorized],
+            ["설립 시 발행 주식", source.initialIssuedShares],
+          ],
+        },
+        {
+          title: "임원·연도",
+          items: [
+            ["대표이사", source.representativeDirector],
+            ["이사 임기", source.directorTerm],
+            [
+              "사업 연도",
+              source.businessYear?.start || source.businessYear?.end
+                ? `${source.businessYear?.start || "-"} ~ ${source.businessYear?.end || "-"}`
+                : "",
+            ],
+            [
+              "최초 사업 연도",
+              source.firstBusinessYear?.start || source.firstBusinessYear?.end
+                ? `${source.firstBusinessYear?.start || "-"} ~ ${
+                    source.firstBusinessYear?.end || "-"
+                  }`
+                : "",
+            ],
+          ],
+        },
+      ]
+    : [];
 
-            <Link to="/hearing-sheet" className="btn">
-              히어링 시트 수정하기
-            </Link>
+  const sectionCount = articlesData.sections?.length || 0;
+  const purposeCount = objectValues(source?.Purpose).filter((item) => item.content).length;
+  const founderCount = objectValues(source?.Founder).length;
+  const directorCount = objectValues(source?.Director).length;
+
+  return (
+    <div className="arv-page">
+      <aside className="arv-sidebar">
+        <Link to="/" className="arv-logo">
+          <span>◎</span>
+          <strong>WVA AI Consulting</strong>
+          <small>Japan Entry OS</small>
+        </Link>
+
+        <nav className="arv-side-nav">
+          <Link to="/">Home</Link>
+          <Link to="/hearing-sheet">Hearing Sheet</Link>
+          <Link to="/articles-result" className="active">
+            Articles
+          </Link>
+          <Link to="/reservation">Consultations</Link>
+          <Link to="/myreservations">My Reservations</Link>
+          <Link to="/chat">AI Chatbot</Link>
+        </nav>
+      </aside>
+
+      <div className="arv-shell">
+        <header className="arv-topbar">
+          <div className="arv-breadcrumb">
+            <Link to="/">Dashboard</Link>
+            <span>›</span>
+            <Link to="/hearing-sheet">Hearing Sheet</Link>
+            <span>›</span>
+            <strong>Articles Draft</strong>
           </div>
 
-          <section className="hs-block articles-preview-block articles-paper">
-            <div className="articles-doc-head">
-              <span>Draft Articles</span>
-              <strong>정관</strong>
-            </div>
-
-            {source ? (
-              <div className="articles-document">
-                <h2>정관 초안</h2>
-
-                <article className="articles-clause">
-                  <h3>제1조 (상호)</h3>
-                  <p>
-                    본 회사의 상호는 <Highlight>{displayValue(source.companyName)}</Highlight>
-                    로 한다. 영문 표기는{" "}
-                    <Highlight>{displayValue(source.companyNameEn)}</Highlight>로 한다.
-                  </p>
-                </article>
-
-                <article className="articles-clause">
-                  <h3>제2조 (목적)</h3>
-                  <p>본 회사는 다음 각 호의 사업을 목적으로 한다.</p>
-                  <ol>
-                    {objectValues(source.Purpose).map((purpose, index) => (
-                      <li key={`purpose-${index}`}>
-                        <Highlight>{displayValue(purpose.content)}</Highlight>
-                      </li>
-                    ))}
-                  </ol>
-                </article>
-
-                <article className="articles-clause">
-                  <h3>제3조 (자본금)</h3>
-                  <p>
-                    본 회사의 자본금은 <Highlight>{displayValue(source.capital)}</Highlight>
-                    로 한다.
-                  </p>
-                </article>
-
-                <article className="articles-clause">
-                  <h3>제4조 (자본금 납입 은행)</h3>
-                  <p>
-                    자본금 납입 은행은{" "}
-                    <Highlight>{displayValue(source.capitalPaymentBank?.bankName)}</Highlight>{" "}
-                    <Highlight>{displayValue(source.capitalPaymentBank?.branchName)}</Highlight>
-                    지점으로 한다.
-                  </p>
-                </article>
-
-                <article className="articles-clause">
-                  <h3>제5조 (발기인 및 출자자)</h3>
-                  <p>본 회사의 발기인 및 출자자는 다음과 같다.</p>
-                  <ol>
-                    {objectValues(source.Founder).map((founder, index) => (
-                      <li key={`founder-${index}`}>
-                        주소 <Highlight>{displayValue(founder.address)}</Highlight>, 성명{" "}
-                        <Highlight>{displayValue(founder.name)}</Highlight>, 출자금액{" "}
-                        <Highlight>{displayValue(founder.investmentAmount)}</Highlight>
-                      </li>
-                    ))}
-                  </ol>
-                </article>
-
-                <article className="articles-clause">
-                  <h3>제6조 (이사)</h3>
-                  <p>본 회사의 이사는 다음과 같다.</p>
-                  <ol>
-                    {objectValues(source.Director).map((director, index) => (
-                      <li key={`director-${index}`}>
-                        주소 <Highlight>{displayValue(director.address)}</Highlight>, 성명{" "}
-                        <Highlight>{displayValue(director.name)}</Highlight>, 로마자 성명{" "}
-                        <Highlight>{displayValue(director.romanizedName)}</Highlight>
-                      </li>
-                    ))}
-                  </ol>
-                </article>
-
-                <article className="articles-clause">
-                  <h3>제7조 (대표이사)</h3>
-                  <p>
-                    본 회사의 대표이사는{" "}
-                    <Highlight>{displayValue(source.representativeDirector)}</Highlight>로 한다.
-                  </p>
-                </article>
-
-                <article className="articles-clause">
-                  <h3>제8조 (이사의 임기)</h3>
-                  <p>
-                    이사의 임기는 <Highlight>{displayValue(source.directorTerm)}</Highlight>
-                    로 한다.
-                  </p>
-                </article>
-
-                <article className="articles-clause">
-                  <h3>제9조 (본점 소재지)</h3>
-                  <p>
-                    본 회사의 본점은{" "}
-                    <Highlight>{displayValue(source.headOfficeAddress)}</Highlight>에 둔다.
-                  </p>
-                </article>
-
-                <article className="articles-clause">
-                  <h3>제10조 (발행 가능 주식 총수)</h3>
-                  <p>
-                    본 회사가 발행할 수 있는 주식의 총수는{" "}
-                    <Highlight>{displayValue(source.totalSharesAuthorized)}</Highlight>로 한다.
-                  </p>
-                </article>
-
-                <article className="articles-clause">
-                  <h3>제11조 (사업 연도)</h3>
-                  <p>
-                    본 회사의 사업 연도는 매년{" "}
-                    <Highlight>{displayValue(source.businessYear?.start)}</Highlight>부터{" "}
-                    <Highlight>{displayValue(source.businessYear?.end)}</Highlight>까지로 한다.
-                  </p>
-                </article>
-
-                <article className="articles-clause">
-                  <h3>제12조 (설립 시 발행 주식 수)</h3>
-                  <p>
-                    본 회사의 설립 시 발행하는 주식의 총수는{" "}
-                    <Highlight>{displayValue(source.initialIssuedShares)}</Highlight>로 한다.
-                  </p>
-                </article>
-
-                <article className="articles-clause">
-                  <h3>제13조 (최초 사업 연도)</h3>
-                  <p>
-                    본 회사의 최초 사업 연도는{" "}
-                    <Highlight>{displayValue(source.firstBusinessYear?.start)}</Highlight>부터{" "}
-                    <Highlight>{displayValue(source.firstBusinessYear?.end)}</Highlight>까지로 한다.
-                  </p>
-                </article>
-              </div>
-            ) : (
-              <>
-                {/* 기존 단순 텍스트 미리보기 방식입니다. */}
-                <pre className="articles-content">{articlesData.content}</pre>
-              </>
-            )}
-
-            <p className="articles-note">
-              본 문서는 히어링 시트 입력값을 바탕으로 생성된 확인용 정관
-              초안입니다.
-            </p>
-          </section>
-
-          <div className="hs-actions">
-            {/* 기존 버튼 구성입니다. */}
-            {/* <Link to="/reservation" className="btn primary">
-              내용 확인 후 상담 예약
-            </Link> */}
-            <button type="button" className="btn" onClick={handlePdfPreview}>
+          <div className="arv-top-actions">
+            <button type="button" onClick={handlePdfPreview}>
               PDF 미리보기
             </button>
-            <Link to="/reservation" className="btn primary">
-              내용 확인 후 상담 예약
-            </Link>
+            <Link to="/hearing-sheet">수정하기</Link>
           </div>
-        </div>
-      </main>
+        </header>
+
+        <main className="arv-main">
+          <aside className="arv-summary-panel">
+            <div className="arv-summary-head">
+              <span>Draft Summary</span>
+              <h1>정관 입력 요약</h1>
+              <p>히어링 시트에서 입력한 정보가 정관 초안에 반영되었습니다.</p>
+            </div>
+
+            {summaryGroups.map((group) => (
+              <section className="arv-summary-group" key={group.title}>
+                <h2>{group.title}</h2>
+                <dl>
+                  {group.items.map(([label, value]) => (
+                    <div key={label}>
+                      <dt>{label}</dt>
+                      <dd>{displayValue(value)}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </section>
+            ))}
+
+            <section className="arv-status-card">
+              <h2>문서 상태</h2>
+              <div>
+                <span>조항 수</span>
+                <strong>{sectionCount || 13}개</strong>
+              </div>
+              <div>
+                <span>사업 목적</span>
+                <strong>{purposeCount}개</strong>
+              </div>
+              <div>
+                <span>발기인 / 이사</span>
+                <strong>
+                  {founderCount}명 / {directorCount}명
+                </strong>
+              </div>
+            </section>
+
+            <section className="arv-advisory">
+              <strong>AI Advisory</strong>
+              <p>
+                이 문서는 입력값을 바탕으로 만든 확인용 초안입니다. 실제 제출 전에는
+                전문가 검토를 권장합니다.
+              </p>
+              <Link to="/reservation">전문가 상담 예약</Link>
+            </section>
+          </aside>
+
+          <section className="arv-document-panel">
+            <div className="arv-document-toolbar">
+              <div>
+                <span>Articles Preview</span>
+                <h1>정관 초안 검토</h1>
+              </div>
+              <div className="arv-document-actions">
+                <button type="button" onClick={handlePdfPreview}>
+                  PDF / 인쇄
+                </button>
+                <Link to="/reservation">상담 예약</Link>
+              </div>
+            </div>
+
+            <article className="arv-paper">
+              <div className="arv-paper-head">
+                <span>Draft Articles of Incorporation</span>
+                <h2>정관 초안</h2>
+                <p>사용자가 입력한 값은 굵은 글씨로 강조됩니다.</p>
+              </div>
+
+              {source && articlesData.sections ? (
+                <div className="arv-clause-list">
+                  {articlesData.sections.map((section) => (
+                    <section className="arv-clause" key={section.title}>
+                      <h3>{section.title}</h3>
+                      <p>{section.body}</p>
+                      <div className="arv-highlight-grid">
+                        {section.highlights.map((highlight) => (
+                          <div className="arv-highlight-item" key={highlight.label}>
+                            <span>{highlight.label}</span>
+                            <Highlight>{displayValue(highlight.value)}</Highlight>
+                          </div>
+                        ))}
+                      </div>
+                    </section>
+                  ))}
+                </div>
+              ) : (
+                <pre className="arv-content-fallback">{articlesData.content}</pre>
+              )}
+
+              <p className="arv-paper-note">
+                본 문서는 히어링 시트 입력값을 바탕으로 생성된 확인용 정관 초안입니다.
+              </p>
+            </article>
+          </section>
+        </main>
+      </div>
     </div>
   );
 }

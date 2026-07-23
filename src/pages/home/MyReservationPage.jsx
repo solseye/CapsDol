@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import Header from "../../components/Header";
 import { Link } from "react-router-dom";
 import "../../App.css";
-import "../admin/admin.css";
+import "../../styles/my-reservations-visily.css";
 import {
   cancelReservation,
   deleteReservation,
@@ -74,8 +73,6 @@ function getStatusClass(status) {
 }
 
 export default function MyReservations() {
-  const [isLoggedIn, setIsLoggedIn] = useState(null);
-
   const [reservations, setReservations] = useState([]);
   const [localCancelReasons, setLocalCancelReasons] = useState({});
 
@@ -102,8 +99,6 @@ export default function MyReservations() {
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-
-    setIsLoggedIn(!!token);
 
     if (token) {
       fetchReservations();
@@ -195,139 +190,199 @@ export default function MyReservations() {
     );
   });
 
+  const statusCounts = sortedReservations.reduce(
+    (acc, item) => {
+      const status = item.status || "pending";
+      acc[status] = (acc[status] || 0) + 1;
+      acc.total += 1;
+      return acc;
+    },
+    { total: 0, pending: 0, approved: 0, rejected: 0, cancelled: 0 }
+  );
+
   return (
-    <>
-      <Header isLoggedIn={isLoggedIn} />
+    <div className="mrv-page">
+      <aside className="mrv-sidebar">
+        <Link to="/" className="mrv-logo">
+          <span>◎</span>
+          <strong>WVA AI Consulting</strong>
+          <small>Japan Entry OS</small>
+        </Link>
 
-      <main className="reserve-page">
-        <section className="reserve-hero">
-          <p className="adm-eyebrow">My Reservations</p>
-          <h2>내 상담 내역</h2>
-        </section>
+        <nav className="mrv-side-nav">
+          <Link to="/">Home</Link>
+          <Link to="/hearing-sheet">Hearing Sheet</Link>
+          <Link to="/articles-result">Articles</Link>
+          <Link to="/reservation">Consultations</Link>
+          <Link to="/myreservations" className="active">
+            My Reservations
+          </Link>
+          <Link to="/chat">AI Chatbot</Link>
+        </nav>
+      </aside>
 
-        <section className="adm-card reserve-history-card">
-          <div className="adm-card-head">
+      <div className="mrv-shell">
+        <header className="mrv-topbar">
+          <div className="mrv-breadcrumb">
+            <Link to="/">Dashboard</Link>
+            <span>›</span>
+            <strong>My Reservations</strong>
+          </div>
+
+          <Link to="/reservation" className="mrv-top-link">
+            새 상담 예약
+          </Link>
+        </header>
+
+        <main className="mrv-main">
+          <section className="mrv-hero">
             <div>
-              <h2>예약 정보</h2>
+              <p>Reservation Status</p>
+              <h1>내 상담 내역</h1>
+              <span>
+                신청한 상담의 승인 여부, 취소 상태, 불허 사유를 한곳에서
+                확인합니다.
+              </span>
+            </div>
+          </section>
+
+          <section className="mrv-metrics">
+            <article>
+              <span>전체 예약</span>
+              <strong>{statusCounts.total}</strong>
+            </article>
+            <article>
+              <span>승인 대기</span>
+              <strong>{statusCounts.pending || 0}</strong>
+            </article>
+            <article>
+              <span>승인 완료</span>
+              <strong>{statusCounts.approved || 0}</strong>
+            </article>
+            <article>
+              <span>취소/불허</span>
+              <strong>
+                {(statusCounts.cancelled || 0) + (statusCounts.rejected || 0)}
+              </strong>
+            </article>
+          </section>
+
+          <section className="mrv-panel">
+            <div className="mrv-panel-head">
+              <div>
+                <span>Consultation Timeline</span>
+                <h2>예약 정보</h2>
+              </div>
+              <Link to="/reservation">상담 예약하기</Link>
             </div>
 
-            <Link to="/" className="adm-btn ghost">
-              홈으로
-            </Link>
-          </div>
+            {error && <p className="mrv-error">{error}</p>}
+            {success && <p className="mrv-success">{success}</p>}
 
-          {error && <p className="login-error">{error}</p>}
-          {success && <p className="login-success">{success}</p>}
+            {isLoading ? (
+              <div className="mrv-empty-box">예약 정보를 불러오는 중입니다.</div>
+            ) : sortedReservations.length === 0 ? (
+              <div className="mrv-empty-box">
+                <strong>아직 신청한 상담 예약이 없습니다.</strong>
+                <p>상담 예약을 신청하면 이곳에서 승인 상태를 확인할 수 있습니다.</p>
+                <Link to="/reservation">상담 예약 시작</Link>
+              </div>
+            ) : (
+              <div className="mrv-list">
+                {sortedReservations.map((item) => {
+                  const reservationId = item.reservation_id;
 
-          {isLoading ? (
-            <div className="reserve-empty-box">
-              예약 정보를 불러오는 중입니다.
-            </div>
-          ) : sortedReservations.length === 0 ? (
-            <div className="reserve-empty-box">
-              아직 신청한 상담 예약이 없습니다.
-            </div>
-          ) : (
-            <div className="reserve-list">
-              {sortedReservations.map((item) => {
-                const reservationId = item.reservation_id;
+                  const statusLabel = getStatusLabel(item.status);
 
-                const statusLabel = getStatusLabel(item.status);
+                  const fieldLabel = getFieldLabel(item.field);
 
-                const fieldLabel = getFieldLabel(item.field);
+                  const dateLabel = formatDate(item.selected_date);
 
-                const dateLabel = formatDate(item.selected_date);
+                  const timeLabel = formatTime(item.selected_time);
 
-                const timeLabel = formatTime(item.selected_time);
+                  const cancelAvailable = canCancel(item.status);
 
-                const cancelAvailable = canCancel(item.status);
+                  const cancelling = cancelLoadingId === reservationId;
 
-                const cancelling =
-                  cancelLoadingId === reservationId;
+                  const cancelReason =
+                    item.cancel_reason || localCancelReasons[reservationId];
 
-                const cancelReason =
-                  item.cancel_reason ||
-                  localCancelReasons[reservationId];
+                  return (
+                    <article className="mrv-item" key={reservationId}>
+                      <div className="mrv-item-main">
+                        <div className="mrv-date-box">
+                          <span>{dateLabel}</span>
+                          <strong>{timeLabel}</strong>
+                        </div>
 
-                return (
-                  <article
-                    className={`reserve-item reserve-status-${item.status}`}
-                    key={reservationId}
-                  >
-                    <div>
-                      <strong>
-                        {fieldLabel} · {dateLabel} · {timeLabel}
-                      </strong>
+                        <div className="mrv-info">
+                          <div className="mrv-title-row">
+                            <h3>{fieldLabel} 상담</h3>
+                            <span className={`mrv-status ${getStatusClass(item.status)}`}>
+                              {statusLabel}
+                            </span>
+                          </div>
+                          <dl>
+                            <div>
+                              <dt>상담 분야</dt>
+                              <dd>{fieldLabel}</dd>
+                            </div>
+                            <div>
+                              <dt>예약 번호</dt>
+                              <dd>#{reservationId}</dd>
+                            </div>
+                            <div>
+                              <dt>신청일</dt>
+                              <dd>{formatDate(item.requested_at)}</dd>
+                            </div>
+                          </dl>
 
-                      <small
-                        className={`reservation-status ${getStatusClass(
-                          item.status
-                        )}`}
-                      >
-                        상태: {statusLabel}
+                          {item.reject_reason && (
+                            <p className="mrv-reason">불허 사유: {item.reject_reason}</p>
+                          )}
 
-                        {item.reject_reason && (
-                          <>
-                            <br />
-                            불허 사유: {item.reject_reason}
-                          </>
+                          {cancelReason && (
+                            <p className="mrv-reason">취소 사유: {cancelReason}</p>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="mrv-actions">
+                        {cancelAvailable ? (
+                          <button
+                            type="button"
+                            onClick={() => handleCancel(reservationId)}
+                            disabled={cancelling}
+                          >
+                            {cancelling ? "취소 중..." : "상담 취소"}
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            className="danger"
+                            onClick={() => handleDeleteReservation(reservationId)}
+                          >
+                            삭제
+                          </button>
                         )}
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            )}
+          </section>
 
-                        {cancelReason && (
-                          <>
-                            <br />
-                            취소 사유: {cancelReason}
-                          </>
-                        )}
-                      </small>
-                    </div>
-
-                    {cancelAvailable ? (
-                      <button
-                        type="button"
-                        className="adm-btn ghost"
-                        onClick={() =>
-                          handleCancel(reservationId)
-                        }
-                        disabled={cancelling}
-                      >
-                        {cancelling
-                          ? "취소 중..."
-                          : "상담 취소"}
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        className="adm-btn danger"
-                        onClick={() =>
-                          handleDeleteReservation(
-                            reservationId
-                          )
-                        }
-                      >
-                        삭제
-                      </button>
-                    )}
-                  </article>
-                );
-              })}
+          <section className="mrv-brand-card">
+            <div>
+              <span>W</span>
+              <h2>WVA</h2>
+              <p>상담 예약 상태와 전문가 검토 흐름을 이곳에서 확인할 수 있습니다.</p>
             </div>
-          )}
-        </section>
-
-        <section className="adm-card reserve-brand-card">
-          <div className="reserve-brand-empty">
-            <span className="adm-brand-mark">W</span>
-
-            <h2>WVA</h2>
-
-            <p>
-              예약 상태와 상담 일정을 이곳에서 확인할 수
-              있습니다.
-            </p>
-          </div>
-        </section>
-      </main>
-    </>
+            <Link to="/hearing-sheet">히어링 시트 작성</Link>
+          </section>
+        </main>
+      </div>
+    </div>
   );
 }

@@ -1,14 +1,23 @@
 import React, { useEffect, useState } from "react";
 import "../App.css";
 
-import Header from "../components/Header";
-import Footer from "../components/Footer";
+// 기존 공통 Header/Footer입니다. Visily 프레임 홈은 자체 헤더/푸터를 포함해 디자인 일관성을 맞춥니다.
+// import Header from "../components/Header";
+// import Footer from "../components/Footer";
 
-import MainIntro from "./home/MainIntro";
-import ServiceInfo from "./home/ServiceInfo";
-import UsageInfo from "./home/UsageInfo";
-import SupportInfo from "./home/SupportInfo";
-import ChatFab from "./home/Chatbot";
+// 기존 master 홈 구성입니다. 소니 디자인 선별 적용 중에도 되돌릴 수 있도록 남겨둡니다.
+// import MainIntro from "./home/MainIntro";
+// import ServiceInfo from "./home/ServiceInfo";
+// import UsageInfo from "./home/UsageInfo";
+// import MainIntroSelected from "./home/MainIntroSelected";
+// import ExpansionRoadmap from "./home/ExpansionRoadmap";
+// import CategoryGuide from "./home/CategoryGuide";
+// import HearingShortcuts from "./home/HearingShortcuts";
+// import SupportInfo from "./home/SupportInfo";
+import HomeVisilyFrame from "./home/HomeVisilyFrame";
+// 기존 챗봇 플로팅 버튼입니다. 새 홈 디자인에서는 버튼 UI만 별도 파일로 분리했습니다.
+// import ChatFab from "./home/Chatbot";
+// import FloatingChatBtn from "../components/FloatingChatBtn";
 import { getCurrentLanguage } from "../i18n/translations";
 
 export default function Home() {
@@ -74,17 +83,20 @@ export default function Home() {
         }}
       />
 
-      <Header isLoggedIn={isLoggedIn} />
-
       <main id="top">
-        <MainIntro />
-        <ServiceInfo />
-        <UsageInfo />
-        <SupportInfo />
-        <Footer />
+        {/* 변경 이유: Visily에서 선택한 프레임을 기준으로 메인 페이지 전용 디자인을 적용합니다. */}
+        <HomeVisilyFrame isLoggedIn={isLoggedIn} />
+        {/* 소니 선별 적용 홈 섹션입니다. 필요하면 Visily 프레임 대신 아래 5개를 다시 사용할 수 있습니다. */}
+        {/* <MainIntroSelected /> */}
+        {/* <ExpansionRoadmap /> */}
+        {/* <CategoryGuide /> */}
+        {/* <HearingShortcuts /> */}
+        {/* <SupportInfo /> */}
+        {/* 기존 master 홈 섹션입니다. 필요하면 위 4개 섹션 대신 아래 3개를 다시 사용하면 됩니다. */}
+        {/* <MainIntro /> */}
+        {/* <ServiceInfo /> */}
+        {/* <UsageInfo /> */}
       </main>
-
-      <ChatFab />
     </div>
   );
 }

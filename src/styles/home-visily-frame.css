@@ -1,0 +1,1024 @@
+.visily-home {
+  min-height: 100vh;
+  background: #f5f7f8;
+  color: #17202b;
+  font-family:
+    Inter,
+    Pretendard,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+
+.visily-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: 68px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 28px;
+  padding: 0 72px;
+  border-bottom: 1px solid #dce3e8;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(14px);
+}
+
+.visily-brand,
+.visily-footer-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: #061f35;
+  text-decoration: none;
+}
+
+.visily-brand-mark {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  color: #06233c;
+  font-size: 25px;
+  font-weight: 950;
+}
+
+.visily-brand strong {
+  display: block;
+  color: #061f35;
+  font-size: 15px;
+  font-weight: 950;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.visily-brand small {
+  display: block;
+  margin-top: 4px;
+  color: #66717e;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.visily-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 34px;
+}
+
+.visily-nav-links a,
+.visily-footer nav a {
+  color: #596371;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.visily-nav-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 14px;
+}
+
+.visily-ghost-btn,
+.visily-dark-btn,
+.visily-green-btn,
+.visily-outline-btn,
+.visily-link-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 42px;
+  padding: 0 22px;
+  border-radius: 2px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.visily-ghost-btn {
+  border: 1px solid #06233c;
+  color: #06233c;
+  background: #ffffff;
+}
+
+.visily-dark-btn {
+  border: 1px solid #06233c;
+  color: #ffffff;
+  background: #06233c;
+}
+
+.visily-hero {
+  position: relative;
+  min-height: calc(100vh - 68px);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: #06233c;
+}
+
+.visily-hero-bg {
+  position: absolute;
+  inset: 0;
+  background-position: center;
+  background-size: cover;
+  opacity: 0.34;
+  filter: saturate(0.85) contrast(1.05);
+}
+
+.visily-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(3, 24, 43, 0.78) 0%, rgba(6, 35, 60, 0.66) 58%, rgba(6, 35, 60, 0.92) 100%),
+    radial-gradient(circle at center, rgba(21, 92, 63, 0.32), transparent 52%);
+}
+
+.visily-hero-content {
+  position: relative;
+  width: min(980px, calc(100% - 32px));
+  padding: 72px 0 96px;
+  text-align: center;
+}
+
+.visily-badge {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 0 32px;
+  padding: 10px 20px;
+  border-radius: 999px;
+  color: #8fb79e;
+  background: rgba(28, 96, 70, 0.25);
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.visily-hero h1 {
+  margin: 0;
+  color: #ffffff;
+  font-size: clamp(48px, 7vw, 84px);
+  line-height: 1.03;
+  font-weight: 950;
+  letter-spacing: -0.055em;
+}
+
+.visily-hero h1 span {
+  display: block;
+  color: #89a57c;
+}
+
+.visily-hero-copy {
+  max-width: 760px;
+  margin: 32px auto 34px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 18px;
+  line-height: 1.7;
+  font-weight: 750;
+}
+
+.visily-ai-search {
+  width: min(700px, 100%);
+  min-height: 70px;
+  margin: 0 auto;
+  padding: 9px 10px 9px 26px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-radius: 10px;
+  background: rgba(232, 239, 244, 0.78);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.24);
+}
+
+.visily-ai-search span {
+  color: #70808e;
+  font-size: 24px;
+}
+
+.visily-ai-search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #06233c;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.visily-ai-search input::placeholder {
+  color: #87929d;
+}
+
+.visily-ai-search button {
+  height: 48px;
+  border: 0;
+  border-radius: 4px;
+  padding: 0 28px;
+  color: #ffffff;
+  background: #06233c;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.visily-trust-row {
+  margin-top: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.visily-trust-row span {
+  width: 34px;
+  height: 34px;
+  margin-left: -7px;
+  display: grid;
+  place-items: center;
+  border: 2px solid #dce3e8;
+  border-radius: 50%;
+  color: #06233c;
+  background: #ffffff;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.visily-trust-row p {
+  margin: 0 0 0 18px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.visily-section,
+.visily-pricing-section,
+.visily-process-section {
+  width: min(1320px, calc(100% - 96px));
+  margin: 0 auto;
+  padding: 86px 0;
+}
+
+.visily-section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px;
+  margin-bottom: 44px;
+}
+
+.visily-section h2,
+.visily-pricing-head h2,
+.visily-process-head h2,
+.visily-centered-head h2,
+.visily-cta h2 {
+  margin: 0;
+  color: #1b2530;
+  font-size: 32px;
+  line-height: 1.15;
+  font-weight: 950;
+  letter-spacing: -0.035em;
+}
+
+.visily-section p,
+.visily-pricing-head p,
+.visily-process-head p,
+.visily-centered-head p,
+.visily-cta p {
+  color: #697482;
+  font-size: 15px;
+  line-height: 1.65;
+  font-weight: 750;
+}
+
+.visily-link-btn {
+  border: 1px solid #d6dde2;
+  color: #213040;
+  background: #ffffff;
+}
+
+.visily-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.visily-service-card,
+.visily-metric-card {
+  min-height: 250px;
+  padding: 28px;
+  border: 1px solid #dbe2e7;
+  border-radius: 8px;
+  background: #ffffff;
+  text-decoration: none;
+  box-shadow: 0 14px 32px rgba(16, 29, 43, 0.03);
+}
+
+.visily-service-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 42px;
+}
+
+.visily-service-icon {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border-radius: 4px;
+  color: #144d3a;
+  background: #edf3f4;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.visily-service-card small {
+  padding: 4px 8px;
+  border: 1px solid #d8dee3;
+  border-radius: 999px;
+  color: #737b85;
+  font-size: 9px;
+  font-weight: 950;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.visily-service-card h3,
+.visily-metric-card h3 {
+  margin: 0 0 14px;
+  color: #1b2530;
+  font-size: 24px;
+  font-weight: 950;
+  letter-spacing: -0.04em;
+}
+
+.visily-service-card p,
+.visily-metric-card p {
+  margin: 0 0 28px;
+  color: #5f6975;
+  font-size: 14px;
+  line-height: 1.55;
+  font-weight: 750;
+}
+
+.visily-service-card strong {
+  color: #12304a;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.visily-pricing-section {
+  border-top: 1px solid #dbe2e7;
+  background: linear-gradient(180deg, #f5f7f8 0%, #eef3f1 100%);
+}
+
+.visily-pricing-head {
+  max-width: 760px;
+  margin: 0 auto 44px;
+  text-align: center;
+}
+
+.visily-pricing-head > span {
+  display: inline-flex;
+  margin-bottom: 14px;
+  color: #184d38;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.visily-pricing-head p {
+  margin: 18px auto 0;
+}
+
+.visily-pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.visily-pricing-grid article {
+  min-height: 430px;
+  padding: 30px;
+  border: 1px solid #dbe2e7;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 16px 36px rgba(16, 29, 43, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.visily-pricing-grid article.featured {
+  border: 2px solid #184d38;
+  box-shadow: 0 24px 48px rgba(24, 77, 56, 0.12);
+}
+
+.visily-price-label {
+  width: fit-content;
+  margin-bottom: 22px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  color: #184d38;
+  background: #e9f2ee;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.visily-pricing-grid h3 {
+  margin: 0 0 14px;
+  color: #1b2530;
+  font-size: 24px;
+  font-weight: 950;
+  letter-spacing: -0.02em;
+}
+
+.visily-pricing-grid article > strong {
+  color: #06233c;
+  font-size: 30px;
+  line-height: 1.15;
+  font-weight: 950;
+}
+
+.visily-pricing-grid article > p {
+  min-height: 72px;
+  margin: 18px 0 20px;
+  color: #5f6975;
+  font-size: 14px;
+  line-height: 1.6;
+  font-weight: 750;
+}
+
+.visily-pricing-grid ul {
+  margin: 0 0 28px;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 12px;
+}
+
+.visily-pricing-grid li {
+  position: relative;
+  padding-left: 22px;
+  color: #3f4b58;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.visily-pricing-grid li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #184d38;
+  font-weight: 950;
+}
+
+.visily-pricing-grid a {
+  min-height: 48px;
+  margin-top: auto;
+  border: 1px solid #06233c;
+  border-radius: 6px;
+  color: #ffffff;
+  background: #06233c;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 950;
+}
+
+.visily-pricing-note {
+  max-width: 760px;
+  margin: 28px auto 0;
+  color: #697482;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.6;
+  font-weight: 750;
+}
+
+.visily-process-section {
+  border-top: 1px solid #dbe2e7;
+  border-bottom: 1px solid #dbe2e7;
+}
+
+.visily-process-head {
+  max-width: 760px;
+  margin: 0 auto 44px;
+  text-align: center;
+}
+
+.visily-process-head p {
+  margin: 18px auto 0;
+}
+
+.visily-process-banner {
+  position: relative;
+  overflow: hidden;
+  height: 390px;
+  margin-bottom: 46px;
+  border-radius: 12px;
+  background: #06233c;
+  box-shadow: 0 18px 42px rgba(8, 20, 34, 0.18);
+}
+
+.visily-process-banner img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transition: transform 0.8s ease;
+  filter: saturate(0.95) contrast(1.03);
+}
+
+.visily-process-banner:hover img {
+  transform: scale(1.04);
+}
+
+.visily-process-banner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 35%, rgba(6, 35, 60, 0.74));
+}
+
+.visily-art-label {
+  position: absolute;
+  right: 28px;
+  bottom: 28px;
+  z-index: 1;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  color: #dcefe4;
+  background: rgba(6, 35, 60, 0.72);
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.visily-process-flow {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.visily-process-flow::before {
+  content: "";
+  position: absolute;
+  top: 44px;
+  left: 12%;
+  right: 12%;
+  height: 1px;
+  background: repeating-linear-gradient(
+    90deg,
+    #c0c9c1,
+    #c0c9c1 4px,
+    transparent 4px,
+    transparent 9px
+  );
+}
+
+.visily-process-card {
+  position: relative;
+  z-index: 1;
+  min-height: 290px;
+  padding: 30px;
+  border: 1px solid #dbe2e7;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 14px 32px rgba(16, 29, 43, 0.04);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.visily-process-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(24, 77, 56, 0.36);
+  box-shadow: 0 24px 42px rgba(45, 90, 67, 0.14);
+}
+
+.visily-process-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+.visily-step-number {
+  color: #14422d;
+  font-size: 50px;
+  line-height: 0.9;
+  font-weight: 950;
+}
+
+.visily-process-top strong {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  color: #14422d;
+  background: #e9f2ee;
+  font-size: 11px;
+  font-weight: 950;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+.visily-process-card:hover .visily-process-top strong {
+  color: #ffffff;
+  background: #184d38;
+}
+
+.visily-process-card h3 {
+  margin: 0 0 14px;
+  color: #1b2530;
+  font-size: 22px;
+  font-weight: 950;
+}
+
+.visily-process-card p {
+  margin: 0;
+  color: #5f6975;
+  font-size: 15px;
+  line-height: 1.65;
+  font-weight: 750;
+}
+
+.visily-process-cta {
+  margin-top: 42px;
+  display: flex;
+  justify-content: center;
+}
+
+.visily-green-btn {
+  min-height: 64px;
+  border: 1px solid #184d38;
+  color: #ffffff;
+  background: #184d38;
+}
+
+.visily-process-insights {
+  margin-top: 58px;
+  padding: 28px;
+  border-radius: 12px;
+  background: #eef3f1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.visily-process-insights article {
+  min-height: 92px;
+  padding: 18px;
+  border: 1px solid rgba(192, 201, 193, 0.65);
+  border-radius: 8px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 10px 22px rgba(16, 29, 43, 0.04);
+}
+
+.visily-process-insights span {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #184d38;
+  background: #dff0e7;
+  font-weight: 950;
+}
+
+.visily-process-insights p {
+  margin: 0 0 4px;
+  color: #697482;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.visily-process-insights strong {
+  color: #14422d;
+  font-size: 18px;
+  font-weight: 950;
+}
+
+.visily-standards {
+  padding-top: 86px;
+}
+
+.visily-experts-section {
+  border-bottom: 1px solid #dbe2e7;
+}
+
+.visily-centered-head {
+  max-width: 620px;
+  margin: 0 auto 56px;
+  text-align: center;
+}
+
+.visily-expert-grid {
+  display: grid;
+  gap: 28px;
+}
+
+.visily-expert-card {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 34px;
+  padding: 34px;
+  border: 1px solid #dbe2e7;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 16px 36px rgba(16, 29, 43, 0.04);
+}
+
+.visily-expert-avatar {
+  min-height: 300px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  color: #d9ece1;
+  background:
+    linear-gradient(180deg, rgba(24, 77, 56, 0.52), rgba(6, 35, 60, 0.9)),
+    #06233c;
+  font-size: 56px;
+  font-weight: 950;
+  letter-spacing: -0.04em;
+}
+
+.visily-expert-content {
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: 28px;
+}
+
+.visily-expert-title {
+  padding-bottom: 22px;
+  border-bottom: 1px solid #dbe2e7;
+}
+
+.visily-expert-title h3 {
+  margin: 0;
+  color: #1b2530;
+  font-size: 30px;
+  font-weight: 950;
+  letter-spacing: -0.04em;
+}
+
+.visily-expert-title p {
+  margin: 9px 0 0;
+  color: #184d38;
+  font-size: 15px;
+  font-weight: 950;
+}
+
+.visily-expert-detail-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 32px;
+}
+
+.visily-expert-detail-grid h4 {
+  margin: 0 0 14px;
+  color: #6b7580;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.visily-expert-detail-grid ul {
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 9px;
+  list-style: none;
+}
+
+.visily-expert-detail-grid li {
+  position: relative;
+  padding-left: 18px;
+  color: #4f5a66;
+  font-size: 14px;
+  line-height: 1.55;
+  font-weight: 750;
+}
+
+.visily-expert-detail-grid li::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #184d38;
+}
+
+.visily-expert-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.visily-expert-tags span {
+  padding: 8px 12px;
+  border: 1px solid #d2ddd8;
+  border-radius: 999px;
+  color: #184d38;
+  background: #f1f6f4;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.visily-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 28px;
+}
+
+.visily-metric-card {
+  min-height: 190px;
+}
+
+.visily-metric-card small {
+  display: block;
+  margin-bottom: 28px;
+  color: #64707b;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.visily-cta {
+  width: min(1220px, calc(100% - 96px));
+  margin: 54px auto 86px;
+  padding: 74px 30px;
+  border-radius: 4px;
+  color: #ffffff;
+  background:
+    radial-gradient(circle at top left, rgba(25, 91, 63, 0.46), transparent 42%),
+    #06233c;
+  text-align: center;
+  box-shadow: 0 18px 38px rgba(10, 25, 40, 0.18);
+}
+
+.visily-cta h2 {
+  color: #ffffff;
+}
+
+.visily-cta p {
+  max-width: 660px;
+  margin: 22px auto 34px;
+  color: rgba(255, 255, 255, 0.74);
+}
+
+.visily-cta div {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.visily-outline-btn {
+  min-height: 64px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  color: #ffffff;
+  background: transparent;
+}
+
+.visily-footer {
+  min-height: 96px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 24px;
+  padding: 0 72px;
+  border-top: 1px solid #dbe2e7;
+  color: #7d8690;
+  background: #f5f7f8;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.visily-footer nav {
+  display: flex;
+  gap: 34px;
+}
+
+@media (max-width: 1080px) {
+  .visily-nav {
+    grid-template-columns: 1fr auto;
+    padding: 0 28px;
+  }
+
+  .visily-nav-links {
+    display: none;
+  }
+
+  .visily-section,
+  .visily-pricing-section,
+  .visily-process-section,
+  .visily-cta {
+    width: min(100% - 36px, 980px);
+  }
+
+  .visily-card-grid,
+  .visily-pricing-grid,
+  .visily-process-flow,
+  .visily-process-insights,
+  .visily-metric-grid,
+  .visily-expert-card,
+  .visily-expert-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .visily-process-flow::before {
+    display: none;
+  }
+
+  .visily-process-banner {
+    height: 300px;
+  }
+
+  .visily-expert-avatar {
+    min-height: 150px;
+  }
+
+  .visily-footer {
+    grid-template-columns: 1fr;
+    justify-items: start;
+    padding: 28px;
+  }
+}
+
+@media (max-width: 640px) {
+  .visily-nav {
+    height: auto;
+    padding: 16px;
+    grid-template-columns: 1fr;
+  }
+
+  .visily-nav-actions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .visily-hero {
+    min-height: 620px;
+  }
+
+  .visily-hero-content {
+    padding: 54px 0 84px;
+  }
+
+  .visily-ai-search {
+    display: grid;
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .visily-ai-search span {
+    display: none;
+  }
+
+  .visily-ai-search input {
+    min-height: 42px;
+    text-align: center;
+  }
+
+  .visily-ai-search button,
+  .visily-green-btn,
+  .visily-outline-btn {
+    width: 100%;
+  }
+
+  .visily-section-head {
+    display: grid;
+  }
+
+  .visily-cta div,
+  .visily-footer nav {
+    display: grid;
+    width: 100%;
+  }
+}

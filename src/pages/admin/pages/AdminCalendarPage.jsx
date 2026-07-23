@@ -213,6 +213,25 @@ export default function AdminCalendarPage() {
 
   const selectedReservations = reservationsByDate[selectedDate] || [];
   const selectedBlocks = blocksByDate[selectedDate] || [];
+  const allReservations = schedules.flatMap((schedule) =>
+    (schedule.reservations || []).map((reservation) => ({
+      ...reservation,
+      schedule_id: schedule.schedule_id,
+      field: schedule.field,
+      selected_date: schedule.selected_date,
+      selected_time: schedule.selected_time,
+    }))
+  );
+  const pendingCount = allReservations.filter(
+    (reservation) => reservation.status === "pending"
+  ).length;
+  const approvedCount = allReservations.filter(
+    (reservation) => reservation.status === "approved"
+  ).length;
+  const activeCount = allReservations.filter(
+    (reservation) =>
+      reservation.status === "pending" || reservation.status === "approved"
+  ).length;
 
   const handlePrevMonth = () => {
     const nextMonth = new Date(
@@ -423,21 +442,27 @@ export default function AdminCalendarPage() {
 
   return (
     <div className="adm-page">
-      <div className="adm-page-head">
+      <div className="adm-portal-head">
         <div>
-          <p className="adm-eyebrow">Reservations Calendar</p>
-          <h2>예약 캘린더</h2>
-          <span>날짜별 예약 신청 현황과 차단된 일정을 확인합니다.</span>
+          <h2>Operational Portal</h2>
+          <span>
+            예약 신청 현황을 모니터링하고, 승인·불허·일정 차단을 관리합니다.
+          </span>
         </div>
 
-        <button
-          type="button"
-          className="adm-btn ghost"
-          onClick={fetchAdminCalendar}
-          disabled={loading}
-        >
-          {loading ? "조회 중..." : "새로고침"}
-        </button>
+        <div className="adm-portal-actions">
+          <button
+            type="button"
+            className="adm-btn ghost"
+            onClick={fetchAdminCalendar}
+            disabled={loading}
+          >
+            {loading ? "조회 중..." : "Schedule View"}
+          </button>
+          <button type="button" className="adm-btn primary">
+            System Audit
+          </button>
+        </div>
       </div>
 
       {error && <section className="adm-card admin-alert error">{error}</section>}
@@ -446,9 +471,86 @@ export default function AdminCalendarPage() {
         <section className="adm-card admin-alert success">{success}</section>
       )}
 
+      <section className="adm-kpi-grid">
+        <article className="adm-kpi-card">
+          <span>Active Reservations</span>
+          <strong>{activeCount}</strong>
+          <small>예약 대기 및 승인</small>
+        </article>
+        <article className="adm-kpi-card warning">
+          <span>Pending Approvals</span>
+          <strong>{pendingCount}</strong>
+          <small>승인 검토 필요</small>
+        </article>
+        <article className="adm-kpi-card">
+          <span>Approved Sessions</span>
+          <strong>{approvedCount}</strong>
+          <small>승인 완료 상담</small>
+        </article>
+        <article className="adm-kpi-card danger">
+          <span>Blocked Slots</span>
+          <strong>{blocks.length}</strong>
+          <small>관리자 차단 일정</small>
+        </article>
+      </section>
+
+      <section className="adm-ops-grid">
+        <article className="adm-card adm-activity-card">
+          <div className="adm-card-head">
+            <div>
+              <h2>Platform Activity</h2>
+              <span>Reservation requests vs blocked schedules</span>
+            </div>
+            <strong>Last 7 Days</strong>
+          </div>
+          <div className="adm-activity-chart" aria-hidden="true">
+            <span style={{ height: "45%" }} />
+            <span style={{ height: "32%" }} />
+            <span style={{ height: "58%" }} />
+            <span style={{ height: "72%" }} />
+            <span style={{ height: "64%" }} />
+            <span style={{ height: "50%" }} />
+            <span style={{ height: "38%" }} />
+          </div>
+          <div className="adm-chart-legend">
+            <span>예약 신청</span>
+            <span>전문가 검토</span>
+          </div>
+        </article>
+
+        <article className="adm-card adm-queue-card">
+          <div className="adm-card-head">
+            <div>
+              <h2>Approval Queue</h2>
+              <span>승인 대기 중인 상담 신청</span>
+            </div>
+            <b>{pendingCount} Urgent</b>
+          </div>
+          <div className="adm-queue-list">
+            {allReservations
+              .filter((reservation) => reservation.status === "pending")
+              .slice(0, 4)
+              .map((reservation) => (
+                <div key={reservation.reservation_id}>
+                  <strong>{reservation.username || "사용자"}</strong>
+                  <span>
+                    {getFieldLabel(reservation.field)} ·{" "}
+                    {formatTime(reservation.selected_time)}
+                  </span>
+                  <em>Pending</em>
+                </div>
+              ))}
+            {pendingCount === 0 && <p>현재 승인 대기 예약이 없습니다.</p>}
+          </div>
+        </article>
+      </section>
+
       <section className="adm-card">
         <div className="adm-card-head">
-          <h2>월간 예약 현황</h2>
+          <div>
+            <h2>Reservation Management</h2>
+            <span>날짜별 예약 신청 현황과 차단된 일정을 확인합니다.</span>
+          </div>
 
           <div className="admin-calendar-tools">
             <div className="admin-calendar-picker-row">

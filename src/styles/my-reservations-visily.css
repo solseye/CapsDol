@@ -1,0 +1,527 @@
+.mrv-page {
+  min-height: 100vh;
+  background: #f4f7f9;
+  color: #172132;
+  display: flex;
+  font-family: "Inter", "Noto Sans KR", system-ui, -apple-system, sans-serif;
+}
+
+.mrv-page * {
+  box-sizing: border-box;
+}
+
+.mrv-sidebar {
+  width: 260px;
+  min-height: 100vh;
+  padding: 30px 24px;
+  background: #06233c;
+  color: #fff;
+  position: sticky;
+  top: 0;
+}
+
+.mrv-logo {
+  color: inherit;
+  text-decoration: none;
+  display: grid;
+  gap: 4px;
+}
+
+.mrv-logo span {
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #9fb8a5;
+  font-size: 24px;
+}
+
+.mrv-logo strong {
+  margin-top: 10px;
+  font-size: 18px;
+}
+
+.mrv-logo small {
+  color: rgba(255, 255, 255, 0.58);
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.mrv-side-nav {
+  margin-top: 54px;
+  display: grid;
+  gap: 10px;
+}
+
+.mrv-side-nav a {
+  color: rgba(255, 255, 255, 0.68);
+  text-decoration: none;
+  padding: 13px 14px;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.mrv-side-nav a.active,
+.mrv-side-nav a:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.mrv-shell {
+  flex: 1;
+  min-width: 0;
+}
+
+.mrv-topbar {
+  min-height: 76px;
+  padding: 0 42px;
+  background: rgba(255, 255, 255, 0.92);
+  border-bottom: 1px solid #dce4ea;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.mrv-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #6f7c8b;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.mrv-breadcrumb a,
+.mrv-top-link {
+  color: #06233c;
+  text-decoration: none;
+}
+
+.mrv-top-link {
+  border: 1px solid #cfd9e2;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-weight: 900;
+  background: #fff;
+}
+
+.mrv-main {
+  width: min(1180px, calc(100% - 56px));
+  margin: 0 auto;
+  padding: 38px 0 70px;
+}
+
+.mrv-hero {
+  min-height: 250px;
+  padding: 42px;
+  border-radius: 8px;
+  color: #fff;
+  background:
+    linear-gradient(135deg, rgba(6, 35, 60, 0.97), rgba(24, 77, 56, 0.9)),
+    repeating-linear-gradient(45deg, transparent 0 15px, rgba(255, 255, 255, 0.05) 15px 16px);
+  display: flex;
+  align-items: flex-end;
+  box-shadow: 0 24px 50px rgba(6, 35, 60, 0.18);
+}
+
+.mrv-hero p,
+.mrv-panel-head span {
+  margin: 0;
+  color: #9fb8a5;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.mrv-hero h1 {
+  margin: 12px 0 14px;
+  font-size: clamp(34px, 5vw, 64px);
+  line-height: 1.02;
+  letter-spacing: 0;
+}
+
+.mrv-hero span {
+  display: block;
+  max-width: 620px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 16px;
+  line-height: 1.7;
+  font-weight: 700;
+}
+
+.mrv-metrics {
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.mrv-metrics article,
+.mrv-panel,
+.mrv-brand-card {
+  background: #fff;
+  border: 1px solid #dfe7ed;
+  border-radius: 8px;
+  box-shadow: 0 18px 44px rgba(14, 31, 48, 0.06);
+}
+
+.mrv-metrics article {
+  padding: 22px;
+}
+
+.mrv-metrics span {
+  color: #728091;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.mrv-metrics strong {
+  display: block;
+  margin-top: 12px;
+  color: #06233c;
+  font-size: 34px;
+  line-height: 1;
+}
+
+.mrv-panel {
+  margin-top: 22px;
+  padding: 30px;
+}
+
+.mrv-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.mrv-panel-head h2 {
+  margin: 6px 0 0;
+  font-size: 28px;
+  letter-spacing: 0;
+}
+
+.mrv-panel-head a,
+.mrv-empty-box a,
+.mrv-brand-card a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 8px;
+  background: #184d38;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 900;
+}
+
+.mrv-error,
+.mrv-success {
+  margin: 0 0 16px;
+  padding: 14px 16px;
+  border-radius: 8px;
+  font-weight: 800;
+}
+
+.mrv-error {
+  background: #fff1f2;
+  color: #be123c;
+}
+
+.mrv-success {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.mrv-empty-box {
+  min-height: 160px;
+  border: 1px dashed #cbd7e0;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 12px;
+  text-align: center;
+  color: #6f7c8b;
+  font-weight: 800;
+  padding: 26px;
+}
+
+.mrv-empty-box strong {
+  color: #172132;
+  font-size: 20px;
+}
+
+.mrv-empty-box p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.mrv-list {
+  display: grid;
+  gap: 14px;
+}
+
+.mrv-item {
+  border: 1px solid #dce4ea;
+  border-radius: 8px;
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  background: #fbfcfd;
+}
+
+.mrv-item-main {
+  min-width: 0;
+  display: flex;
+  gap: 18px;
+  align-items: stretch;
+}
+
+.mrv-date-box {
+  width: 132px;
+  flex: 0 0 132px;
+  border-radius: 8px;
+  background: #06233c;
+  color: #fff;
+  padding: 16px;
+  display: grid;
+  align-content: center;
+  gap: 8px;
+}
+
+.mrv-date-box span {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.mrv-date-box strong {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.mrv-info {
+  min-width: 0;
+}
+
+.mrv-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.mrv-title-row h3 {
+  margin: 0;
+  font-size: 20px;
+  letter-spacing: 0;
+}
+
+.mrv-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.mrv-status.approved {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.mrv-status.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.mrv-status.rejected,
+.mrv-status.cancelled {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.mrv-info dl {
+  margin: 14px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 22px;
+}
+
+.mrv-info dl div {
+  display: grid;
+  gap: 4px;
+}
+
+.mrv-info dt {
+  color: #7b8794;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.mrv-info dd {
+  margin: 0;
+  color: #172132;
+  font-weight: 800;
+}
+
+.mrv-reason {
+  margin: 12px 0 0;
+  color: #5d6b7a;
+  line-height: 1.6;
+  font-weight: 700;
+}
+
+.mrv-actions {
+  flex: 0 0 auto;
+}
+
+.mrv-actions button {
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid #cfd9e2;
+  border-radius: 8px;
+  background: #fff;
+  color: #06233c;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.mrv-actions button:hover:not(:disabled) {
+  background: #eef4f7;
+}
+
+.mrv-actions button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.mrv-actions button.danger {
+  color: #991b1b;
+}
+
+.mrv-brand-card {
+  margin-top: 22px;
+  padding: 38px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+}
+
+.mrv-brand-card span {
+  width: 64px;
+  height: 64px;
+  border-radius: 8px;
+  background: #27b463;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 32px;
+  font-weight: 900;
+}
+
+.mrv-brand-card h2 {
+  margin: 18px 0 8px;
+  color: #06233c;
+  font-size: 36px;
+  letter-spacing: 0;
+}
+
+.mrv-brand-card p {
+  margin: 0;
+  color: #5d6b7a;
+  font-weight: 800;
+}
+
+@media (max-width: 980px) {
+  .mrv-page {
+    display: block;
+  }
+
+  .mrv-sidebar {
+    position: relative;
+    width: 100%;
+    min-height: auto;
+  }
+
+  .mrv-side-nav {
+    margin-top: 24px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mrv-topbar {
+    padding: 18px 24px;
+  }
+
+  .mrv-main {
+    width: min(100% - 32px, 1180px);
+  }
+
+  .mrv-metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .mrv-item,
+  .mrv-brand-card {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 640px) {
+  .mrv-topbar,
+  .mrv-panel-head {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .mrv-hero {
+    padding: 30px 24px;
+  }
+
+  .mrv-metrics,
+  .mrv-side-nav {
+    grid-template-columns: 1fr;
+  }
+
+  .mrv-panel {
+    padding: 20px;
+  }
+
+  .mrv-item-main {
+    flex-direction: column;
+  }
+
+  .mrv-date-box {
+    width: 100%;
+    flex-basis: auto;
+  }
+
+  .mrv-actions button {
+    width: 100%;
+  }
+}
+
+/* 사용자 페이지에서는 좌측 대시보드를 제거하고 예약 내역을 전체 폭으로 사용합니다. */
+.mrv-page {
+  display: block;
+}
+
+.mrv-sidebar {
+  display: none;
+}

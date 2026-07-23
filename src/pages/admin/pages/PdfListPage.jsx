@@ -90,6 +90,14 @@ export default function PdfListPage() {
     );
   }, [filesByFolder]);
 
+  const activeFileCount = allFiles.filter(
+    (file) => (file.ragMetadata?.file_status || "active") === "active"
+  ).length;
+
+  const inactiveFileCount = allFiles.filter(
+    (file) => (file.ragMetadata?.file_status || "active") !== "active"
+  ).length;
+
   const fetchFilesByFolder = async (folder) => {
     const data = await getRagFiles({
       bucket: "chat",
@@ -281,11 +289,14 @@ export default function PdfListPage() {
 
   return (
     <div className="adm-page">
-      <div className="adm-page-head">
+      <div className="adm-portal-head">
         <div>
-          <p className="adm-eyebrow">PDF Library</p>
-          <h2>PDF 자료 목록</h2>
-          <span>현재 챗봇에 등록된 자료를 확인합니다.</span>
+          <p className="adm-eyebrow">Document Library</p>
+          <h2>문서 라이브러리</h2>
+          <span>
+            챗봇이 참고하는 자료를 분야별로 확인하고, 상태 변경과 벡터 DB
+            제작을 관리합니다.
+          </span>
         </div>
 
         <div className="admin-page-actions">
@@ -306,6 +317,29 @@ export default function PdfListPage() {
           >
             {isIndexing ? "제작 중..." : "벡터 DB 제작"}
           </button>
+        </div>
+      </div>
+
+      <div className="adm-library-stats">
+        <div className="adm-mini-stat">
+          <span>전체 자료</span>
+          <strong>{allFiles.length}</strong>
+          <small>모든 분야 합산</small>
+        </div>
+        <div className="adm-mini-stat">
+          <span>사용 중</span>
+          <strong>{activeFileCount}</strong>
+          <small>챗봇 검색 대상</small>
+        </div>
+        <div className="adm-mini-stat">
+          <span>비활성/보관</span>
+          <strong>{inactiveFileCount}</strong>
+          <small>검색 제외 가능</small>
+        </div>
+        <div className="adm-mini-stat">
+          <span>현재 분야</span>
+          <strong>{selectedFiles.length}</strong>
+          <small>{getFolderLabel(selectedFolder)}</small>
         </div>
       </div>
 
@@ -336,7 +370,7 @@ export default function PdfListPage() {
         }
       >
         <div className="admin-file-summary">
-          <strong>{getFolderLabel(selectedFolder)}</strong>
+          <strong>{getFolderLabel(selectedFolder)} 자료</strong>
           <span>
             {getFolderGroup(selectedFolder)} 자료 · {selectedFiles.length}개
           </span>

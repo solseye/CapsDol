@@ -1,81 +1,110 @@
 import { getCurrentLanguage, translate } from "../../i18n/translations";
+import "../../styles/sonny-selected-home.css";
 
 export default function SupportInfo() {
   const language = getCurrentLanguage();
   const t = (key) => translate(language, key);
 
+  // 변경 이유: sonny 브랜치의 전문가 소개 디자인처럼 경력과 전문 분야를 더 읽기 쉬운 프로필 형태로 보여주기 위함입니다.
+  // 기존 번역 키와 전문가 정보는 그대로 사용하고, 화면 구조만 정리했습니다.
+  const experts = [
+    {
+      initial: "K",
+      name: t("home.expert1Name"),
+      role: t("home.expert1Role"),
+      careers: [
+        t("home.expert1Career1"),
+        t("home.expert1Career2"),
+        t("home.expert1Career3"),
+        t("home.expert1Career4"),
+        t("home.expert1Career5"),
+        t("home.expert1Career6"),
+      ],
+      specialties: [
+        t("home.expert1Specialty1"),
+        t("home.expert1Specialty2"),
+        t("home.expert1Specialty3"),
+        t("home.expert1Specialty4"),
+        t("home.expert1Specialty5"),
+        t("home.expert1Specialty6"),
+        t("home.expert1Specialty7"),
+      ],
+    },
+    {
+      initial: "G",
+      name: t("home.expert2Name"),
+      role: t("home.expert2Role"),
+      careers: [
+        t("home.expert2Career1"),
+        t("home.expert2Career2"),
+        t("home.expert2Career3"),
+        t("home.expert2Career4"),
+        t("home.expert2Career5"),
+        t("home.expert2Career6"),
+      ],
+      specialties: [
+        t("home.expert2Specialty1"),
+        t("home.expert2Specialty2"),
+        t("home.expert2Specialty3"),
+        t("home.expert2Specialty4"),
+        t("home.expert2Specialty5"),
+      ],
+    },
+  ];
+
   return (
-    <>
-      {/* Expert Info */}
-      <section id="expert">
-        <div className="container">
-          <div className="kicker">Expert Info</div>
-
+    <section id="expert" className="selected-support">
+      <div className="container">
+        <div className="selected-section-head">
+          <div className="selected-kicker">Expert Info</div>
           <h2 className="section-title">{t("home.expertTitle")}</h2>
-
-          <div className="grid2">
-            <div className="card expert-card">
-              <div className="expert-head">
-                <div className="avatar" aria-hidden="true">
-                  K
-                </div>
-                <h3>{t("home.expert1Name")}</h3>
-              </div>
-
-              <p className="head">{t("home.expert1Role")}</p>
-              <ul className="list">
-                <p className="muted m0">{t("home.career")}</p>
-                <li>{t("home.expert1Career1")}</li>
-                <li>{t("home.expert1Career2")}</li>
-                <li>{t("home.expert1Career3")}</li>
-                <li>{t("home.expert1Career4")}</li>
-                <li>{t("home.expert1Career5")}</li>
-                <li>{t("home.expert1Career6")}</li>
-              </ul>
-              <ul className="list">
-                <p className="muted m0">{t("home.specialty")}</p>
-                <li>{t("home.expert1Specialty1")}</li>
-                <li>{t("home.expert1Specialty2")}</li>
-                <li>{t("home.expert1Specialty3")}</li>
-                <li>{t("home.expert1Specialty4")}</li>
-                <li>{t("home.expert1Specialty5")}</li>
-                <li>{t("home.expert1Specialty6")}</li>
-                <li>{t("home.expert1Specialty7")}</li>
-              </ul>
-            </div>
-
-            <div className="card expert-card">
-              <div className="expert-head">
-                <div className="avatar" aria-hidden="true">
-                  G
-                </div>
-                <h3>{t("home.expert2Name")}</h3>
-              </div>
-
-              <p className="head">{t("home.expert2Role")}</p>
-              <ul className="list">
-                <p className="muted m0">{t("home.career")}</p>
-                <li>{t("home.expert2Career1")}</li>
-                <li>{t("home.expert2Career2")}</li>
-                <li>{t("home.expert2Career3")}</li>
-                <li>{t("home.expert2Career4")}</li>
-                <li>{t("home.expert2Career5")}</li>
-                <li>{t("home.expert2Career6")}</li>
-                <br></br>
-              </ul>
-              <ul className="list">
-                <p className="muted m0">{t("home.specialty")}</p>
-                <li>{t("home.expert2Specialty1")}</li>
-                <li>{t("home.expert2Specialty2")}</li>
-                <li>{t("home.expert2Specialty3")}</li>
-                <li>{t("home.expert2Specialty4")}</li>
-                <li>{t("home.expert2Specialty5")}</li>
-              </ul>
-            </div>
-          </div>
-          <h3 className="kicker">{t("home.expertClosing")}</h3>
+          <p className="section-desc">
+            일본 현지 법인 설립, 세무, 비자, 등기 실무를 전문가 상담으로
+            연결합니다.
+          </p>
         </div>
-      </section>
-    </>
+
+        <div className="selected-expert-grid">
+          {experts.map((expert) => (
+            <article className="selected-expert-card" key={expert.name}>
+              <div className="selected-expert-avatar" aria-hidden="true">
+                {expert.initial}
+              </div>
+
+              <div className="selected-expert-content">
+                <div className="selected-expert-title">
+                  <h3>{expert.name}</h3>
+                  <p>{expert.role}</p>
+                </div>
+
+                <div className="selected-expert-details">
+                  <div>
+                    <p className="selected-expert-label">{t("home.career")}</p>
+                    <ul className="selected-expert-careers">
+                      {expert.careers.map((career) => (
+                        <li key={career}>{career}</li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div>
+                    <p className="selected-expert-label">
+                      {t("home.specialty")}
+                    </p>
+                    <div className="selected-expert-tags">
+                      {expert.specialties.map((specialty) => (
+                        <span key={specialty}>{specialty}</span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <h3 className="selected-expert-closing">{t("home.expertClosing")}</h3>
+      </div>
+    </section>
   );
 }

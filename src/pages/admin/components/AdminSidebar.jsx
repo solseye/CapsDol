@@ -5,19 +5,19 @@ import { NavLink } from "react-router-dom";
 const menuItems = [
   {
     to: "/admin/calendar",
-    label: "신청 기록 캘린더",
+    label: "Admin Dashboard",
   },
   {
     to: "/admin/pdf-upload",
-    label: "PDF 업로드",
+    label: "PDF Upload",
   },
   {
     to: "/admin/pdf-list",
-    label: "PDF 자료 목록",
+    label: "Document Library",
   },
   {
     to: "/admin/chatbot",
-    label: "관리자 챗봇",
+    label: "AI Chatbot",
   },
 ];
 
@@ -26,11 +26,11 @@ export default function AdminSidebar() {
     <aside className="adm-sidebar">
       {/* 💡 수정 포인트: 사용자가 로고를 클릭하면 유저 홈페이지(Home.jsx)인 "/" 경로로 탈출하도록 변경 */}
       <NavLink to="/" className="adm-brand">
-        <span>W</span>
+        <span>◎</span>
 
         <div>
-          <strong>WVA</strong>
-          <small>Admin</small>
+          <strong>WVA AI Consulting</strong>
+          <small>Japan Entry OS</small>
         </div>
       </NavLink>
 
@@ -48,6 +48,12 @@ export default function AdminSidebar() {
           </NavLink>
         ))}
       </nav>
+
+      <div className="adm-sidebar-footer">
+        <span>Settings</span>
+        <span>Help Center</span>
+        <strong>Admin Operator</strong>
+      </div>
     </aside>
   );
 }
