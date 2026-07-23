@@ -744,3 +744,775 @@ footer {
   color: #ffffff;
   border-color: #23834f;
 }
+
+/* =========================
+   My Page Main
+========================= */
+
+.mypage {
+  width: 100%;
+  max-width: 2500px;
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+/* 상단 마이페이지 소개 */
+.mypage .reserve-hero {
+  width: 100%;
+  max-width: 880px;
+  margin: 44px auto 0;
+  padding: 42px 32px;
+  text-align: center;
+}
+
+/* 메뉴 카드 전체 영역 */
+.mypage-menu-grid {
+  width: 100%;
+  max-width: 760px;
+  margin: 70px auto 0;
+
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+/* 개별 카드 */
+.mypage-menu-card {
+  min-height: 260px;
+  padding: 38px 42px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+
+  text-align: center;
+  border-radius: 24px;
+}
+
+/* 숫자 아이콘 */
+.mypage-menu-icon {
+  width: 54px;
+  height: 54px;
+  margin-bottom: 20px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 18px;
+  background: #ecfdf3;
+  color: #138a4b;
+
+  font-size: 14px;
+  font-weight: 900;
+}
+
+/* 카드 텍스트 영역 */
+.mypage-menu-content {
+  width: 100%;
+  max-width: 500px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.mypage-menu-content .adm-eyebrow {
+  margin: 0;
+}
+
+.mypage-menu-content h2 {
+  margin: 0;
+  color: #172033;
+  font-size: 24px;
+}
+
+.mypage-menu-content > p:last-child {
+  margin: 4px 0 0;
+  color: #657185;
+  line-height: 1.75;
+  word-break: keep-all;
+}
+
+/* 버튼 위치 통일 */
+.mypage-menu-card > .adm-btn {
+  min-width: 150px;
+  margin-top: auto;
+  padding: 12px 24px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 홈 버튼 */
+.mypage-home-actions {
+  width: 100%;
+  max-width: 760px;
+  margin: 24px auto 60px;
+
+  display: flex;
+  justify-content: center;
+}
+
+/* 모바일 */
+@media (max-width: 768px) {
+  .mypage {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .mypage-main-page .reserve-hero {
+    margin-top: 26px;
+    padding: 34px 20px;
+  }
+
+  .mypage-menu-grid {
+    margin-top: 36px;
+    gap: 18px;
+  }
+
+  .mypage-menu-card {
+    min-height: 280px;
+    padding: 32px 24px;
+  }
+
+  .mypage-menu-content h2 {
+    font-size: 21px;
+  }
+
+  .mypage-menu-content > p:last-child {
+    font-size: 14px;
+  }
+
+  .mypage-menu-card > .adm-btn {
+    width: 100%;
+    max-width: 220px;
+  }
+}
+
+/* ========================================
+   My Reservations Page
+======================================== */
+
+.mypage-reservations-page {
+  width: 100%;
+  max-width: none;
+  min-height: calc(100vh - 72px);
+  margin: 0;
+  padding: 44px 24px 70px;
+}
+
+/* 상단 소개 영역 */
+.mypage-reservations-page .reserve-hero {
+  padding: 42px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border-radius: 24px;
+}
+
+.mypage-files-page .reserve-hero {
+  padding: 42px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border-radius: 24px;
+}
+
+.mypage-reservations-page .reserve-hero .adm-eyebrow {
+  margin: 0 0 8px;
+}
+
+.mypage-reservations-page .reserve-hero h2 {
+  margin: 0;
+}
+
+.mypage-reservations-page .reserve-hero span {
+  display: block;
+  margin-top: 12px;
+  color: #657185;
+}
+
+/* 마이페이지 하위 메뉴 */
+.mypage-reservations-page .mypage-sub-nav {
+  width: 100%;
+  max-width: 880px;
+  margin: 24px auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* 기존 링크 스타일 충돌 방지 */
+.mypage-reservations-page .mypage-sub-nav .adm-btn {
+  width: auto;
+  min-width: 130px;
+  margin: 0;
+  padding: 11px 18px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* 예약 목록 카드 */
+.mypage-reservations-page .reserve-history-card {
+  width: 100%;
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 24px;
+
+  border-radius: 22px;
+}
+
+/* 카드 제목 영역 */
+.mypage-reservations-page .reserve-history-card .adm-card-head {
+  width: 100%;
+  margin-bottom: 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.mypage-reservations-page
+  .reserve-history-card
+  .adm-card-head
+  h2 {
+  margin: 4px 0 0;
+}
+
+/* 상담 내역 목록 */
+.mypage-reservations-page .reserve-list {
+  width: 100%;
+  display: grid;
+  gap: 14px;
+}
+
+/* 개별 상담 내역 */
+.mypage-reservations-page .reserve-item {
+  width: 100%;
+  min-height: 82px;
+  padding: 18px 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+
+  border: 1px solid #e1e7ee;
+  border-radius: 16px;
+  background: #ffffff;
+}
+
+.mypage-reservations-page .reserve-item > div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.mypage-reservations-page .reserve-item strong {
+  color: #172033;
+  line-height: 1.5;
+  word-break: keep-all;
+}
+
+.mypage-reservations-page .reservation-status {
+  display: block;
+  line-height: 1.6;
+}
+
+/* 취소 및 삭제 버튼 */
+.mypage-reservations-page .reserve-item > .adm-btn {
+  width: auto;
+  min-width: 100px;
+  margin: 0;
+  flex-shrink: 0;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 빈 목록 */
+.mypage-reservations-page .reserve-empty-box {
+  width: 100%;
+  min-height: 150px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+}
+
+/* 태블릿 및 모바일 */
+@media (max-width: 768px) {
+  .mypage-reservations-page {
+    padding: 28px 16px 50px;
+  }
+
+  .mypage-reservations-page .reserve-hero {
+    padding: 34px 20px;
+  }
+
+  .mypage-reservations-page .mypage-sub-nav {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .mypage-reservations-page .mypage-sub-nav .adm-btn {
+    width: 100%;
+  }
+
+  .mypage-reservations-page .reserve-history-card {
+    padding: 18px;
+  }
+
+  .mypage-reservations-page
+    .reserve-history-card
+    .adm-card-head {
+    align-items: flex-start;
+  }
+
+  .mypage-reservations-page .reserve-item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .mypage-reservations-page .reserve-item > .adm-btn {
+    width: 100%;
+  }
+}
+
+/* ========================================
+   My Files Page
+======================================== */
+
+.mypage-files-page {
+  width: 100%;
+  max-width: none;
+  min-height: calc(100vh - 70px);
+  margin: 0;
+  padding: 44px 24px 70px;
+  box-sizing: border-box;
+  background: #f4f7fb;
+}
+
+/* 공통 콘텐츠 너비 */
+.mypage-files-page > .reserve-hero,
+.mypage-files-page > .mypage-sub-nav,
+.mypage-files-page > .mypage-upload-card,
+.mypage-files-page > .mypage-file-card {
+  width: 100%;
+  max-width: 880px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* 상단 소개 */
+.mypage-files-page .reserve-hero {
+  padding: 42px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border-radius: 24px;
+}
+
+.mypage-files-page .reserve-hero .adm-eyebrow {
+  margin: 0 0 8px;
+}
+
+.mypage-files-page .reserve-hero h2 {
+  margin: 0;
+}
+
+.mypage-files-page .reserve-hero span {
+  display: block;
+  margin-top: 12px;
+  color: #657185;
+}
+
+/* 하위 메뉴 */
+.mypage-files-page .mypage-sub-nav {
+  margin-top: 24px;
+  margin-bottom: 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.mypage-files-page .mypage-sub-nav .adm-btn {
+  width: auto;
+  min-width: 130px;
+  margin: 0;
+  padding: 11px 18px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  white-space: nowrap;
+}
+
+/* 업로드 카드 */
+.mypage-files-page .mypage-upload-card {
+  padding: 24px;
+  border-radius: 22px;
+}
+
+.mypage-files-page .mypage-upload-card .adm-card-head {
+  margin-bottom: 18px;
+}
+
+.mypage-files-page .mypage-upload-box {
+  min-height: 300px;
+  padding: 34px 28px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+
+  border: 1px dashed #ccd7e5;
+  border-radius: 18px;
+  background: #f9fbfd;
+  text-align: center;
+}
+
+.mypage-files-page .mypage-upload-icon {
+  width: 64px;
+  height: 64px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 18px;
+  background: #ecfdf3;
+  color: #168a4b;
+  font-weight: 900;
+}
+
+.mypage-files-page .mypage-upload-description {
+  width: 100%;
+  max-width: 480px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.mypage-files-page .mypage-upload-description h3 {
+  margin: 0;
+  color: #172033;
+}
+
+.mypage-files-page .mypage-upload-description p {
+  margin: 0;
+  color: #657185;
+  line-height: 1.7;
+  word-break: keep-all;
+}
+
+.mypage-files-page .mypage-upload-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.mypage-files-page .adm-selected-file {
+  min-height: 24px;
+  color: #657185;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.mypage-files-page .mypage-upload-message {
+  margin: 0;
+  color: #168a4b;
+  font-weight: 800;
+}
+
+/* 업로드된 파일 카드 */
+.mypage-files-page .mypage-file-card {
+  margin-top: 22px;
+  padding: 24px;
+  border-radius: 22px;
+}
+
+.mypage-files-page .mypage-file-card .adm-card-head {
+  margin-bottom: 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+/* 파일 목록 */
+.mypage-files-page .mypage-file-list {
+  width: 100%;
+  display: grid;
+  gap: 12px;
+}
+
+.mypage-files-page .mypage-file-item {
+  width: 100%;
+  min-height: 82px;
+  padding: 16px 18px;
+
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  border: 1px solid #e1e7ee;
+  border-radius: 16px;
+  background: #ffffff;
+}
+
+.mypage-files-page .mypage-file-type {
+  width: 54px;
+  height: 54px;
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 14px;
+  background: #ecfdf3;
+  color: #168a4b;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.mypage-files-page .mypage-file-info {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.mypage-files-page .mypage-file-info strong {
+  color: #172033;
+  overflow-wrap: anywhere;
+}
+
+.mypage-files-page .mypage-file-info span {
+  color: #657185;
+  font-size: 13px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.mypage-files-page .mypage-file-info small {
+  color: #168a4b;
+  font-weight: 800;
+}
+
+/* 빈 목록 */
+.mypage-files-page .reserve-empty-box {
+  min-height: 130px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px dashed #ccd7e5;
+  border-radius: 16px;
+  background: #f9fbfd;
+  text-align: center;
+}
+
+/* 모바일 */
+@media (max-width: 768px) {
+  .mypage-files-page {
+    padding: 28px 16px 50px;
+  }
+
+  .mypage-files-page .reserve-hero {
+    padding: 34px 20px;
+  }
+
+  .mypage-files-page .mypage-sub-nav {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .mypage-files-page .mypage-sub-nav .adm-btn {
+    width: 100%;
+  }
+
+  .mypage-files-page .mypage-upload-card,
+  .mypage-files-page .mypage-file-card {
+    padding: 18px;
+  }
+
+  .mypage-files-page .mypage-upload-box {
+    min-height: 280px;
+    padding: 28px 18px;
+  }
+
+  .mypage-files-page .mypage-file-card .adm-card-head {
+    align-items: flex-start;
+  }
+
+  .mypage-files-page .mypage-file-item {
+    align-items: flex-start;
+  }
+
+  .mypage-files-page .mypage-file-type {
+    width: 46px;
+    height: 46px;
+  }
+}
+
+.mypage-files-page .mypage-upload-form {
+  width: 100%;
+  max-width: 560px;
+
+  display: grid;
+  gap: 16px;
+
+  margin-top: 6px;
+  text-align: left;
+}
+
+.mypage-files-page .mypage-upload-field {
+  width: 100%;
+  display: grid;
+  gap: 8px;
+}
+
+.mypage-files-page .mypage-upload-field > span {
+  color: #172033;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.mypage-files-page .mypage-upload-field > span strong {
+  color: #16a05d;
+}
+
+.mypage-files-page .mypage-upload-field input,
+.mypage-files-page .mypage-upload-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+
+  border: 1px solid #dfe6ee;
+  border-radius: 14px;
+
+  padding: 13px 15px;
+
+  background: #ffffff;
+  color: #172033;
+
+  font: inherit;
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.mypage-files-page .mypage-upload-field textarea {
+  min-height: 110px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.mypage-files-page .mypage-upload-field input:focus,
+.mypage-files-page .mypage-upload-field textarea:focus {
+  border-color: #21ad65;
+  box-shadow: 0 0 0 4px rgba(33, 173, 101, 0.12);
+}
+
+.mypage-files-page .mypage-upload-field input:disabled,
+.mypage-files-page .mypage-upload-field textarea:disabled {
+  background: #f2f5f8;
+  cursor: not-allowed;
+}
+
+.mypage-files-page
+  .mypage-upload-box
+  > .adm-btn.primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.mypage-files-page
+  .mypage-file-item
+  > .adm-btn {
+  width: auto;
+  min-width: 90px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .mypage-files-page .mypage-file-item {
+    flex-wrap: wrap;
+  }
+
+  .mypage-files-page
+    .mypage-file-item
+    > .adm-btn {
+    width: 100%;
+    margin-left: 0;
+  }
+}
+
+.mypage-files-page .mypage-file-actions {
+  margin-left: auto;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mypage-files-page .mypage-file-actions .adm-btn {
+  width: auto;
+  min-width: 84px;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .mypage-files-page .mypage-file-actions {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .mypage-files-page .mypage-file-actions .adm-btn {
+    flex: 1;
+    min-width: 90px;
+  }
+}

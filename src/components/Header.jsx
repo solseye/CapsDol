@@ -3,13 +3,15 @@ import { logoutUser } from "../api/authApi";
 
 export default function Header({ isLoggedIn }) {
   const location = useLocation();
-
   const role = localStorage.getItem("role");
 
-  const handleLogoClick = (e) => {
+  const handleLogoClick = (event) => {
     if (location.pathname === "/") {
-      e.preventDefault();
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      event.preventDefault();
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
     }
   };
 
@@ -27,15 +29,9 @@ export default function Header({ isLoggedIn }) {
   const handleLogout = async () => {
     try {
       await logoutUser();
-
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("user");
-      localStorage.removeItem("role");
-
-      window.location.href = "/";
     } catch (err) {
       console.error("로그아웃 실패:", err);
-
+    } finally {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("user");
       localStorage.removeItem("role");
@@ -56,13 +52,15 @@ export default function Header({ isLoggedIn }) {
           <nav className="main-nav" aria-label="주요 메뉴">
             <ul>
               <li>
-                <a href="#about">회사 개요</a>
+                <a href="/#about">회사 개요</a>
               </li>
+
               <li>
-                <a href="#service">서비스</a>
+                <a href="/#service">서비스</a>
               </li>
+
               <li>
-                <a href="#flow">업무 흐름</a>
+                <a href="/#flow">업무 흐름</a>
               </li>
 
               {!isLoggedIn && (
@@ -75,32 +73,44 @@ export default function Header({ isLoggedIn }) {
 
               {isLoggedIn && role === "admin" && (
                 <li>
-                  <Link to="/admin/calendar" className="btn primary nav-cta">
+                  <Link
+                    to="/admin/calendar"
+                    className="btn primary nav-cta"
+                  >
                     관리자 페이지
                   </Link>
                 </li>
               )}
 
               {isLoggedIn && role !== "admin" && (
-                <li>
-                  {/* 주소를 /reservation 으로 정확히 맞춰줍니다 */}
-                  <Link to="/reservation" className="btn primary nav-cta">
-                    상담 예약
-                  </Link>
-                </li>
-              )}
+                <>
+                  <li>
+                    <Link
+                      to="/reservation"
+                      className="btn primary nav-cta"
+                    >
+                      상담 예약
+                    </Link>
+                  </li>
 
-              {isLoggedIn && role !== "admin" && (
-                <li>
-                  <Link to="/myreservations" className="btn primary nav-cta">
-                    상담 내역
-                  </Link>
-                </li>
+                  <li>
+                    <Link
+                      to="/mypage"
+                      className="btn primary nav-cta"
+                    >
+                      마이페이지
+                    </Link>
+                  </li>
+                </>
               )}
 
               {isLoggedIn && (
                 <li>
-                  <button onClick={handleLogout} className="nav-logout">
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="nav-logout"
+                  >
                     로그아웃
                   </button>
                 </li>
@@ -116,6 +126,7 @@ export default function Header({ isLoggedIn }) {
             >
               KO
             </button>
+
             <button
               type="button"
               className="lang-option"

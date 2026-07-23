@@ -16,6 +16,10 @@ const menuItems = [
     label: "PDF 자료 목록",
   },
   {
+    to: "/admin/users",
+    label: "사용자 목록",
+  },
+  {
     to: "/admin/chatbot",
     label: "관리자 챗봇",
   },
@@ -24,7 +28,6 @@ const menuItems = [
 export default function AdminSidebar() {
   return (
     <aside className="adm-sidebar">
-      {/* 💡 수정 포인트: 사용자가 로고를 클릭하면 유저 홈페이지(Home.jsx)인 "/" 경로로 탈출하도록 변경 */}
       <NavLink to="/" className="adm-brand">
         <span>W</span>
 
