@@ -47,6 +47,16 @@
   margin-bottom: 24px;
 }
 
+.hs-head-actions {
+  display: flex;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.hs-head > div:first-child {
+  flex: 1;
+}
+
 .hs-block-title {
   margin: 0 0 18px;
   font-size: 20px;

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { createArticles } from "../api/articleApi";
 import "../App.css";
 
 export default function HearingSheet() {
@@ -12,7 +13,14 @@ export default function HearingSheet() {
   const [representativeDirector, setRepresentativeDirector] = useState("");
   const [directorTerm, setDirectorTerm] = useState("");
 
+  const [headOfficeAddress, setHeadOfficeAddress] = useState("");
+  const [totalSharesAuthorized, setTotalSharesAuthorized] = useState("");
+  const [initialIssuedShares, setInitialIssuedShares] = useState("");
+
   const [purposes, setPurposes] = useState([{ content: "" }]);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const [founders, setFounders] = useState([
     {
@@ -214,52 +222,73 @@ ${directorText}
 
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (
+      Number(initialIssuedShares) >
+      Number(totalSharesAuthorized)
+    ) {
+      setSubmitError(
+        "설립 시 발행 주식 수는 발행 가능 주식 총수보다 클 수 없습니다."
+      );
+      return;
+    }
 
     const hearingSheetData = {
       companyName,
       companyNameEn,
+
       Purpose: convertArrayToObject(purposes),
+
       capital,
+
       capitalPaymentBank: {
         bankName,
         branchName,
       },
+
       Founder: convertArrayToObject(founders),
+
       Director: convertArrayToObject(directors),
+
       representativeDirector,
       directorTerm,
+      headOfficeAddress,
+      totalSharesAuthorized,
+      initialIssuedShares,
+
+      description: "히어링 시트 기반 정관",
     };
 
-    // 기존 동작입니다.
-    // console.log("Backend로 보낼 JSON:", hearingSheetData);
+    try {
+      setIsSubmitting(true);
+      setSubmitError("");
 
-    // 변경 이유: 히어링 시트 제출 후 정관 확인 페이지에서 입력값 기반 초안을 확인할 수 있도록
-    // ArticlesPreview 페이지로 정관 텍스트를 전달합니다.
-    console.log("Backend로 보낼 JSON:", hearingSheetData);
+      const result = await createArticles(hearingSheetData);
 
-    const articlesData = {
-      source: hearingSheetData,
-      content: buildArticlesContent(hearingSheetData),
-      sections: buildArticlesSections(hearingSheetData),
-    };
+      const articlesData = {
+        source: hearingSheetData,
+        content: buildArticlesContent(hearingSheetData),
+        sections: buildArticlesSections(hearingSheetData),
+      };
 
-    navigate("/articles-result", {
-      state: { articlesData },
-    });
-
-    /*
-      axios 또는 fetch 예시
-
-      fetch("http://localhost:8080/api/hearing-sheet", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      navigate("/articles-result", {
+        state: {
+          articlesData,
+          createdFile: result.file,
         },
-        body: JSON.stringify(hearingSheetData),
       });
-    */
+    } catch (error) {
+      console.error("정관 생성 실패:", error);
+
+      setSubmitError(
+        error.message ||
+          "정관 생성 중 오류가 발생했습니다."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -516,17 +545,75 @@ ${directorText}
               </div>
             </section>
 
+            <section className="hs-block">
+              <h2 className="hs-block-title">9. 본점 소재지</h2>
+
+              <div className="hs-field">
+                <label className="hs-label">본점 소재지</label>
+                <input
+                  className="hs-input"
+                  value={headOfficeAddress}
+                  onChange={(e) => setHeadOfficeAddress(e.target.value)}
+                  placeholder="예: 오사카시 기타구"
+                  required
+                />
+              </div>
+            </section>
+
+            <section className="hs-block">
+              <h2 className="hs-block-title">10. 발행 가능 주식 총수</h2>
+
+              <div className="hs-field">
+                <label className="hs-label">발행 가능 주식 총수</label>
+                <input
+                  className="hs-input"
+                  type="number"
+                  min="1"
+                  value={totalSharesAuthorized}
+                  onChange={(e) => setTotalSharesAuthorized(e.target.value)}
+                  placeholder="예: 1000"
+                  required
+                />
+              </div>
+            </section>
+
+            <section className="hs-block">
+              <h2 className="hs-block-title">11. 설립 시 발행 주식 수</h2>
+
+              <div className="hs-field">
+                <label className="hs-label">설립 시 발행 주식 수</label>
+                <input
+                  className="hs-input"
+                  type="number"
+                  min="1"
+                  value={initialIssuedShares}
+                  onChange={(e) => setInitialIssuedShares(e.target.value)}
+                  placeholder="예: 100"
+                  required
+                />
+              </div>
+            </section>
+
+            {submitError && (
+              <p className="login-error">
+                {submitError}
+              </p>
+            )}
+
             <div className="hs-actions">
-              <button type="button" className="btn">
-                임시 저장
-              </button>
 
               <Link to="/reservation" className="btn primary nav-cta">
                 상담 예약페이지로 이동
               </Link>
 
-              <button type="submit" className="btn primary">
-                제출하기
+              <button
+                type="submit"
+                className="btn primary"
+                disabled={isSubmitting}
+              >
+                {isSubmitting
+                  ? "정관 생성 중..."
+                  : "제출하기"}
               </button>
             </div>
           </form>

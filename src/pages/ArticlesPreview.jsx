@@ -201,6 +201,10 @@ export default function ArticlesPreview() {
             <Link to="/hearing-sheet" className="btn">
               히어링 시트 수정하기
             </Link>
+            
+            <Link to="/" className="btn">
+              메인으로 돌아가기
+            </Link>
           </div>
 
           <section className="hs-block articles-preview-block articles-paper">
