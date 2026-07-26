@@ -52,6 +52,21 @@ function getSelectedDateIso(dateKey) {
   return `${dateKey}T00:00:00.000Z`;
 }
 
+function normalizeTimeInput(value) {
+  const match = String(value || "")
+    .trim()
+    .match(/^(\d{1,2}):(\d{2})$/);
+
+  if (!match) return "";
+
+  const hour = Number(match[1]);
+  const minute = Number(match[2]);
+
+  if (hour < 0 || hour > 23 || minute < 0 || minute > 59) return "";
+
+  return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+}
+
 function buildCalendarDays(viewDate) {
   const year = viewDate.getFullYear();
   const month = viewDate.getMonth();
@@ -128,6 +143,7 @@ export default function AdminCalendarPage() {
   const [blocks, setBlocks] = useState([]);
 
   const [selectedBlockTimes, setSelectedBlockTimes] = useState(["09:00"]);
+  const [customBlockTime, setCustomBlockTime] = useState("");
   const [selectedBlockFields, setSelectedBlockFields] = useState([null]);
   const [blockReason, setBlockReason] = useState("");
 
@@ -232,6 +248,10 @@ export default function AdminCalendarPage() {
     (reservation) =>
       reservation.status === "pending" || reservation.status === "approved"
   ).length;
+  const availableBlockTimes = useMemo(
+    () => [...new Set([...TIME_OPTIONS, ...selectedBlockTimes])].sort(),
+    [selectedBlockTimes]
+  );
 
   const handlePrevMonth = () => {
     const nextMonth = new Date(
@@ -309,6 +329,23 @@ export default function AdminCalendarPage() {
 
       return [...prev, time];
     });
+  };
+
+  const handleAddCustomBlockTime = () => {
+    const normalizedTime = normalizeTimeInput(customBlockTime);
+
+    if (!normalizedTime) {
+      setError("올바른 시간을 입력해 주세요.");
+      setSuccess("");
+      return;
+    }
+
+    setSelectedBlockTimes((prev) =>
+      prev.includes(normalizedTime) ? prev : [...prev, normalizedTime]
+    );
+    setCustomBlockTime("");
+    setError("");
+    setSuccess("");
   };
 
   const handleBlockSchedule = async () => {
@@ -669,7 +706,7 @@ export default function AdminCalendarPage() {
                     <small className="admin-block-label">차단 시간</small>
 
                     <div className="admin-block-grid time-grid">
-                      {TIME_OPTIONS.map((time) => (
+                      {availableBlockTimes.map((time) => (
                         <button
                           key={time}
                           type="button"
@@ -681,6 +718,26 @@ export default function AdminCalendarPage() {
                           {time}
                         </button>
                       ))}
+                    </div>
+
+                    <div className="admin-custom-time">
+                      <input
+                        type="time"
+                        value={customBlockTime}
+                        onChange={(e) => {
+                          setCustomBlockTime(e.target.value);
+                          setError("");
+                          setSuccess("");
+                        }}
+                        aria-label="직접 차단 시간 입력"
+                      />
+                      <button
+                        type="button"
+                        className="adm-btn ghost"
+                        onClick={handleAddCustomBlockTime}
+                      >
+                        시간 추가
+                      </button>
                     </div>
                   </div>
 

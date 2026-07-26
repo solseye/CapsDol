@@ -41,6 +41,16 @@ export default function Login() {
 
         localStorage.setItem("accessToken", data.accessToken);
         localStorage.setItem("role", data.role);
+        localStorage.setItem(
+          "user",
+          JSON.stringify(
+            data.user || {
+              username: data.username || "Google 사용자",
+              email: data.email || "",
+              role: data.role,
+            }
+          )
+        );
 
         navigate(data.role === "admin" ? "/admin/calendar" : "/");
       } catch (err) {
@@ -125,6 +135,16 @@ export default function Login() {
 
       localStorage.setItem("accessToken", data.accessToken);
       localStorage.setItem("role", data.role);
+      localStorage.setItem(
+        "user",
+        JSON.stringify(
+          data.user || {
+            username: form.username.trim(),
+            email: data.email || "",
+            role: data.role,
+          }
+        )
+      );
       navigate(data.role === "admin" ? "/admin/calendar" : "/");
     } catch (err) {
       console.error("로그인 실패:", err);

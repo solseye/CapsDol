@@ -8,6 +8,10 @@ const menuItems = [
     label: "Admin Dashboard",
   },
   {
+    to: "/admin/users",
+    label: "Users",
+  },
+  {
     to: "/admin/pdf-upload",
     label: "PDF Upload",
   },
@@ -18,6 +22,10 @@ const menuItems = [
   {
     to: "/admin/chatbot",
     label: "AI Chatbot",
+  },
+  {
+    to: "/admin/chat-logs",
+    label: "Question Logs",
   },
 ];
 

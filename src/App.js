@@ -12,6 +12,9 @@ import AdminCalendarPage from "./pages/admin/pages/AdminCalendarPage";
 import AdminChatbotPage from "./pages/admin/pages/AdminChatbotPage";
 import PdfUploadPage from "./pages/admin/pages/PdfUploadPage";
 import PdfListPage from "./pages/admin/pages/PdfListPage";
+import AdminChatLogsPage from "./pages/admin/pages/AdminChatLogsPage";
+import UsersPage from "./pages/admin/pages/UsersPage";
+import UsersDetailPage from "./pages/admin/pages/UsersDetailPage";
 
 import LostId from "./pages/lostid";
 import LostPw from "./pages/lostpw";
@@ -20,6 +23,9 @@ import ArticlesPreview from "./pages/ArticlesPreview";
 
 import Reservations from "./pages/home/ReservationPage";
 import MyReservations from "./pages/home/MyReservationPage";
+import MyPage from "./pages/home/mypage/MyPage";
+import MyPageReservations from "./pages/home/mypage/MyReservations";
+import MyFiles from "./pages/home/mypage/MyFiles";
 
 function App() {
   const { pathname } = useLocation();
@@ -35,6 +41,9 @@ function App() {
       <Route path="/hearing-sheet" element={<HearingSheet />} />
       <Route path="/reservation" element={<Reservations />} />
       <Route path="/myreservations" element={<MyReservations />} />
+      <Route path="/mypage" element={<MyPage />} />
+      <Route path="/mypage/reservations" element={<MyPageReservations />} />
+      <Route path="/mypage/files" element={<MyFiles />} />
       <Route path="/chat" element={<Chat />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/lostid" element={<LostId />} />
@@ -71,6 +80,30 @@ function App() {
         element={
           <AdminLayout>
             <AdminChatbotPage />
+          </AdminLayout>
+        }
+      />
+      <Route
+        path="/admin/users"
+        element={
+          <AdminLayout>
+            <UsersPage />
+          </AdminLayout>
+        }
+      />
+      <Route
+        path="/admin/users/:uuid"
+        element={
+          <AdminLayout>
+            <UsersDetailPage />
+          </AdminLayout>
+        }
+      />
+      <Route
+        path="/admin/chat-logs"
+        element={
+          <AdminLayout>
+            <AdminChatLogsPage />
           </AdminLayout>
         }
       />

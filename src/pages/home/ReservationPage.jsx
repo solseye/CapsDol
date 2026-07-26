@@ -105,6 +105,10 @@ function getMonthStartIso(date) {
 }
 
 function addTwoHourBlock(blockedSet, time) {
+  if (time) {
+    blockedSet.add(time);
+  }
+
   const index = TIME_OPTIONS.indexOf(time);
   if (index === -1) return;
 
@@ -113,6 +117,21 @@ function addTwoHourBlock(blockedSet, time) {
   if (TIME_OPTIONS[index + 1]) {
     blockedSet.add(TIME_OPTIONS[index + 1]);
   }
+}
+
+function normalizeTimeInput(value) {
+  const match = String(value || "")
+    .trim()
+    .match(/^(\d{1,2}):(\d{2})$/);
+
+  if (!match) return "";
+
+  const hour = Number(match[1]);
+  const minute = Number(match[2]);
+
+  if (hour < 0 || hour > 23 || minute < 0 || minute > 59) return "";
+
+  return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
 }
 
 function getLocalDateIso(date) {
@@ -144,6 +163,7 @@ export default function ReservationPage() {
 
   const [selectedField, setSelectedField] = useState("hr");
   const [selectedTime, setSelectedTime] = useState("");
+  const [customTime, setCustomTime] = useState("");
   const [selectedDate, setSelectedDate] = useState(
     new Date(today.getFullYear(), today.getMonth(), today.getDate())
   );
@@ -243,6 +263,14 @@ export default function ReservationPage() {
     return blocked;
   }, [schedules, blocks, selectedDate, selectedField]);
 
+  const timeOptions = useMemo(() => {
+    if (!selectedTime || TIME_OPTIONS.includes(selectedTime)) {
+      return TIME_OPTIONS;
+    }
+
+    return [...TIME_OPTIONS, selectedTime].sort();
+  }, [selectedTime]);
+
   const moveToMonth = (date) => {
     const nextMonth = new Date(date.getFullYear(), date.getMonth(), 1);
 
@@ -310,6 +338,26 @@ export default function ReservationPage() {
     setSelectedTime("");
     setSubmitError("");
     setSubmitSuccess("");
+  };
+
+  const handleAddCustomTime = () => {
+    const normalizedTime = normalizeTimeInput(customTime);
+
+    setSubmitSuccess("");
+
+    if (!normalizedTime) {
+      setSubmitError("올바른 시간을 입력해 주세요.");
+      return;
+    }
+
+    if (blockedTimes.has(normalizedTime)) {
+      setSubmitError("이미 예약이 불가능한 시간입니다.");
+      return;
+    }
+
+    setSelectedTime(normalizedTime);
+    setCustomTime("");
+    setSubmitError("");
   };
 
   const handleSubmit = async () => {
@@ -387,7 +435,7 @@ export default function ReservationPage() {
   }
 
   if (isAdmin) {
-    return <Navigate to="/admin" replace />;
+    return <Navigate to="/admin/calendar" replace />;
   }
 
   const selectedFieldOption = FIELD_OPTIONS.find(
@@ -677,7 +725,7 @@ export default function ReservationPage() {
                 </div>
 
                 <div className="rv-time-grid">
-                  {TIME_OPTIONS.map((time) => {
+                  {timeOptions.map((time) => {
                     const blocked = blockedTimes.has(time);
 
                     return (
@@ -700,6 +748,22 @@ export default function ReservationPage() {
                       </button>
                     );
                   })}
+                </div>
+
+                <div className="rv-custom-time">
+                  <input
+                    type="time"
+                    value={customTime}
+                    onChange={(e) => {
+                      setCustomTime(e.target.value);
+                      setSubmitError("");
+                      setSubmitSuccess("");
+                    }}
+                    aria-label="직접 상담 시간 입력"
+                  />
+                  <button type="button" onClick={handleAddCustomTime}>
+                    시간 추가
+                  </button>
                 </div>
               </section>
             </div>

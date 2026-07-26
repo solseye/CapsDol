@@ -594,6 +594,40 @@
   cursor: not-allowed;
 }
 
+.rv-custom-time {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 12px;
+  border: 1px dashed #c9d3dc;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.rv-custom-time input,
+.rv-custom-time button {
+  min-height: 44px;
+  border-radius: 6px;
+  font: inherit;
+  font-weight: 850;
+}
+
+.rv-custom-time input {
+  border: 1px solid #d5dce4;
+  padding: 0 12px;
+  color: #20242c;
+  background: #fff;
+}
+
+.rv-custom-time button {
+  border: 1px solid #06233c;
+  padding: 0 16px;
+  color: #fff;
+  background: #06233c;
+  cursor: pointer;
+}
+
 .rv-summary-panel {
   position: sticky;
   top: 78px;
@@ -864,7 +898,8 @@
   }
 
   .rv-side-nav,
-  .rv-time-grid {
+  .rv-time-grid,
+  .rv-custom-time {
     grid-template-columns: 1fr;
   }
 

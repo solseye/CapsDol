@@ -203,3 +203,39 @@ export async function createRagIndex({ bucket = "chat", prefix = "normal" }) {
 
   return data;
 }
+
+export async function getAdminUsers({
+  limit = 100,
+  offset = 0,
+} = {}) {
+  const token = localStorage.getItem("accessToken");
+
+  if (!token) {
+    throw new Error("로그인이 필요합니다.");
+  }
+
+  const params = new URLSearchParams({
+    limit: String(limit),
+    offset: String(offset),
+  });
+
+  const response = await fetch(
+    `${BASE_URL}/admin/users?${params.toString()}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    }
+  );
+
+  const data = await parseJsonResponse(response);
+
+  if (!response.ok || data.success === false) {
+    throw new Error(data.error || "사용자 목록을 불러오지 못했습니다.");
+  }
+
+  return data;
+}

@@ -183,6 +183,99 @@ html[data-lang="ja"] .lang-option:last-child {
   color: #ffffff;
 }
 
+.language-menu {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.language-menu::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 140px;
+  height: 14px;
+}
+
+.language-menu-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 999px;
+  padding: 6px 13px 6px 9px;
+  color: var(--text-strong);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: var(--shadow-xs);
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.language-menu-trigger span {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: #f2f5f9;
+  font-size: 17px;
+}
+
+.language-menu-trigger strong {
+  font-size: 0.84rem;
+  /* 언어 버튼 안의 KO/EN/JA 글자 줄 간격은 아래 line-height 값을 조정하면 됩니다. */
+  line-height: 1;
+}
+
+.language-menu-list {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 80;
+  width: 140px;
+  display: grid;
+  gap: 4px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 12px;
+  padding: 6px;
+  background: #ffffff;
+  box-shadow: 0 18px 46px rgba(15, 23, 42, 0.16);
+}
+
+.language-menu-list button {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  align-items: center;
+  gap: 7px;
+  min-height: 36px;
+  border: 0;
+  border-radius: 9px;
+  padding: 6px 8px;
+  color: #20242c;
+  background: transparent;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+.language-menu-list button:hover,
+.language-menu-list button.active {
+  background: #eef8f2;
+}
+
+.language-menu-list button span {
+  font-size: 16px;
+}
+
+.language-menu-list button strong {
+  font-size: 12px;
+  font-weight: 900;
+  /* 펼쳐진 언어 목록의 한국어/English/日本語 글자 줄 간격은 아래 line-height 값을 조정하면 됩니다. */
+  line-height: 1.2;
+}
+
 .btn {
   position: relative;
   display: inline-flex;
@@ -933,4 +1026,284 @@ html[data-lang="ja"] .lang-option:last-child {
   background: #f2f4f7;
   color: #101828;
   outline: none;
+}
+
+/* ==========================================================================
+   Shared Header Refresh
+   - 메인 페이지(HomeVisilyFrame)의 헤더 톤과 맞추기 위한 공통 Header 스타일입니다.
+   - Header.jsx는 마이페이지/로그인 이후 화면에서 쓰이므로, 기존 기능은 유지하고 시각 구조만 맞춥니다.
+   ========================================================================== */
+.site-header {
+  border-bottom: 1px solid #dce3e8;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: none;
+  backdrop-filter: blur(14px);
+}
+
+.site-header .container.nav {
+  position: relative;
+  width: min(100% - 48px, 1440px);
+  min-height: 68px;
+  padding: 0;
+  gap: 28px;
+  align-items: center;
+}
+
+.site-header .brand {
+  min-width: 0;
+  gap: 12px;
+  color: #061f35;
+  text-decoration: none;
+}
+
+.site-header .logo {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: #06233c;
+  font-size: 25px;
+  font-weight: 950;
+}
+
+.site-header .logo::after {
+  content: none;
+}
+
+.site-header .brand-copy {
+  display: grid;
+  gap: 4px;
+}
+
+.site-header .brand-copy strong {
+  color: #061f35;
+  font-size: 15px;
+  font-weight: 950;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.site-header .brand-copy small {
+  color: #66717e;
+  font-size: 10px;
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.site-header .nav-right {
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+  margin-left: auto;
+}
+
+.site-header .main-nav ul {
+  gap: 26px;
+  flex-wrap: nowrap;
+}
+
+.site-header .main-nav a,
+.site-header .nav-logout {
+  padding: 8px 0;
+  border-radius: 0;
+  color: #596371;
+  font-size: 13px;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.site-header .main-nav a:hover,
+.site-header .main-nav a.active,
+.site-header .nav-logout:hover {
+  color: #06233c;
+  background: transparent;
+  transform: none;
+}
+
+.site-header .main-nav a.active {
+  font-weight: 950;
+}
+
+.site-header .main-nav a.active::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 2px;
+  margin-top: 7px;
+  background: #06233c;
+}
+
+.site-header .nav-cta {
+  min-height: 40px;
+  padding: 0 18px;
+  border-radius: 0;
+  font-size: 13px;
+}
+
+.btn.ghost {
+  border-color: #cfd8e2;
+  background: #ffffff;
+  color: #06233c;
+}
+
+.site-header .btn.primary {
+  border-color: #06233c;
+  background: #06233c;
+  color: #ffffff;
+  box-shadow: none;
+}
+
+.site-header .btn.ghost {
+  border-color: #cfd8e2;
+  background: #ffffff;
+  color: #06233c;
+  box-shadow: none;
+}
+
+.site-header .btn:hover {
+  transform: none;
+  border-color: #06233c;
+  box-shadow: none;
+}
+
+.site-menu-toggle {
+  width: 42px;
+  height: 42px;
+  display: none;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.site-menu-toggle span {
+  width: 18px;
+  height: 2px;
+  display: block;
+  grid-area: 1 / 1;
+  border-radius: 999px;
+  background: #06233c;
+  transition: transform 0.22s ease;
+}
+
+.site-menu-toggle span:first-child {
+  transform: translateY(-4px);
+}
+
+.site-menu-toggle span:last-child {
+  transform: translateY(4px);
+}
+
+.site-menu-toggle.is-open span:first-child {
+  transform: rotate(45deg);
+}
+
+.site-menu-toggle.is-open span:last-child {
+  transform: rotate(-45deg);
+}
+
+.site-mobile-menu {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  width: 100vw;
+  display: none;
+  border-bottom: 1px solid #dce3e8;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 20px 44px rgba(6, 35, 60, 0.1);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -8px);
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s ease;
+}
+
+.site-mobile-menu.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, 0);
+}
+
+.site-mobile-menu nav,
+.site-mobile-actions {
+  width: min(100% - 44px, 720px);
+  margin: 0 auto;
+}
+
+.site-mobile-menu nav {
+  display: grid;
+  padding: 18px 0 10px;
+}
+
+.site-mobile-menu nav a {
+  border-bottom: 1px solid #edf1f4;
+  padding: 15px 0;
+  color: #17202b;
+  text-decoration: none;
+  font-size: 18px;
+  line-height: 1.2;
+  font-weight: 900;
+}
+
+.site-mobile-menu nav a.active {
+  color: #06233c;
+}
+
+.site-mobile-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding: 14px 0 22px;
+}
+
+@media (max-width: 1180px) {
+  .site-header .main-nav {
+    display: none;
+  }
+
+  .site-menu-toggle,
+  .site-mobile-menu {
+    display: grid;
+  }
+}
+
+@media (max-width: 640px) {
+  .site-header .container.nav {
+    width: min(100% - 28px, 1440px);
+    min-height: 64px;
+  }
+
+  .site-header .brand-copy strong {
+    font-size: 13px;
+  }
+
+  .site-header .brand-copy small {
+    font-size: 9px;
+    letter-spacing: 0.1em;
+  }
+
+  .site-header .language-menu-trigger {
+    min-height: 38px;
+    padding: 5px 10px 5px 7px;
+  }
+
+  .site-header .language-menu-trigger span {
+    width: 26px;
+    height: 26px;
+  }
+
+  .site-mobile-actions {
+    grid-template-columns: 1fr;
+  }
 }

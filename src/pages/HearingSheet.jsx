@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { createArticles } from "../api/articleApi";
 import "../App.css";
 import { getCurrentLanguage, translate } from "../i18n/translations";
 import "../styles/hearing-sheet-visily.css";
@@ -26,6 +27,9 @@ export default function HearingSheet() {
   const [currentStep, setCurrentStep] = useState(0);
 
   const [purposes, setPurposes] = useState([{ content: "" }]);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const [founders, setFounders] = useState([
     {
@@ -314,20 +318,36 @@ ${directorText}
 
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (
+      Number(initialIssuedShares) >
+      Number(totalSharesAuthorized)
+    ) {
+      setSubmitError(
+        "설립 시 발행 주식 수는 발행 가능 주식 총수보다 클 수 없습니다."
+      );
+      return;
+    }
 
     const hearingSheetData = {
       companyName,
       companyNameEn,
+
       Purpose: convertArrayToObject(purposes),
+
       capital,
+
       capitalPaymentBank: {
         bankName,
         branchName,
       },
+
       Founder: convertArrayToObject(founders),
+
       Director: convertArrayToObject(directors),
+
       representativeDirector,
       directorTerm,
       headOfficeAddress,
@@ -341,36 +361,39 @@ ${directorText}
         start: firstBusinessYearStart,
         end: firstBusinessYearEnd,
       },
+      description: "히어링 시트 기반 정관",
     };
 
-    // 기존 동작입니다.
-    // console.log("Backend로 보낼 JSON:", hearingSheetData);
+    try {
+      setIsSubmitting(true);
+      setSubmitError("");
 
-    // 변경 이유: 히어링 시트 제출 후 정관 확인 페이지에서 입력값 기반 초안을 확인할 수 있도록
-    // ArticlesPreview 페이지로 정관 텍스트를 전달합니다.
-    console.log("Backend로 보낼 JSON:", hearingSheetData);
+      // master 정관자동저장API 반영:
+      // 화면 디자인은 현재 브랜치의 단계형 UI를 유지하고, 제출 데이터만 백엔드에 저장/생성 요청합니다.
+      const result = await createArticles(hearingSheetData);
 
-    const articlesData = {
-      source: hearingSheetData,
-      content: buildArticlesContent(hearingSheetData),
-      sections: buildArticlesSections(hearingSheetData),
-    };
+      const articlesData = {
+        source: hearingSheetData,
+        content: buildArticlesContent(hearingSheetData),
+        sections: buildArticlesSections(hearingSheetData),
+      };
 
-    navigate("/articles-result", {
-      state: { articlesData },
-    });
-
-    /*
-      axios 또는 fetch 예시
-
-      fetch("http://localhost:8080/api/hearing-sheet", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      navigate("/articles-result", {
+        state: {
+          articlesData,
+          createdFile: result.file,
         },
-        body: JSON.stringify(hearingSheetData),
       });
-    */
+    } catch (error) {
+      console.error("정관 생성 실패:", error);
+
+      setSubmitError(
+        error.message ||
+          "정관 생성 중 오류가 발생했습니다."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const steps = [
@@ -818,12 +841,14 @@ ${directorText}
               {/* 기존 입력/제출 기능은 유지하고, Visily 프레임처럼 단계별 화면으로만 재배치합니다. */}
               {renderStepFields()}
 
+              {submitError && <p className="login-error">{submitError}</p>}
+
               <div className="hsv-actions">
                 <button
                   type="button"
                   className="hsv-secondary-btn"
                   onClick={goPrevStep}
-                  disabled={currentStep === 0}
+                  disabled={currentStep === 0 || isSubmitting}
                 >
                   이전
                 </button>
@@ -833,12 +858,13 @@ ${directorText}
                     type="button"
                     className="hsv-primary-btn"
                     onClick={goNextStep}
+                    disabled={isSubmitting}
                   >
                     다음 단계
                   </button>
                 ) : (
-                  <button type="submit" className="hsv-primary-btn">
-                    정관 초안 생성
+                  <button type="submit" className="hsv-primary-btn" disabled={isSubmitting}>
+                    {isSubmitting ? "정관 생성 중..." : "정관 초안 생성"}
                   </button>
                 )}
               </div>

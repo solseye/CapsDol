@@ -1,18 +1,44 @@
 import { Link, useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { logoutUser } from "../api/authApi";
+import LanguageMenu from "./LanguageMenu";
 import {
   getCurrentLanguage,
-  setCurrentLanguage,
   translate,
 } from "../i18n/translations";
 
 export default function Header({ isLoggedIn }) {
   const location = useLocation();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const role = localStorage.getItem("role");
   const language = getCurrentLanguage();
   const t = (key) => translate(language, key);
+  const isAdmin = role === "admin";
+  const isMyPageSection = location.pathname.startsWith("/mypage");
+
+  const mainNavItems = isMyPageSection
+    ? [
+        { to: "/mypage", label: "마이페이지" },
+        { to: "/mypage/reservations", label: "내 상담 내역" },
+        { to: "/mypage/files", label: "내 파일 관리" },
+      ]
+    : [
+        { to: "/#services", label: t("common.navService") },
+        { to: "/#method", label: t("common.navFlow") },
+        { to: "/#experts", label: "전문가" },
+        { to: "/#standards", label: "운영 방식" },
+      ];
+
+  const isActivePath = (path) => {
+    if (!isMyPageSection) return false;
+
+    if (path === "/mypage") {
+      return location.pathname === "/mypage";
+    }
+
+    return location.pathname.startsWith(path);
+  };
 
   useEffect(() => {
     document.documentElement.setAttribute("data-lang", getCurrentLanguage());
@@ -25,21 +51,8 @@ export default function Header({ isLoggedIn }) {
     }
   };
 
-  const switchToLanguage = (lang) => {
-    // 기존 Google Translate 쿠키 방식입니다.
-    // const languageMap = {
-    //   ko: "/ko/ko",
-    //   en: "/ko/en",
-    //   ja: "/ko/ja",
-    // };
-    // const value = languageMap[lang] || languageMap.ko;
-    // document.cookie = `googtrans=${value}; path=/`;
-    // document.cookie = `googtrans=${value}; path=/; domain=${window.location.hostname}`;
-    // document.documentElement.setAttribute("data-lang", lang);
-
-    // 변경 이유: 법무/세무 용어는 자동 번역보다 직접 관리하는 번역 사전이 더 안전합니다.
-    setCurrentLanguage(lang);
-    window.location.reload();
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
   };
 
   const handleLogout = async () => {
@@ -66,22 +79,26 @@ export default function Header({ isLoggedIn }) {
     <header className="site-header">
       <div className="container nav">
         <Link to="/" className="brand" onClick={handleLogoClick}>
-          <span className="logo" aria-hidden="true" />
-          <span>WVA</span>
+          <span className="logo" aria-hidden="true">◎</span>
+          <span className="brand-copy">
+            <strong>WVA AI Consulting</strong>
+            <small>일본 진출 운영 시스템</small>
+          </span>
         </Link>
 
         <div className="nav-right">
           <nav className="main-nav" aria-label="주요 메뉴">
             <ul>
-              <li>
-                <a href="#about">{t("common.navCompany")}</a>
-              </li>
-              <li>
-                <a href="#service">{t("common.navService")}</a>
-              </li>
-              <li>
-                <a href="#flow">{t("common.navFlow")}</a>
-              </li>
+              {mainNavItems.map((item) => (
+                <li key={item.to}>
+                  <Link
+                    to={item.to}
+                    className={isActivePath(item.to) ? "active" : ""}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
 
               {!isLoggedIn && (
                 <li>
@@ -91,7 +108,7 @@ export default function Header({ isLoggedIn }) {
                 </li>
               )}
 
-              {isLoggedIn && role === "admin" && (
+              {isLoggedIn && isAdmin && (
                 <li>
                   <Link to="/admin/calendar" className="btn primary nav-cta">
                     {t("common.navAdmin")}
@@ -99,19 +116,19 @@ export default function Header({ isLoggedIn }) {
                 </li>
               )}
 
-              {isLoggedIn && role !== "admin" && (
+              {isLoggedIn && !isAdmin && !isMyPageSection && (
                 <li>
-                  {/* 주소를 /reservation 으로 정확히 맞춰줍니다 */}
-                  <Link to="/reservation" className="btn primary nav-cta">
-                    {t("common.navReservation")}
+                  <Link to="/mypage" className="btn ghost nav-cta">
+                    {t("common.navMyReservations")}
                   </Link>
                 </li>
               )}
 
-              {isLoggedIn && role !== "admin" && (
+              {isLoggedIn && !isAdmin && (
                 <li>
-                  <Link to="/myreservations" className="btn primary nav-cta">
-                    {t("common.navMyReservations")}
+                  {/* 주소를 /reservation 으로 정확히 맞춰줍니다 */}
+                  <Link to="/reservation" className="btn ghost nav-cta">
+                    {t("common.navReservation")}
                   </Link>
                 </li>
               )}
@@ -126,28 +143,82 @@ export default function Header({ isLoggedIn }) {
             </ul>
           </nav>
 
-          <div className="lang-toggle" aria-label="언어 전환">
-            <button
-              type="button"
-              className="lang-option"
-              onClick={() => switchToLanguage("ko")}
-            >
-              KO
-            </button>
-            <button
-              type="button"
-              className="lang-option"
-              onClick={() => switchToLanguage("en")}
-            >
-              EN
-            </button>
-            <button
-              type="button"
-              className="lang-option"
-              onClick={() => switchToLanguage("ja")}
-            >
-              JA
-            </button>
+          <LanguageMenu />
+
+          <button
+            type="button"
+            className={`site-menu-toggle ${isMobileMenuOpen ? "is-open" : ""}`}
+            aria-label="메뉴 열기"
+            aria-expanded={isMobileMenuOpen}
+            onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+          >
+            <span />
+            <span />
+          </button>
+        </div>
+
+        <div className={`site-mobile-menu ${isMobileMenuOpen ? "is-open" : ""}`}>
+          <nav aria-label="모바일 메뉴">
+            {mainNavItems.map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                className={isActivePath(item.to) ? "active" : ""}
+                onClick={closeMobileMenu}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+
+          <div className="site-mobile-actions">
+            {!isLoggedIn && (
+              <>
+                <Link to="/login" className="btn ghost" onClick={closeMobileMenu}>
+                  {t("common.navLogin")}
+                </Link>
+                <Link to="/signup" className="btn primary" onClick={closeMobileMenu}>
+                  회원가입
+                </Link>
+              </>
+            )}
+
+            {isLoggedIn && isAdmin && (
+              <Link
+                to="/admin/calendar"
+                className="btn primary"
+                onClick={closeMobileMenu}
+              >
+                {t("common.navAdmin")}
+              </Link>
+            )}
+
+            {isLoggedIn && !isAdmin && (
+              <>
+                {!isMyPageSection && (
+                  <Link to="/mypage" className="btn ghost" onClick={closeMobileMenu}>
+                    {t("common.navMyReservations")}
+                  </Link>
+                )}
+                <Link
+                  to="/reservation"
+                  className="btn ghost"
+                  onClick={closeMobileMenu}
+                >
+                  {t("common.navReservation")}
+                </Link>
+              </>
+            )}
+
+            {isLoggedIn && (
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="btn primary"
+              >
+                {t("common.navLogout")}
+              </button>
+            )}
           </div>
         </div>
       </div>
