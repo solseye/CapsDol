@@ -1,0 +1,263 @@
+/* =========================================
+   Sidebar Container
+========================================= */
+.adm-sidebar {
+  width: var(--sidebar-width, 260px);
+  background-color: var(--sidebar-bg, #0f172a);
+  color: var(--sidebar-text, #f8fafc);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+
+  padding: 30px 24px;
+  box-sizing: border-box;
+}
+/* =========================================
+   Brand Area
+========================================= */
+.adm-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: white;
+  margin-bottom: 50px;
+}
+
+.adm-brand span {
+  color: var(--primary, #2563eb);
+  font-size: 24px;
+}
+
+.adm-brand div {
+  display: flex;
+  flex-direction: column;
+}
+
+.adm-brand strong {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.adm-brand small {
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+/* =========================================
+   Navigation Menu
+========================================= */
+.adm-menu {
+  padding: 0px 0px 0px 0px;
+  margin-top: 0px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.adm-menu-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px; /* 예전 넉넉했던 상하좌우 여백으로 복구 */
+  height: 44px; /* 💡 박스 높이를 명시적으로 고정하여 내용물에 휘둘리지 않게 함 */
+  box-sizing: border-box; /* 패딩이 높이 안에 포함되도록 계산 강제 */
+  border-radius: var(--radius-sm, 6px);
+  color: #94a3b8;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.adm-menu-link:hover {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.adm-menu-link.active {
+  color: #ffffff;
+  font-weight: 600;
+  background-color: var(--primary, #2563eb);
+  box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+}
+
+/* 💡 새로 추가된 span 태그를 예전 영문 텍스트 규격에 맞추는 마법의 코드 */
+.adm-menu-text {
+  font-size: 14px; /* 기존 폰트 크기 유지 */
+  font-weight: 500;
+  line-height: 1; /* 한글 특유의 불필요한 위아래 행간(여백) 제거 */
+  letter-spacing: -0.01em; /* 한글을 영문과 비슷한 밀도로 보이게 살짝 좁힘 */
+  transform: translateY(
+    1px
+  ); /* 한글 폰트가 미세하게 위로 치우쳐 보이는 현상을 시각적 중앙으로 1px 보정 */
+}
+/* =========================================
+   Sidebar Footer (Line separated, No Box)
+========================================= */
+.adm-sidebar-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 16px 16px 8px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* 프로필 */
+.adm-profile-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  margin-bottom: 8px;
+}
+
+.adm-profile-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.adm-profile-info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.adm-profile-info normal {
+  font-size: 17px;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* 언어 설정 말풍선 (Popover) */
+.adm-lang-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.adm-lang-popover {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  width: 100%;
+  background-color: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-md, 8px);
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.35);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 100;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.adm-lang-popover::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 20px;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #1e293b;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.adm-lang-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: #cbd5e1;
+  font-size: 13px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease;
+}
+
+.adm-lang-option:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.adm-lang-option.active {
+  background-color: var(--primary, #2563eb);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* 하단 버튼들 (언어설정 / 로그아웃) */
+.adm-footer-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm, 6px);
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.adm-footer-btn:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+}
+
+.adm-caret {
+  margin-left: auto;
+  font-size: 10px;
+  transition: transform 0.2s ease;
+}
+.adm-caret.open {
+  transform: rotate(-90deg);
+}
+
+.adm-logout-btn:hover {
+  background-color: rgba(225, 29, 72, 0.1);
+  color: #f87171;
+}
+
+/* 💡 추가된 기능 3: 윈도우 브라우저용 투명하고 얇은 스크롤바 커스텀 */
+.adm-menu::-webkit-scrollbar {
+  width: 4px;
+}
+.adm-menu::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+.adm-menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+

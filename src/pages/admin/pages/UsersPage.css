@@ -1,0 +1,228 @@
+/* 글로벌 박스 모듈 설정 (밝은 배경 적용 및 컨테이너 정렬) */
+.usr-page-container {
+  width: 100%;
+  padding: 24px;
+  box-sizing: border-box;
+  background-color: #f1f5f9;
+  /* 화면이 커져도 컨텐츠가 중앙에 오도록 추가 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 카드 컨테이너 (흰색 배경 및 그림자 적용) */
+.usr-card {
+  width: 100%;
+  max-width: 800px; /* 박스가 너무 커지지 않도록 최대 너비 설정 */
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 1. 상단 헤더 */
+.usr-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e2e8f0;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.usr-header-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.usr-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.usr-subtitle {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+}
+
+/* 헤더 우측 컨트롤 (검색창 + 새로고침) */
+.usr-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.usr-search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.usr-search-icon {
+  position: absolute;
+  left: 12px;
+  color: #cbd5e1;
+  pointer-events: none;
+}
+
+.usr-search-input {
+  width: 240px;
+  padding: 8px 12px 8px 36px;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  color: #334155;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.usr-search-input:focus {
+  border-color: #2563eb;
+}
+
+.usr-search-input::placeholder {
+  color: #cbd5e1;
+}
+
+/* 새로고침 버튼 */
+.usr-refresh-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background-color: #2563eb;
+  border: none;
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.usr-refresh-btn:hover {
+  background-color: #1d4ed8;
+}
+
+/* 2. 테이블 구조 */
+.usr-table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.usr-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 14px;
+}
+
+.usr-table th {
+  background-color: #f8fafc;
+  color: #64748b;
+  font-weight: 600;
+  padding: 12px 18px;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 13px;
+}
+
+.usr-table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #334155;
+  vertical-align: middle;
+}
+
+.usr-table tbody tr {
+  cursor: pointer; /* 클릭 가능한 행임을 표시 */
+}
+
+.usr-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.col-center {
+  text-align: center;
+}
+
+.col-bold {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.usr-empty-row {
+  text-align: center;
+  padding: 40px !important;
+  color: #64748b;
+}
+
+/* 3. 하단 푸터 및 페이지네이션 */
+.usr-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-top: 1px solid #e2e8f0;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.usr-footer-info {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.usr-footer-info strong {
+  color: #1e293b;
+}
+
+.usr-pagination {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* 페이지네이션 버튼 */
+.usr-page-btn {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 6px;
+  border-radius: 6px;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.usr-page-btn:hover:not(:disabled) {
+  background-color: #f1f5f9;
+  color: #1e293b;
+}
+
+.usr-page-btn.active {
+  background-color: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.usr-page-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
