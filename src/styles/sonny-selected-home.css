@@ -1,0 +1,554 @@
+.selected-kicker {
+  margin: 0 0 14px;
+  color: #1f8a52;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.selected-section-head {
+  max-width: 720px;
+  margin: 0 auto 44px;
+  text-align: center;
+}
+
+.selected-hero {
+  min-height: 72vh;
+  padding: 96px 20px 70px;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at top left, rgba(31, 138, 82, 0.13), transparent 34%),
+    linear-gradient(180deg, #f8fbfa 0%, #eef5f1 100%);
+}
+
+.selected-hero-inner {
+  width: min(920px, 100%);
+  text-align: center;
+}
+
+.selected-hero-title {
+  margin: 0;
+  color: #152033;
+  font-size: clamp(42px, 7vw, 78px);
+  line-height: 1.12;
+  font-weight: 950;
+}
+
+.selected-hero-title span {
+  color: #1f8a52;
+}
+
+.selected-hero-desc {
+  max-width: 700px;
+  margin: 24px auto 34px;
+  color: #5d6a7a;
+  font-size: 18px;
+  line-height: 1.7;
+  font-weight: 700;
+}
+
+.selected-search {
+  width: min(780px, 100%);
+  margin: 0 auto;
+  padding: 9px 10px 9px 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid #d8e2dc;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 18px 45px rgba(35, 73, 51, 0.1);
+}
+
+.selected-search-icon {
+  color: #7f9387;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.selected-search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #152033;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.selected-search button {
+  border: 0;
+  border-radius: 999px;
+  padding: 15px 30px;
+  color: #ffffff;
+  background: #1f8a52;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.selected-prompt-row {
+  margin-top: 22px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.selected-prompt-row button {
+  border: 1px solid #d8e2dc;
+  border-radius: 999px;
+  padding: 11px 16px;
+  background: rgba(255, 255, 255, 0.85);
+  color: #4b5c52;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.selected-roadmap,
+.selected-hearing {
+  padding: 82px 0;
+  background: #f6f9f7;
+}
+
+.selected-support {
+  padding: 82px 0 100px;
+  background: #ffffff;
+}
+
+.selected-workflow-grid,
+.selected-service-grid,
+.selected-hearing-grid {
+  display: grid;
+  gap: 20px;
+}
+
+.selected-workflow-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-bottom: 32px;
+}
+
+.selected-step-card,
+.selected-service-card,
+.selected-hearing-card,
+.selected-guide-panel,
+.selected-guide-tabs {
+  border: 1px solid #e0e8e2;
+  border-radius: 22px;
+  background: #ffffff;
+  box-shadow: 0 12px 34px rgba(30, 52, 38, 0.05);
+}
+
+.selected-step-card {
+  padding: 26px 22px;
+}
+
+.selected-step-number {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #ffffff;
+  background: #1f8a52;
+  font-weight: 900;
+}
+
+.selected-step-card p {
+  margin: 16px 0 8px;
+  color: #1f8a52;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.selected-step-card h3,
+.selected-service-card h3,
+.selected-hearing-card h3 {
+  margin: 0 0 10px;
+  color: #162033;
+  font-size: 19px;
+  font-weight: 900;
+}
+
+.selected-step-card span,
+.selected-hearing-card p,
+.selected-guide-panel p {
+  color: #647084;
+  line-height: 1.65;
+  font-weight: 650;
+}
+
+.selected-service-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.selected-service-card {
+  padding: 28px 24px;
+}
+
+.selected-service-icon {
+  width: 52px;
+  height: 52px;
+  margin-bottom: 18px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  color: #1f8a52;
+  background: #e9f5ee;
+  font-size: 20px;
+  font-weight: 950;
+}
+
+.selected-service-card ul,
+.selected-guide-panel ul {
+  margin: 0;
+  padding-left: 18px;
+  color: #647084;
+  line-height: 1.75;
+  font-weight: 700;
+}
+
+.selected-guide {
+  padding: 82px 0;
+  background: #ffffff;
+}
+
+.selected-guide-layout {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 22px;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.selected-guide-tabs {
+  padding: 18px;
+  display: grid;
+  gap: 10px;
+  align-content: start;
+}
+
+.selected-guide-tabs button {
+  border: 0;
+  border-radius: 14px;
+  padding: 16px;
+  background: transparent;
+  color: #687584;
+  font-size: 15px;
+  font-weight: 900;
+  text-align: left;
+  cursor: pointer;
+}
+
+.selected-guide-tabs button.active,
+.selected-guide-tabs button:hover {
+  color: #ffffff;
+  background: #1f8a52;
+}
+
+.selected-guide-panel {
+  padding: 42px;
+}
+
+.selected-guide-panel h3 {
+  margin: 0 0 14px;
+  color: #162033;
+  font-size: 28px;
+  font-weight: 950;
+}
+
+.selected-guide-detail {
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 24px;
+}
+
+.selected-guide-detail h4 {
+  margin: 0 0 14px;
+  color: #162033;
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.selected-price-box {
+  border-radius: 18px;
+  padding: 24px;
+  background: #f2f8f5;
+  border: 1px solid #d6e7dc;
+}
+
+.selected-price-box span,
+.selected-price-box small {
+  display: block;
+  color: #647084;
+  font-weight: 800;
+}
+
+.selected-price-box strong {
+  display: block;
+  margin: 12px 0;
+  color: #1f8a52;
+  font-size: 28px;
+  font-weight: 950;
+}
+
+.selected-hearing-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.selected-hearing-card {
+  padding: 30px 22px;
+  color: inherit;
+  text-align: center;
+  text-decoration: none;
+}
+
+.selected-hearing-icon {
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 18px;
+  display: grid;
+  place-items: center;
+  border-radius: 18px;
+  background: #eef7f2;
+}
+
+.selected-hearing-icon img {
+  width: 30px;
+  height: 30px;
+}
+
+.selected-hearing-card span {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 11px 18px;
+  border-radius: 999px;
+  color: #ffffff;
+  background: #1f8a52;
+  font-weight: 900;
+}
+
+.selected-floating-chat {
+  position: fixed;
+  right: 26px;
+  bottom: 26px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 14px 20px;
+  border-radius: 999px;
+  color: #ffffff;
+  background: #1f8a52;
+  box-shadow: 0 14px 36px rgba(31, 138, 82, 0.32);
+  text-decoration: none;
+  font-weight: 950;
+}
+
+.selected-floating-pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 0 0 rgba(31, 138, 82, 0.42);
+  animation: selected-chat-pulse 2.4s infinite;
+}
+
+.selected-floating-icon {
+  position: relative;
+  font-size: 20px;
+}
+
+.selected-floating-chat span:last-child {
+  position: relative;
+}
+
+.selected-expert-grid {
+  display: grid;
+  gap: 26px;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.selected-expert-card {
+  display: grid;
+  grid-template-columns: 210px 1fr;
+  gap: 30px;
+  padding: 34px;
+  border: 1px solid #e0e8e2;
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: 0 12px 34px rgba(30, 52, 38, 0.05);
+}
+
+.selected-expert-avatar {
+  min-height: 320px;
+  display: grid;
+  place-items: center;
+  border-radius: 20px;
+  color: #1f8a52;
+  background:
+    linear-gradient(180deg, rgba(31, 138, 82, 0.1), rgba(31, 138, 82, 0.03)),
+    #f6f9f7;
+  border: 1px solid #d6e7dc;
+  font-size: 52px;
+  font-weight: 950;
+}
+
+.selected-expert-content {
+  min-width: 0;
+  display: grid;
+  gap: 22px;
+}
+
+.selected-expert-title h3 {
+  margin: 0;
+  color: #162033;
+  font-size: 28px;
+  font-weight: 950;
+}
+
+.selected-expert-title p {
+  margin: 8px 0 0;
+  color: #1f8a52;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.selected-expert-details {
+  display: grid;
+  gap: 24px;
+}
+
+.selected-expert-label {
+  margin: 0 0 12px;
+  color: #667585;
+  font-size: 13px;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.selected-expert-careers {
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+  list-style: none;
+}
+
+.selected-expert-careers li {
+  position: relative;
+  padding-left: 18px;
+  color: #4f5f70;
+  line-height: 1.55;
+  font-weight: 700;
+}
+
+.selected-expert-careers li::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #1f8a52;
+}
+
+.selected-expert-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.selected-expert-tags span {
+  padding: 8px 14px;
+  border: 1px solid #d6e7dc;
+  border-radius: 999px;
+  color: #246146;
+  background: #f2f8f5;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.selected-expert-closing {
+  max-width: 760px;
+  margin: 44px auto 0;
+  color: #1f8a52;
+  text-align: center;
+  font-size: 20px;
+  line-height: 1.55;
+  font-weight: 950;
+}
+
+@keyframes selected-chat-pulse {
+  70% {
+    box-shadow: 0 0 0 18px rgba(31, 138, 82, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(31, 138, 82, 0);
+  }
+}
+
+@media (max-width: 980px) {
+  .selected-workflow-grid,
+  .selected-service-grid,
+  .selected-hearing-grid,
+  .selected-guide-layout,
+  .selected-guide-detail,
+  .selected-expert-card {
+    grid-template-columns: 1fr;
+  }
+
+  .selected-guide-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .selected-expert-avatar {
+    min-height: 140px;
+  }
+}
+
+@media (max-width: 640px) {
+  .selected-hero {
+    padding-top: 74px;
+  }
+
+  .selected-search {
+    border-radius: 24px;
+    padding: 14px;
+    display: grid;
+  }
+
+  .selected-search-icon {
+    display: none;
+  }
+
+  .selected-search input {
+    text-align: center;
+    min-height: 42px;
+  }
+
+  .selected-search button {
+    width: 100%;
+  }
+
+  .selected-guide-tabs {
+    grid-template-columns: 1fr;
+  }
+
+  .selected-floating-chat {
+    right: 18px;
+    bottom: 18px;
+    padding: 14px;
+  }
+
+  .selected-floating-chat span:last-child {
+    display: none;
+  }
+}

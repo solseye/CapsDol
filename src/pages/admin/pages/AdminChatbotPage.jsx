@@ -91,107 +91,139 @@ export default function AdminChatbotPage() {
 
   return (
     <div className="adm-page">
-      <div className="adm-page-head">
+      <div className="adm-portal-head">
         <div>
           <p className="adm-eyebrow">RAG Chatbot</p>
-          <h2>관리자 상담 챗봇</h2>
-          <span>등록된 RAG 자료를 기준으로 상담 답변을 생성합니다.</span>
+          <h2>운영 보조 AI</h2>
+          <span>
+            등록된 RAG 자료를 기준으로 상담, 문서, 일본 진출 관련 질문에 대한
+            운영용 답변을 생성합니다.
+          </span>
+        </div>
+
+        <div className="adm-portal-actions">
+          <button
+            type="button"
+            className="adm-btn ghost"
+            onClick={handleReset}
+          >
+            대화 초기화
+          </button>
         </div>
       </div>
 
-      <div className="chat-container admin-chat-container">
-        <div className="chat-inner admin-chat">
-          <aside className="summary card">
-            <p className="kicker">RAG Chatbot</p>
-            <h3>관리자 상담 챗봇</h3>
-
-            <div className="summary-content">
-              등록된 상담 자료를 기준으로 답변합니다.
+      <div className="adm-ai-layout">
+        <section className="adm-card adm-ai-console">
+          <div className="adm-card-head">
+            <div>
+              <p className="adm-eyebrow">Administrator Assistant</p>
+              <h2>관리자 상담</h2>
+              <span>질문에 관련된 자료가 있으면 함께 표시합니다.</span>
             </div>
+          </div>
 
-            {lastUsage && (
-              <div className="chat-meta-box">
-                <span>사용 토큰</span>
-                <strong>{lastUsage.total_tokens || 0}</strong>
+          <div className="adm-ai-window" ref={chatBodyRef}>
+            {messages.map((message, index) => (
+              <div key={index} className={`adm-ai-row ${message.type}`}>
+                <div className="adm-ai-bubble">
+                  <div className="adm-ai-text">{message.text}</div>
+
+                  {message.sources?.length > 0 && (
+                    <div className="adm-ai-sources">
+                      <strong>참고 자료</strong>
+
+                      {message.sources.map((source) => (
+                        <div
+                          key={`${source.fileId}-${source.chunkId}-${source.chunkIndex}`}
+                          className="adm-ai-source"
+                        >
+                          <span>
+                            {source.sourceName ||
+                              source.originalName ||
+                              source.storagePath}
+                          </span>
+                          <small>
+                            유사도{" "}
+                            {typeof source.similarity === "number"
+                              ? source.similarity.toFixed(3)
+                              : "-"}
+                          </small>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+
+            {loading && (
+              <div className="adm-ai-row bot">
+                <div className="adm-ai-bubble loading">답변 생성 중...</div>
               </div>
             )}
-          </aside>
+          </div>
 
-          <section className="chat card">
-            <div className="chat-top">
-              <div>
-                <p className="kicker">Administrator Assistant</p>
-                <h2>관리자 상담</h2>
-              </div>
+          <div className="adm-ai-bottom">
+            {error && <p className="adm-chat-error">{error}</p>}
 
-              <button
-                type="button"
-                className="chat-reset-btn"
-                onClick={handleReset}
-              >
-                대화 초기화
+            <form className="adm-ai-form" onSubmit={handleSubmit}>
+              <input
+                value={input}
+                onChange={(event) => setInput(event.target.value)}
+                placeholder="상담 관련 질문을 입력하세요..."
+                disabled={loading}
+              />
+
+              <button type="submit" disabled={loading || !input.trim()}>
+                {loading ? "생성 중" : "전송"}
               </button>
-            </div>
+            </form>
+          </div>
+        </section>
 
-            <div className="chat-body" ref={chatBodyRef}>
-              {messages.map((message, index) => (
-                <div key={index} className={`msg-row ${message.type}`}>
-                  <div className="bubble">
-                    <div className="bubble-text">{message.text}</div>
-
-                    {message.sources?.length > 0 && (
-                      <div className="source-list">
-                        <strong>참고 자료</strong>
-
-                        {message.sources.map((source) => (
-                          <div
-                            key={`${source.fileId}-${source.chunkId}-${source.chunkIndex}`}
-                            className="source-item"
-                          >
-                            <span>
-                              {source.sourceName ||
-                                source.originalName ||
-                                source.storagePath}
-                            </span>
-                            <small>
-                              유사도{" "}
-                              {typeof source.similarity === "number"
-                                ? source.similarity.toFixed(3)
-                                : "-"}
-                            </small>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-
-              {loading && (
-                <div className="msg-row bot">
-                  <div className="bubble typing">답변 생성 중...</div>
-                </div>
-              )}
-            </div>
-
-            <div className="chat-bottom">
-              {error && <p className="chat-error">{error}</p>}
-
-              <form className="chat-input" onSubmit={handleSubmit}>
-                <input
-                  value={input}
-                  onChange={(event) => setInput(event.target.value)}
-                  placeholder="상담 관련 질문을 입력하세요..."
-                  disabled={loading}
-                />
-
-                <button type="submit" disabled={loading || !input.trim()}>
-                  {loading ? "생성 중" : "전송"}
-                </button>
-              </form>
+        <aside className="adm-ai-side">
+          <section className="adm-card">
+            <p className="adm-eyebrow">Knowledge Scope</p>
+            <h3>응답 기준</h3>
+            <div className="adm-guide-list">
+              <div>
+                <strong>RAG Prefix</strong>
+                <span>normal 폴더의 통합 자료를 우선 검색합니다.</span>
+              </div>
+              <div>
+                <strong>Match Count</strong>
+                <span>질문과 가까운 청크 5개를 참고합니다.</span>
+              </div>
+              <div>
+                <strong>운영 원칙</strong>
+                <span>법률·세무 사실은 자료 기반으로만 답변하도록 제한합니다.</span>
+              </div>
             </div>
           </section>
-        </div>
+
+          <section className="adm-card">
+            <p className="adm-eyebrow">Usage</p>
+            <h3>사용량</h3>
+            {lastUsage ? (
+              <div className="adm-token-list">
+                <div>
+                  <span>Prompt</span>
+                  <strong>{lastUsage.prompt_tokens || 0}</strong>
+                </div>
+                <div>
+                  <span>Completion</span>
+                  <strong>{lastUsage.completion_tokens || 0}</strong>
+                </div>
+                <div>
+                  <span>Total</span>
+                  <strong>{lastUsage.total_tokens || 0}</strong>
+                </div>
+              </div>
+            ) : (
+              <p className="adm-empty">아직 생성된 답변이 없습니다.</p>
+            )}
+          </section>
+        </aside>
       </div>
     </div>
   );

@@ -20,10 +20,10 @@ import LostPw from "./pages/lostpw";
 import ResetPassword from "./pages/ResetPassword";
 import ArticlesPreview from "./pages/ArticlesPreview";
 
+import Reservations from "./pages/home/ReservationPage";
 import MyPage from "./pages/home/mypage/MyPage";
-import MyReservations from "./pages/home/mypage/MyReservations";
+import MyPageReservations from "./pages/home/mypage/MyReservations";
 import MyFiles from "./pages/home/mypage/MyFiles";
-import ReservationPage from "./pages/home/ReservationPage";
 
 function App() {
   const { pathname } = useLocation();
@@ -37,17 +37,17 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/hearing-sheet" element={<HearingSheet />} />
-      <Route path="/reservation" element={<ReservationPage />} />
+      <Route path="/reservation" element={<Reservations />} />
+      <Route path="/myreservations" element={<MyPageReservations />} />
       <Route path="/mypage" element={<MyPage />} />
+      <Route path="/mypage/reservations" element={<MyPageReservations />} />
+      <Route path="/mypage/files" element={<MyFiles />} />
       <Route path="/chat" element={<Chat />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/lostid" element={<LostId />} />
       <Route path="/lostpw" element={<LostPw />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/articles-result" element={<ArticlesPreview />} />
-
-      <Route path="/mypage/reservations" element={<MyReservations />} />
-      <Route path="/mypage/files" element={<MyFiles />} />
 
       <Route
         path="/admin/calendar"
@@ -74,6 +74,14 @@ function App() {
         }
       />
       <Route
+        path="/admin/chatbot"
+        element={
+          <AdminLayout>
+            <AdminChatbotPage />
+          </AdminLayout>
+        }
+      />
+      <Route
         path="/admin/users"
         element={
           <AdminLayout>
@@ -86,14 +94,6 @@ function App() {
         element={
           <AdminLayout>
             <UsersDetailPage />
-          </AdminLayout>
-        }
-      />
-      <Route
-        path="/admin/chatbot"
-        element={
-          <AdminLayout>
-            <AdminChatbotPage />
           </AdminLayout>
         }
       />

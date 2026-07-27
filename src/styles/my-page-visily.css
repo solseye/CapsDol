@@ -1,0 +1,483 @@
+.my-page-dashboard {
+  min-height: calc(100vh - 76px);
+  padding: 20px 20px 42px;
+  background: #f4f7fa;
+  color: #0a2239;
+}
+
+.my-page-shell {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+}
+
+.my-page-heading {
+  padding: 4px 0 13px 18px;
+  border-left: 4px solid #0a2a45;
+}
+
+.my-page-heading p,
+.my-page-upcoming-copy p,
+.my-page-action-card p,
+.my-page-progress-card > p,
+.my-page-faq header p,
+.my-page-modal header p {
+  margin: 0 0 5px;
+  color: #667588;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.14em;
+}
+
+.my-page-heading h1 {
+  margin: 0 0 5px;
+  font-size: 34px;
+  line-height: 1.15;
+  letter-spacing: 0;
+}
+
+.my-page-heading span {
+  color: #5c6979;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.my-page-upcoming {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+  gap: 16px;
+  margin-top: 12px;
+  padding: 14px 16px;
+  border: 1px solid #d7e0e8;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(10, 34, 57, 0.055);
+  align-items: center;
+}
+
+.my-page-square-tag {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  background: #0a2a45;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 850;
+  place-items: center;
+}
+
+.my-page-upcoming-copy h2 {
+  margin: 0 0 4px;
+  font-size: 20px;
+  line-height: 1.3;
+  letter-spacing: 0;
+}
+
+.my-page-upcoming-copy > span {
+  color: #647181;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.my-page-upcoming-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.my-page-upcoming-actions button,
+.my-page-upcoming-actions a,
+.my-page-action-card > a,
+.my-page-modal > a {
+  display: inline-flex;
+  min-height: 38px;
+  padding: 0 15px;
+  border: 1px solid #0a2a45;
+  background: #0a2a45;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    background 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
+}
+
+.my-page-upcoming-actions a {
+  background: #fff;
+  color: #0a2a45;
+}
+
+.my-page-upcoming-actions button:hover,
+.my-page-upcoming-actions a:hover,
+.my-page-action-card > a:hover {
+  background: #123c5e;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.my-page-upcoming-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.my-page-content-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 350px;
+  gap: 12px;
+  margin-top: 12px;
+  padding: 0;
+  align-items: stretch;
+}
+
+.my-page-action-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.my-page-action-card,
+.my-page-progress-card {
+  min-height: 194px;
+  padding: 18px;
+  border: 1px solid #d7e0e8;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(10, 34, 57, 0.05);
+}
+
+.my-page-action-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.my-page-action-card p {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+}
+
+.my-page-mini-tag {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  background: #edf3f7;
+  color: #0a2a45;
+  font-size: 10px;
+  letter-spacing: 0;
+  place-items: center;
+}
+
+.my-page-action-card h2,
+.my-page-progress-card h2,
+.my-page-faq h2 {
+  margin: 18px 0 9px;
+  font-size: 24px;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+.my-page-action-card div > span {
+  display: block;
+  max-width: 320px;
+  color: #5f6d7b;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.my-page-action-card > a {
+  width: fit-content;
+  min-height: 36px;
+  margin-top: 18px;
+  background: #fff;
+  color: #0a2a45;
+}
+
+.my-page-progress-card h2 {
+  margin-top: 16px;
+}
+
+.my-page-progress-value {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+  align-items: baseline;
+}
+
+.my-page-progress-value strong {
+  font-size: 25px;
+}
+
+.my-page-progress-value span {
+  color: #697686;
+  font-size: 11px;
+}
+
+.my-page-progress-bar {
+  height: 5px;
+  margin: 14px 0 12px;
+  overflow: hidden;
+  background: #e2e8ed;
+}
+
+.my-page-progress-bar span {
+  display: block;
+  height: 100%;
+  background: #0a2a45;
+  transition: width 240ms ease;
+}
+
+.my-page-step-list {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 5px;
+}
+
+.my-page-step-list button {
+  display: grid;
+  min-width: 0;
+  min-height: 48px;
+  gap: 4px;
+  padding: 5px 3px;
+  border: 1px solid #d7e0e8;
+  background: #fff;
+  color: #788492;
+  font: inherit;
+  font-size: 9px;
+  line-height: 1.25;
+  place-items: center;
+  cursor: pointer;
+}
+
+.my-page-step-list button > span {
+  display: grid;
+  width: 20px;
+  height: 20px;
+  border: 1px solid #aeb9c4;
+  border-radius: 50%;
+  font-size: 9px;
+  font-weight: 850;
+  place-items: center;
+}
+
+.my-page-step-list button.is-complete {
+  border-color: #0a2a45;
+  background: #f2f6f9;
+  color: #0a2a45;
+}
+
+.my-page-step-list button.is-complete > span {
+  border-color: #0a2a45;
+  background: #0a2a45;
+  color: #fff;
+}
+
+.my-page-progress-card > small {
+  display: block;
+  margin-top: 12px;
+  color: #7a8794;
+  font-size: 10px;
+}
+
+.my-page-faq {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 24px;
+  margin-top: 12px;
+  padding: 20px;
+  border: 1px solid #d7e0e8;
+  background: #fff;
+}
+
+.my-page-faq h2 {
+  margin: 6px 0 8px;
+}
+
+.my-page-faq header > span {
+  color: #647181;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.my-page-faq > div {
+  display: grid;
+}
+
+.my-page-faq article {
+  border-top: 1px solid #dfe6ec;
+}
+
+.my-page-faq article:last-child {
+  border-bottom: 1px solid #dfe6ec;
+}
+
+.my-page-faq article > button {
+  display: flex;
+  width: 100%;
+  min-height: 52px;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  color: #0a2239;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  text-align: left;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.my-page-faq article > button strong {
+  font-size: 20px;
+  font-weight: 500;
+  transition: transform 160ms ease;
+}
+
+.my-page-faq article > div {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 180ms ease;
+}
+
+.my-page-faq article > div > p {
+  min-height: 0;
+  margin: 0;
+  overflow: hidden;
+  color: #5d6a78;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.my-page-faq article.is-open > div {
+  grid-template-rows: 1fr;
+}
+
+.my-page-faq article.is-open > div > p {
+  padding: 0 4px 16px;
+}
+
+.my-page-faq article.is-open > button strong {
+  transform: rotate(45deg);
+}
+
+.my-page-modal-backdrop {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  padding: 20px;
+  background: rgba(4, 20, 34, 0.58);
+  place-items: center;
+}
+
+.my-page-modal {
+  width: min(520px, 100%);
+  padding: 24px;
+  background: #fff;
+  box-shadow: 0 28px 90px rgba(4, 20, 34, 0.28);
+}
+
+.my-page-modal header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.my-page-modal h2 {
+  margin: 0;
+  font-size: 25px;
+}
+
+.my-page-modal header button {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #d2dce4;
+  background: #fff;
+  color: #0a2239;
+  font-size: 23px;
+  cursor: pointer;
+}
+
+.my-page-modal dl {
+  display: grid;
+  margin: 22px 0;
+  border-top: 1px solid #dce4ea;
+}
+
+.my-page-modal dl > div {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  padding: 12px 0;
+  border-bottom: 1px solid #dce4ea;
+}
+
+.my-page-modal dt {
+  color: #687585;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.my-page-modal dd {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+@media (max-width: 900px) {
+  .my-page-content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .my-page-faq {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 680px) {
+  .my-page-dashboard {
+    padding: 18px 14px 36px;
+  }
+
+  .my-page-heading {
+    padding-left: 14px;
+  }
+
+  .my-page-heading h1 {
+    font-size: 29px;
+  }
+
+  .my-page-upcoming {
+    grid-template-columns: 44px minmax(0, 1fr);
+  }
+
+  .my-page-square-tag {
+    width: 44px;
+    height: 44px;
+  }
+
+  .my-page-upcoming-actions {
+    grid-column: 1 / -1;
+  }
+
+  .my-page-action-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .my-page-action-card {
+    min-height: 205px;
+  }
+
+  .my-page-step-list {
+    grid-template-columns: 1fr;
+  }
+
+  .my-page-step-list button {
+    display: flex;
+    min-height: 38px;
+    padding: 7px 10px;
+    justify-content: flex-start;
+  }
+}

@@ -1,0 +1,3039 @@
+.rv-page {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  background: #f4f6f8;
+  color: #20242c;
+  font-family:
+    Inter,
+    Pretendard,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+
+.rv-page * {
+  box-sizing: border-box;
+}
+
+.rv-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  padding: 30px 24px;
+  background: #06233c;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+.rv-logo {
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  gap: 12px;
+  color: #fff;
+  text-decoration: none;
+}
+
+.rv-logo span {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 24px;
+}
+
+.rv-logo strong {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 950;
+}
+
+.rv-logo small {
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.rv-side-nav {
+  margin-top: 62px;
+  display: grid;
+  gap: 7px;
+}
+
+.rv-side-nav a,
+.rv-sidebar-bottom a {
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.78);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.rv-side-nav a.active,
+.rv-side-nav a:hover,
+.rv-sidebar-bottom a:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.rv-sidebar-bottom {
+  margin-top: auto;
+  padding-top: 22px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: grid;
+  gap: 12px;
+}
+
+.rv-sidebar-bottom span {
+  color: rgba(255, 255, 255, 0.38);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.rv-shell {
+  min-width: 0;
+}
+
+.rv-topbar {
+  height: 78px;
+  padding: 0 34px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  border-bottom: 1px solid #dbe2e7;
+  background: #fff;
+}
+
+.rv-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #6d7784;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.rv-breadcrumb a,
+.rv-top-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.rv-breadcrumb strong {
+  color: #20242c;
+}
+
+.rv-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.rv-search-box {
+  width: min(360px, 34vw);
+  min-height: 42px;
+  padding: 0 14px;
+  border: 1px solid #d5dce4;
+  border-radius: 6px;
+  color: #7b8794;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rv-search-box input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  color: #20242c;
+  background: transparent;
+  font: inherit;
+  font-weight: 750;
+}
+
+.rv-top-link {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #d5dce4;
+  border-radius: 6px;
+  padding: 0 16px;
+  color: #06233c;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.rv-user-dot {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #06233c;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-weight: 950;
+}
+
+.rv-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  align-items: start;
+}
+
+.rv-content {
+  padding: 42px 34px 64px;
+}
+
+.rv-hero {
+  margin-bottom: 28px;
+}
+
+.rv-hero h1 {
+  margin: 0;
+  color: #20242c;
+  font-size: 38px;
+  line-height: 1.15;
+  letter-spacing: 0;
+  font-weight: 950;
+}
+
+.rv-hero p {
+  max-width: 800px;
+  margin: 12px 0 0;
+  color: #5d6673;
+  font-size: 17px;
+  line-height: 1.65;
+  font-weight: 750;
+}
+
+.rv-stepper {
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #5d6673;
+  font-weight: 900;
+}
+
+.rv-stepper span {
+  width: 34px;
+  height: 34px;
+  border: 1px solid #cbd4dd;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  color: #5d6673;
+}
+
+.rv-stepper span.active {
+  border-color: #06233c;
+  background: #06233c;
+  color: #fff;
+}
+
+.rv-stepper i {
+  width: 66px;
+  height: 1px;
+  background: #cfd7df;
+}
+
+.rv-approval-flow {
+  margin-bottom: 30px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.rv-approval-flow div {
+  min-height: 128px;
+  padding: 20px;
+  border: 1px solid #dbe2e7;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 12px 28px rgba(16, 29, 43, 0.04);
+}
+
+.rv-approval-flow span,
+.rv-section-head span {
+  display: inline-flex;
+  margin-bottom: 10px;
+  color: #184d38;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.rv-approval-flow strong {
+  display: block;
+  color: #20242c;
+  font-size: 17px;
+  font-weight: 950;
+}
+
+.rv-approval-flow p,
+.rv-section-head p {
+  margin: 8px 0 0;
+  color: #5d6673;
+  line-height: 1.55;
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.rv-expert-section {
+  margin-bottom: 24px;
+}
+
+.rv-section-head {
+  margin-bottom: 16px;
+}
+
+.rv-expert-section h2,
+.rv-panel-head h2 {
+  margin: 0;
+  color: #20242c;
+  font-size: 25px;
+  font-weight: 950;
+  letter-spacing: 0;
+}
+
+.rv-expert-list {
+  margin-top: 16px;
+  display: grid;
+  gap: 16px;
+}
+
+.rv-expert-card {
+  width: 100%;
+  min-height: 156px;
+  border: 1px solid #d8dee5;
+  border-radius: 8px;
+  padding: 22px 24px;
+  background: #fff;
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr) auto;
+  gap: 22px;
+  align-items: center;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+}
+
+.rv-expert-card.selected {
+  border: 2px solid #06233c;
+  background: #f8fbff;
+  box-shadow: 0 16px 32px rgba(6, 35, 60, 0.08);
+}
+
+.rv-expert-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #d9defc, #f0f3ff);
+  color: #06233c;
+  display: grid;
+  place-items: center;
+  font-size: 26px;
+  font-weight: 950;
+}
+
+.rv-expert-copy {
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.rv-expert-copy strong {
+  color: #20242c;
+  font-size: 26px;
+  font-weight: 950;
+}
+
+.rv-expert-copy em {
+  color: #06233c;
+  font-style: normal;
+  font-size: 15px;
+  font-weight: 950;
+}
+
+.rv-expert-copy small {
+  max-width: 680px;
+  color: #5d6673;
+  line-height: 1.55;
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.rv-expert-tags {
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.rv-expert-tags b {
+  min-height: 24px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #e2e6ea;
+  color: #3f4751;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.rv-expert-rating {
+  align-self: start;
+  display: grid;
+  gap: 3px;
+  color: #184d38;
+  background: #f0fbf5;
+  border-radius: 999px;
+  padding: 8px 11px;
+  font-weight: 950;
+}
+
+.rv-expert-rating small {
+  color: #44505d;
+  font-weight: 850;
+}
+
+.rv-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+  gap: 20px;
+}
+
+.rv-panel,
+.rv-summary-panel {
+  border: 1px solid #dbe2e7;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 16px 36px rgba(16, 29, 43, 0.04);
+}
+
+.rv-calendar-panel {
+  grid-row: span 2;
+}
+
+.rv-panel {
+  padding: 24px;
+}
+
+.rv-panel-head {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.rv-panel-head span {
+  display: block;
+  margin-bottom: 8px;
+  color: #184d38;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.rv-panel-head small {
+  color: #697482;
+  font-weight: 850;
+}
+
+.rv-month-tools {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.rv-month-tools button,
+.rv-calendar-nav button {
+  min-height: 38px;
+  border: 1px solid #d8e0e6;
+  border-radius: 6px;
+  padding: 0 14px;
+  color: #06233c;
+  background: #fff;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.rv-calendar-nav {
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+}
+
+.rv-calendar-nav button {
+  width: 42px;
+  padding: 0;
+  font-size: 24px;
+}
+
+.rv-calendar-nav strong {
+  min-width: 180px;
+  color: #20242c;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 950;
+}
+
+.rv-calendar-board {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.rv-weekday {
+  padding: 8px 0;
+  color: #7a8490;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.rv-day {
+  aspect-ratio: 1;
+  border: 1px solid #e0e6eb;
+  border-radius: 8px;
+  color: #20242c;
+  background: #fbfcfd;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.rv-day.empty {
+  border-color: transparent;
+  background: transparent;
+  cursor: default;
+}
+
+.rv-day.today {
+  border-color: #184d38;
+}
+
+.rv-day.selected {
+  color: #fff;
+  border-color: #06233c;
+  background: #06233c;
+  box-shadow: 0 10px 22px rgba(6, 35, 60, 0.18);
+}
+
+.rv-day.disabled {
+  color: #b5bec7;
+  background: #f0f3f5;
+  cursor: not-allowed;
+}
+
+.rv-time-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.rv-time-grid button {
+  min-height: 70px;
+  border: 1px solid #dbe2e7;
+  border-radius: 8px;
+  padding: 13px;
+  color: #20242c;
+  background: #fbfcfd;
+  text-align: left;
+  cursor: pointer;
+}
+
+.rv-time-grid button strong {
+  display: block;
+  font-size: 16px;
+  font-weight: 950;
+}
+
+.rv-time-grid button span {
+  display: block;
+  margin-top: 7px;
+  color: #697482;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.rv-time-grid button.selected {
+  color: #fff;
+  border-color: #06233c;
+  background: #06233c;
+}
+
+.rv-time-grid button.selected span {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.rv-time-grid button.blocked {
+  color: #9faab4;
+  background: #f0f3f5;
+  cursor: not-allowed;
+}
+
+.rv-custom-time {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 12px;
+  border: 1px dashed #c9d3dc;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.rv-custom-time input,
+.rv-custom-time button {
+  min-height: 44px;
+  border-radius: 6px;
+  font: inherit;
+  font-weight: 850;
+}
+
+.rv-custom-time input {
+  border: 1px solid #d5dce4;
+  padding: 0 12px;
+  color: #20242c;
+  background: #fff;
+}
+
+.rv-custom-time button {
+  border: 1px solid #06233c;
+  padding: 0 16px;
+  color: #fff;
+  background: #06233c;
+  cursor: pointer;
+}
+
+.rv-summary-panel {
+  position: sticky;
+  top: 78px;
+  min-height: calc(100vh - 78px);
+  border-radius: 0;
+  border-top: 0;
+  border-right: 0;
+  border-bottom: 0;
+}
+
+.rv-summary-head,
+.rv-selected-summary,
+.rv-cost-box,
+.rv-form,
+.rv-advisory {
+  padding: 28px;
+  border-bottom: 1px solid #edf1f4;
+}
+
+.rv-summary-head h2 {
+  margin: 0 0 20px;
+  color: #20242c;
+  font-size: 28px;
+  line-height: 1.15;
+  font-weight: 950;
+  letter-spacing: 0;
+}
+
+.rv-summary-expert {
+  padding: 14px;
+  border: 1px solid #d8dee5;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rv-summary-expert .rv-expert-avatar {
+  width: 44px;
+  height: 44px;
+  font-size: 17px;
+}
+
+.rv-summary-expert strong,
+.rv-summary-expert small {
+  display: block;
+}
+
+.rv-summary-expert strong {
+  color: #20242c;
+  font-weight: 950;
+}
+
+.rv-summary-expert small {
+  margin-top: 3px;
+  color: #5d6673;
+  font-weight: 750;
+}
+
+.rv-selected-summary {
+  display: grid;
+  gap: 16px;
+}
+
+.rv-selected-summary div {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.rv-selected-summary span,
+.rv-cost-box span {
+  color: #697482;
+  font-weight: 850;
+}
+
+.rv-selected-summary strong {
+  color: #20242c;
+  text-align: right;
+  font-weight: 950;
+}
+
+.rv-cost-box strong {
+  display: block;
+  margin-top: 12px;
+  color: #06233c;
+  font-size: 24px;
+  font-weight: 950;
+}
+
+.rv-cost-box p {
+  margin: 8px 0 0;
+  color: #5d6673;
+  line-height: 1.5;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.rv-form {
+  display: grid;
+  gap: 14px;
+}
+
+.rv-form label {
+  display: grid;
+  gap: 8px;
+}
+
+.rv-form label span {
+  color: #20242c;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.rv-form input {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid #d5dce2;
+  border-radius: 6px;
+  padding: 0 13px;
+  outline: 0;
+  color: #20242c;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.rv-form input:focus {
+  border-color: #06233c;
+  box-shadow: 0 0 0 3px rgba(6, 35, 60, 0.08);
+}
+
+.rv-error,
+.rv-success {
+  margin: 16px 28px 0;
+  padding: 12px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.rv-error {
+  border: 1px solid #f2c7c7;
+  color: #a33c3c;
+  background: #fff3f3;
+}
+
+.rv-success {
+  border: 1px solid #bfddc9;
+  color: #184d38;
+  background: #f0faf4;
+}
+
+.rv-submit {
+  width: calc(100% - 56px);
+  min-height: 58px;
+  margin: 22px 28px;
+  border: 1px solid #06233c;
+  border-radius: 6px;
+  color: #fff;
+  background: #06233c;
+  font-size: 15px;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.rv-submit:disabled {
+  opacity: 0.62;
+  cursor: not-allowed;
+}
+
+.rv-submit span {
+  margin-left: 10px;
+}
+
+.rv-advisory {
+  margin: 0;
+  border: 0;
+  color: #184d38;
+  background: #e9eef1;
+}
+
+.rv-advisory strong {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 950;
+}
+
+.rv-advisory p {
+  margin: 0 0 18px;
+  color: #31513f;
+  line-height: 1.6;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.rv-advisory a {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  color: #fff;
+  background: #184d38;
+  text-decoration: none;
+  font-weight: 950;
+}
+
+@media (max-width: 1240px) {
+  .rv-page,
+  .rv-main {
+    grid-template-columns: 1fr;
+  }
+
+  .rv-sidebar,
+  .rv-summary-panel {
+    position: relative;
+    top: 0;
+    height: auto;
+    min-height: 0;
+  }
+
+  .rv-sidebar {
+    height: auto;
+  }
+
+  .rv-side-nav {
+    margin-top: 26px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .rv-sidebar-bottom {
+    display: none;
+  }
+
+  .rv-summary-panel {
+    border-radius: 8px;
+    margin: 0 34px 42px;
+    border: 1px solid #dbe2e7;
+  }
+}
+
+@media (max-width: 860px) {
+  .rv-topbar,
+  .rv-workspace,
+  .rv-approval-flow,
+  .rv-expert-card {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .rv-topbar {
+    height: auto;
+    padding: 18px;
+  }
+
+  .rv-top-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .rv-search-box {
+    width: 100%;
+  }
+
+  .rv-content {
+    padding: 28px 18px;
+  }
+
+  .rv-side-nav,
+  .rv-time-grid,
+  .rv-custom-time {
+    grid-template-columns: 1fr;
+  }
+
+  .rv-summary-panel {
+    margin: 0 18px 34px;
+  }
+
+  .rv-stepper {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .rv-stepper i {
+    display: none;
+  }
+
+  .rv-calendar-board {
+    gap: 6px;
+  }
+
+  .rv-day {
+    aspect-ratio: auto;
+    min-height: 46px;
+  }
+
+  .rv-hero h1 {
+    font-size: 34px;
+  }
+}
+
+/* 사용자 페이지에서는 좌측 대시보드를 제거하고 예약 화면을 전체 폭으로 사용합니다. */
+.rv-page {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.rv-sidebar {
+  display: none;
+}
+
+/* 최근 상담예약 화면 기준: 공통 헤더 아래에서 한 화면에 핵심 입력/요약이 보이도록 압축합니다. */
+.rv-page {
+  min-height: calc(100vh - 78px);
+  display: block;
+  background: linear-gradient(110deg, #eef4f8 0%, #f9fbfd 58%, #ffffff 100%);
+}
+
+.rv-shell {
+  width: min(100% - 56px, 1420px);
+  margin: 0 auto;
+}
+
+.rv-topbar,
+.rv-approval-flow {
+  display: none;
+}
+
+.rv-main {
+  min-height: calc(100vh - 78px);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 18px;
+  align-items: start;
+  padding: 22px 0 26px;
+}
+
+.rv-content {
+  padding: 0;
+}
+
+.rv-hero {
+  margin-bottom: 10px;
+}
+
+.rv-hero h1 {
+  font-size: 38px;
+}
+
+.rv-hero p {
+  max-width: 900px;
+  margin-top: 4px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.rv-stepper {
+  margin-bottom: 10px;
+  border: 1px solid #d8e1e8;
+  border-radius: 8px;
+  padding: 8px;
+  background: #ffffff;
+  box-shadow: 0 12px 28px rgba(6, 35, 60, 0.05);
+}
+
+.rv-stepper span {
+  width: 28px;
+  height: 28px;
+  font-size: 13px;
+}
+
+.rv-stepper strong {
+  font-size: 13px;
+}
+
+.rv-stepper i {
+  flex: 1;
+}
+
+.rv-expert-section {
+  margin-bottom: 10px;
+}
+
+.rv-section-head {
+  margin-bottom: 8px;
+}
+
+.rv-section-head p {
+  margin-top: 3px;
+  font-size: 12px;
+}
+
+.rv-expert-section h2,
+.rv-panel-head h2 {
+  font-size: 20px;
+}
+
+.rv-expert-list {
+  margin-top: 8px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.rv-expert-card {
+  min-height: 108px;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 10px;
+  padding: 12px;
+}
+
+.rv-expert-avatar {
+  width: 38px;
+  height: 38px;
+  font-size: 15px;
+}
+
+.rv-expert-copy strong {
+  font-size: 17px;
+}
+
+.rv-expert-copy em {
+  font-size: 12px;
+}
+
+.rv-expert-copy small,
+.rv-expert-tags,
+.rv-expert-rating {
+  display: none;
+}
+
+.rv-workspace {
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 10px;
+}
+
+.rv-panel {
+  padding: 12px;
+}
+
+.rv-panel-head {
+  margin-bottom: 8px;
+}
+
+.rv-month-tools {
+  gap: 6px;
+}
+
+.rv-month-tools button,
+.rv-calendar-nav button {
+  min-height: 32px;
+  padding: 0 10px;
+}
+
+.rv-calendar-nav {
+  margin-bottom: 6px;
+}
+
+.rv-calendar-nav strong {
+  font-size: 16px;
+}
+
+.rv-calendar-board {
+  gap: 4px;
+}
+
+.rv-weekday {
+  padding: 4px 0;
+  font-size: 10px;
+}
+
+.rv-day {
+  border-radius: 6px;
+  min-height: 34px;
+}
+
+.rv-time-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.rv-time-grid button {
+  min-height: 46px;
+  padding: 8px;
+}
+
+.rv-time-grid button strong {
+  font-size: 13px;
+}
+
+.rv-time-grid button span {
+  margin-top: 2px;
+  font-size: 10px;
+}
+
+.rv-custom-time {
+  margin-top: 8px;
+  padding: 8px;
+}
+
+.rv-custom-time input,
+.rv-custom-time button {
+  min-height: 36px;
+}
+
+.rv-summary-panel {
+  position: sticky;
+  top: 92px;
+  min-height: 0;
+  border: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  color: #ffffff;
+  background: #06233c;
+  box-shadow: 0 18px 42px rgba(6, 35, 60, 0.14);
+}
+
+.rv-summary-head,
+.rv-selected-summary,
+.rv-cost-box,
+.rv-form,
+.rv-advisory {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.rv-summary-head h2 {
+  margin-bottom: 10px;
+  color: #ffffff;
+  font-size: 22px;
+}
+
+.rv-summary-expert {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.rv-summary-expert strong,
+.rv-selected-summary strong,
+.rv-cost-box strong,
+.rv-form label span {
+  color: #ffffff;
+}
+
+.rv-summary-expert small,
+.rv-selected-summary span,
+.rv-cost-box span,
+.rv-cost-box p {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.rv-selected-summary {
+  gap: 9px;
+}
+
+.rv-cost-box strong {
+  margin-top: 4px;
+  font-size: 17px;
+}
+
+.rv-cost-box p {
+  margin-top: 4px;
+  font-size: 11px;
+}
+
+.rv-form {
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.rv-form label {
+  gap: 4px;
+}
+
+.rv-form input {
+  min-height: 36px;
+  border-color: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.95);
+  font-size: 12px;
+}
+
+.rv-error,
+.rv-success {
+  margin: 10px 16px 0;
+  padding: 9px 10px;
+}
+
+.rv-submit {
+  width: calc(100% - 32px);
+  min-height: 44px;
+  margin: 12px 16px;
+  border-color: #ffffff;
+  background: #ffffff;
+  color: #06233c;
+}
+
+.rv-advisory {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.rv-advisory strong,
+.rv-advisory p {
+  color: #ffffff;
+}
+
+.rv-advisory a {
+  min-height: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: transparent;
+}
+
+@media (max-width: 1100px) {
+  .rv-main,
+  .rv-workspace,
+  .rv-expert-list {
+    grid-template-columns: 1fr;
+  }
+
+  .rv-summary-panel {
+    position: relative;
+    top: 0;
+    margin: 0 0 24px;
+  }
+}
+
+/* 2026-07-27 복구 기준: 예약 화면을 마이페이지 계열의 간격과 헤더 톤에 맞춥니다. */
+.rv-page {
+  min-height: calc(100vh - 72px);
+  display: block;
+  background: linear-gradient(110deg, #eef4f8 0%, #f8fafc 58%, #ffffff 100%);
+}
+
+.rv-shell {
+  width: min(1180px, 100% - 48px);
+  margin: 0 auto;
+}
+
+.rv-main {
+  min-height: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 342px;
+  gap: 16px;
+  align-items: start;
+  padding: 20px 0 48px;
+}
+
+.rv-content {
+  padding: 0;
+}
+
+.rv-hero {
+  margin: 0 0 14px;
+  padding: 4px 0 16px 18px;
+  border-left: 4px solid #06233c;
+}
+
+.rv-hero h1 {
+  margin: 0;
+  color: #06233c;
+  font-size: 34px;
+  line-height: 1.15;
+  letter-spacing: 0;
+  font-weight: 950;
+}
+
+.rv-hero p {
+  max-width: 780px;
+  margin: 8px 0 0;
+  color: #536070;
+  font-size: 14px;
+  line-height: 1.55;
+  font-weight: 800;
+}
+
+.rv-stepper {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border: 1px solid #d7e0e7;
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 10px 28px rgba(6, 35, 60, 0.04);
+}
+
+.rv-stepper span {
+  width: 28px;
+  height: 28px;
+  font-size: 13px;
+}
+
+.rv-stepper strong {
+  color: #06233c;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.rv-stepper i {
+  flex: 1;
+  min-width: 28px;
+}
+
+.rv-expert-section {
+  margin: 0 0 12px;
+}
+
+.rv-section-head {
+  margin-bottom: 8px;
+}
+
+.rv-section-head span,
+.rv-panel-head span {
+  color: #007a4d;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.rv-expert-section h2,
+.rv-panel-head h2 {
+  margin: 2px 0 0;
+  color: #06233c;
+  font-size: 20px;
+  line-height: 1.25;
+  letter-spacing: 0;
+  font-weight: 950;
+}
+
+.rv-section-head p {
+  max-width: 760px;
+  margin: 4px 0 0;
+  color: #627080;
+  font-size: 12px;
+  line-height: 1.45;
+  font-weight: 750;
+}
+
+.rv-expert-list {
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.rv-expert-card {
+  min-height: 116px;
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: 9px;
+  align-items: start;
+  padding: 12px;
+  border-radius: 0;
+  border: 1px solid #d6e0e8;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 10px 26px rgba(6, 35, 60, 0.04);
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.rv-expert-card:hover {
+  transform: translateY(-2px);
+  border-color: #06233c;
+  box-shadow: 0 14px 30px rgba(6, 35, 60, 0.08);
+}
+
+.rv-expert-card.selected {
+  border-color: #06233c;
+  box-shadow: inset 0 4px 0 #06233c, 0 14px 32px rgba(6, 35, 60, 0.08);
+}
+
+.rv-expert-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 0;
+  background: #06233c;
+  color: #ffffff;
+  font-size: 14px;
+}
+
+.rv-expert-copy {
+  min-width: 0;
+}
+
+.rv-expert-copy strong {
+  display: block;
+  color: #06233c;
+  font-size: 15px;
+  line-height: 1.25;
+  font-weight: 950;
+}
+
+.rv-expert-copy em {
+  display: block;
+  margin-top: 3px;
+  color: #007a4d;
+  font-size: 11px;
+  line-height: 1.3;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.rv-expert-copy small {
+  display: block;
+  margin-top: 5px;
+  color: #647386;
+  font-size: 11px;
+  line-height: 1.4;
+  font-weight: 750;
+}
+
+.rv-expert-tags,
+.rv-expert-rating {
+  display: none;
+}
+
+.rv-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 10px;
+}
+
+.rv-panel {
+  padding: 14px;
+  border-radius: 0;
+  border: 1px solid #d7e0e7;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 10px 26px rgba(6, 35, 60, 0.04);
+}
+
+.rv-panel-head {
+  margin-bottom: 8px;
+}
+
+.rv-panel-head small {
+  color: #6b7786;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.rv-month-tools {
+  gap: 6px;
+}
+
+.rv-month-tools button,
+.rv-calendar-nav button,
+.rv-custom-time button,
+.rv-submit {
+  border-radius: 0;
+}
+
+.rv-month-tools button,
+.rv-calendar-nav button {
+  min-height: 32px;
+  padding: 0 10px;
+}
+
+.rv-calendar-nav {
+  margin-bottom: 6px;
+}
+
+.rv-calendar-nav strong {
+  color: #06233c;
+  font-size: 16px;
+}
+
+.rv-calendar-board {
+  gap: 4px;
+}
+
+.rv-weekday {
+  padding: 4px 0;
+  font-size: 10px;
+}
+
+.rv-day {
+  min-height: 34px;
+  border-radius: 0;
+}
+
+.rv-day span {
+  font-size: 12px;
+}
+
+.rv-time-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.rv-time-grid button {
+  min-height: 48px;
+  padding: 8px;
+  border-radius: 0;
+}
+
+.rv-time-grid button strong {
+  font-size: 13px;
+}
+
+.rv-time-grid button span {
+  margin-top: 2px;
+  font-size: 10px;
+}
+
+.rv-custom-time {
+  margin-top: 8px;
+  padding: 8px;
+  border-radius: 0;
+}
+
+.rv-custom-time input,
+.rv-custom-time button {
+  min-height: 36px;
+}
+
+.rv-summary-panel {
+  position: sticky;
+  top: 88px;
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
+  overflow: hidden;
+  color: #ffffff;
+  background: #06233c;
+  box-shadow: 0 18px 42px rgba(6, 35, 60, 0.14);
+}
+
+.rv-summary-head,
+.rv-selected-summary,
+.rv-cost-box,
+.rv-form,
+.rv-advisory {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.rv-summary-head h2 {
+  margin: 0 0 10px;
+  color: #ffffff;
+  font-size: 22px;
+}
+
+.rv-summary-expert {
+  border-color: rgba(255, 255, 255, 0.2);
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.rv-summary-expert strong,
+.rv-selected-summary strong,
+.rv-cost-box strong,
+.rv-form label span {
+  color: #ffffff;
+}
+
+.rv-summary-expert small,
+.rv-selected-summary span,
+.rv-cost-box span,
+.rv-cost-box p {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.rv-selected-summary {
+  gap: 8px;
+}
+
+.rv-selected-summary div {
+  min-height: 0;
+  padding: 0;
+}
+
+.rv-cost-box strong {
+  margin-top: 4px;
+  font-size: 17px;
+}
+
+.rv-cost-box p {
+  margin-top: 4px;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.rv-form {
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.rv-form label {
+  gap: 4px;
+}
+
+.rv-form input {
+  min-height: 36px;
+  border-color: rgba(255, 255, 255, 0.22);
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.95);
+  font-size: 12px;
+}
+
+.rv-basic-panel {
+  min-height: 360px;
+}
+
+.rv-basic-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 0;
+  border-bottom: 0;
+}
+
+.rv-basic-form label {
+  gap: 6px;
+}
+
+.rv-basic-form label span {
+  color: #06233c;
+}
+
+.rv-basic-form input {
+  min-height: 44px;
+  border-color: #d7e0e7;
+  background: #ffffff;
+  color: #06233c;
+  font-size: 14px;
+}
+
+.rv-basic-form label:first-child,
+.rv-basic-form label:last-child {
+  grid-column: span 2;
+}
+
+.rv-basic-form label:last-child {
+  grid-column: auto;
+}
+
+.rv-form-title small {
+  display: none;
+}
+
+.rv-error,
+.rv-success {
+  margin: 10px 16px 0;
+  padding: 9px 10px;
+  border-radius: 0;
+}
+
+.rv-submit {
+  width: calc(100% - 32px);
+  min-height: 44px;
+  margin: 12px 16px;
+  border-color: #ffffff;
+  background: #ffffff;
+  color: #06233c;
+}
+
+.rv-advisory {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.rv-advisory strong,
+.rv-advisory p {
+  color: #ffffff;
+}
+
+.rv-advisory a {
+  min-height: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 0;
+  background: transparent;
+}
+
+@media (max-width: 1180px) {
+  .rv-main,
+  .rv-workspace,
+  .rv-expert-list {
+    grid-template-columns: 1fr;
+  }
+
+  .rv-summary-panel {
+    position: relative;
+    top: 0;
+  }
+
+  .rv-expert-card {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 720px) {
+  .rv-shell {
+    width: min(100% - 28px, 1180px);
+  }
+
+  .rv-main {
+    padding-top: 16px;
+  }
+
+  .rv-hero h1 {
+    font-size: 28px;
+  }
+
+  .rv-stepper {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .rv-stepper i {
+    display: none;
+  }
+
+  .rv-calendar-board,
+  .rv-time-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .rv-basic-form,
+  .rv-basic-form label:first-child,
+  .rv-basic-form label:last-child {
+    grid-template-columns: 1fr;
+    grid-column: auto;
+  }
+}
+
+/* 상담 예약: 실제 선택값 중심의 요약 패널과 컴팩트한 입력 흐름 */
+.rv-basic-form label:first-child,
+.rv-basic-form label:last-child {
+  grid-column: auto;
+}
+
+.rv-basic-form label:last-child {
+  grid-column: 1 / -1;
+}
+
+.rv-workspace {
+  align-items: stretch;
+}
+
+.rv-workspace .rv-panel {
+  min-height: 420px;
+}
+
+.rv-time-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: start;
+}
+
+.rv-time-grid button {
+  min-height: 58px;
+}
+
+.rv-review-panel {
+  min-height: 240px;
+}
+
+.rv-review-note {
+  max-width: 620px;
+  margin: 0;
+  padding: 18px;
+  border-left: 3px solid #06233c;
+  color: #536070;
+  background: #f5f8fa;
+  font-size: 14px;
+  line-height: 1.65;
+  font-weight: 700;
+}
+
+.rv-summary-progress {
+  padding: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.rv-summary-progress > span,
+.rv-summary-progress > strong {
+  display: block;
+}
+
+.rv-summary-progress > span {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.rv-summary-progress > strong {
+  margin-top: 4px;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 950;
+}
+
+.rv-summary-progress i {
+  display: block;
+  height: 5px;
+  margin-top: 12px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.rv-summary-progress b {
+  display: block;
+  height: 100%;
+  background: #ffffff;
+  transition: width 180ms ease;
+}
+
+.rv-status-draft,
+.rv-status-pending {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+.rv-status-draft {
+  color: #d7e5ef !important;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.rv-status-pending {
+  color: #06233c !important;
+  background: #d9f5e8;
+}
+
+@media (max-width: 720px) {
+  .rv-basic-form,
+  .rv-basic-form label:first-child,
+  .rv-basic-form label:last-child {
+    grid-template-columns: 1fr;
+    grid-column: auto;
+  }
+
+  .rv-workspace .rv-panel {
+    min-height: 0;
+  }
+
+  .rv-time-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Step 01 진출 단계 선택: 사용자가 준 시안처럼 4개 카드를 가로로 배치하고, 상세 설명은 현재 선택 바에서만 보여줍니다. */
+.rv-basic-panel {
+  padding: 18px 20px;
+}
+
+.rv-basic-panel .rv-panel-head {
+  margin-bottom: 16px;
+}
+
+.rv-basic-panel .rv-panel-head span {
+  color: #9aa4b2;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.rv-basic-panel .rv-panel-head h2 {
+  margin-top: 5px;
+  color: #222222;
+  font-size: 22px;
+  line-height: 1.25;
+  font-weight: 950;
+}
+
+.rv-basic-stage-top {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #edf0f3;
+}
+
+.rv-basic-stage-top .rv-section-head {
+  display: none;
+}
+
+.rv-basic-stage .rv-stage-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.rv-basic-stage .rv-stage-card {
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 10px;
+  border: 1px solid #e1e6ec;
+  border-radius: 4px;
+  background: #ffffff;
+  text-align: center;
+  box-shadow: none;
+}
+
+.rv-basic-stage .rv-stage-card:hover {
+  transform: none;
+  border-color: #0f2537;
+  box-shadow: none;
+}
+
+.rv-basic-stage .rv-stage-card.selected {
+  border: 2px solid #0f2537;
+  background: #f8fafc;
+  box-shadow: none;
+}
+
+.rv-basic-stage .rv-stage-card span {
+  color: #222222;
+  font-size: 15px;
+  line-height: 1.3;
+  font-weight: 950;
+}
+
+.rv-basic-stage .rv-stage-card strong {
+  display: none;
+}
+
+.rv-basic-stage .rv-stage-strip {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-top: 12px;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 4px;
+  background: #f6f8fb;
+}
+
+.rv-basic-stage .rv-stage-strip span {
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.rv-basic-stage .rv-stage-strip strong {
+  color: #222222;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.rv-basic-stage .rv-stage-strip small {
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+@media (max-width: 960px) {
+  .rv-basic-stage .rv-stage-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .rv-basic-stage .rv-stage-grid,
+  .rv-basic-stage .rv-stage-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .rv-basic-stage .rv-stage-strip {
+    display: grid;
+    gap: 8px;
+  }
+}
+
+/* Step 01 압축 보정: 한 화면에서 단계 선택과 신청자 입력이 함께 보이도록 진출 단계 영역을 낮춥니다. */
+.rv-basic-panel {
+  padding: 16px 18px;
+}
+
+.rv-basic-panel .rv-panel-head {
+  margin-bottom: 14px;
+}
+
+.rv-basic-panel .rv-panel-head h2 {
+  font-size: 21px;
+}
+
+.rv-basic-stage-top {
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+}
+
+.rv-basic-stage-top .rv-section-head {
+  display: none;
+}
+
+.rv-basic-stage .rv-stage-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.rv-basic-stage .rv-stage-card {
+  min-height: 46px;
+  padding: 8px 10px;
+}
+
+.rv-basic-stage .rv-stage-card span {
+  font-size: 14px;
+}
+
+.rv-basic-stage .rv-stage-strip {
+  margin-top: 10px;
+  padding: 8px 12px;
+}
+
+.rv-form-title {
+  margin-bottom: 8px;
+}
+
+.rv-form-title strong {
+  font-size: 17px;
+}
+
+.rv-form-title small {
+  font-size: 12px;
+}
+
+.rv-basic-form {
+  gap: 10px 16px;
+}
+
+.rv-basic-form input {
+  min-height: 40px;
+  padding: 0 12px;
+}
+
+.rv-step-actions {
+  margin-top: 12px;
+}
+
+/* 새 상담 예약 시안: 진출 희망 단계 선택 영역입니다. 진행 상태 자체는 클릭 요소가 아니고, 이 카드만 실제 선택을 담당합니다. */
+.rv-stage-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.rv-basic-stage {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #d7e0e7;
+}
+
+.rv-stage-strip {
+  display: grid;
+  grid-template-columns: auto minmax(120px, auto) minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border: 1px solid #d7e0e7;
+  background: #f4f8fb;
+}
+
+.rv-stage-strip span {
+  color: #007a4d;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.rv-stage-strip strong {
+  color: #06233c;
+  font-size: 16px;
+  font-weight: 950;
+}
+
+.rv-stage-strip small {
+  color: #5f6d7d;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.rv-basic-stage-top {
+  margin-top: 0;
+  margin-bottom: 16px;
+  padding-top: 0;
+  padding-bottom: 16px;
+  border-top: 0;
+  border-bottom: 1px solid #d7e0e7;
+}
+
+.rv-basic-stage .rv-section-head {
+  margin-bottom: 10px;
+}
+
+.rv-basic-stage .rv-stage-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.rv-form-title {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 10px;
+}
+
+.rv-form-title strong {
+  color: #06233c;
+  font-size: 17px;
+  font-weight: 950;
+}
+
+.rv-form-title small {
+  color: #6b7786;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.rv-stage-card {
+  min-height: 104px;
+  padding: 14px 13px;
+  border: 1px solid #d7e0e7;
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.95);
+  color: #06233c;
+  text-align: left;
+  box-shadow: 0 10px 26px rgba(6, 35, 60, 0.04);
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.rv-stage-card:hover {
+  transform: translateY(-2px);
+  border-color: #06233c;
+  box-shadow: 0 14px 30px rgba(6, 35, 60, 0.08);
+}
+
+.rv-stage-card.selected {
+  border-color: #06233c;
+  box-shadow: inset 0 4px 0 #06233c, 0 14px 30px rgba(6, 35, 60, 0.08);
+}
+
+.rv-stage-card span {
+  display: block;
+  color: #06233c;
+  font-size: 17px;
+  line-height: 1.25;
+  font-weight: 950;
+}
+
+.rv-stage-card strong {
+  display: block;
+  margin-top: 8px;
+  color: #5f6d7d;
+  font-size: 12px;
+  line-height: 1.45;
+  font-weight: 800;
+}
+
+.rv-expert-list.compact {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.rv-consult-type-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.rv-consult-type-card {
+  min-height: 76px;
+  padding: 14px;
+  border: 1px solid #d7e0e7;
+  background: rgba(255, 255, 255, 0.95);
+  color: #06233c;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.rv-consult-type-card:hover {
+  transform: translateY(-2px);
+  border-color: #06233c;
+  box-shadow: 0 14px 30px rgba(6, 35, 60, 0.08);
+}
+
+.rv-consult-type-card.selected {
+  border-color: #06233c;
+  box-shadow: inset 0 4px 0 #06233c, 0 12px 26px rgba(6, 35, 60, 0.07);
+}
+
+.rv-consult-type-card span {
+  display: block;
+  color: #06233c;
+  font-size: 17px;
+  font-weight: 950;
+}
+
+.rv-consult-type-card strong {
+  display: block;
+  margin-top: 6px;
+  color: #5f6d7d;
+  font-size: 12px;
+  line-height: 1.45;
+  font-weight: 800;
+}
+
+.rv-expert-list.compact .rv-expert-card {
+  min-height: 118px;
+}
+
+.rv-expert-list.compact .rv-expert-copy small,
+.rv-expert-list.compact .rv-expert-tags {
+  display: block;
+}
+
+.rv-expert-list.compact .rv-expert-tags {
+  margin-top: 8px;
+}
+
+.rv-expert-list.compact .rv-expert-tags b {
+  display: inline-flex;
+  margin: 0 4px 4px 0;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: #edf3f7;
+  color: #06233c;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.rv-additional-request {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.rv-additional-request span {
+  color: #06233c;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.rv-additional-request textarea {
+  width: 100%;
+  min-height: 104px;
+  resize: vertical;
+  border: 1px solid #d7e0e7;
+  border-radius: 0;
+  padding: 12px;
+  color: #06233c;
+  background: #ffffff;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.55;
+  outline: none;
+}
+
+.rv-additional-request textarea:focus {
+  border-color: #06233c;
+  box-shadow: 0 0 0 3px rgba(6, 35, 60, 0.08);
+}
+
+.rv-selected-summary div {
+  grid-template-columns: minmax(88px, 0.8fr) minmax(0, 1.2fr);
+  gap: 10px;
+}
+
+.rv-selected-summary strong {
+  overflow-wrap: anywhere;
+}
+
+.rv-step-screen {
+  animation: rvStepEnter 220ms ease both;
+}
+
+@keyframes rvStepEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rv-step-actions {
+  margin-top: 14px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.rv-step-actions-wide {
+  grid-column: 1 / -1;
+  margin-top: 4px;
+}
+
+.rv-step-prev,
+.rv-step-next {
+  min-height: 42px;
+  padding: 0 18px;
+  border: 1px solid #d7e0e7;
+  border-radius: 0;
+  background: #ffffff;
+  color: #06233c;
+  font-size: 13px;
+  font-weight: 950;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease,
+    color 160ms ease;
+}
+
+.rv-step-next {
+  border-color: #06233c;
+  background: #06233c;
+  color: #ffffff;
+}
+
+.rv-step-prev:hover,
+.rv-step-next:hover {
+  transform: translateY(-2px);
+  border-color: #06233c;
+}
+
+.rv-step-next span {
+  margin-left: 8px;
+}
+
+.rv-review-panel {
+  min-height: 340px;
+}
+
+.rv-review-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.rv-review-grid div {
+  min-height: 86px;
+  padding: 14px;
+  border: 1px solid #d7e0e7;
+  background: #ffffff;
+}
+
+.rv-review-grid span {
+  display: block;
+  color: #7a8592;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.rv-review-grid strong {
+  display: block;
+  margin-top: 8px;
+  color: #06233c;
+  font-size: 16px;
+  line-height: 1.35;
+  font-weight: 950;
+}
+
+@media (max-width: 1180px) {
+  .rv-stage-grid,
+  .rv-expert-list.compact {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .rv-stage-grid,
+  .rv-expert-list.compact,
+  .rv-consult-type-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rv-stage-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .rv-form-title {
+    display: block;
+  }
+
+  .rv-review-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 2026-07-27 예약 화면 최신 시안: 요약 패널을 빼고 하나의 큰 신청 카드 안에서 단계를 진행합니다. */
+.rv-page {
+  min-height: calc(100vh - 72px);
+  background: #f3f4f6;
+}
+
+.rv-shell {
+  width: min(100% - 56px, 1160px);
+  margin: 0 auto;
+}
+
+.rv-main {
+  display: block;
+  padding: 26px 0 48px;
+}
+
+.rv-content {
+  padding: 34px 42px 40px;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  background: #ffffff;
+  box-shadow: 0 2px 6px rgba(15, 37, 55, 0.06);
+}
+
+.rv-summary-panel {
+  display: none;
+}
+
+.rv-hero {
+  margin: 0 0 34px;
+  padding: 0 0 0 22px;
+  border-left: 4px solid #0f2537;
+}
+
+.rv-hero h1 {
+  color: #222222;
+  font-size: 36px;
+  line-height: 1.2;
+  font-weight: 950;
+}
+
+.rv-hero p {
+  max-width: none;
+  margin-top: 10px;
+  color: #6b7280;
+  font-size: 15px;
+  line-height: 1.6;
+  font-weight: 600;
+}
+
+.rv-stepper {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr auto 1fr auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 54px;
+  padding: 0 20px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.rv-stepper span {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #d1d5db;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #9ca3af;
+  font-size: 16px;
+  font-weight: 950;
+}
+
+.rv-stepper span.active {
+  border-color: #0f2537;
+  background: #0f2537;
+  color: #ffffff;
+}
+
+.rv-stepper strong {
+  margin-left: -4px;
+  color: #9ca3af;
+  font-size: 15px;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.rv-stepper span.active + strong {
+  color: #222222;
+  font-weight: 950;
+}
+
+.rv-stepper i {
+  height: 1px;
+  min-width: 60px;
+  background: #e5e7eb;
+}
+
+.rv-basic-panel,
+.rv-expert-section,
+.rv-workspace,
+.rv-review-panel {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.rv-basic-panel,
+.rv-review-panel {
+  padding: 0;
+  min-height: 0;
+}
+
+.rv-panel-head {
+  margin-bottom: 26px;
+}
+
+.rv-panel-head span,
+.rv-section-head span {
+  color: #9ca3af;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.rv-panel-head h2 {
+  margin-top: 8px;
+  color: #222222;
+  font-size: 22px;
+  font-weight: 950;
+}
+
+.rv-basic-stage-top {
+  margin: 0 0 38px;
+  padding: 0 0 38px;
+  border: 0;
+  border-bottom: 1px solid #eef0f3;
+}
+
+.rv-basic-stage-top .rv-section-head {
+  display: none;
+}
+
+.rv-basic-stage .rv-stage-grid,
+.rv-stage-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.rv-stage-card {
+  min-height: 72px;
+  padding: 18px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  background: #ffffff;
+  text-align: center;
+  box-shadow: none;
+}
+
+.rv-stage-card:hover {
+  transform: none;
+  border-color: #0f2537;
+  box-shadow: none;
+}
+
+.rv-stage-card.selected {
+  border: 2px solid #0f2537;
+  background: #f8fafc;
+  box-shadow: none;
+}
+
+.rv-stage-card span {
+  color: #222222;
+  font-size: 16px;
+  line-height: 1.35;
+  font-weight: 950;
+}
+
+.rv-stage-card strong {
+  display: none;
+}
+
+.rv-stage-strip {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  margin: 22px 0 0;
+  padding: 13px 16px;
+  border: 0;
+  border-radius: 4px;
+  background: #f6f8fb;
+}
+
+.rv-stage-strip span {
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 950;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.rv-stage-strip strong {
+  color: #222222;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.rv-stage-strip small {
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.rv-form-title {
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.rv-form-title strong {
+  color: #222222;
+  font-size: 18px;
+}
+
+.rv-form-title small {
+  color: #9ca3af;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.rv-basic-form {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 24px;
+}
+
+.rv-basic-form label:first-child {
+  grid-column: 1 / -1;
+}
+
+.rv-basic-form label:last-child {
+  grid-column: auto;
+}
+
+.rv-basic-form label span {
+  color: #222222;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.rv-basic-form input {
+  min-height: 46px;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  color: #222222;
+  background: #ffffff;
+  font-size: 15px;
+}
+
+.rv-basic-form input:focus {
+  border-color: #0f2537;
+  box-shadow: 0 0 0 3px rgba(15, 37, 55, 0.08);
+}
+
+.rv-step-actions {
+  margin-top: 18px;
+}
+
+.rv-step-prev,
+.rv-step-next {
+  min-height: 46px;
+  padding: 0 24px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.rv-step-next {
+  border-color: #0f2537;
+  background: #0f2537;
+}
+
+@media (max-width: 900px) {
+  .rv-shell {
+    width: min(100% - 28px, 1160px);
+  }
+
+  .rv-content {
+    padding: 28px 22px 34px;
+  }
+
+  .rv-stepper {
+    grid-template-columns: repeat(4, auto);
+    row-gap: 14px;
+    padding: 0;
+  }
+
+  .rv-stepper i {
+    display: none;
+  }
+
+  .rv-stepper strong {
+    display: none;
+  }
+
+  .rv-basic-stage .rv-stage-grid,
+  .rv-stage-grid,
+  .rv-basic-form {
+    grid-template-columns: 1fr;
+  }
+
+  .rv-stage-strip,
+  .rv-form-title {
+    display: grid;
+    gap: 8px;
+  }
+}
+
+/* 예약 화면 복구: 요약 패널, 단계 표시, 다음 단계 흐름이 깨지지 않도록 기존 2열 구조를 다시 우선 적용합니다. */
+.rv-page {
+  min-height: calc(100vh - 72px);
+  background: linear-gradient(110deg, #eef4f8 0%, #f8fafc 58%, #ffffff 100%);
+}
+
+.rv-shell {
+  width: min(1180px, 100% - 48px);
+  margin: 0 auto;
+}
+
+.rv-main {
+  min-height: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 342px;
+  gap: 16px;
+  align-items: start;
+  padding: 20px 0 48px;
+}
+
+.rv-content {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.rv-summary-panel {
+  display: block;
+  position: sticky;
+  top: 88px;
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
+  overflow: hidden;
+  color: #ffffff;
+  background: #06233c;
+  box-shadow: 0 18px 42px rgba(6, 35, 60, 0.14);
+}
+
+.rv-hero {
+  margin: 0 0 14px;
+  padding: 4px 0 16px 18px;
+  border-left: 4px solid #06233c;
+}
+
+.rv-hero h1 {
+  margin: 0;
+  color: #06233c;
+  font-size: 34px;
+  line-height: 1.15;
+  font-weight: 950;
+}
+
+.rv-hero p {
+  max-width: 780px;
+  margin: 8px 0 0;
+  color: #536070;
+  font-size: 14px;
+  line-height: 1.55;
+  font-weight: 800;
+}
+
+.rv-stepper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border: 1px solid #d7e0e7;
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 10px 28px rgba(6, 35, 60, 0.04);
+}
+
+.rv-stepper span {
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: #edf3f7;
+  color: #6b7786;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.rv-stepper span.active {
+  border-color: #06233c;
+  background: #06233c;
+  color: #ffffff;
+}
+
+.rv-stepper strong {
+  margin-left: 0;
+  color: #06233c;
+  font-size: 13px;
+  font-weight: 950;
+  white-space: nowrap;
+}
+
+.rv-stepper i {
+  display: block;
+  flex: 1;
+  min-width: 28px;
+  height: 1px;
+  background: #d7e0e7;
+}
+
+.rv-basic-panel,
+.rv-review-panel,
+.rv-expert-section,
+.rv-workspace .rv-panel {
+  border: 1px solid #d7e0e7;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 10px 26px rgba(6, 35, 60, 0.04);
+}
+
+.rv-basic-panel,
+.rv-review-panel {
+  padding: 14px;
+  min-height: 360px;
+}
+
+.rv-expert-section {
+  padding: 14px;
+}
+
+.rv-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 10px;
+}
+
+.rv-panel-head {
+  margin-bottom: 12px;
+}
+
+.rv-panel-head h2 {
+  margin-top: 2px;
+  color: #06233c;
+  font-size: 20px;
+  line-height: 1.25;
+  font-weight: 950;
+}
+
+.rv-basic-stage-top {
+  margin: 0 0 16px;
+  padding: 0 0 16px;
+  border-bottom: 1px solid #d7e0e7;
+}
+
+.rv-basic-stage-top .rv-section-head {
+  display: block;
+}
+
+.rv-basic-stage .rv-stage-grid,
+.rv-stage-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.rv-stage-card {
+  min-height: 104px;
+  padding: 14px 13px;
+  border: 1px solid #d7e0e7;
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.95);
+  text-align: left;
+  box-shadow: 0 10px 26px rgba(6, 35, 60, 0.04);
+}
+
+.rv-stage-card:hover {
+  transform: translateY(-2px);
+  border-color: #06233c;
+  box-shadow: 0 14px 30px rgba(6, 35, 60, 0.08);
+}
+
+.rv-stage-card.selected {
+  border-color: #06233c;
+  background: #ffffff;
+  box-shadow: inset 0 4px 0 #06233c, 0 14px 30px rgba(6, 35, 60, 0.08);
+}
+
+.rv-stage-card span {
+  color: #06233c;
+  font-size: 17px;
+  line-height: 1.25;
+  font-weight: 950;
+}
+
+.rv-stage-card strong {
+  display: block;
+  margin-top: 8px;
+  color: #5f6d7d;
+  font-size: 12px;
+  line-height: 1.45;
+  font-weight: 800;
+}
+
+.rv-stage-strip {
+  display: grid;
+  grid-template-columns: auto auto auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border: 1px solid #d7e0e7;
+  border-radius: 0;
+  background: #f4f8fb;
+}
+
+.rv-stage-strip span {
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.rv-stage-strip strong,
+.rv-stage-strip small {
+  color: #536070;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.rv-basic-form {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.rv-basic-form label:first-child,
+.rv-basic-form label:last-child {
+  grid-column: span 2;
+}
+
+.rv-basic-form input {
+  min-height: 44px;
+  border-radius: 0;
+  font-size: 14px;
+}
+
+.rv-step-actions {
+  margin-top: 14px;
+}
+
+.rv-step-prev,
+.rv-step-next {
+  min-height: 42px;
+  padding: 0 18px;
+  border-radius: 0;
+  font-size: 13px;
+}
+
+.rv-step-next {
+  border-color: #06233c;
+  background: #06233c;
+  color: #ffffff;
+}
+
+@media (max-width: 1180px) {
+  .rv-main,
+  .rv-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .rv-summary-panel {
+    position: relative;
+    top: 0;
+  }
+}
+
+@media (max-width: 720px) {
+  .rv-shell {
+    width: min(100% - 28px, 1180px);
+  }
+
+  .rv-stepper {
+    flex-wrap: wrap;
+  }
+
+  .rv-stepper i {
+    display: none;
+  }
+
+  .rv-stage-grid,
+  .rv-basic-stage .rv-stage-grid,
+  .rv-basic-form,
+  .rv-basic-form label:first-child,
+  .rv-basic-form label:last-child,
+  .rv-stage-strip {
+    grid-template-columns: 1fr;
+    grid-column: auto;
+  }
+}

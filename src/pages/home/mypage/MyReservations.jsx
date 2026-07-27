@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import Header from "../../../components/Header";
 import "../../../App.css";
-import "../../admin/admin.css";
+import "../../../styles/my-reservations-visily.css";
+import "../../../styles/mypage-transition.css";
 
 import {
   cancelReservation,
@@ -22,6 +23,22 @@ function formatDate(dateString) {
   }월 ${date.getDate()}일`;
 }
 
+function formatDateTime(dateString) {
+  if (!dateString) return "-";
+
+  const date = new Date(dateString);
+
+  if (Number.isNaN(date.getTime())) return "-";
+
+  return date.toLocaleString("ko-KR", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 function formatTime(timeString) {
   if (!timeString) return "-";
 
@@ -32,16 +49,12 @@ function getStatusLabel(status) {
   switch (status) {
     case "pending":
       return "승인 대기";
-
     case "approved":
       return "승인 완료";
-
     case "rejected":
       return "불허";
-
     case "cancelled":
       return "취소 완료";
-
     default:
       return status || "-";
   }
@@ -52,19 +65,15 @@ function getFieldLabel(field) {
     case "law":
     case "법무":
       return "법무";
-
     case "accounting":
     case "회계":
       return "회계";
-
     case "hr":
     case "인사":
       return "인사";
-
     case "labor":
     case "노무":
       return "노무";
-
     default:
       return field || "-";
   }
@@ -74,26 +83,33 @@ function canCancel(status) {
   return status === "pending" || status === "approved";
 }
 
-function getStatusClass(status) {
-  if (status === "approved") return "approved";
-  if (status === "rejected") return "rejected";
-  if (status === "cancelled") return "cancelled";
+function isUpcoming(item) {
+  const selectedDate = new Date(item.selected_date);
 
-  return "pending";
+  if (Number.isNaN(selectedDate.getTime())) return false;
+
+  const timeParts = String(item.selected_time || "00:00")
+    .split(":")
+    .map(Number);
+
+  selectedDate.setHours(timeParts[0] || 0, timeParts[1] || 0, 0, 0);
+
+  return selectedDate.getTime() >= Date.now();
 }
 
 export default function MyReservations() {
   const [isLoggedIn, setIsLoggedIn] = useState(null);
-
   const [reservations, setReservations] = useState([]);
   const [localCancelReasons, setLocalCancelReasons] = useState({});
-
   const [isLoading, setIsLoading] = useState(true);
   const [cancelLoadingId, setCancelLoadingId] = useState(null);
   const [deleteLoadingId, setDeleteLoadingId] = useState(null);
-
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [periodFilter, setPeriodFilter] = useState("all");
+  const [selectedReservation, setSelectedReservation] = useState(null);
 
   const fetchReservations = async () => {
     try {
@@ -104,9 +120,7 @@ export default function MyReservations() {
 
       setReservations(data.reservations || []);
     } catch (err) {
-      setError(
-        err.message || "예약 목록을 불러오지 못했습니다."
-      );
+      setError(err.message || "예약 목록을 불러오지 못했습니다.");
     } finally {
       setIsLoading(false);
     }
@@ -125,10 +139,19 @@ export default function MyReservations() {
     }
   }, []);
 
+  useEffect(() => {
+    if (!selectedReservation) return undefined;
+
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") setSelectedReservation(null);
+    };
+
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [selectedReservation]);
+
   const handleCancel = async (reservationId) => {
-    const ok = window.confirm(
-      "상담 예약을 취소하시겠습니까?"
-    );
+    const ok = window.confirm("상담 예약을 취소하시겠습니까?");
 
     if (!ok) return;
 
@@ -158,34 +181,18 @@ export default function MyReservations() {
         }));
 
         await fetchReservations();
-
-        setReservations((prev) =>
-          prev.map((item) =>
-            item.reservation_id === reservationId
-              ? {
-                  ...item,
-                  status: "cancelled",
-                  cancel_reason: trimmedReason,
-                }
-              : item
-          )
-        );
-
+        setSelectedReservation(null);
         setSuccess("상담 예약이 취소되었습니다.");
       }
     } catch (err) {
-      setError(
-        err.message || "상담 예약 취소에 실패했습니다."
-      );
+      setError(err.message || "상담 예약 취소에 실패했습니다.");
     } finally {
       setCancelLoadingId(null);
     }
   };
 
   const handleDeleteReservation = async (reservationId) => {
-    const ok = window.confirm(
-      "이 상담 내역을 삭제하시겠습니까?"
-    );
+    const ok = window.confirm("이 상담 내역을 삭제하시겠습니까?");
 
     if (!ok) return;
 
@@ -201,203 +208,328 @@ export default function MyReservations() {
       }
 
       await fetchReservations();
+      setSelectedReservation(null);
     } catch (err) {
-      setError(
-        err.message || "상담 내역 삭제에 실패했습니다."
-      );
+      setError(err.message || "상담 내역 삭제에 실패했습니다.");
     } finally {
       setDeleteLoadingId(null);
     }
   };
 
-  const sortedReservations = [...reservations].sort(
-    (a, b) => {
-      const dateA = new Date(a.selected_date).getTime();
-      const dateB = new Date(b.selected_date).getTime();
+  const sortedReservations = useMemo(
+    () =>
+      [...reservations].sort((a, b) => {
+        const dateA = new Date(a.selected_date).getTime();
+        const dateB = new Date(b.selected_date).getTime();
 
-      if (dateB !== dateA) {
-        return dateB - dateA;
-      }
+        if (dateB !== dateA) return dateB - dateA;
 
-      return String(b.selected_time).localeCompare(
-        String(a.selected_time)
-      );
-    }
+        return String(b.selected_time).localeCompare(
+          String(a.selected_time)
+        );
+      }),
+    [reservations]
   );
+
+  const filteredReservations = useMemo(() => {
+    const normalizedSearch = searchTerm.trim().toLowerCase();
+
+    return sortedReservations.filter((item) => {
+      const matchesSearch =
+        !normalizedSearch ||
+        getFieldLabel(item.field).toLowerCase().includes(normalizedSearch) ||
+        formatDate(item.selected_date).includes(normalizedSearch);
+      const matchesStatus =
+        statusFilter === "all" || item.status === statusFilter;
+      const upcoming = isUpcoming(item);
+      const matchesPeriod =
+        periodFilter === "all" ||
+        (periodFilter === "upcoming" && upcoming) ||
+        (periodFilter === "past" && !upcoming);
+
+      return matchesSearch && matchesStatus && matchesPeriod;
+    });
+  }, [periodFilter, searchTerm, sortedReservations, statusFilter]);
+
+  const approvedCount = reservations.filter(
+    (item) => item.status === "approved"
+  ).length;
+  const pendingCount = reservations.filter(
+    (item) => item.status === "pending"
+  ).length;
+  const upcomingCount = reservations.filter(
+    (item) => isUpcoming(item) && canCancel(item.status)
+  ).length;
 
   return (
     <>
       <Header isLoggedIn={isLoggedIn} />
 
-      <main className="reserve-page mypage mypage-reservations-page">
-        <section className="reserve-hero">
-          <p className="adm-eyebrow">Reservations</p>
-          <h2>내 상담 내역</h2>
-          <span>
-            상담 예약 일정과 승인 상태를 확인합니다.
-          </span>
-        </section>
-
-        <nav
-        className="mypage-sub-nav"
-        aria-label="마이페이지 메뉴"
-        >
-        <Link to="/mypage" className="adm-btn ghost">
-            마이페이지 홈
-        </Link>
-
-        <Link
-            to="/mypage/reservations"
-            className="adm-btn primary"
-        >
-            내 상담 내역
-        </Link>
-
-        <Link
-            to="/mypage/files"
-            className="adm-btn ghost"
-        >
-            내 파일 관리
-        </Link>
-        </nav>
-
-        <section className="adm-card reserve-history-card">
-          <div className="adm-card-head">
+      <main className="my-reservations-page mypage-page-enter">
+        <div className="my-reservations-shell">
+          <header className="my-reservations-heading">
+            <p>CONSULTATION HISTORY</p>
             <div>
-              <p className="adm-eyebrow">
-                Reservation History
-              </p>
-              <h2>예약 정보</h2>
+              <h1>내 상담 내역</h1>
+              <Link to="/mypage">마이페이지로</Link>
+            </div>
+            <span>
+              신청한 상담의 일정과 승인 상태를 확인하고 관리합니다.
+            </span>
+          </header>
+
+          <section
+            className="my-reservations-summary"
+            aria-label="상담 예약 요약"
+          >
+            <article>
+              <span>전체 상담</span>
+              <strong>{reservations.length}</strong>
+            </article>
+            <article>
+              <span>예정 상담</span>
+              <strong>{upcomingCount}</strong>
+            </article>
+            <article>
+              <span>승인 대기</span>
+              <strong>{pendingCount}</strong>
+            </article>
+            <article>
+              <span>승인 완료</span>
+              <strong>{approvedCount}</strong>
+            </article>
+          </section>
+
+          <section className="my-reservations-panel">
+            <div className="my-reservations-panel-head">
+              <div>
+                <p>RESERVATIONS</p>
+                <h2>상담 목록</h2>
+              </div>
+              <Link to="/reservation" className="my-reservations-primary">
+                새 상담 예약
+              </Link>
             </div>
 
-            <Link to="/" className="adm-btn ghost">
-              홈으로
-            </Link>
-          </div>
-
-          {error && (
-            <p className="login-error">{error}</p>
-          )}
-
-          {success && (
-            <p className="login-success">{success}</p>
-          )}
-
-          {isLoading ? (
-            <div className="reserve-empty-box">
-              예약 정보를 불러오는 중입니다.
+            <div className="my-reservations-filters">
+              <label>
+                <span>상담 검색</span>
+                <input
+                  type="search"
+                  value={searchTerm}
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                  placeholder="분야 또는 날짜 검색"
+                />
+              </label>
+              <label>
+                <span>기간</span>
+                <select
+                  value={periodFilter}
+                  onChange={(event) => setPeriodFilter(event.target.value)}
+                >
+                  <option value="all">전체 기간</option>
+                  <option value="upcoming">예정 상담</option>
+                  <option value="past">지난 상담</option>
+                </select>
+              </label>
+              <label>
+                <span>상태</span>
+                <select
+                  value={statusFilter}
+                  onChange={(event) => setStatusFilter(event.target.value)}
+                >
+                  <option value="all">전체 상태</option>
+                  <option value="pending">승인 대기</option>
+                  <option value="approved">승인 완료</option>
+                  <option value="rejected">불허</option>
+                  <option value="cancelled">취소 완료</option>
+                </select>
+              </label>
             </div>
-          ) : sortedReservations.length === 0 ? (
-            <div className="reserve-empty-box">
-              아직 신청한 상담 예약이 없습니다.
-            </div>
-          ) : (
-            <div className="reserve-list">
-              {sortedReservations.map((item) => {
-                const reservationId =
-                  item.reservation_id;
 
-                const statusLabel = getStatusLabel(
-                  item.status
-                );
+            {error && <p className="my-reservations-alert error">{error}</p>}
+            {success && (
+              <p className="my-reservations-alert success">{success}</p>
+            )}
 
-                const fieldLabel = getFieldLabel(
-                  item.field
-                );
+            {isLoading ? (
+              <div className="my-reservations-empty">
+                예약 정보를 불러오는 중입니다.
+              </div>
+            ) : filteredReservations.length === 0 ? (
+              <div className="my-reservations-empty">
+                <strong>
+                  {reservations.length === 0
+                    ? "아직 신청한 상담이 없습니다."
+                    : "조건에 맞는 상담이 없습니다."}
+                </strong>
+                <span>
+                  검색 조건을 바꾸거나 새로운 상담을 예약해 주세요.
+                </span>
+              </div>
+            ) : (
+              <div className="my-reservations-list">
+                {filteredReservations.map((item) => {
+                  const reservationId = item.reservation_id;
+                  const cancelling = cancelLoadingId === reservationId;
+                  const deleting = deleteLoadingId === reservationId;
+                  const cancelReason =
+                    item.cancel_reason || localCancelReasons[reservationId];
 
-                const dateLabel = formatDate(
-                  item.selected_date
-                );
+                  return (
+                    <article
+                      className="my-reservation-item"
+                      key={reservationId}
+                    >
+                      <div className="my-reservation-date">
+                        <span>{formatDate(item.selected_date)}</span>
+                        <strong>{formatTime(item.selected_time)}</strong>
+                      </div>
 
-                const timeLabel = formatTime(
-                  item.selected_time
-                );
-
-                const cancelAvailable = canCancel(
-                  item.status
-                );
-
-                const cancelling =
-                  cancelLoadingId === reservationId;
-
-                const deleting =
-                  deleteLoadingId === reservationId;
-
-                const cancelReason =
-                  item.cancel_reason ||
-                  localCancelReasons[reservationId];
-
-                return (
-                  <article
-                    className={`reserve-item reserve-status-${item.status}`}
-                    key={reservationId}
-                  >
-                    <div>
-                      <strong>
-                        {fieldLabel} · {dateLabel} ·{" "}
-                        {timeLabel}
-                      </strong>
-
-                      <small
-                        className={`reservation-status ${getStatusClass(
-                          item.status
-                        )}`}
-                      >
-                        상태: {statusLabel}
-
-                        {item.reject_reason && (
-                          <>
-                            <br />
-                            불허 사유:{" "}
-                            {item.reject_reason}
-                          </>
+                      <div className="my-reservation-info">
+                        <div>
+                          <h3>{getFieldLabel(item.field)} 상담</h3>
+                          <span className={`status ${item.status || "pending"}`}>
+                            {getStatusLabel(item.status)}
+                          </span>
+                        </div>
+                        <p>
+                          예약 번호 #{reservationId}
+                          {item.requested_at
+                            ? ` · ${formatDate(item.requested_at)} 신청`
+                            : ""}
+                        </p>
+                        {(item.reject_reason || cancelReason) && (
+                          <small>
+                            {item.reject_reason
+                              ? `불허 사유: ${item.reject_reason}`
+                              : `취소 사유: ${cancelReason}`}
+                          </small>
                         )}
+                      </div>
 
-                        {cancelReason && (
-                          <>
-                            <br />
-                            취소 사유: {cancelReason}
-                          </>
+                      <div className="my-reservation-actions">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedReservation(item)}
+                        >
+                          상세보기
+                        </button>
+                        {canCancel(item.status) ? (
+                          <button
+                            type="button"
+                            className="secondary"
+                            onClick={() => handleCancel(reservationId)}
+                            disabled={cancelling}
+                          >
+                            {cancelling ? "취소 중..." : "상담 취소"}
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            className="text-danger"
+                            onClick={() =>
+                              handleDeleteReservation(reservationId)
+                            }
+                            disabled={deleting}
+                          >
+                            {deleting ? "삭제 중..." : "내역 삭제"}
+                          </button>
                         )}
-                      </small>
-                    </div>
-
-                    {cancelAvailable ? (
-                      <button
-                        type="button"
-                        className="adm-btn ghost"
-                        onClick={() =>
-                          handleCancel(reservationId)
-                        }
-                        disabled={cancelling}
-                      >
-                        {cancelling
-                          ? "취소 중..."
-                          : "상담 취소"}
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        className="adm-btn danger"
-                        onClick={() =>
-                          handleDeleteReservation(
-                            reservationId
-                          )
-                        }
-                        disabled={deleting}
-                      >
-                        {deleting
-                          ? "삭제 중..."
-                          : "삭제"}
-                      </button>
-                    )}
-                  </article>
-                );
-              })}
-            </div>
-          )}
-        </section>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+        </div>
       </main>
+
+      {selectedReservation && (
+        <div
+          className="my-reservation-modal-backdrop"
+          role="presentation"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              setSelectedReservation(null);
+            }
+          }}
+        >
+          <section
+            className="my-reservation-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="reservation-detail-title"
+          >
+            <div className="my-reservation-modal-head">
+              <div>
+                <p>RESERVATION DETAIL</p>
+                <h2 id="reservation-detail-title">상담 상세 정보</h2>
+              </div>
+              <button
+                type="button"
+                aria-label="상세 정보 닫기"
+                onClick={() => setSelectedReservation(null)}
+              >
+                ×
+              </button>
+            </div>
+
+            <dl>
+              <div>
+                <dt>상담 분야</dt>
+                <dd>{getFieldLabel(selectedReservation.field)}</dd>
+              </div>
+              <div>
+                <dt>상담 일시</dt>
+                <dd>
+                  {formatDate(selectedReservation.selected_date)}{" "}
+                  {formatTime(selectedReservation.selected_time)}
+                </dd>
+              </div>
+              <div>
+                <dt>예약 상태</dt>
+                <dd>{getStatusLabel(selectedReservation.status)}</dd>
+              </div>
+              <div>
+                <dt>신청 일시</dt>
+                <dd>{formatDateTime(selectedReservation.requested_at)}</dd>
+              </div>
+              <div>
+                <dt>승인 일시</dt>
+                <dd>{formatDateTime(selectedReservation.approved_at)}</dd>
+              </div>
+              <div>
+                <dt>상담 번호</dt>
+                <dd>#{selectedReservation.reservation_id}</dd>
+              </div>
+            </dl>
+
+            {(selectedReservation.reject_reason ||
+              selectedReservation.cancel_reason ||
+              localCancelReasons[selectedReservation.reservation_id]) && (
+              <div className="my-reservation-modal-reason">
+                <strong>처리 사유</strong>
+                <p>
+                  {selectedReservation.reject_reason ||
+                    selectedReservation.cancel_reason ||
+                    localCancelReasons[selectedReservation.reservation_id]}
+                </p>
+              </div>
+            )}
+
+            <div className="my-reservation-modal-actions">
+              <button
+                type="button"
+                onClick={() => setSelectedReservation(null)}
+              >
+                확인
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
     </>
   );
 }

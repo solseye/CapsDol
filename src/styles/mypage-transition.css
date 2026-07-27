@@ -1,0 +1,22 @@
+/* 마이페이지 계열 화면 전환: 헤더는 유지하고 본문만 짧게 나타납니다. */
+.mypage-page-enter {
+  animation: mypage-page-enter 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes mypage-page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mypage-page-enter {
+    animation: none;
+  }
+}
