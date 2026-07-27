@@ -7,13 +7,31 @@ async function parseJsonResponse(res) {
 
 export async function createReservation({
   phone,
-  CName,
+  companyName,
   kind,
   field,
-  selectedDate,
-  selectedTime,
+  note = "",
+  availableRanges,
 }) {
   const token = localStorage.getItem("accessToken");
+
+  const requestBody = {
+    phone,
+    c_name: companyName,
+    kind,
+    field,
+    available_ranges: availableRanges.map((range) => ({
+      date: range.date,
+      start_time: range.startTime,
+      end_time: range.endTime,
+    })),
+  };
+
+  const trimmedNote = note.trim();
+
+  if (trimmedNote) {
+    requestBody.note = trimmedNote;
+  }
 
   const res = await fetch(`${BASE_URL}/reserv`, {
     method: "POST",
@@ -22,14 +40,7 @@ export async function createReservation({
       Authorization: `Bearer ${token}`,
     },
     credentials: "include",
-    body: JSON.stringify({
-      phone,
-      CName,
-      kind,
-      field,
-      selectedDate,
-      selectedTime,
-    }),
+    body: JSON.stringify(requestBody),
   });
 
   const data = await parseJsonResponse(res);
@@ -41,8 +52,21 @@ export async function createReservation({
   return data;
 }
 
-export async function cancelReservation(reservationId, cancelReason) {
+export async function cancelReservation({
+  reservationId,
+  cancelReason = "",
+}) {
   const token = localStorage.getItem("accessToken");
+
+  const requestBody = {
+    reservationId,
+  };
+
+  const trimmedReason = cancelReason.trim();
+
+  if (trimmedReason) {
+    requestBody.cancelReason = trimmedReason;
+  }
 
   const res = await fetch(`${BASE_URL}/reserv/cancel`, {
     method: "POST",
@@ -51,22 +75,19 @@ export async function cancelReservation(reservationId, cancelReason) {
       Authorization: `Bearer ${token}`,
     },
     credentials: "include",
-    body: JSON.stringify({
-      reservationId,
-      cancelReason,
-    }),
+    body: JSON.stringify(requestBody),
   });
 
   const data = await parseJsonResponse(res);
 
   if (!res.ok) {
-    throw new Error(data.error || "상담 취소에 실패했습니다.");
+    throw new Error(data.error || "예약 취소에 실패했습니다.");
   }
 
   return data;
 }
 
-export async function deleteReservation(reservationId) {
+export async function deleteReservation({ reservationId }) {
   const token = localStorage.getItem("accessToken");
 
   const res = await fetch(`${BASE_URL}/reserv/delete`, {
@@ -84,7 +105,7 @@ export async function deleteReservation(reservationId) {
   const data = await parseJsonResponse(res);
 
   if (!res.ok) {
-    throw new Error(data.error || "상담 내역 삭제에 실패했습니다.");
+    throw new Error(data.error || "예약 삭제에 실패했습니다.");
   }
 
   return data;
@@ -93,7 +114,7 @@ export async function deleteReservation(reservationId) {
 export async function getMyReservations() {
   const token = localStorage.getItem("accessToken");
 
-  const res = await fetch(`${BASE_URL}/reserv/user_list`, {
+  const res = await fetch(`${BASE_URL}/reserv/user/list`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -130,8 +151,21 @@ export async function getReservationList() {
   return data;
 }
 
-export async function getReservationListByRange(requestTime, monthsToFetch) {
+export async function getReservationListByRange({
+  baseDate,
+  previousMonthCount = 2,
+  nextMonthCount = 4,
+} = {}) {
   const token = localStorage.getItem("accessToken");
+
+  const requestBody = {
+    previous_month_count: previousMonthCount,
+    next_month_count: nextMonthCount,
+  };
+
+  if (baseDate) {
+    requestBody.base_date = baseDate;
+  }
 
   const res = await fetch(`${BASE_URL}/reserv/list`, {
     method: "POST",
@@ -140,10 +174,7 @@ export async function getReservationListByRange(requestTime, monthsToFetch) {
       Authorization: `Bearer ${token}`,
     },
     credentials: "include",
-    body: JSON.stringify({
-      requestTime,
-      monthsToFetch,
-    }),
+    body: JSON.stringify(requestBody),
   });
 
   const data = await parseJsonResponse(res);
@@ -153,6 +184,43 @@ export async function getReservationListByRange(requestTime, monthsToFetch) {
   }
 
   return data;
+}
+
+function normalizeAdminListData(data) {
+  const schedulesMap = {};
+
+  (data.reservations || []).forEach((reservation) => {
+    const ranges = reservation.available_ranges || [];
+
+    ranges.forEach((range) => {
+      const key = `${range.date}_${range.start_time}_${reservation.field}`;
+
+      if (!schedulesMap[key]) {
+        schedulesMap[key] = {
+          schedule_id: key,
+          field: reservation.field,
+          selected_date: range.date,
+          selected_time: range.start_time,
+          reservations: [],
+        };
+      }
+
+      schedulesMap[key].reservations.push(reservation);
+    });
+  });
+
+  const schedules = Object.values(schedulesMap);
+
+  const blocks = (data.blocks || []).map((b) => ({
+    ...b,
+    blocked_date: b.unavailable_date,
+    blocked_time: b.start_time,
+  }));
+
+  return {
+    schedules,
+    blocks,
+  };
 }
 
 export async function getAdminReservationList() {
@@ -169,14 +237,23 @@ export async function getAdminReservationList() {
   const data = await parseJsonResponse(res);
 
   if (!res.ok) {
-    throw new Error(data.error || "관리자 예약 목록 조회에 실패했습니다.");
+    throw new Error(data.error || "관리자 예약 조회 실패");
   }
 
-  return data;
+  return normalizeAdminListData(data);
 }
 
-export async function getAdminReservationListByRange(requestTime, monthsToFetch) {
+export async function getAdminReservationListByRange(
+  requestTime,
+  monthsToFetch
+) {
   const token = localStorage.getItem("accessToken");
+
+  const body = {
+    base_date: requestTime.slice(0, 10),
+    previous_month_count: 2,
+    next_month_count: 4,
+  };
 
   const res = await fetch(`${BASE_URL}/reserv/admin/list`, {
     method: "POST",
@@ -185,19 +262,16 @@ export async function getAdminReservationListByRange(requestTime, monthsToFetch)
       Authorization: `Bearer ${token}`,
     },
     credentials: "include",
-    body: JSON.stringify({
-      requestTime,
-      monthsToFetch,
-    }),
+    body: JSON.stringify(body),
   });
 
   const data = await parseJsonResponse(res);
 
   if (!res.ok) {
-    throw new Error(data.error || "관리자 예약 일정 조회에 실패했습니다.");
+    throw new Error(data.error || "관리자 일정 조회 실패");
   }
 
-  return data;
+  return normalizeAdminListData(data);
 }
 
 export async function blockAdminReservation({
@@ -208,6 +282,11 @@ export async function blockAdminReservation({
 }) {
   const token = localStorage.getItem("accessToken");
 
+  const date = new Date(selectedDate).toISOString().slice(0, 10);
+
+  const start_time = selectedTime;
+  const end_time = addMinutes(selectedTime, 120);
+
   const res = await fetch(`${BASE_URL}/reserv/admin/block`, {
     method: "POST",
     headers: {
@@ -216,20 +295,36 @@ export async function blockAdminReservation({
     },
     credentials: "include",
     body: JSON.stringify({
-      field,
-      selectedDate,
-      selectedTime,
-      reason,
+      blocks: [
+        {
+          field,
+          date,
+          start_time,
+          end_time,
+          reason,
+        },
+      ],
     }),
   });
 
   const data = await parseJsonResponse(res);
 
   if (!res.ok) {
-    throw new Error(data.error || "예약 차단에 실패했습니다.");
+    throw new Error(data.error || "예약 차단 실패");
   }
 
   return data;
+}
+
+function addMinutes(time, minutes) {
+  const [h, m] = time.split(":").map(Number);
+
+  const total = h * 60 + m + minutes;
+
+  const hour = Math.floor(total / 60);
+  const min = total % 60;
+
+  return `${String(hour).padStart(2, "0")}:${String(min).padStart(2, "0")}`;
 }
 
 export async function unblockAdminReservation(blockId) {
@@ -243,7 +338,7 @@ export async function unblockAdminReservation(blockId) {
     },
     credentials: "include",
     body: JSON.stringify({
-      blockId,
+      blockIds: [blockId],
     }),
   });
 
@@ -256,7 +351,12 @@ export async function unblockAdminReservation(blockId) {
   return data;
 }
 
-export async function allowAdminReservation(decisions) {
+export async function allowAdminReservation({
+  reservationId,
+  date,
+  startTime,
+  endTime,
+}) {
   const token = localStorage.getItem("accessToken");
 
   const res = await fetch(`${BASE_URL}/reserv/admin/allow`, {
@@ -266,13 +366,18 @@ export async function allowAdminReservation(decisions) {
       Authorization: `Bearer ${token}`,
     },
     credentials: "include",
-    body: JSON.stringify(decisions),
+    body: JSON.stringify({
+      reservationId,
+      date,
+      start_time: startTime,
+      end_time: endTime,
+    }),
   });
 
   const data = await parseJsonResponse(res);
 
   if (!res.ok) {
-    throw new Error(data.error || "상담 승인 처리에 실패했습니다.");
+    throw new Error(data.error || "상담 승인 실패");
   }
 
   return data;
@@ -288,13 +393,47 @@ export async function disallowAdminReservation(decisions) {
       Authorization: `Bearer ${token}`,
     },
     credentials: "include",
-    body: JSON.stringify(decisions),
+    body: JSON.stringify({
+      decisions,
+    }),
   });
 
   const data = await parseJsonResponse(res);
 
   if (!res.ok) {
-    throw new Error(data.error || "상담 불허 처리에 실패했습니다.");
+    throw new Error(data.error || "상담 불허 처리 실패");
+  }
+
+  return data;
+}
+
+export async function modifyReservation({
+  reservationId,
+  availableRanges,
+}) {
+  const token = localStorage.getItem("accessToken");
+
+  const res = await fetch(`${BASE_URL}/reserv/modify`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    credentials: "include",
+    body: JSON.stringify({
+      reservationId,
+      available_ranges: availableRanges.map((range) => ({
+        date: range.date,
+        start_time: range.startTime,
+        end_time: range.endTime,
+      })),
+    }),
+  });
+
+  const data = await parseJsonResponse(res);
+
+  if (!res.ok) {
+    throw new Error(data.error || "예약 수정에 실패했습니다.");
   }
 
   return data;

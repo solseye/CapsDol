@@ -418,22 +418,32 @@ export default function AdminCalendarPage() {
     }
   };
 
-  const handleApproveReservation = async (reservationId) => {
+  const handleApproveReservation = async (reservation) => {
     const ok = window.confirm("이 상담 신청을 승인하시겠습니까?");
     if (!ok) return;
 
     try {
-      setDecisionLoadingId(reservationId);
+      setDecisionLoadingId(reservation.reservation_id);
       setError("");
       setSuccess("");
 
-      await allowAdminReservation([
-        {
-          id: reservationId,
-          approved: true,
-          reason: null,
-        },
-      ]);
+      const selectedRange = (reservation.available_ranges || []).find(
+        (range) =>
+          range.date === reservation.selected_date &&
+          formatTime(range.start_time) === formatTime(reservation.selected_time)
+      );
+
+      if (!selectedRange) {
+        setError("승인할 시간 정보를 찾을 수 없습니다.");
+        return;
+      }
+
+      await allowAdminReservation({
+        reservationId: reservation.reservation_id,
+        date: selectedRange.date,
+        startTime: formatTime(selectedRange.start_time),
+        endTime: formatTime(selectedRange.end_time),
+      });
 
       setSuccess("상담 신청이 승인되었습니다.");
       await fetchAdminCalendarByCurrentMonth();
@@ -463,7 +473,6 @@ export default function AdminCalendarPage() {
       await disallowAdminReservation([
         {
           id: reservationId,
-          approved: false,
           reason: reason.trim() || null,
         },
       ]);
@@ -847,7 +856,7 @@ export default function AdminCalendarPage() {
                           className="adm-btn primary"
                           disabled={decisionLoadingId === reservation.reservation_id}
                           onClick={() =>
-                            handleApproveReservation(reservation.reservation_id)
+                            handleApproveReservation(reservation)
                           }
                         >
                           {decisionLoadingId === reservation.reservation_id

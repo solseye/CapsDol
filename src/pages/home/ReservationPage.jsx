@@ -87,7 +87,14 @@ const CONSULT_TYPES = [
   },
 ];
 
-const MONTHS_TO_FETCH = 7;
+const CONSULTATION_DURATION_MINUTES = 120;
+
+const API_FIELD_VALUES = {
+  hr: "인사",
+  labor: "노무",
+  accounting: "회계",
+  law: "법무",
+};
 
 function isSameDate(a, b) {
   if (!a || !b) return false;
@@ -141,37 +148,23 @@ function getDateKey(dateValue) {
   return `${year}-${month}-${day}`;
 }
 
-function getTimeKey(timeValue) {
-  return String(timeValue || "").slice(0, 5);
-}
 
 function getMonthStartIso(date) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
-  return `${year}-${month}-01T00:00:00.000Z`;
+  return `${year}-${month}-01`;
 }
 
-function addTwoHourBlock(blockedSet, time) {
-  if (time) {
-    blockedSet.add(time);
-  }
 
-  const index = TIME_OPTIONS.indexOf(time);
-  if (index === -1) return;
+function addMinutesToTime(time, minutesToAdd) {
+  const [hour, minute] = String(time).split(":").map(Number);
 
-  blockedSet.add(TIME_OPTIONS[index]);
+  const totalMinutes = hour * 60 + minute + minutesToAdd;
 
-  if (TIME_OPTIONS[index + 1]) {
-    blockedSet.add(TIME_OPTIONS[index + 1]);
-  }
-}
+  const endHour = Math.floor(totalMinutes / 60);
+  const endMinute = totalMinutes % 60;
 
-function getLocalDateIso(date) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-
-  return `${year}-${month}-${day}T00:00:00.000Z`;
+  return `${String(endHour).padStart(2, "0")}:${String(endMinute).padStart(2, "0")}`;
 }
 
 export default function ReservationPage() {
@@ -210,7 +203,6 @@ export default function ReservationPage() {
     kind: "",
   });
 
-  const [schedules, setSchedules] = useState([]);
   const [blocks, setBlocks] = useState([]);
 
   const [submitError, setSubmitError] = useState("");
@@ -233,12 +225,12 @@ export default function ReservationPage() {
       try {
         setListError("");
 
-        const data = await getReservationListByRange(
-          getMonthStartIso(viewDate),
-          MONTHS_TO_FETCH
-        );
+        const data = await getReservationListByRange({
+          baseDate: getMonthStartIso(viewDate),
+          previousMonthCount: 2,
+          nextMonthCount: 4,
+        });
 
-        setSchedules(data.schedules || []);
         setBlocks(data.blocks || []);
       } catch (err) {
         console.error("예약 일정 조회 실패:", err);
@@ -258,45 +250,39 @@ export default function ReservationPage() {
   const blockedTimes = useMemo(() => {
     const blocked = new Set();
 
-    if (!selectedField) {
-      return blocked;
-    }
+    if (!selectedDate) return blocked;
 
-    const selectedDateKey = getDateKey(selectedDate);
+    const dateKey = getDateKey(selectedDate);
 
-    schedules.forEach((item) => {
-      const itemDateKey = getDateKey(item.selected_date);
-      const itemTime = getTimeKey(item.selected_time);
-
-      const isSameField = item.field === selectedField;
-
-      const isTakenReservation = item.approved;
-
-      const isBlockedSchedule = item.block;
+    blocks.forEach((block) => {
+      if (block.unavailable_date !== dateKey) return;
 
       if (
-        itemDateKey === selectedDateKey &&
-        isSameField &&
-        (isTakenReservation || isBlockedSchedule)
-      ) {
-        addTwoHourBlock(blocked, itemTime);
-      }
-    });
+        block.field &&
+        API_FIELD_VALUES[selectedField] !== block.field
+      )
+        return;
 
-    blocks.forEach((item) => {
-      const itemDateKey = getDateKey(item.blocked_date);
-      const itemTime = getTimeKey(item.blocked_time);
+      const start = block.start_time.slice(0, 5);
+      const end = block.end_time.slice(0, 5);
 
-      const isSameField =
-        item.field === null || item.field === selectedField;
+      TIME_OPTIONS.forEach((time) => {
+        const endTime = addMinutesToTime(
+          time,
+          CONSULTATION_DURATION_MINUTES
+        );
 
-      if (itemDateKey === selectedDateKey && isSameField) {
-        addTwoHourBlock(blocked, itemTime);
-      }
+        const overlap =
+          !(endTime <= start || time >= end);
+
+        if (overlap) {
+          blocked.add(time);
+        }
+      });
     });
 
     return blocked;
-  }, [schedules, blocks, selectedDate, selectedField]);
+  }, [blocks, selectedDate, selectedField]);
 
   const timeOptions = useMemo(() => {
     if (!selectedTime || TIME_OPTIONS.includes(selectedTime)) {
@@ -345,12 +331,12 @@ export default function ReservationPage() {
       setSelectedTime("");
       setIsSubmitted(false);
 
-      const data = await getReservationListByRange(
-        getMonthStartIso(nextMonth),
-        MONTHS_TO_FETCH
-      );
+      const data = await getReservationListByRange({
+        baseDate: getMonthStartIso(nextMonth),
+        previousMonthCount: 2,
+        nextMonthCount: 4,
+      });
 
-      setSchedules(data.schedules || []);
       setBlocks(data.blocks || []);
     } catch (err) {
       console.error("예약 일정 재조회 실패:", err);
@@ -480,25 +466,38 @@ export default function ReservationPage() {
     try {
       setIsSubmitting(true);
 
+      const apiField = API_FIELD_VALUES[selectedField];
+
+      const endTime = addMinutesToTime(
+        selectedTime,
+        CONSULTATION_DURATION_MINUTES
+      );
+
       const data = await createReservation({
         phone: form.phone.trim(),
-        CName: form.CName.trim(),
+        companyName: form.CName.trim(),
         kind: form.kind.trim(),
-        field: selectedField,
-        selectedDate: getLocalDateIso(selectedDate),
-        selectedTime,
+        field: apiField,
+        note: additionalRequest,
+        availableRanges: [
+          {
+            date: getDateKey(selectedDate),
+            startTime: selectedTime,
+            endTime: endTime,
+          },
+        ],
       });
 
       if (data.success) {
         setSubmitSuccess(t("reservation.submitSuccess"));
         setIsSubmitted(true);
 
-        const listData = await getReservationListByRange(
-          getMonthStartIso(viewDate),
-          MONTHS_TO_FETCH
-        );
+        const listData = await getReservationListByRange({
+          baseDate: getMonthStartIso(viewDate),
+          previousMonthCount: 2,
+          nextMonthCount: 4,
+        });
 
-        setSchedules(listData.schedules || []);
         setBlocks(listData.blocks || []);
       } else {
         setSubmitSuccess(t("reservation.submitFallbackSuccess"));
