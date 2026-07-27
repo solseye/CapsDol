@@ -1,4 +1,5 @@
 import "../App.css";
+import "../styles/auth-visily.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signupUser } from "../api/authApi";
@@ -59,54 +60,90 @@ export default function Signup() {
   };
 
   return (
-    <div className="login-page">
-      <div className="container login-container">
-        <div className="login-card card">
-          <div className="kicker">Create Account</div>
+    <div className="authv-page">
+      <section className="authv-brand-panel">
+        <button
+          type="button"
+          className="authv-brand"
+          onClick={() => navigate("/")}
+          aria-label="WVA 홈으로 이동"
+        >
+          <span>◎</span>
+          <strong>WVA AI Consulting</strong>
+        </button>
 
-          <h1 className="section-title login-title">회원가입</h1>
-
-          <p className="section-desc login-desc">
-            계정을 생성하고 서비스를 이용해보세요.
+        <div className="authv-brand-copy">
+          <h1>
+            일본 진출 준비를
+            <span>WVA 계정으로 시작하세요</span>
+          </h1>
+          <p>
+            AI 챗봇 상담, 히어링 시트 작성, 정관 초안 확인, 전문가 상담 예약을
+            하나의 계정으로 이용할 수 있습니다.
           </p>
 
-          <form className="login-form" onSubmit={handleSignup}>
-            <div className="login-field">
-              <label className="login-label" htmlFor="email">
-                이메일
-              </label>
+          <div className="authv-proof-grid">
+            <div>
+              <span>✓</span>
+              <strong>히어링 시트</strong>
+              <p>기업 정보를 정리하고 정관 초안으로 연결합니다.</p>
+            </div>
+            <div>
+              <span>✓</span>
+              <strong>예약 관리</strong>
+              <p>전문가 상담 일정을 신청하고 상태를 확인합니다.</p>
+            </div>
+          </div>
+        </div>
+
+        <p className="authv-trust">일본 법무·세무 상담 준비를 위한 AI 워크플로우</p>
+      </section>
+
+      <section className="authv-form-panel">
+        <div className="authv-card">
+          <div className="authv-title">
+            <h2>계정 만들기</h2>
+            <p>WVA의 AI 상담과 전문가 연결 기능을 이용할 계정을 생성합니다.</p>
+          </div>
+
+          <div className="authv-tabs">
+            <button type="button" onClick={() => navigate("/login")}>
+              로그인
+            </button>
+            <button type="button" className="active">
+              회원가입
+            </button>
+          </div>
+
+          <form className="authv-form" onSubmit={handleSignup}>
+            <div className="authv-field">
+              <label htmlFor="email">업무 이메일</label>
               <input
                 id="email"
                 type="email"
                 name="email"
-                placeholder="이메일을 입력하세요"
+                placeholder="name@company.com"
                 value={form.email}
                 onChange={handleChange}
-                className="reservation-input"
                 autoComplete="email"
               />
             </div>
 
-            <div className="login-field">
-              <label className="login-label" htmlFor="username">
-                아이디
-              </label>
+            <div className="authv-field">
+              <label htmlFor="username">아이디</label>
               <input
                 id="username"
                 type="text"
                 name="username"
-                placeholder="아이디를 입력하세요"
+                placeholder="로그인에 사용할 아이디"
                 value={form.username}
                 onChange={handleChange}
-                className="reservation-input"
                 autoComplete="username"
               />
             </div>
 
-            <div className="login-field">
-              <label className="login-label" htmlFor="password">
-                비밀번호
-              </label>
+            <div className="authv-field">
+              <label htmlFor="password">비밀번호</label>
               <input
                 id="password"
                 type="password"
@@ -114,34 +151,36 @@ export default function Signup() {
                 placeholder="비밀번호를 입력하세요"
                 value={form.password}
                 onChange={handleChange}
-                className="reservation-input"
                 autoComplete="new-password"
               />
             </div>
 
-            {error && <p className="login-error">{error}</p>}
+            <label className="authv-remember">
+              <input type="checkbox" />
+              <span>서비스 이용을 위한 계정 생성에 동의합니다</span>
+            </label>
 
-            <button
-              type="submit"
-              className="btn primary login-submit"
-              disabled={loading}
-            >
-              {loading ? "가입 중..." : "회원가입"}
+            {error && <p className="authv-error">{error}</p>}
+
+            <button type="submit" className="authv-submit" disabled={loading}>
+              {loading ? "가입 중..." : "WVA 계정 생성"} <span>→</span>
             </button>
           </form>
 
-          <div className="signup-redirect">
+          <div className="authv-help">
             <span>이미 계정이 있으신가요?</span>
-            <button
-              type="button"
-              className="signup-link"
-              onClick={() => navigate("/login")}
-            >
-              로그인
+            <button type="button" onClick={() => navigate("/login")}>
+              로그인하기
             </button>
           </div>
+
+          <div className="authv-compliance">
+            <span>문서 기반 상담</span>
+            <span>다국어 지원</span>
+            <span>전문가 연결</span>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

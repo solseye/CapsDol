@@ -5,15 +5,19 @@ import { NavLink } from "react-router-dom";
 const menuItems = [
   {
     to: "/admin/calendar",
-    label: "신청 기록 캘린더",
+    label: "Admin Dashboard",
+  },
+  {
+    to: "/admin/users",
+    label: "Users",
   },
   {
     to: "/admin/pdf-upload",
-    label: "PDF 업로드",
+    label: "PDF Upload",
   },
   {
     to: "/admin/pdf-list",
-    label: "PDF 자료 목록",
+    label: "Document Library",
   },
   {
     to: "/admin/users",
@@ -21,7 +25,7 @@ const menuItems = [
   },
   {
     to: "/admin/chatbot",
-    label: "관리자 챗봇",
+    label: "AI Chatbot",
   },
 ];
 
@@ -29,11 +33,11 @@ export default function AdminSidebar() {
   return (
     <aside className="adm-sidebar">
       <NavLink to="/" className="adm-brand">
-        <span>W</span>
+        <span>◎</span>
 
         <div>
-          <strong>WVA</strong>
-          <small>Admin</small>
+          <strong>WVA AI Consulting</strong>
+          <small>Japan Entry OS</small>
         </div>
       </NavLink>
 
@@ -51,6 +55,12 @@ export default function AdminSidebar() {
           </NavLink>
         ))}
       </nav>
+
+      <div className="adm-sidebar-footer">
+        <span>Settings</span>
+        <span>Help Center</span>
+        <strong>Admin Operator</strong>
+      </div>
     </aside>
   );
 }

@@ -1,4 +1,5 @@
 import "../App.css";
+import "../styles/auth-visily.css";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginUser, loginWithGoogle } from "../api/authApi";
@@ -40,6 +41,16 @@ export default function Login() {
 
         localStorage.setItem("accessToken", data.accessToken);
         localStorage.setItem("role", data.role);
+        localStorage.setItem(
+          "user",
+          JSON.stringify(
+            data.user || {
+              username: data.username || "Google 사용자",
+              email: data.email || "",
+              role: data.role,
+            }
+          )
+        );
 
         navigate(data.role === "admin" ? "/admin/calendar" : "/");
       } catch (err) {
@@ -124,6 +135,16 @@ export default function Login() {
 
       localStorage.setItem("accessToken", data.accessToken);
       localStorage.setItem("role", data.role);
+      localStorage.setItem(
+        "user",
+        JSON.stringify(
+          data.user || {
+            username: form.username.trim(),
+            email: data.email || "",
+            role: data.role,
+          }
+        )
+      );
       navigate(data.role === "admin" ? "/admin/calendar" : "/");
     } catch (err) {
       console.error("로그인 실패:", err);
@@ -134,32 +155,73 @@ export default function Login() {
   };
 
   return (
-    <div className="login-page">
-      <div className="container login-container">
-        <div className="login-card card">
-          <div className="kicker">Member Login</div>
-          <h1 className="section-title login-title">로그인</h1>
-          <p className="section-desc login-desc">
-            로그인 후 상담 예약 및 챗봇 서비스를 이용할 수 있습니다.
+    <div className="authv-page">
+      <section className="authv-brand-panel">
+        <button
+          type="button"
+          className="authv-brand"
+          onClick={() => navigate("/")}
+          aria-label="WVA 홈으로 이동"
+        >
+          <span>◎</span>
+          <strong>WVA AI Consulting</strong>
+        </button>
+
+        <div className="authv-brand-copy">
+          <h1>
+            AI로 일본 진출 준비를
+            <span>더 빠르고 정확하게</span>
+          </h1>
+          <p>
+            법인 설립, 정관 초안, 세무·회계 질문, 전문가 상담 예약까지
+            하나의 업무 흐름으로 정리하세요.
           </p>
 
-          <div className="google-login-section">
-            <div className="login-subtitle">Google 계정으로 로그인</div>
-            <div ref={googleButtonRef} className="google-login-button" />
-            {googleLoading && (
-              <p className="login-helper-text">구글 로그인 처리 중...</p>
-            )}
+          <div className="authv-proof-grid">
+            <div>
+              <span>✓</span>
+              <strong>문서 중심 보안</strong>
+              <p>기업 정보와 법무 자료를 업무 단위로 정리합니다.</p>
+            </div>
+            <div>
+              <span>✓</span>
+              <strong>전문가 연결</strong>
+              <p>AI가 정리한 내용을 상담 예약으로 이어갑니다.</p>
+            </div>
+          </div>
+        </div>
+
+        <p className="authv-trust">일본 시장 진출을 준비하는 기업을 위한 WVA 업무 플랫폼</p>
+      </section>
+
+      <section className="authv-form-panel">
+        <div className="authv-card">
+          <div className="authv-title">
+            <h2>다시 오신 것을 환영합니다</h2>
+            <p>일본 진출 운영 시스템에 접속하려면 로그인해 주세요.</p>
           </div>
 
-          <div className="login-divider">
-            <span>또는</span>
+          <div className="authv-google-box">
+            <div ref={googleButtonRef} className="authv-google-button" />
+            {googleLoading && <p>구글 로그인 처리 중...</p>}
           </div>
 
-          <form className="login-form" onSubmit={handleLogin}>
-            <div className="login-field">
-              <label className="login-label" htmlFor="username">
-                아이디
-              </label>
+          <div className="authv-divider">
+            <span>또는 아이디로 계속하기</span>
+          </div>
+
+          <div className="authv-tabs">
+            <button type="button" className="active">
+              로그인
+            </button>
+            <button type="button" onClick={() => navigate("/signup")}>
+              회원가입
+            </button>
+          </div>
+
+          <form className="authv-form" onSubmit={handleLogin}>
+            <div className="authv-field">
+              <label htmlFor="username">아이디</label>
               <input
                 id="username"
                 type="text"
@@ -167,15 +229,17 @@ export default function Login() {
                 placeholder="아이디를 입력하세요"
                 value={form.username}
                 onChange={handleChange}
-                className="reservation-input"
                 autoComplete="username"
               />
             </div>
 
-            <div className="login-field">
-              <label className="login-label" htmlFor="password">
-                비밀번호
-              </label>
+            <div className="authv-field">
+              <div className="authv-label-row">
+                <label htmlFor="password">비밀번호</label>
+                <button type="button" onClick={() => navigate("/lostpw")}>
+                  비밀번호 찾기
+                </button>
+              </div>
               <input
                 id="password"
                 type="password"
@@ -183,53 +247,39 @@ export default function Login() {
                 placeholder="비밀번호를 입력하세요"
                 value={form.password}
                 onChange={handleChange}
-                className="reservation-input"
                 autoComplete="current-password"
               />
             </div>
 
-            {error && <p className="login-error">{error}</p>}
+            <label className="authv-remember">
+              <input type="checkbox" />
+              <span>이 기기에서 로그인 상태 유지</span>
+            </label>
 
-            <button
-              type="submit"
-              className="btn primary login-submit"
-              disabled={loading}
-            >
-              {loading ? "로그인 중..." : "로그인"}
+            {error && <p className="authv-error">{error}</p>}
+
+            <button type="submit" className="authv-submit" disabled={loading}>
+              {loading ? "로그인 중..." : "WVA에 로그인"} <span>→</span>
             </button>
           </form>
 
-          <div className="signup-redirect">
-            <span>계정이 없으신가요?</span>
-            <button
-                type="button"
-                className="signup-link"
-                onClick={() => navigate("/signup")}
-            >
-                가입하기
+          <div className="authv-help">
+            <button type="button" onClick={() => navigate("/lostid")}>
+              아이디 찾기
             </button>
-        </div>
-        <div className="signup-redirect">
-          <button
-            type="button"
-            className="signup-link"
-            onClick={() => navigate("/lostid")}
-          >
-            아이디 찾기
-          </button>
+            <span>도움이 필요하신가요?</span>
+            <button type="button" onClick={() => navigate("/reservation")}>
+              전문가 상담
+            </button>
+          </div>
 
-          <span className="auth-link-divider">|</span>
-
-          <button
-            type="button"
-            className="signup-link"
-            onClick={() => navigate("/lostpw")}
-          >
-            비밀번호 찾기
-          </button>
+          <div className="authv-compliance">
+            <span>문서 기반 상담</span>
+            <span>AI 상담 지원</span>
+            <span>전문가 검토 연결</span>
+          </div>
         </div>
-        </div>
-      </div>
+      </section>
     </div>
   );
 }

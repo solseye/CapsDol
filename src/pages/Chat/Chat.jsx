@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Navigate, useLocation } from "react-router-dom";
-import Header from "../../components/Header";
-import Footer from "../../components/Footer";
+import { Link, Navigate, useLocation } from "react-router-dom";
 import { sendQuestion } from "../../api/chatApi";
 import "./chat.css";
 
@@ -112,65 +110,162 @@ export default function Chat() {
   }
 
   return (
-    <div className="layout">
-      <Header isLoggedIn={isLoggedIn} />
+    <div className="ai-page">
+      <aside className="ai-sidebar">
+        <Link to="/" className="ai-logo">
+          <span>◎</span>
+          <strong>WVA AI Consulting</strong>
+          <small>Japan Entry OS</small>
+        </Link>
 
-      <div className="chat-container">
-        <div className="chat-inner user-chat">
+        <nav className="ai-side-nav">
+          <Link to="/">Home</Link>
+          <Link to="/hearing-sheet">Hearing Sheet</Link>
+          <Link to="/articles-result">Articles</Link>
+          <Link to="/reservation">Consultations</Link>
+          <Link to="/myreservations">My Reservations</Link>
+          <Link to="/chat" className="active">
+            AI Chatbot
+          </Link>
+        </nav>
 
-          <section className="chat card">
-            <div className="chat-top">
+        <div className="ai-sidebar-note">
+          <strong>RAG Knowledge</strong>
+          <p>등록된 일본 진출 자료를 기반으로 답변합니다.</p>
+        </div>
+      </aside>
+
+      <div className="ai-shell">
+        <header className="ai-topbar">
+          <div className="ai-breadcrumb">
+            <Link to="/">Dashboard</Link>
+            <span>›</span>
+            <strong>AI Chatbot</strong>
+          </div>
+
+          <button
+            type="button"
+            className="ai-reset-top"
+            onClick={handleReset}
+          >
+            대화 초기화
+          </button>
+        </header>
+
+        <main className="ai-main">
+          <section className="ai-chat-panel">
+            <div className="ai-chat-head">
               <div>
-                <p className="kicker">Chatbot</p>
-                <h2>상담</h2>
+                <p>AI Consultation</p>
+                <h1>일본 진출 상담 챗봇</h1>
+                <span>
+                  법인 설립, 세무, 회계, 비자, 노무 관련 질문을 먼저 정리해
+                  보세요.
+                </span>
               </div>
-
-              <button
-                type="button"
-                className="chat-reset-btn"
-                onClick={handleReset}
-              >
-                대화 초기화
-              </button>
             </div>
 
-            <div className="chat-body" ref={chatBodyRef}>
+            <div className="ai-chat-body" ref={chatBodyRef}>
               {messages.map((message, index) => (
-                <div key={index} className={`msg-row ${message.type}`}>
-                  <div className="bubble">
-                    <div className="bubble-text">{message.text}</div>
+                <div key={index} className={`ai-msg-row ${message.type}`}>
+                  <div className="ai-bubble">
+                    <div className="ai-bubble-label">
+                      {message.type === "user" ? "You" : "WVA AI"}
+                    </div>
+                    <div className="ai-bubble-text">{message.text}</div>
+
+                    {message.sources?.length > 0 && (
+                      <div className="ai-source-list">
+                        <strong>참고 자료</strong>
+
+                        {message.sources.map((source) => (
+                          <div
+                            key={`${source.fileId}-${source.chunkId}-${source.chunkIndex}`}
+                            className="ai-source-item"
+                          >
+                            <span>
+                              {source.sourceName ||
+                                source.originalName ||
+                                source.storagePath}
+                            </span>
+                            <small>
+                              유사도{" "}
+                              {typeof source.similarity === "number"
+                                ? source.similarity.toFixed(3)
+                                : "-"}
+                            </small>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
 
               {loading && (
-                <div className="msg-row bot">
-                  <div className="bubble typing">답변 생성 중...</div>
+                <div className="ai-msg-row bot">
+                  <div className="ai-bubble ai-typing">
+                    <div className="ai-bubble-label">WVA AI</div>
+                    답변 생성 중...
+                  </div>
                 </div>
               )}
             </div>
 
-            <div className="chat-bottom">
-              {error && <p className="chat-error">{error}</p>}
+            <div className="ai-chat-bottom">
+              {error && <p className="ai-chat-error">{error}</p>}
 
-              <form className="chat-input" onSubmit={handleSubmit}>
+              <form className="ai-chat-input" onSubmit={handleSubmit}>
                 <input
                   value={input}
                   onChange={(event) => setInput(event.target.value)}
-                  placeholder="상담 관련 질문을 입력하세요..."
+                  placeholder="일본 법인 설립, 세무, 비자, 정관 작성에 대해 질문하세요..."
                   disabled={loading}
                 />
 
                 <button type="submit" disabled={loading || !input.trim()}>
-                  {loading ? "생성 중" : "전송"}
+                  {loading ? "생성 중" : "전송"} <span>→</span>
                 </button>
               </form>
             </div>
           </section>
-        </div>
-      </div>
 
-      <Footer />
+          <aside className="ai-context-panel">
+            <div className="ai-context-card dark">
+              <span>WVA</span>
+              <h2>답변 기준</h2>
+              <p>
+                챗봇은 등록된 RAG 문서를 참고해 답변합니다. 실제 법률·세무
+                판단은 전문가 상담으로 최종 확인해야 합니다.
+              </p>
+            </div>
+
+            <div className="ai-context-card">
+              <h3>빠른 질문</h3>
+              {[
+                "일본에 거주하지 않아도 법인을 설립할 수 있어?",
+                "일본 법인 설립 전에 어떤 정보를 준비해야 해?",
+                "정관 초안에서 가장 중요하게 봐야 할 부분은 뭐야?",
+              ].map((question) => (
+                <button
+                  type="button"
+                  key={question}
+                  onClick={() => sendMessage(question)}
+                  disabled={loading}
+                >
+                  {question}
+                </button>
+              ))}
+            </div>
+
+            <div className="ai-context-card">
+              <h3>다음 단계</h3>
+              <Link to="/hearing-sheet">히어링 시트 작성</Link>
+              <Link to="/reservation">전문가 상담 예약</Link>
+            </div>
+          </aside>
+        </main>
+      </div>
     </div>
   );
 }

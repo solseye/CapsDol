@@ -91,110 +91,148 @@ export default function PdfUploadPage() {
 
   return (
     <div className="adm-page">
-      <div className="adm-page-head">
+      <div className="adm-portal-head">
         <div>
           <p className="adm-eyebrow">Knowledge Base</p>
           <h2>자료 업로드</h2>
-          <span>챗봇이 참고할 자료 파일을 등록합니다.</span>
+          <span>
+            상담 챗봇이 참고할 법무, 회계, 노무 자료를 분야별로 등록합니다.
+          </span>
+        </div>
+
+        <div className="adm-portal-actions">
+          <button type="button" className="adm-btn ghost" disabled>
+            Bucket: chat
+          </button>
         </div>
       </div>
 
-      <AdminCard title="자료 파일 추가">
-        <div className="adm-upload-box">
-          <div className="adm-upload-icon">FILE</div>
+      <div className="adm-upload-layout">
+        <AdminCard
+          title="자료 파일 추가"
+          action={<span>{ACCEPTED_FILE_TYPES.replaceAll(",", " / ")}</span>}
+        >
+          <div className="adm-upload-box">
+            <div className="adm-upload-icon">DOC</div>
 
-          <h3>파일을 선택해 주세요</h3>
+            <h3>파일을 선택해 주세요</h3>
+            <p>
+              업로드한 자료는 선택한 분야의 RAG 문서로 저장되고, 이후 벡터 DB
+              제작 대상이 됩니다.
+            </p>
 
-          <div className="adm-upload-field">
+            <div className="adm-upload-field">
+              <label>자료 분야</label>
 
-            <div className="custom-select">
-              <button
-                type="button"
-                className={`custom-select-trigger ${
-                  isFolderOpen ? "open" : ""
-                }`}
-                onClick={() => setIsFolderOpen((prev) => !prev)}
+              <div className="custom-select">
+                <button
+                  type="button"
+                  className={`custom-select-trigger ${
+                    isFolderOpen ? "open" : ""
+                  }`}
+                  onClick={() => setIsFolderOpen((prev) => !prev)}
+                  disabled={isUploading}
+                >
+                  {selectedFolderLabel}
+                  <span>▾</span>
+                </button>
+
+                {isFolderOpen && (
+                  <div className="custom-select-menu">
+                    {FOLDER_OPTIONS.map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        className={`custom-select-option ${
+                          selectedFolder === option.value ? "selected" : ""
+                        }`}
+                        onClick={() => {
+                          setSelectedFolder(option.value);
+                          setIsFolderOpen(false);
+                        }}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <label className="adm-file-picker">
+              파일 선택
+              <input
+                type="file"
+                accept={ACCEPTED_FILE_TYPES}
                 disabled={isUploading}
-              >
-                {selectedFolderLabel}
-                <span>▾</span>
-              </button>
+                onChange={(event) => {
+                  const file = event.target.files?.[0] || null;
 
-              {isFolderOpen && (
-                <div className="custom-select-menu">
-                  {FOLDER_OPTIONS.map((option) => (
-                    <button
-                      key={option.value}
-                      type="button"
-                      className={`custom-select-option ${
-                        selectedFolder === option.value ? "selected" : ""
-                      }`}
-                      onClick={() => {
-                        setSelectedFolder(option.value);
-                        setIsFolderOpen(false);
-                      }}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              )}
+                  if (file && !isAllowedFile(file)) {
+                    setSelectedFile(null);
+                    setProgress(0);
+                    setStatus("대기 중");
+                    setSuccess("");
+                    setError(
+                      "업로드 가능한 파일 형식은 PDF, DOCX, XLSX, CSV, TXT, MD입니다."
+                    );
+                    event.target.value = "";
+                    return;
+                  }
+
+                  setSelectedFile(file);
+                  setProgress(0);
+                  setStatus(file ? "파일 선택됨" : "대기 중");
+                  setError("");
+                  setSuccess("");
+                }}
+              />
+            </label>
+
+            <div className="adm-selected-file">
+              {selectedFile ? selectedFile.name : "선택된 파일이 없습니다."}
+            </div>
+
+            <div className="adm-progress">
+              <span style={{ width: `${progress}%` }} />
+            </div>
+
+            <div className="adm-upload-status">{status}</div>
+
+            {error && <p className="adm-upload-status error">{error}</p>}
+            {success && <p className="adm-upload-status success">{success}</p>}
+
+            <button
+              type="button"
+              className="adm-btn primary"
+              onClick={handleUpload}
+              disabled={isUploading}
+            >
+              {isUploading ? "업로드 중..." : "업로드"}
+            </button>
+          </div>
+        </AdminCard>
+
+        <aside className="adm-guide-card">
+          <p className="adm-eyebrow">Upload Guide</p>
+          <h3>자료 등록 기준</h3>
+
+          <div className="adm-guide-list">
+            <div>
+              <strong>1. 분야 선택</strong>
+              <span>통합 챗봇 또는 법무/회계/노무 등 세부 분야를 선택합니다.</span>
+            </div>
+            <div>
+              <strong>2. 원본 업로드</strong>
+              <span>PDF, DOCX, CSV 등 챗봇 학습에 필요한 문서를 등록합니다.</span>
+            </div>
+            <div>
+              <strong>3. 목록에서 인덱싱</strong>
+              <span>업로드 후 문서 목록에서 벡터 DB 제작을 실행합니다.</span>
             </div>
           </div>
-
-          <label className="adm-file-picker">
-            파일 선택
-            <input
-              type="file"
-              accept={ACCEPTED_FILE_TYPES}
-              disabled={isUploading}
-              onChange={(event) => {
-                const file = event.target.files?.[0] || null;
-
-                if (file && !isAllowedFile(file)) {
-                  setSelectedFile(null);
-                  setProgress(0);
-                  setStatus("대기 중");
-                  setSuccess("");
-                  setError(
-                    "업로드 가능한 파일 형식은 PDF, DOCX, XLSX, CSV, TXT, MD입니다."
-                  );
-                  event.target.value = "";
-                  return;
-                }
-
-                setSelectedFile(file);
-                setProgress(0);
-                setStatus(file ? "파일 선택됨" : "대기 중");
-                setError("");
-                setSuccess("");
-              }}
-            />
-          </label>
-
-          <div className="adm-selected-file">
-            {selectedFile ? selectedFile.name : "선택된 파일이 없습니다."}
-          </div>
-
-          <div className="adm-progress">
-            <span style={{ width: `${progress}%` }} />
-          </div>
-
-          <div className="adm-upload-status">{status}</div>
-
-          {error && <p className="adm-upload-status error">{error}</p>}
-          {success && <p className="adm-upload-status success">{success}</p>}
-
-          <button
-            type="button"
-            className="adm-btn primary"
-            onClick={handleUpload}
-            disabled={isUploading}
-          >
-            {isUploading ? "업로드 중..." : "업로드"}
-          </button>
-        </div>
-      </AdminCard>
+        </aside>
+      </div>
     </div>
   );
 }

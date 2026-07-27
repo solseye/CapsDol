@@ -1,4 +1,5 @@
 import "../App.css";
+import "../styles/auth-visily.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { findPassword } from "../api/authApi";
@@ -39,22 +40,62 @@ export default function LostPw() {
   };
 
   return (
-    <div className="login-page">
-      <div className="container login-container">
-        <div className="login-card card">
-          <div className="kicker">Reset Password</div>
+    <div className="authv-page">
+      <section className="authv-brand-panel">
+        <button
+          type="button"
+          className="authv-brand"
+          onClick={() => navigate("/")}
+          aria-label="WVA 홈으로 이동"
+        >
+          <span>◎</span>
+          <strong>WVA AI Consulting</strong>
+        </button>
 
-          <h1 className="section-title login-title">비밀번호 찾기</h1>
-
-          <p className="section-desc login-desc">
-            아이디를 입력하면 해당 계정에 연결된 이메일로 비밀번호 재설정 링크를 보내드립니다.
+        <div className="authv-brand-copy">
+          <h1>
+            비밀번호를 잊어도
+            <span>업무는 이어집니다</span>
+          </h1>
+          <p>
+            아이디를 입력하면 연결된 이메일로 비밀번호 재설정 링크를 보내
+            계정 접근을 복구합니다.
           </p>
 
-          <form className="login-form" onSubmit={handleSubmit}>
-            <div className="login-field">
-              <label className="login-label" htmlFor="username">
-                아이디
-              </label>
+          <div className="authv-proof-grid">
+            <div>
+              <span>✓</span>
+              <strong>메일 기반 재설정</strong>
+              <p>계정에 연결된 이메일로 재설정 링크를 발송합니다.</p>
+            </div>
+            <div>
+              <span>✓</span>
+              <strong>보안 흐름 유지</strong>
+              <p>새 비밀번호 설정 후 기존 업무 페이지로 복귀할 수 있습니다.</p>
+            </div>
+          </div>
+        </div>
+
+        <p className="authv-trust">일본 진출 운영 시스템의 안전한 계정 복구</p>
+      </section>
+
+      <section className="authv-form-panel">
+        <div className="authv-card">
+          <div className="authv-title">
+            <h2>비밀번호 찾기</h2>
+            <p>
+              아이디를 입력하면 해당 계정에 연결된 이메일로 비밀번호 재설정
+              링크를 보내드립니다.
+            </p>
+          </div>
+
+          <div className="authv-divider">
+            <span>재설정 링크 요청</span>
+          </div>
+
+          <form className="authv-form" onSubmit={handleSubmit}>
+            <div className="authv-field">
+              <label htmlFor="username">아이디</label>
               <input
                 id="username"
                 type="text"
@@ -66,44 +107,47 @@ export default function LostPw() {
                   setError("");
                   setMessage("");
                 }}
-                className="reservation-input"
                 autoComplete="username"
               />
             </div>
 
-            {error && <p className="login-error">{error}</p>}
-            {message && <p className="login-success">{message}</p>}
+            {error && <p className="authv-error">{error}</p>}
+            {message && <p className="authv-success">{message}</p>}
 
             <button
               type="submit"
-              className="btn primary login-submit"
+              className="authv-submit"
               disabled={isLoading}
             >
-              {isLoading ? "발송 중..." : "비밀번호 재설정 링크 받기"}
+              {isLoading ? "발송 중..." : "비밀번호 재설정 링크 받기"} <span>→</span>
             </button>
           </form>
 
-          <div className="signup-redirect">
+          <div className="authv-help">
             <button
               type="button"
-              className="signup-link"
               onClick={() => navigate("/login")}
             >
               로그인으로 돌아가기
             </button>
 
-            <span className="auth-link-divider">|</span>
+            <span>또는</span>
 
             <button
               type="button"
-              className="signup-link"
               onClick={() => navigate("/lostid")}
             >
               아이디 찾기
             </button>
           </div>
+
+          <div className="authv-compliance">
+            <span>계정 복구</span>
+            <span>메일 인증 흐름</span>
+            <span>업무 복귀 지원</span>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

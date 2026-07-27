@@ -1,0 +1,2500 @@
+.visily-home {
+  min-height: 100vh;
+  background: #f5f7f8;
+  color: #17202b;
+  font-family:
+    Inter,
+    Pretendard,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+
+/* Header
+   - 큰 화면: 로고 / 중앙 메뉴 / 로그인 액션을 한 줄로 표시합니다.
+   - 작은 화면: 중앙 메뉴와 액션 버튼은 햄버거 메뉴 안으로 이동합니다. */
+.visily-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: 68px;
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) auto minmax(360px, 1fr);
+  align-items: center;
+  gap: 28px;
+  padding: 0 72px;
+  border-bottom: 1px solid #dce3e8;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(14px);
+}
+
+.visily-brand,
+.visily-footer-brand {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: #061f35;
+  text-decoration: none;
+}
+
+.visily-brand-mark {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  color: #06233c;
+  font-size: 25px;
+  font-weight: 950;
+}
+
+.visily-brand strong {
+  display: block;
+  color: #061f35;
+  font-size: 15px;
+  font-weight: 950;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.visily-brand small {
+  display: block;
+  margin-top: 4px;
+  color: #66717e;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.visily-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 34px;
+  white-space: nowrap;
+}
+
+.visily-nav-links a,
+.visily-footer nav a {
+  color: #596371;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.visily-nav-links a {
+  position: relative;
+  padding: 8px 0;
+  transition:
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.visily-nav-links a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background: #06233c;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 180ms ease;
+}
+
+.visily-nav-links a:hover,
+.visily-nav-links a.active {
+  color: #06233c;
+  transform: translateY(-2px);
+}
+
+.visily-nav-links a:hover::after,
+.visily-nav-links a.active::after {
+  transform: scaleX(1);
+}
+
+.visily-nav-actions {
+  min-width: 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 14px;
+  white-space: nowrap;
+}
+
+.visily-desktop-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* 메인 헤더의 실행 메뉴도 마이페이지 헤더와 같은 하단 바 방식으로 표시합니다. */
+.visily-nav .visily-desktop-actions .visily-ghost-btn,
+.visily-nav .visily-desktop-actions .visily-dark-btn {
+  position: relative;
+  min-height: auto;
+  padding: 8px 0;
+  border: 0;
+  background: transparent;
+  color: #596371;
+  box-shadow: none;
+  transition:
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.visily-nav .visily-desktop-actions .visily-ghost-btn {
+  color: #06233c;
+  font-weight: 950;
+}
+
+.visily-nav .visily-desktop-actions .visily-dark-btn {
+  min-height: 36px;
+  padding: 0 16px;
+  border-radius: 3px;
+  color: #ffffff;
+  background: #06233c;
+  font-weight: 950;
+}
+
+.visily-nav .visily-desktop-actions .visily-ghost-btn::after,
+.visily-nav .visily-desktop-actions .visily-dark-btn::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background: #06233c;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 180ms ease;
+}
+
+.visily-nav .visily-desktop-actions .visily-ghost-btn:hover,
+.visily-nav .visily-desktop-actions .visily-ghost-btn:focus-visible {
+  color: #06233c;
+  transform: translateY(-2px);
+}
+
+.visily-nav .visily-desktop-actions .visily-ghost-btn:hover::after,
+.visily-nav .visily-desktop-actions .visily-ghost-btn:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.visily-nav .visily-desktop-actions .visily-dark-btn:hover,
+.visily-nav .visily-desktop-actions .visily-dark-btn:focus-visible {
+  color: #ffffff;
+  background: #0d3657;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(6, 35, 60, 0.16);
+}
+
+.visily-nav .visily-desktop-actions .visily-dark-btn::after {
+  display: none;
+}
+
+.visily-menu-toggle {
+  width: 42px;
+  height: 42px;
+  display: none;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.visily-menu-toggle span {
+  width: 18px;
+  height: 2px;
+  display: block;
+  grid-area: 1 / 1;
+  border-radius: 999px;
+  background: #06233c;
+  transition:
+    transform 0.22s ease,
+    opacity 0.22s ease;
+}
+
+.visily-menu-toggle span:first-child {
+  transform: translateY(-4px);
+}
+
+.visily-menu-toggle span:last-child {
+  transform: translateY(4px);
+}
+
+.visily-menu-toggle.is-open span:first-child {
+  transform: rotate(45deg);
+}
+
+.visily-menu-toggle.is-open span:last-child {
+  transform: rotate(-45deg);
+}
+
+/* Mobile menu
+   Apple 사이트처럼 화면이 좁아지면 로고 + 언어 선택 + 햄버거만 남기기 위한 메뉴입니다. */
+.visily-mobile-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  display: none;
+  border-bottom: 1px solid #dce3e8;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 20px 44px rgba(6, 35, 60, 0.1);
+  backdrop-filter: blur(16px);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-8px);
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s ease;
+}
+
+.visily-mobile-menu.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.visily-mobile-menu nav,
+.visily-mobile-actions {
+  width: min(100% - 44px, 720px);
+  margin: 0 auto;
+}
+
+.visily-mobile-menu nav {
+  display: grid;
+  padding: 18px 0 10px;
+}
+
+.visily-mobile-menu nav a {
+  border-bottom: 1px solid #edf1f4;
+  padding: 15px 0;
+  color: #17202b;
+  text-decoration: none;
+  font-size: 18px;
+  line-height: 1.2;
+  font-weight: 900;
+}
+
+.visily-mobile-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding: 14px 0 22px;
+}
+
+.visily-language-menu {
+  margin-right: 2px;
+}
+
+.visily-language-menu .language-menu-trigger {
+  min-height: 38px;
+  border: 0;
+  border-radius: 0;
+  padding: 4px 3px;
+  color: #06233c;
+  background: transparent;
+  box-shadow: inset 0 -2px transparent;
+  transition:
+    color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.visily-language-menu .language-menu-trigger:hover,
+.visily-language-menu .language-menu-trigger:focus-visible,
+.visily-language-menu .language-menu-trigger[aria-expanded="true"] {
+  color: #06233c;
+  box-shadow: inset 0 -2px #06233c;
+  transform: translateY(-2px);
+}
+
+.visily-language-menu .language-menu-trigger .language-globe {
+  background: transparent;
+}
+
+.visily-language-menu .language-menu-list {
+  top: calc(100% + 8px);
+  border-radius: 4px;
+  box-shadow: 0 14px 34px rgba(6, 35, 60, 0.14);
+}
+
+/* Common buttons
+   메인 페이지에서 쓰는 버튼 공통 스타일입니다. 글자가 세로로 깨지지 않도록 nowrap을 유지합니다. */
+.visily-ghost-btn,
+.visily-dark-btn,
+.visily-green-btn,
+.visily-outline-btn,
+.visily-link-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 42px;
+  padding: 0 22px;
+  border-radius: 2px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 950;
+  cursor: pointer;
+  white-space: nowrap;
+  word-break: keep-all;
+}
+
+.visily-ghost-btn {
+  border: 1px solid #06233c;
+  color: #06233c;
+  background: #ffffff;
+}
+
+.visily-dark-btn {
+  border: 1px solid #06233c;
+  color: #ffffff;
+  background: #06233c;
+}
+
+/* Hero
+   첫 화면 배경 이미지, AI 질문 입력창, 신뢰 문구가 포함된 메인 진입 영역입니다. */
+.visily-hero {
+  position: relative;
+  min-height: calc(100vh - 68px);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: #06233c;
+}
+
+.visily-hero-bg {
+  position: absolute;
+  inset: 0;
+  background-position: center;
+  background-size: cover;
+  opacity: 0.34;
+  filter: saturate(0.85) contrast(1.05);
+}
+
+.visily-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(3, 24, 43, 0.78) 0%, rgba(6, 35, 60, 0.66) 58%, rgba(6, 35, 60, 0.92) 100%),
+    radial-gradient(circle at center, rgba(21, 92, 63, 0.32), transparent 52%);
+}
+
+.visily-hero-content {
+  position: relative;
+  width: min(980px, calc(100% - 32px));
+  padding: 72px 0 96px;
+  text-align: center;
+}
+
+.visily-badge {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 0 32px;
+  padding: 10px 20px;
+  border-radius: 999px;
+  color: #8fb79e;
+  background: rgba(28, 96, 70, 0.25);
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.visily-hero h1 {
+  margin: 0;
+  color: #ffffff;
+  font-size: clamp(48px, 7vw, 84px);
+  line-height: 1.03;
+  font-weight: 950;
+  letter-spacing: -0.055em;
+}
+
+.visily-hero h1 span {
+  display: block;
+  color: #89a57c;
+}
+
+.visily-hero-copy {
+  max-width: 760px;
+  margin: 32px auto 34px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 18px;
+  line-height: 1.7;
+  font-weight: 750;
+}
+
+.visily-ai-search {
+  width: min(700px, 100%);
+  min-height: 70px;
+  margin: 0 auto;
+  padding: 9px 10px 9px 26px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-radius: 10px;
+  background: rgba(232, 239, 244, 0.78);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.24);
+}
+
+.visily-ai-search span {
+  color: #70808e;
+  font-size: 24px;
+}
+
+.visily-ai-search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #06233c;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.visily-ai-search input::placeholder {
+  color: #87929d;
+}
+
+.visily-ai-search button {
+  height: 48px;
+  border: 0;
+  border-radius: 4px;
+  padding: 0 28px;
+  color: #ffffff;
+  background: #06233c;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.visily-trust-row {
+  margin-top: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.visily-trust-row span {
+  width: 34px;
+  height: 34px;
+  margin-left: -7px;
+  display: grid;
+  place-items: center;
+  border: 2px solid #dce3e8;
+  border-radius: 50%;
+  color: #06233c;
+  background: #ffffff;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.visily-trust-row p {
+  margin: 0 0 0 18px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.visily-section,
+.visily-pricing-section,
+.visily-process-section {
+  width: min(1320px, calc(100% - 96px));
+  margin: 0 auto;
+  padding: 86px 0;
+}
+
+.visily-section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px;
+  margin-bottom: 44px;
+}
+
+.visily-section h2,
+.visily-pricing-head h2,
+.visily-process-head h2,
+.visily-centered-head h2,
+.visily-cta h2 {
+  margin: 0;
+  color: #1b2530;
+  font-size: 32px;
+  line-height: 1.15;
+  font-weight: 950;
+  letter-spacing: -0.035em;
+}
+
+.visily-section p,
+.visily-pricing-head p,
+.visily-process-head p,
+.visily-centered-head p,
+.visily-cta p {
+  color: #697482;
+  font-size: 15px;
+  line-height: 1.65;
+  font-weight: 750;
+}
+
+.visily-link-btn {
+  border: 1px solid #d6dde2;
+  color: #213040;
+  background: #ffffff;
+}
+
+.visily-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.visily-service-card,
+.visily-metric-card {
+  min-height: 250px;
+  padding: 28px;
+  border: 1px solid #dbe2e7;
+  border-radius: 8px;
+  background: #ffffff;
+  text-decoration: none;
+  box-shadow: 0 14px 32px rgba(16, 29, 43, 0.03);
+}
+
+.visily-service-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 300px;
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.visily-service-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(24, 77, 56, 0.28);
+  box-shadow: 0 24px 44px rgba(16, 29, 43, 0.08);
+}
+
+.visily-service-card::before,
+.visily-service-card::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.visily-service-card::before {
+  inset: 0;
+  opacity: 0.7;
+}
+
+.visily-service-card::after {
+  right: 30px;
+  top: 42px;
+  opacity: 0.16;
+}
+
+.visily-service-card.ai::before {
+  background:
+    linear-gradient(120deg, transparent 0 56%, rgba(16, 185, 129, 0.1) 56% 57%, transparent 57%),
+    linear-gradient(35deg, transparent 0 62%, rgba(6, 35, 60, 0.08) 62% 63%, transparent 63%);
+}
+
+.visily-service-card.ai::after {
+  width: 145px;
+  height: 145px;
+  border: 2px solid #184d38;
+  border-radius: 28px;
+  background:
+    linear-gradient(#184d38, #184d38) 50% 24% / 54px 2px no-repeat,
+    linear-gradient(#184d38, #184d38) 50% 50% / 88px 2px no-repeat,
+    linear-gradient(#184d38, #184d38) 50% 76% / 54px 2px no-repeat;
+}
+
+.visily-service-card.doc::before {
+  background:
+    linear-gradient(135deg, transparent 0 52%, rgba(16, 185, 129, 0.08) 52% 53%, transparent 53%),
+    linear-gradient(180deg, rgba(237, 243, 244, 0.65), transparent 58%);
+}
+
+.visily-service-card.doc::after {
+  width: 118px;
+  height: 148px;
+  border: 2px solid #184d38;
+  border-radius: 12px;
+  box-shadow:
+    -18px 16px 0 rgba(24, 77, 56, 0.14),
+    -34px 32px 0 rgba(24, 77, 56, 0.08);
+  background:
+    linear-gradient(#184d38, #184d38) 24px 34px / 64px 2px no-repeat,
+    linear-gradient(#184d38, #184d38) 24px 58px / 74px 2px no-repeat,
+    linear-gradient(#184d38, #184d38) 24px 82px / 52px 2px no-repeat;
+}
+
+.visily-service-card.pro::before {
+  background:
+    linear-gradient(145deg, transparent 0 48%, rgba(16, 185, 129, 0.09) 48% 49%, transparent 49%),
+    linear-gradient(25deg, transparent 0 68%, rgba(6, 35, 60, 0.07) 68% 69%, transparent 69%);
+}
+
+.visily-service-card.pro::after {
+  width: 150px;
+  height: 104px;
+  border: 2px solid #184d38;
+  border-radius: 28px;
+  background:
+    linear-gradient(#184d38, #184d38) 34px 34px / 78px 2px no-repeat,
+    linear-gradient(#184d38, #184d38) 34px 58px / 54px 2px no-repeat;
+  box-shadow: -34px 48px 0 rgba(24, 77, 56, 0.1);
+}
+
+.visily-service-card:hover::after {
+  opacity: 0.23;
+  transform: translateY(-4px);
+}
+
+.visily-service-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.visily-service-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  margin-bottom: 86px;
+}
+
+.visily-service-card small {
+  padding: 4px 8px;
+  border: 1px solid #d8dee3;
+  border-radius: 999px;
+  color: #737b85;
+  font-size: 9px;
+  font-weight: 950;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.visily-service-card h3,
+.visily-metric-card h3 {
+  margin: 0 0 14px;
+  color: #1b2530;
+  font-size: 24px;
+  font-weight: 950;
+  letter-spacing: -0.04em;
+}
+
+.visily-service-card p,
+.visily-metric-card p {
+  margin: 0 0 28px;
+  color: #5f6975;
+  font-size: 14px;
+  line-height: 1.55;
+  font-weight: 750;
+}
+
+.visily-service-card strong {
+  color: #12304a;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.visily-pricing-section {
+  border-top: 1px solid #dbe2e7;
+  border-bottom: 1px solid #dbe2e7;
+  background: #f5f7f8;
+}
+
+/* Services & Pricing
+   핵심 서비스와 비용 구조를 하나의 카드 그룹으로 보여주는 영역입니다. */
+.visily-pricing-head {
+  max-width: 760px;
+  margin: 0 auto 44px;
+  text-align: center;
+}
+
+.visily-pricing-head > span {
+  display: inline-flex;
+  margin-bottom: 14px;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.visily-pricing-head p {
+  margin: 18px auto 0;
+}
+
+.visily-pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.visily-pricing-grid article {
+  position: relative;
+  min-height: 500px;
+  padding: 30px;
+  border: 1px solid #dbe2e7;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 16px 36px rgba(16, 29, 43, 0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.visily-pricing-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 24px 48px rgba(16, 29, 43, 0.12);
+}
+
+.visily-price-content {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  min-height: 440px;
+  display: flex;
+  flex-direction: column;
+}
+
+.visily-price-content > :not(a) {
+  transition:
+    opacity 0.36s ease,
+    transform 0.36s ease;
+}
+
+.visily-pricing-card:hover .visily-price-content > :not(a) {
+  opacity: 0.28;
+  transform: scale(0.985);
+}
+
+/* Pricing card hover
+   카드 하단 CTA 버튼은 항상 보이게 두고, hover 설명은 버튼 위 영역까지만 덮습니다. */
+.visily-price-overlay {
+  position: absolute;
+  inset: 0 0 92px;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: inherit;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  padding: 34px;
+  color: #ffffff;
+  background: rgba(8, 13, 20, 0.68);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  pointer-events: none;
+  text-align: center;
+  transition: opacity 0.36s ease;
+}
+
+.visily-pricing-card:hover .visily-price-overlay {
+  opacity: 1;
+}
+
+.visily-price-overlay h3 {
+  margin: 0 0 14px;
+  color: #ffffff !important;
+  font-size: 27px;
+  font-weight: 950;
+  letter-spacing: 0;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.34);
+}
+
+.visily-price-overlay p {
+  max-width: 280px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.96);
+  font-size: 15px;
+  line-height: 1.7;
+  font-weight: 900;
+}
+
+/* Expert estimate overlay
+   전문가 상담 카드 hover 시 보이는 대표 견적표입니다. 가격/문구 수정은 JSX의 배열 데이터를 먼저 확인하세요. */
+.visily-price-overlay.estimate {
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 22px 30px 16px;
+  text-align: left;
+}
+
+.visily-estimate-badge {
+  width: fit-content;
+  margin-bottom: 16px;
+  border-radius: 999px;
+  padding: 6px 12px;
+  color: rgba(255, 255, 255, 0.62);
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 10px;
+  font-weight: 950;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.visily-pricing-grid article.featured {
+  border: 1px solid #dbe2e7;
+  box-shadow: 0 16px 36px rgba(16, 29, 43, 0.05);
+}
+
+.visily-pricing-grid article.visily-price-flip-card {
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+  perspective: 1100px;
+}
+
+.visily-price-face {
+  min-height: 500px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  transition:
+    opacity 0.32s ease,
+    transform 0.42s ease;
+}
+
+.visily-price-back {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: rotateY(10deg) translateY(16px);
+  border-color: rgba(0, 0, 0, 0.12);
+  background: rgba(10, 17, 24, 0.54);
+  backdrop-filter: blur(5px);
+}
+
+.visily-price-flip-card:hover .visily-price-front,
+.visily-price-flip-card:focus-within .visily-price-front {
+  opacity: 0;
+  transform: rotateY(-10deg) translateY(-16px);
+  pointer-events: none;
+}
+
+.visily-price-flip-card:hover .visily-price-back,
+.visily-price-flip-card:focus-within .visily-price-back {
+  opacity: 1;
+  transform: rotateY(0deg) translateY(0);
+}
+
+.visily-estimate-list {
+  display: grid;
+  gap: 0;
+}
+
+.visily-estimate-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 5px 16px;
+  min-height: 0;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0;
+  padding: 10px 0 12px;
+  background: transparent;
+  box-shadow: none;
+}
+
+.visily-estimate-item span {
+  color: #ffffff;
+  font-size: 15px;
+  line-height: 1.25;
+  font-weight: 950;
+}
+
+.visily-estimate-item strong {
+  color: #ffffff;
+  font-size: 15px;
+  line-height: 1.25;
+  font-weight: 950;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.28);
+  white-space: nowrap;
+}
+
+.visily-estimate-item p {
+  grid-column: 1 / -1;
+  min-height: 0;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 10.8px;
+  line-height: 1.34;
+  font-weight: 760;
+}
+
+.visily-estimate-item:nth-child(5) {
+  border-bottom: 0;
+}
+
+.visily-price-overlay.estimate > small {
+  display: block;
+  margin-top: auto;
+  margin-left: auto;
+  margin-bottom: 8px;
+  padding-top: 0;
+  color: rgba(255, 255, 255, 0.72);
+  text-shadow: none;
+  font-size: 10.5px;
+  line-height: 1.4;
+  font-weight: 950;
+  text-align: right;
+}
+
+.visily-price-back .visily-price-label {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.visily-price-back h3 {
+  margin-left: auto;
+  margin-right: auto;
+  color: #ffffff !important;
+  text-align: center;
+  text-shadow: none;
+}
+
+.visily-price-label {
+  width: fit-content;
+  margin-bottom: 22px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  color: #475569;
+  background: #eef1f4;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.visily-pricing-grid h3 {
+  margin: 0 0 14px;
+  color: #1b2530;
+  font-size: 24px;
+  font-weight: 950;
+  letter-spacing: -0.02em;
+}
+
+.visily-price-content h3 {
+  margin: 0 0 14px;
+  color: #1b2530;
+  font-size: 24px;
+  font-weight: 950;
+  letter-spacing: -0.02em;
+}
+
+.visily-pricing-grid article > strong {
+  color: #06233c;
+  font-size: 30px;
+  line-height: 1.15;
+  font-weight: 950;
+}
+
+.visily-price-face > strong {
+  color: #06233c;
+  font-size: 30px;
+  line-height: 1.15;
+  font-weight: 950;
+}
+
+.visily-price-content > strong {
+  color: #06233c;
+  font-size: 30px;
+  line-height: 1.15;
+  font-weight: 950;
+}
+
+.visily-pricing-grid article > p {
+  min-height: 72px;
+  margin: 18px 0 20px;
+  color: #5f6975;
+  font-size: 14px;
+  line-height: 1.6;
+  font-weight: 750;
+}
+
+.visily-price-face > p {
+  min-height: 72px;
+  margin: 18px 0 20px;
+  color: #5f6975;
+  font-size: 14px;
+  line-height: 1.6;
+  font-weight: 750;
+}
+
+.visily-price-content > p {
+  min-height: 72px;
+  margin: 18px 0 20px;
+  color: #5f6975;
+  font-size: 14px;
+  line-height: 1.6;
+  font-weight: 750;
+}
+
+.visily-pricing-grid ul {
+  margin: 0 0 28px;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 12px;
+}
+
+.visily-pricing-grid li {
+  position: relative;
+  padding-left: 22px;
+  color: #3f4b58;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.visily-pricing-grid li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #184d38;
+  font-weight: 950;
+}
+
+.visily-pricing-grid a {
+  min-height: 48px;
+  margin-top: auto;
+  border: 1px solid #06233c;
+  border-radius: 6px;
+  color: #ffffff;
+  background: #06233c;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 950;
+}
+
+.visily-price-content > a {
+  position: relative;
+  z-index: 6;
+  min-height: 48px;
+  margin-top: auto;
+  border: 1px solid #06233c;
+  border-radius: 6px;
+  color: #ffffff;
+  background: #06233c;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 950;
+}
+
+.visily-price-face > a {
+  min-height: 48px;
+  margin-top: auto;
+  border: 1px solid #06233c;
+  border-radius: 6px;
+  color: #ffffff;
+  background: #06233c;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 950;
+}
+
+.visily-pricing-note {
+  max-width: 760px;
+  margin: 28px auto 0;
+  color: #697482;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.6;
+  font-weight: 750;
+}
+
+@media (hover: none) {
+  .visily-pricing-grid article.visily-price-flip-card {
+    gap: 0;
+  }
+
+  .visily-price-back {
+    position: static;
+    opacity: 1;
+    transform: none;
+    border-top: 1px solid #dbe2e7;
+  }
+
+  .visily-price-flip-card:hover .visily-price-front {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+}
+
+.visily-process-section {
+  position: relative;
+  overflow: hidden;
+  width: min(1540px, calc(100% - 96px));
+  margin-top: 44px;
+  border-radius: 18px;
+  border: 1px solid #dbe2e7;
+  padding: 64px 42px 58px;
+  background: #f5f7f8;
+  box-shadow: 0 14px 34px rgba(16, 29, 43, 0.06);
+}
+
+.visily-process-head {
+  position: relative;
+  z-index: 2;
+  max-width: 760px;
+  margin: 0 auto 30px;
+  text-align: center;
+}
+
+.visily-process-head p {
+  margin: 12px auto 0;
+}
+
+.visily-process-banner {
+  position: relative;
+  overflow: hidden;
+  height: 390px;
+  margin-bottom: 46px;
+  border-radius: 12px;
+  background: #06233c;
+  box-shadow: 0 18px 42px rgba(8, 20, 34, 0.18);
+}
+
+.visily-process-banner img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transition: transform 0.8s ease;
+  filter: saturate(0.95) contrast(1.03);
+}
+
+.visily-process-banner:hover img {
+  transform: scale(1.04);
+}
+
+.visily-process-banner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 35%, rgba(6, 35, 60, 0.74));
+}
+
+.visily-art-label {
+  position: absolute;
+  right: 28px;
+  bottom: 28px;
+  z-index: 1;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  color: #dcefe4;
+  background: rgba(6, 35, 60, 0.72);
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.visily-process-flow {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.visily-process-flow::before {
+  content: "";
+  position: absolute;
+  top: 44px;
+  left: 12%;
+  right: 12%;
+  height: 1px;
+  background: repeating-linear-gradient(
+    90deg,
+    #c0c9c1,
+    #c0c9c1 4px,
+    transparent 4px,
+    transparent 9px
+  );
+}
+
+.visily-process-card {
+  position: relative;
+  z-index: 1;
+  min-height: 290px;
+  padding: 30px;
+  border: 1px solid #dbe2e7;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 14px 32px rgba(16, 29, 43, 0.04);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.visily-process-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(24, 77, 56, 0.36);
+  box-shadow: 0 24px 42px rgba(45, 90, 67, 0.14);
+}
+
+.visily-process-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+.visily-step-number {
+  color: #14422d;
+  font-size: 50px;
+  line-height: 0.9;
+  font-weight: 950;
+}
+
+.visily-process-top strong {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  color: #14422d;
+  background: #e9f2ee;
+  font-size: 11px;
+  font-weight: 950;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+.visily-process-card:hover .visily-process-top strong {
+  color: #ffffff;
+  background: #184d38;
+}
+
+.visily-process-card h3 {
+  margin: 0 0 14px;
+  color: #1b2530;
+  font-size: 22px;
+  font-weight: 950;
+}
+
+.visily-process-card p {
+  margin: 0;
+  color: #5f6975;
+  font-size: 15px;
+  line-height: 1.65;
+  font-weight: 750;
+}
+
+/* Process workflow
+   일본 진출 준비 흐름입니다. JS에서 계산한 --process-line-progress 값으로 선 진행도가 바뀝니다. */
+.visily-zigzag-workflow {
+  position: relative;
+  z-index: 2;
+  min-height: 270px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+  align-items: center;
+  width: min(1480px, 100%);
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 34px;
+}
+
+.visily-zigzag-line {
+  position: absolute;
+  left: 9%;
+  right: 9%;
+  top: 50%;
+  height: 80px;
+  opacity: 1;
+  transform: translateY(-50%);
+  transform-origin: left center;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.visily-zigzag-line::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 3px;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(6, 35, 60, 0.62),
+    rgba(6, 35, 60, 0.62) 10px,
+    transparent 10px,
+    transparent 20px
+  );
+  transform: translateY(-50%) scaleX(var(--process-line-progress, 0));
+  transform-origin: left center;
+}
+
+.visily-zigzag-line svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.visily-zigzag-line path {
+  fill: none;
+  stroke: rgba(6, 35, 60, 0.14);
+  stroke-dasharray: 10 10;
+  stroke-linecap: round;
+  stroke-width: 3;
+}
+
+/* Process step circles
+   기본 상태는 항상 보이고, 스크롤 진행도에 따라 is-scroll-active가 붙으면 강조됩니다. */
+.visily-zigzag-stage {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  outline: none;
+  opacity: 1;
+  transform: translateY(0) scale(0.96);
+  transition:
+    opacity 0.36s ease,
+    transform 0.42s cubic-bezier(0.18, 0.9, 0.24, 1.18);
+}
+
+.visily-zigzag-stage.is-scroll-active {
+  opacity: 1;
+  transform: translateY(-5px) scale(1);
+}
+
+.visily-zigzag-stage.down {
+  align-self: center;
+}
+
+.visily-zigzag-stage.up {
+  align-self: center;
+}
+
+.visily-zigzag-node {
+  position: relative;
+  width: clamp(154px, 12vw, 190px);
+  height: clamp(154px, 12vw, 190px);
+  display: grid;
+  place-items: center;
+  align-content: center;
+  border: 1px solid rgba(6, 35, 60, 0.16);
+  border-radius: 50%;
+  padding: 22px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 14px 28px rgba(16, 29, 43, 0.08);
+  text-align: center;
+  overflow: hidden;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    border-color 0.3s ease,
+    background 0.3s ease;
+}
+
+.visily-zigzag-stage:not(.is-scroll-active) .visily-zigzag-node {
+  opacity: 0.62;
+  box-shadow: 0 10px 22px rgba(16, 29, 43, 0.04);
+}
+
+.visily-zigzag-stage.is-scroll-active .visily-zigzag-node {
+  border-color: rgba(6, 35, 60, 0.34);
+  box-shadow: 0 18px 38px rgba(6, 35, 60, 0.13);
+}
+
+.visily-zigzag-node::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border: 1px solid rgba(6, 35, 60, 0.12);
+  border-radius: 50%;
+  opacity: 0;
+  transform: scale(0.88);
+  pointer-events: none;
+}
+
+.visily-zigzag-stage.is-scroll-active .visily-zigzag-node::after {
+  animation: visily-process-pulse 1.2s ease-out both;
+}
+
+.visily-zigzag-stage:hover,
+.visily-zigzag-stage:focus-within {
+  z-index: 8;
+}
+
+.visily-zigzag-stage:hover .visily-zigzag-node,
+.visily-zigzag-stage:focus-within .visily-zigzag-node {
+  transform: translateY(-6px) scale(1.02);
+  border-color: rgba(6, 35, 60, 0.38);
+  background: rgba(6, 35, 60, 0.74);
+  box-shadow: 0 22px 44px rgba(6, 35, 60, 0.16);
+}
+
+.visily-zigzag-default {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  padding: 22px;
+  transition:
+    opacity 0.24s ease,
+    transform 0.24s ease;
+}
+
+.visily-zigzag-default span {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  color: rgba(6, 35, 60, 0.12);
+  font-size: clamp(58px, 5.5vw, 88px);
+  line-height: 1;
+  font-weight: 950;
+  transform: translate(-50%, -50%);
+  transition:
+    color 0.3s ease,
+    opacity 0.3s ease;
+}
+
+@keyframes visily-process-pulse {
+  0% {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+
+  42% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.16);
+  }
+}
+
+.visily-zigzag-default h3 {
+  position: relative;
+  z-index: 1;
+  max-width: 140px;
+  margin: 0;
+  color: #162033;
+  font-size: 15px;
+  line-height: 1.32;
+  font-weight: 950;
+  letter-spacing: 0;
+  transition:
+    color 0.3s ease,
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
+
+.visily-zigzag-hover {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  align-content: center;
+  gap: 9px;
+  padding: 22px;
+  color: #ffffff;
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 0.24s ease,
+    transform 0.24s ease;
+}
+
+.visily-zigzag-hover h4 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 13px;
+  line-height: 1.3;
+  font-weight: 950;
+}
+
+.visily-zigzag-hover ul {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.visily-zigzag-hover li {
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 10px;
+  line-height: 1.3;
+  font-weight: 820;
+}
+
+.visily-zigzag-stage:hover .visily-zigzag-default,
+.visily-zigzag-stage:focus-within .visily-zigzag-default {
+  opacity: 0;
+  transform: scale(0.94);
+}
+
+.visily-zigzag-stage:hover .visily-zigzag-hover,
+.visily-zigzag-stage:focus-within .visily-zigzag-hover {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.visily-practical-flow {
+  margin-top: 34px;
+  border: 1px solid #dbe2e7;
+  border-radius: 14px;
+  padding: 34px;
+  background:
+    linear-gradient(135deg, rgba(16, 185, 129, 0.08), transparent 42%),
+    #ffffff;
+  box-shadow: 0 18px 36px rgba(16, 29, 43, 0.05);
+}
+
+.visily-practical-head {
+  max-width: 760px;
+  margin-bottom: 26px;
+}
+
+.visily-practical-head span {
+  display: inline-flex;
+  margin-bottom: 10px;
+  color: #08754b;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.visily-practical-head h3 {
+  margin: 0;
+  color: #162033;
+  font-size: 30px;
+  line-height: 1.25;
+  font-weight: 950;
+  letter-spacing: 0;
+}
+
+.visily-practical-head p {
+  margin: 12px 0 0;
+  color: #5f6975;
+  font-size: 14px;
+  line-height: 1.7;
+  font-weight: 780;
+}
+
+.visily-practical-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.visily-practical-card {
+  min-height: 300px;
+  border: 1px solid #d7e1dc;
+  border-radius: 12px;
+  padding: 22px;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.visily-practical-number {
+  display: inline-flex;
+  width: 42px;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  border-radius: 50%;
+  color: #ffffff;
+  background: #184d38;
+  font-size: 14px;
+  font-weight: 950;
+}
+
+.visily-practical-card h4 {
+  margin: 0 0 10px;
+  color: #162033;
+  font-size: 20px;
+  line-height: 1.35;
+  font-weight: 950;
+}
+
+.visily-practical-card > p {
+  min-height: 48px;
+  margin: 0 0 18px;
+  color: #66717d;
+  font-size: 13px;
+  line-height: 1.55;
+  font-weight: 780;
+}
+
+.visily-practical-card ul {
+  display: grid;
+  gap: 9px;
+  margin: 0;
+  padding-left: 18px;
+  color: #33404c;
+  font-size: 13px;
+  line-height: 1.52;
+  font-weight: 850;
+}
+
+.visily-practical-card li::marker {
+  color: #10b981;
+}
+
+.visily-process-cta {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.visily-green-btn {
+  min-height: 52px;
+  border: 1px solid #06233c;
+  color: #ffffff;
+  background: #06233c;
+}
+
+.visily-process-insights {
+  margin-top: 58px;
+  padding: 28px;
+  border-radius: 12px;
+  background: #eef3f1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.visily-process-insights article {
+  min-height: 92px;
+  padding: 18px;
+  border: 1px solid rgba(192, 201, 193, 0.65);
+  border-radius: 8px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 10px 22px rgba(16, 29, 43, 0.04);
+}
+
+.visily-process-insights span {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #184d38;
+  background: #dff0e7;
+  font-weight: 950;
+}
+
+.visily-process-insights p {
+  margin: 0 0 4px;
+  color: #697482;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.visily-process-insights strong {
+  color: #14422d;
+  font-size: 18px;
+  font-weight: 950;
+}
+
+.visily-standards {
+  padding-top: 86px;
+}
+
+.visily-experts-section {
+  border-bottom: 1px solid #dbe2e7;
+}
+
+/* Experts
+   데스크톱에서는 이력과 전문 분야를 함께 보여주고, 작은 화면에서는 전문 분야와 사진을 우선합니다. */
+.visily-centered-head {
+  max-width: 620px;
+  margin: 0 auto 56px;
+  text-align: center;
+}
+
+.visily-expert-grid {
+  display: grid;
+  gap: 28px;
+}
+
+.visily-expert-card {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 34px;
+  padding: 34px;
+  border: 1px solid #dbe2e7;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 16px 36px rgba(16, 29, 43, 0.04);
+}
+
+.visily-expert-avatar {
+  min-height: 300px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  color: #d9ece1;
+  background:
+    linear-gradient(180deg, rgba(24, 77, 56, 0.52), rgba(6, 35, 60, 0.9)),
+    #06233c;
+  font-size: 56px;
+  font-weight: 950;
+  letter-spacing: -0.04em;
+}
+
+.visily-expert-content {
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: 28px;
+}
+
+.visily-expert-title {
+  padding-bottom: 22px;
+  border-bottom: 1px solid #dbe2e7;
+}
+
+.visily-expert-title h3 {
+  margin: 0;
+  color: #1b2530;
+  font-size: 30px;
+  font-weight: 950;
+  letter-spacing: -0.04em;
+}
+
+.visily-expert-title p {
+  margin: 9px 0 0;
+  color: #184d38;
+  font-size: 15px;
+  font-weight: 950;
+}
+
+.visily-expert-detail-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 32px;
+}
+
+.visily-expert-detail-grid h4 {
+  margin: 0 0 14px;
+  color: #6b7580;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.visily-expert-detail-grid ul {
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 9px;
+  list-style: none;
+}
+
+.visily-expert-detail-grid li {
+  position: relative;
+  padding-left: 18px;
+  color: #4f5a66;
+  font-size: 14px;
+  line-height: 1.55;
+  font-weight: 750;
+}
+
+.visily-expert-detail-grid li::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #184d38;
+}
+
+.visily-expert-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.visily-expert-tags span {
+  padding: 8px 12px;
+  border: 1px solid #d2ddd8;
+  border-radius: 999px;
+  color: #184d38;
+  background: #f1f6f4;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.visily-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 28px;
+}
+
+/* Standards
+   WVA 운영 방식 카드입니다. active 클래스는 React에서 자동 순환/hover 상태로 제어합니다. */
+.visily-metric-card {
+  position: relative;
+  min-height: 268px;
+  overflow: hidden;
+  border-color: #d8e0e8;
+  outline: none;
+  transition:
+    border-color 0.5s ease,
+    box-shadow 0.5s ease,
+    transform 0.5s ease,
+    background 0.5s ease;
+}
+
+.visily-metric-card.active {
+  border-color: #06233c;
+  background: linear-gradient(180deg, #ffffff 0%, #f3f7fb 100%);
+  box-shadow: 0 18px 34px rgba(6, 35, 60, 0.12);
+  transform: translateY(-4px);
+}
+
+.visily-metric-card:focus-visible {
+  border-color: #06233c;
+  box-shadow: 0 0 0 4px rgba(6, 35, 60, 0.14);
+}
+
+.visily-metric-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.visily-metric-card small {
+  display: block;
+  width: fit-content;
+  border-radius: 999px;
+  padding: 5px 9px;
+  color: #06233c;
+  background: rgba(6, 35, 60, 0.08);
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.visily-metric-number {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(6, 35, 60, 0.18);
+  border-radius: 50%;
+  color: #06233c;
+  background: #f3f7fb;
+  font-size: 12px;
+  font-weight: 950;
+  line-height: 1;
+  transition:
+    color 0.42s ease,
+    background 0.42s ease,
+    border-color 0.42s ease;
+}
+
+.visily-metric-card.active .visily-metric-number {
+  border-color: #06233c;
+  color: #ffffff;
+  background: #06233c;
+}
+
+.visily-metric-card h3 {
+  margin-bottom: 14px;
+  font-size: 24px;
+  line-height: 1.25;
+}
+
+.visily-metric-details {
+  opacity: 0.72;
+  transform: translateY(0);
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s ease;
+}
+
+.visily-metric-card.active .visily-metric-details {
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+.visily-metric-details p {
+  margin: 0;
+  color: #5f6975;
+  font-size: 14px;
+  line-height: 1.58;
+  font-weight: 760;
+}
+
+.visily-metric-details ul {
+  display: grid;
+  gap: 6px;
+  margin: 12px 0 0;
+  padding-left: 18px;
+  color: #3f4b58;
+  font-size: 12px;
+  line-height: 1.45;
+  font-weight: 850;
+}
+
+.visily-contact-panel {
+  width: 100%;
+  margin: 48px auto 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(340px, 0.85fr);
+  gap: 54px;
+  align-items: center;
+  border-radius: 10px;
+  padding: 54px 60px;
+  background: #edf4ff;
+}
+
+.visily-contact-copy h3 {
+  margin: 0 0 34px;
+  color: #162033;
+  font-size: 30px;
+  font-weight: 950;
+}
+
+.visily-contact-detail {
+  display: grid;
+  gap: 8px;
+}
+
+.visily-contact-detail + .visily-contact-detail {
+  margin-top: 34px;
+}
+
+.visily-contact-detail span {
+  display: inline-flex;
+  color: #08754b;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.visily-contact-detail strong {
+  color: #162033;
+  font-size: 24px;
+  font-weight: 950;
+}
+
+.visily-contact-detail p {
+  margin: 0;
+  color: #5f6975;
+  font-size: 14px;
+  line-height: 1.7;
+  font-weight: 760;
+}
+
+.visily-contact-detail a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.visily-contact-detail a:hover {
+  color: #08754b;
+  text-decoration: underline;
+}
+
+.visily-map-placeholder {
+  min-height: 270px;
+  display: grid;
+  place-items: center;
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  color: #08754b;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.18), transparent 48%),
+    #cdddf0;
+  text-align: center;
+}
+
+.visily-map-placeholder > span {
+  font-size: 44px;
+  line-height: 1;
+  transform: rotate(90deg);
+}
+
+.visily-map-placeholder > strong {
+  margin-top: -80px;
+  color: #244053;
+  font-size: 13px;
+  font-weight: 950;
+  letter-spacing: 0.04em;
+}
+
+.visily-map-placeholder > small {
+  position: absolute;
+  left: 28px;
+  bottom: 28px;
+  border-radius: 4px;
+  padding: 12px 14px;
+  color: #172033;
+  background: rgba(255, 255, 255, 0.9);
+  text-align: left;
+  font-size: 11px;
+  line-height: 1.45;
+  font-weight: 900;
+  box-shadow: 0 10px 24px rgba(16, 29, 43, 0.08);
+}
+
+.visily-cta {
+  width: min(1220px, calc(100% - 96px));
+  margin: 54px auto 86px;
+  padding: 74px 30px;
+  border-radius: 4px;
+  color: #ffffff;
+  background:
+    radial-gradient(circle at top left, rgba(25, 91, 63, 0.46), transparent 42%),
+    #06233c;
+  text-align: center;
+  box-shadow: 0 18px 38px rgba(10, 25, 40, 0.18);
+}
+
+.visily-cta h2 {
+  color: #ffffff;
+}
+
+.visily-cta p {
+  max-width: 660px;
+  margin: 22px auto 34px;
+  color: rgba(255, 255, 255, 0.74);
+}
+
+.visily-cta div {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.visily-outline-btn {
+  min-height: 64px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  color: #ffffff;
+  background: transparent;
+}
+
+.visily-footer {
+  min-height: 96px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 24px;
+  padding: 0 72px;
+  border-top: 1px solid #dbe2e7;
+  color: #7d8690;
+  background: #f5f7f8;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.visily-footer nav {
+  display: flex;
+  gap: 34px;
+}
+
+/* Responsive header step 1: 여백과 버튼 크기를 먼저 줄여 중간 화면 깨짐을 방지합니다. */
+@media (max-width: 1380px) {
+  .visily-nav {
+    grid-template-columns: minmax(210px, 0.9fr) auto minmax(330px, 1fr);
+    gap: 16px;
+    padding: 0 40px;
+  }
+
+  .visily-nav-links {
+    gap: 22px;
+  }
+
+  .visily-nav-links a {
+    font-size: 12px;
+  }
+
+  .visily-nav-actions {
+    gap: 9px;
+  }
+
+  .visily-desktop-actions {
+    gap: 9px;
+  }
+
+  .visily-ghost-btn,
+  .visily-dark-btn {
+    min-height: 40px;
+    padding: 0 14px;
+    font-size: 12px;
+  }
+}
+
+/* Responsive header step 2: 중앙 메뉴와 액션 버튼을 햄버거 메뉴로 이동합니다. */
+@media (max-width: 1240px) {
+  .visily-nav {
+    grid-template-columns: 1fr auto;
+    gap: 18px;
+    padding: 0 34px;
+  }
+
+  .visily-nav-links {
+    display: none;
+  }
+
+  .visily-desktop-actions {
+    display: none;
+  }
+
+  .visily-menu-toggle {
+    display: grid;
+  }
+
+  .visily-mobile-menu {
+    display: block;
+  }
+}
+
+@media (max-width: 860px) {
+  .visily-nav {
+    height: 64px;
+    min-height: 64px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 14px;
+    padding: 0 22px;
+  }
+
+  .visily-brand {
+    justify-self: start;
+  }
+
+  .visily-nav-actions {
+    width: auto;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+
+  .visily-language-menu {
+    margin-right: 0;
+  }
+
+  .visily-language-menu .language-menu-trigger {
+    min-height: 38px;
+  }
+
+  .visily-mobile-actions .visily-ghost-btn,
+  .visily-mobile-actions .visily-dark-btn {
+    min-height: 38px;
+    padding: 0 13px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 560px) {
+  .visily-nav {
+    padding: 0 16px;
+  }
+
+  .visily-brand {
+    gap: 9px;
+  }
+
+  .visily-brand-mark {
+    width: 24px;
+    height: 24px;
+    font-size: 21px;
+  }
+
+  .visily-brand strong {
+    font-size: 12px;
+  }
+
+  .visily-brand small {
+    font-size: 8px;
+    letter-spacing: 0.08em;
+  }
+
+  .visily-mobile-menu nav,
+  .visily-mobile-actions {
+    width: min(100% - 32px, 720px);
+  }
+
+  .visily-mobile-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .visily-mobile-actions .visily-ghost-btn,
+  .visily-mobile-actions .visily-dark-btn {
+    width: 100%;
+    min-width: 0;
+    padding: 0 10px;
+    font-size: 11px;
+  }
+}
+
+/* Tablet and small desktop layout
+   카드/전문가/운영 방식 섹션이 한 줄에 무리하게 들어가지 않도록 재배치합니다. */
+@media (max-width: 1080px) {
+  .visily-section,
+  .visily-pricing-section,
+  .visily-process-section,
+  .visily-cta {
+    width: min(100% - 36px, 980px);
+  }
+
+  .visily-card-grid,
+  .visily-pricing-grid,
+  .visily-process-flow,
+  .visily-practical-grid,
+  .visily-process-insights,
+  .visily-metric-grid,
+  .visily-contact-panel,
+  .visily-expert-card,
+  .visily-expert-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .visily-zigzag-workflow {
+    min-height: auto;
+    grid-template-columns: repeat(2, minmax(170px, 1fr));
+    gap: 30px 24px;
+    margin-top: 42px;
+  }
+
+  .visily-zigzag-line {
+    display: none;
+  }
+
+  .visily-zigzag-stage,
+  .visily-zigzag-stage.down,
+  .visily-zigzag-stage.up {
+    transform: translateY(0) scale(0.98);
+  }
+
+  .visily-zigzag-stage.is-scroll-active,
+  .visily-zigzag-stage.is-scroll-active.down,
+  .visily-zigzag-stage.is-scroll-active.up {
+    transform: translateY(0) scale(1);
+  }
+
+  .visily-zigzag-node {
+    width: clamp(164px, 34vw, 220px);
+    height: clamp(164px, 34vw, 220px);
+    min-height: 0;
+    overflow: hidden;
+    border-radius: 50%;
+    padding: 22px;
+  }
+
+  .visily-zigzag-stage:hover .visily-zigzag-node,
+  .visily-zigzag-stage:focus-within .visily-zigzag-node {
+    transform: translateY(-4px) scale(1.02);
+    border-color: rgba(6, 35, 60, 0.38);
+    background: rgba(6, 35, 60, 0.74);
+  }
+
+  .visily-zigzag-stage:hover .visily-zigzag-default h3,
+  .visily-zigzag-stage:focus-within .visily-zigzag-default h3 {
+    color: #162033;
+  }
+
+  .visily-zigzag-stage:hover .visily-zigzag-default span,
+  .visily-zigzag-stage:focus-within .visily-zigzag-default span {
+    color: rgba(18, 48, 74, 0.16);
+  }
+
+  .visily-zigzag-stage:nth-of-type(1) {
+    order: 1;
+  }
+
+  .visily-zigzag-stage:nth-of-type(2) {
+    order: 2;
+  }
+
+  .visily-zigzag-stage:nth-of-type(3) {
+    order: 3;
+  }
+
+  .visily-zigzag-stage:nth-of-type(4) {
+    order: 4;
+  }
+
+  .visily-process-flow::before {
+    display: none;
+  }
+
+  .visily-process-banner {
+    height: 300px;
+  }
+
+  .visily-expert-avatar {
+    min-height: 260px;
+    font-size: 64px;
+  }
+
+  .visily-expert-card {
+    gap: 24px;
+    padding: 28px;
+  }
+
+  .visily-expert-title {
+    text-align: center;
+  }
+
+  .visily-expert-title h3 {
+    font-size: 28px;
+  }
+
+  .visily-expert-detail-grid {
+    display: block;
+  }
+
+  .visily-expert-detail-grid > div:first-child {
+    display: none;
+  }
+
+  .visily-expert-detail-grid > div:last-child h4 {
+    text-align: center;
+  }
+
+  .visily-expert-tags {
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .visily-expert-tags span {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  .visily-footer {
+    grid-template-columns: 1fr;
+    justify-items: start;
+    padding: 28px;
+  }
+}
+
+/* Mobile layout
+   헤더 두께는 유지하고, 콘텐츠 카드와 버튼은 한 열로 정리합니다. */
+@media (max-width: 640px) {
+  .visily-nav {
+    height: 64px;
+    min-height: 64px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 0 16px;
+  }
+
+  .visily-nav-actions {
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+  }
+
+  .visily-hero {
+    min-height: 620px;
+  }
+
+  .visily-hero-content {
+    padding: 54px 0 84px;
+  }
+
+  .visily-ai-search {
+    display: grid;
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .visily-ai-search span {
+    display: none;
+  }
+
+  .visily-ai-search input {
+    min-height: 42px;
+    text-align: center;
+  }
+
+  .visily-ai-search button,
+  .visily-green-btn,
+  .visily-outline-btn {
+    width: 100%;
+  }
+
+  .visily-zigzag-workflow {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 22px;
+  }
+
+  .visily-zigzag-node {
+    width: min(72vw, 230px);
+    height: min(72vw, 230px);
+  }
+
+  .visily-expert-card {
+    padding: 22px;
+  }
+
+  .visily-expert-avatar {
+    min-height: 220px;
+    font-size: 58px;
+  }
+
+  .visily-expert-title h3 {
+    font-size: 24px;
+  }
+
+  .visily-expert-title p {
+    font-size: 13px;
+  }
+
+  .visily-section-head {
+    display: grid;
+  }
+
+  .visily-cta div,
+  .visily-footer nav {
+    display: grid;
+    width: 100%;
+  }
+}

@@ -4,18 +4,27 @@
 .adm-shell {
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 260px minmax(0, 1fr);
-  background: #f5f7fb;
-  color: #172033;
+  grid-template-columns: 280px minmax(0, 1fr);
+  background: #f4f6f8;
+  color: #20242c;
+  font-family:
+    Inter,
+    Pretendard,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
 }
 
 .adm-sidebar {
   position: sticky;
   top: 0;
   height: 100vh;
-  padding: 24px 18px;
-  background: #101827;
+  padding: 30px 24px;
+  background: #06233c;
   color: #ffffff;
+  display: flex;
+  flex-direction: column;
 }
 
 .adm-brand {
@@ -28,13 +37,15 @@
 }
 
 .adm-brand span {
-  width: 42px;
-  height: 42px;
+  width: 38px;
+  height: 38px;
   display: grid;
   place-items: center;
-  border-radius: 12px;
-  background: #27ae60;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  background: transparent;
   color: #ffffff;
+  font-size: 24px;
   font-weight: 900;
 }
 
@@ -47,30 +58,49 @@
 .adm-brand small {
   display: block;
   margin-top: 2px;
-  color: #9ca9bd;
-  font-size: 12px;
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .adm-menu {
+  margin-top: 40px;
   display: grid;
-  gap: 12px;
+  gap: 7px;
 }
 
 .adm-menu-link {
   display: flex;
   align-items: center;
-  min-height: 46px;
+  min-height: 44px;
   padding: 0 14px;
-  border-radius: 12px;
-  color: #e5eaf1;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.78);
   text-decoration: none;
   font-weight: 900;
 }
 
 .adm-menu-link:hover,
 .adm-menu-link.active {
-  background: #1c283a;
+  background: rgba(255, 255, 255, 0.1);
   color: #ffffff;
+}
+
+.adm-sidebar-footer {
+  margin-top: auto;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: grid;
+  gap: 14px;
+  color: rgba(255, 255, 255, 0.38);
+  font-size: 14px;
+  font-weight: 850;
+}
+
+.adm-sidebar-footer strong {
+  margin-top: 12px;
+  color: rgba(255, 255, 255, 0.72);
 }
 
 .adm-main {
@@ -80,14 +110,14 @@
 }
 
 .adm-header {
-  min-height: 84px;
+  min-height: 78px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 18px;
-  padding: 18px 32px;
+  padding: 0 32px;
   background: #ffffff;
-  border-bottom: 1px solid #e6eaf0;
+  border-bottom: 1px solid #dbe2e7;
 }
 
 .adm-header h1,
@@ -113,6 +143,49 @@
   font-weight: 800;
 }
 
+.adm-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #6d7784;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.adm-breadcrumb strong {
+  color: #20242c;
+}
+
+.adm-header-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.adm-header-search {
+  width: min(360px, 32vw);
+  min-height: 42px;
+  padding: 0 14px;
+  border: 1px solid #d5dce4;
+  border-radius: 6px;
+  color: #7b8794;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.adm-header-search input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #20242c;
+  font: inherit;
+  font-weight: 750;
+}
+
 .adm-header-user strong {
   width: 38px;
   height: 38px;
@@ -132,7 +205,214 @@
    ========================================================================== */
 .adm-page {
   display: grid;
+  gap: 24px;
+}
+
+.adm-portal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.adm-portal-head h2 {
+  margin: 0;
+  color: #20242c;
+  font-size: 34px;
+  line-height: 1.12;
+  font-weight: 950;
+  letter-spacing: 0;
+}
+
+.adm-portal-head span,
+.adm-card-head span {
+  display: block;
+  margin-top: 8px;
+  color: #5d6673;
+  font-weight: 750;
+}
+
+.adm-portal-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.adm-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.adm-kpi-card {
+  min-height: 150px;
+  padding: 24px;
+  border: 1px solid #dbe2e7;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 14px 32px rgba(16, 29, 43, 0.04);
+}
+
+.adm-kpi-card::before {
+  content: "↗ +12.5%";
+  float: right;
+  padding: 5px 9px;
+  border-radius: 999px;
+  color: #184d38;
+  background: #ecfdf3;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.adm-kpi-card.warning::before {
+  content: "↘ -4.2%";
+  color: #c2410c;
+  background: #fff1e8;
+}
+
+.adm-kpi-card.danger::before {
+  content: "Blocked";
+  color: #991b1b;
+  background: #fee2e2;
+}
+
+.adm-kpi-card span {
+  display: block;
+  margin-top: 56px;
+  color: #5d6673;
+  font-weight: 850;
+}
+
+.adm-kpi-card strong {
+  display: block;
+  margin-top: 8px;
+  color: #20242c;
+  font-size: 30px;
+  line-height: 1;
+  font-weight: 950;
+}
+
+.adm-kpi-card small {
+  display: block;
+  margin-top: 8px;
+  color: #7b8794;
+  font-weight: 750;
+}
+
+.adm-ops-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 24px;
+}
+
+.adm-activity-card,
+.adm-queue-card {
+  min-height: 360px;
+}
+
+.adm-activity-card .adm-card-head strong {
+  color: #06233c;
+  font-size: 13px;
+}
+
+.adm-activity-chart {
+  height: 230px;
+  padding: 18px 18px 0;
+  border-bottom: 1px dashed #d0d7df;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  align-items: end;
+  gap: 18px;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 45px,
+      #e4e9ee 46px
+    );
+}
+
+.adm-activity-chart span {
+  border-radius: 8px 8px 0 0;
+  background: linear-gradient(180deg, #06233c, #184d38);
+}
+
+.adm-chart-legend {
+  margin-top: 18px;
+  display: flex;
+  justify-content: center;
   gap: 22px;
+  color: #20242c;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.adm-chart-legend span::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  margin-right: 7px;
+  display: inline-block;
+  border-radius: 2px;
+  background: #06233c;
+}
+
+.adm-chart-legend span + span::before {
+  background: #184d38;
+}
+
+.adm-queue-card .adm-card-head b {
+  padding: 5px 10px;
+  border-radius: 999px;
+  color: #c2410c;
+  background: #ffedd5;
+  font-size: 12px;
+}
+
+.adm-queue-list {
+  display: grid;
+  gap: 0;
+}
+
+.adm-queue-list div {
+  position: relative;
+  padding: 18px 70px 18px 0;
+  border-bottom: 1px solid #dbe2e7;
+}
+
+.adm-queue-list strong,
+.adm-queue-list span,
+.adm-queue-list em {
+  display: block;
+}
+
+.adm-queue-list strong {
+  color: #20242c;
+}
+
+.adm-queue-list span {
+  margin-top: 5px;
+  color: #5d6673;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.adm-queue-list em {
+  position: absolute;
+  right: 0;
+  top: 20px;
+  padding: 3px 8px;
+  border: 1px solid #fdba74;
+  border-radius: 999px;
+  color: #c2410c;
+  font-style: normal;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.adm-queue-list p {
+  margin: 24px 0 0;
+  color: #7b8794;
+  font-weight: 850;
 }
 
 .adm-page-head {
@@ -149,10 +429,10 @@
 
 .adm-card {
   padding: 24px;
-  border: 1px solid #e6eaf0;
-  border-radius: 18px;
+  border: 1px solid #dbe2e7;
+  border-radius: 8px;
   background: #ffffff;
-  box-shadow: 0 18px 50px rgba(23, 32, 51, 0.06);
+  box-shadow: 0 16px 36px rgba(16, 29, 43, 0.04);
   overflow: visible;
 }
 
@@ -174,20 +454,22 @@
 
 .adm-btn {
   min-height: 40px;
-  border: 0;
-  border-radius: 10px;
+  border: 1px solid transparent;
+  border-radius: 6px;
   padding: 0 16px;
   font-weight: 900;
   cursor: pointer;
 }
 
 .adm-btn.primary {
-  background: #27ae60;
+  background: #06233c;
+  border-color: #06233c;
   color: #ffffff;
 }
 
 .adm-btn.ghost {
-  background: #f2f5f9;
+  background: #ffffff;
+  border-color: #d5dce4;
   color: #344054;
   display: flex;
   align-items: center;
@@ -206,6 +488,7 @@
 
 .adm-btn.danger {
   background: #fff1f2;
+  border-color: #fecdd3;
   color: #dc2626;
 }
 
@@ -1444,15 +1727,1365 @@
 
 .admin-page-actions .adm-btn {
   min-height: 44px;
-}v
+}
 
-/* ========================================
-   Admin Users Page
-======================================== */
+/* ==========================================================================
+   [추가 개선] 관리자 자료 관리/챗봇 페이지 포털형 레이아웃
+   ========================================================================== */
+.adm-upload-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 24px;
+  align-items: start;
+}
 
-.users-page {
+.adm-upload-layout .adm-card {
+  min-width: 0;
+}
+
+.adm-upload-layout .adm-card-head span {
+  color: #657185;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.adm-upload-box {
+  background:
+    linear-gradient(135deg, rgba(236, 253, 243, 0.72), rgba(255, 255, 255, 0.96)),
+    #f8fafc;
+}
+
+.adm-upload-box p {
+  max-width: 520px;
+  color: #657185;
+  font-weight: 750;
+  line-height: 1.6;
+}
+
+.adm-guide-card {
+  position: sticky;
+  top: 102px;
+  padding: 24px;
+  border: 1px solid #dbe2e7;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 16px 36px rgba(16, 29, 43, 0.04);
+}
+
+.adm-guide-card h3,
+.adm-ai-side h3 {
+  margin: 0 0 16px;
+  color: #20242c;
+  font-size: 22px;
+  font-weight: 950;
+}
+
+.adm-guide-list {
+  display: grid;
+  gap: 12px;
+}
+
+.adm-guide-list div {
+  padding: 14px;
+  border: 1px solid #e6eaf0;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.adm-guide-list strong,
+.adm-guide-list span {
+  display: block;
+}
+
+.adm-guide-list strong {
+  color: #20242c;
+  font-weight: 950;
+}
+
+.adm-guide-list span {
+  margin-top: 6px;
+  color: #657185;
+  font-size: 13px;
+  font-weight: 750;
+  line-height: 1.5;
+}
+
+.adm-library-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.adm-mini-stat {
+  padding: 18px;
+  border: 1px solid #dbe2e7;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 14px 30px rgba(16, 29, 43, 0.04);
+}
+
+.adm-mini-stat span,
+.adm-mini-stat small {
+  display: block;
+  color: #657185;
+  font-weight: 850;
+}
+
+.adm-mini-stat strong {
+  display: block;
+  margin: 8px 0 6px;
+  color: #06233c;
+  font-size: 32px;
+  line-height: 1;
+  font-weight: 950;
+}
+
+.adm-mini-stat small {
+  font-size: 12px;
+}
+
+.adm-ai-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 24px;
+  align-items: start;
+}
+
+.adm-ai-console {
+  min-height: 690px;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+
+.adm-ai-window {
+  min-height: 460px;
+  max-height: 540px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border: 1px solid #dbe2e7;
+  border-radius: 8px;
+  padding: 18px;
+  background:
+    linear-gradient(180deg, rgba(248, 250, 252, 0.96), rgba(255, 255, 255, 0.96)),
+    #f8fafc;
+}
+
+.adm-ai-row {
+  display: flex;
+}
+
+.adm-ai-row.user {
+  justify-content: flex-end;
+}
+
+.adm-ai-row.bot {
+  justify-content: flex-start;
+}
+
+.adm-ai-bubble {
+  width: fit-content;
+  max-width: min(720px, 82%);
+  padding: 14px 16px;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #20242c;
+  border: 1px solid #e6eaf0;
+  box-shadow: 0 10px 24px rgba(16, 29, 43, 0.04);
+  line-height: 1.65;
+  font-weight: 750;
+}
+
+.adm-ai-row.user .adm-ai-bubble {
+  background: #06233c;
+  border-color: #06233c;
+  color: #ffffff;
+}
+
+.adm-ai-bubble.loading {
+  color: #657185;
+  font-weight: 900;
+}
+
+.adm-ai-sources {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(101, 113, 133, 0.18);
+  display: grid;
+  gap: 8px;
+}
+
+.adm-ai-sources > strong {
+  color: inherit;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.adm-ai-source {
+  padding: 10px;
+  border-radius: 8px;
+  background: #f2f5f9;
+  color: #20242c;
+}
+
+.adm-ai-source span,
+.adm-ai-source small {
+  display: block;
+}
+
+.adm-ai-source span {
+  font-weight: 900;
+}
+
+.adm-ai-source small {
+  margin-top: 4px;
+  color: #657185;
+  font-weight: 750;
+}
+
+.adm-ai-bottom {
+  margin-top: 16px;
+}
+
+.adm-ai-form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+}
+
+.adm-ai-form input {
+  min-height: 48px;
+  border: 1px solid #d5dce4;
+  border-radius: 6px;
+  padding: 0 14px;
+  background: #ffffff;
+  color: #20242c;
+  font: inherit;
+  font-weight: 800;
+}
+
+.adm-ai-form input:focus {
+  outline: none;
+  border-color: #27ae60;
+  box-shadow: 0 0 0 4px rgba(39, 174, 96, 0.12);
+}
+
+.adm-ai-form button {
+  min-width: 96px;
+  min-height: 48px;
+  border: 0;
+  border-radius: 6px;
+  background: #06233c;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.adm-ai-form button:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+}
+
+.adm-ai-side {
+  display: grid;
+  gap: 18px;
+}
+
+.adm-token-list {
+  display: grid;
+  gap: 10px;
+}
+
+.adm-token-list div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid #e6eaf0;
+}
+
+.adm-token-list span {
+  color: #657185;
+  font-weight: 850;
+}
+
+.adm-token-list strong {
+  color: #06233c;
+  font-weight: 950;
+}
+
+.admin-custom-time {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.admin-custom-time input {
+  min-height: 42px;
+  border: 1px solid #d5dce4;
+  border-radius: 6px;
+  padding: 0 12px;
+  color: #20242c;
+  background: #ffffff;
+  font: inherit;
+  font-weight: 850;
+}
+
+.admin-custom-time input:focus {
+  outline: none;
+  border-color: #06233c;
+  box-shadow: 0 0 0 3px rgba(6, 35, 60, 0.08);
+}
+
+.admin-chat-log-filter {
+  margin: 18px 0;
+}
+
+.admin-chat-log-filter input {
+  width: min(520px, 100%);
+  min-height: 46px;
+  border: 1px solid #d5dce4;
+  border-radius: 6px;
+  padding: 0 14px;
+  color: #20242c;
+  background: #ffffff;
+  font: inherit;
+  font-weight: 850;
+}
+
+.admin-chat-log-filter input:focus {
+  outline: none;
+  border-color: #06233c;
+  box-shadow: 0 0 0 3px rgba(6, 35, 60, 0.08);
+}
+
+.admin-chat-log-list {
+  display: grid;
+  gap: 14px;
+}
+
+.admin-chat-log-card {
+  display: grid;
+  gap: 12px;
+  border: 1px solid #e6eaf0;
+  border-radius: 10px;
+  padding: 18px;
+  background: #ffffff;
+}
+
+.admin-chat-log-meta {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  color: #657185;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.admin-chat-log-meta strong {
+  display: block;
+  color: #172033;
+  font-size: 15px;
+  font-weight: 950;
+}
+
+.admin-chat-log-body {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-chat-log-body div {
+  border-radius: 8px;
+  padding: 12px;
+  background: #f8fafc;
+}
+
+.admin-chat-log-body span {
+  display: block;
+  margin-bottom: 5px;
+  color: #657185;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.admin-chat-log-body p {
+  margin: 0;
+  color: #20242c;
+  line-height: 1.6;
+  font-weight: 750;
+}
+
+.admin-chat-log-sources {
+  color: #1f7a4a;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.users-page,
+.mypage-main-page,
+.mypage-reservations-page,
+.mypage-files-page {
   display: grid;
   gap: 22px;
+}
+
+.mypage-menu-grid {
+  width: min(760px, 100%);
+  margin: 34px auto 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.mypage-menu-card,
+.mypage-upload-card,
+.mypage-file-card,
+.reserve-history-card {
+  border-radius: 10px;
+}
+
+.mypage-menu-card {
+  min-height: 240px;
+  padding: 30px;
+  display: grid;
+  gap: 20px;
+}
+
+.mypage-menu-content {
+  display: grid;
+  gap: 10px;
+}
+
+.mypage-menu-content h2,
+.mypage-upload-description h3 {
+  margin: 0;
+  color: #172033;
+}
+
+.mypage-menu-content p,
+.mypage-upload-description p {
+  margin: 0;
+  color: #657185;
+  line-height: 1.7;
+  font-weight: 750;
+}
+
+.mypage-home-actions,
+.mypage-sub-nav {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.mypage-sub-nav {
+  margin: 4px 0 8px;
+}
+
+.reserve-history-card,
+.mypage-upload-card,
+.mypage-file-card {
+  width: min(920px, 100%);
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.reserve-list,
+.mypage-file-list {
+  display: grid;
+  gap: 12px;
+}
+
+.reserve-item,
+.mypage-file-item,
+.admin-user-file-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border: 1px solid #e6eaf0;
+  border-radius: 10px;
+  padding: 16px;
+  background: #ffffff;
+}
+
+.reserve-item > div,
+.mypage-file-info {
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.reserve-item strong,
+.mypage-file-info strong {
+  color: #172033;
+  overflow-wrap: anywhere;
+}
+
+.mypage-file-info span,
+.mypage-file-info small {
+  color: #657185;
+  font-size: 13px;
+  font-weight: 750;
+  overflow-wrap: anywhere;
+}
+
+.mypage-file-type {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  color: #06233c;
+  background: #edf4f7;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.mypage-file-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.mypage-upload-box {
+  display: grid;
+  place-items: center;
+  gap: 18px;
+  min-height: 260px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 10px;
+  padding: 28px;
+  text-align: center;
+  background: #f8fafc;
+}
+
+.mypage-upload-icon {
+  width: 60px;
+  height: 60px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  color: #ffffff;
+  background: #06233c;
+  font-weight: 950;
+}
+
+.mypage-upload-form {
+  width: min(560px, 100%);
+  display: grid;
+  gap: 14px;
+  text-align: left;
+}
+
+.mypage-upload-field {
+  display: grid;
+  gap: 8px;
+  color: #172033;
+  font-weight: 850;
+}
+
+.mypage-upload-field input,
+.mypage-upload-field textarea,
+.users-search-box input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #d5dce4;
+  border-radius: 6px;
+  padding: 12px 14px;
+  color: #20242c;
+  background: #ffffff;
+  font: inherit;
+}
+
+.mypage-upload-field textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.mypage-upload-field input:focus,
+.mypage-upload-field textarea:focus,
+.users-search-box input:focus {
+  outline: none;
+  border-color: #06233c;
+  box-shadow: 0 0 0 3px rgba(6, 35, 60, 0.08);
+}
+
+.mypage-upload-message {
+  margin: 0;
+  color: #06233c;
+  font-weight: 900;
+}
+
+/* ==========================================================================
+   [사용자] 마이페이지 Visily 톤 정리
+   - 기능 코드는 유지하고, 메인 페이지와 같은 어두운 네이비/화이트 카드 톤으로만 재정렬합니다.
+   - .mypage 범위 안에서만 적용해서 관리자/예약 페이지 스타일과 섞이지 않도록 합니다.
+   ========================================================================== */
+.mypage.reserve-page {
+  min-height: 100vh;
+  padding: 20px 24px 64px;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(6, 35, 60, 0.08), transparent 30%),
+    linear-gradient(180deg, #f5f7f8 0%, #eef3f7 100%);
+  color: #17202b;
+  font-family:
+    Inter,
+    Pretendard,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+
+.mypage-main-page {
+  padding-top: 0;
+}
+
+.mypage-overview-hero {
+  margin: 0 -24px;
+  padding: 20px 24px;
+  border-bottom: 1px solid #dce3e8;
+  background: #f4f7fa;
+}
+
+.mypage-overview-copy {
+  width: min(1080px, 100%);
+  margin: 0 auto;
+  border-left: 3px solid #06233c;
+  padding-left: 18px;
+}
+
+.mypage-overview-copy .adm-eyebrow {
+  margin-bottom: 8px;
+  color: #06233c;
+  letter-spacing: 0.18em;
+}
+
+.mypage-overview-copy h1 {
+  margin: 0 0 8px;
+  color: #061f35;
+  font-size: clamp(26px, 2.6vw, 34px);
+  line-height: 1.18;
+  font-weight: 950;
+  letter-spacing: -0.02em;
+}
+
+.mypage-overview-copy p:last-child {
+  max-width: 720px;
+  margin: 0;
+  color: #596371;
+  font-size: 13px;
+  line-height: 1.5;
+  font-weight: 650;
+}
+
+.mypage-primary-grid {
+  width: min(1080px, 100%);
+  margin: 18px auto 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+  align-items: stretch;
+}
+
+.mypage-status-grid {
+  width: min(1080px, 100%);
+  margin: -20px auto 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.mypage-status-grid article {
+  border: 1px solid #dce3e8;
+  padding: 22px 24px;
+  background: #ffffff;
+}
+
+.mypage-status-grid span,
+.mypage-section-head .adm-eyebrow {
+  display: block;
+  margin: 0 0 8px;
+  color: #74777d;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.mypage-status-grid strong {
+  color: #061f35;
+  font-size: 22px;
+  line-height: 1.2;
+  font-weight: 950;
+}
+
+.mypage-progress-panel {
+  width: 100%;
+  margin: 0;
+  border: 1px solid #dce3e8;
+  padding: 28px 26px;
+  background: #ffffff;
+  box-shadow: 0 18px 46px rgba(6, 35, 60, 0.07);
+}
+
+.mypage-floating-progress {
+  width: min(1080px, 100%);
+  margin: 18px auto 0;
+  padding: 18px;
+  box-shadow: 0 18px 42px rgba(6, 35, 60, 0.09);
+}
+
+.mypage-floating-progress .mypage-progress-track,
+.mypage-floating-progress .mypage-progress-labels {
+  display: none;
+}
+
+.mypage-section-head {
+  display: grid;
+  gap: 8px;
+}
+
+.mypage-section-head h2 {
+  margin: 0;
+  color: #061f35;
+  font-size: 22px;
+  line-height: 1.3;
+  font-weight: 950;
+}
+
+.mypage-progress-current {
+  margin: 10px 0 24px;
+  color: #061f35;
+  font-size: 13px;
+  font-weight: 850;
+  text-align: left;
+}
+
+.mypage-progress-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 8px 0 14px;
+}
+
+.mypage-progress-summary strong {
+  color: #06233c;
+  font-size: 22px;
+  line-height: 1;
+  font-weight: 950;
+}
+
+.mypage-progress-summary span {
+  color: #596371;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.mypage-progress-track {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: center;
+  gap: 22px;
+  height: auto;
+  padding: 6px 0;
+}
+
+.mypage-progress-track::before,
+.mypage-progress-track::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  right: auto;
+  top: 10px;
+  bottom: 10px;
+  width: 2px;
+  height: auto;
+  transform: none;
+}
+
+.mypage-progress-track::before {
+  background: #e3e2e4;
+}
+
+.mypage-progress-track::after {
+  height: 50%;
+  bottom: auto;
+  background: #06233c;
+}
+
+.mypage-progress-track span {
+  position: relative;
+  z-index: 1;
+  width: 10px;
+  height: 10px;
+  justify-self: start;
+  border-radius: 999px;
+  background: #e3e2e4;
+}
+
+.mypage-progress-track span.done {
+  background: #06233c;
+}
+
+.mypage-progress-track span.active {
+  background: #061f35;
+  box-shadow: 0 0 0 5px rgba(6, 31, 53, 0.12);
+}
+
+.mypage-progress-labels {
+  display: grid;
+  gap: 15px;
+  margin-top: -146px;
+  padding-left: 28px;
+}
+
+.mypage-progress-labels span {
+  color: #74777d;
+  font-size: 12px;
+  font-weight: 850;
+  text-align: left;
+}
+
+.mypage-progress-checklist {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.mypage-progress-checklist label {
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #dce3e8;
+  padding: 10px;
+  background: #f8fafc;
+  color: #9aa3ad;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.mypage-progress-checklist input {
+  width: 14px;
+  height: 14px;
+  accent-color: #06233c;
+}
+
+.mypage-progress-checklist label.complete {
+  color: #061f35;
+  background: #ffffff;
+}
+
+.mypage .reserve-hero {
+  width: min(1080px, 100%);
+  margin: 0 auto 18px;
+  padding: 58px 44px;
+  border: 1px solid #dce3e8;
+  border-radius: 0;
+  background:
+    linear-gradient(135deg, rgba(6, 35, 60, 0.95), rgba(17, 46, 70, 0.86)),
+    linear-gradient(180deg, #ffffff, #f5f7f8);
+  box-shadow: 0 24px 70px rgba(6, 35, 60, 0.13);
+  text-align: left;
+}
+
+.mypage .reserve-hero .adm-eyebrow {
+  margin-bottom: 12px;
+  color: #d9e7f3;
+  letter-spacing: 0.18em;
+}
+
+.mypage .reserve-hero h2 {
+  color: #ffffff;
+  font-size: clamp(34px, 5vw, 64px);
+  line-height: 1.05;
+  letter-spacing: 0;
+}
+
+.mypage .reserve-hero span {
+  max-width: 640px;
+  margin-top: 18px;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 17px;
+  font-weight: 750;
+}
+
+.mypage-menu-grid {
+  width: 100%;
+  margin: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.mypage .adm-card,
+.mypage-menu-card,
+.mypage-upload-card,
+.mypage-file-card,
+.mypage .reserve-history-card {
+  border: 1px solid #dce3e8;
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 18px 46px rgba(6, 35, 60, 0.08);
+}
+
+.mypage-menu-card {
+  min-height: 148px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid #dce3e8;
+  padding: 18px;
+  background: #ffffff;
+}
+
+.mypage-menu-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #06233c;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.mypage-menu-card-reservation::before {
+  background: #06233c;
+}
+
+.mypage-menu-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 60px rgba(6, 35, 60, 0.12);
+}
+
+.mypage-menu-card:hover::before {
+  opacity: 1;
+}
+
+.mypage-menu-content {
+  position: relative;
+  z-index: 1;
+  gap: 16px;
+}
+
+.mypage-card-kicker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.mypage-card-kicker .adm-eyebrow {
+  margin: 0;
+}
+
+.mypage-card-icon {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  background: #eef4f8;
+  color: #06233c;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.mypage-menu-content .adm-eyebrow,
+.mypage .adm-card-head .adm-eyebrow {
+  color: #06233c;
+  letter-spacing: 0.16em;
+}
+
+.mypage-menu-content h2,
+.mypage-upload-description h3,
+.mypage .adm-card-head h2 {
+  color: #061f35;
+  font-size: 19px;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+.mypage-menu-content p,
+.mypage-upload-description p {
+  color: #596371;
+  font-size: 12px;
+  line-height: 1.45;
+  font-weight: 750;
+}
+
+.mypage-card-bottom {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 10px;
+}
+
+.mypage-card-bottom > span {
+  color: #c9d0d6;
+  font-size: 26px;
+  line-height: 0.82;
+  font-weight: 950;
+  letter-spacing: -0.04em;
+}
+
+.mypage .adm-btn {
+  min-height: 34px;
+  padding: 8px 14px;
+  font-size: 12px;
+  border-radius: 0;
+  border-color: #cfd8e2;
+  font-weight: 900;
+}
+
+.mypage .adm-btn.primary {
+  border-color: #06233c;
+  background: #06233c;
+  color: #ffffff;
+}
+
+.mypage .adm-btn.primary:hover {
+  background: #0b314f;
+}
+
+.mypage .adm-btn.ghost {
+  background: #ffffff;
+  color: #06233c;
+}
+
+.mypage .adm-btn.ghost:hover {
+  border-color: #06233c;
+  background: #06233c;
+  color: #ffffff;
+}
+
+.mypage-home-actions,
+.mypage-sub-nav {
+  width: min(1080px, 100%);
+  margin: 0 auto;
+}
+
+.mypage-sub-nav {
+  justify-content: flex-start;
+  padding: 12px;
+  border: 1px solid #dce3e8;
+  background: rgba(255, 255, 255, 0.76);
+  backdrop-filter: blur(12px);
+}
+
+.mypage-home-actions {
+  justify-content: flex-start;
+}
+
+.mypage-secondary-area {
+  width: min(1080px, 100%);
+  margin: 72px auto 0;
+  border-top: 1px solid #dce3e8;
+  padding-top: 42px;
+  text-align: center;
+}
+
+.mypage-secondary-area p {
+  margin: 0 0 22px;
+  color: #596371;
+  font-size: 16px;
+  line-height: 1.7;
+  font-weight: 700;
+}
+
+.mypage-home-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid transparent;
+  padding-bottom: 4px;
+  color: #06233c;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.mypage-home-link:hover {
+  border-bottom-color: #06233c;
+}
+
+.mypage-home-link span {
+  transition: transform 0.2s ease;
+}
+
+.mypage-home-link:hover span {
+  transform: translateX(4px);
+}
+
+.mypage-dashboard-grid {
+  width: min(1080px, 100%);
+  margin: 18px auto 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+.mypage-activity-panel,
+.mypage-help-panel {
+  min-width: 0;
+}
+
+.mypage-activity-list {
+  display: grid;
+  gap: 0;
+  margin-top: 22px;
+}
+
+.mypage-activity-list article {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 1px solid #dce3e8;
+  padding: 18px 0;
+}
+
+.mypage-activity-list article:last-child {
+  border-bottom: 0;
+}
+
+.mypage-activity-icon {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #dce3e8;
+  color: #06233c;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.mypage-activity-list strong {
+  color: #061f35;
+  font-size: 16px;
+  line-height: 1.3;
+}
+
+.mypage-activity-list p {
+  margin: 4px 0 0;
+  color: #596371;
+  font-size: 13px;
+  line-height: 1.55;
+  font-weight: 700;
+}
+
+.mypage-activity-list a {
+  color: #061f35;
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 950;
+}
+
+.mypage-activity-list a:hover {
+  text-decoration: underline;
+}
+
+.mypage-help-panel {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+}
+
+.mypage-help-panel .mypage-section-head {
+  margin-bottom: 8px;
+}
+
+.mypage-help-panel > a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  border-bottom: 1px solid #dce3e8;
+  padding: 12px 0;
+  color: #596371;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.mypage-help-panel > a:hover {
+  color: #061f35;
+}
+
+.mypage-help-panel > a strong {
+  color: inherit;
+  font-size: 20px;
+}
+
+.mypage-guide-item {
+  border: 1px solid #dce3e8;
+  background: #ffffff;
+}
+
+.mypage-guide-item button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  border: 0;
+  padding: 18px;
+  color: #061f35;
+  background: transparent;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+.mypage-guide-item button span {
+  display: grid;
+  gap: 5px;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.mypage-guide-item button small {
+  color: #74777d;
+  font-size: 10px;
+  font-weight: 950;
+  letter-spacing: 0.14em;
+}
+
+.mypage-guide-item button strong {
+  color: #9aa3ad;
+  font-size: 18px;
+  transition: transform 0.2s ease;
+}
+
+.mypage-guide-item.active button strong {
+  transform: rotate(180deg);
+}
+
+.mypage-guide-body {
+  display: none;
+  border-top: 1px solid #edf1f4;
+  padding: 0 18px 18px;
+}
+
+.mypage-guide-item.active .mypage-guide-body {
+  display: block;
+}
+
+.mypage-guide-body p {
+  margin: 14px 0;
+  color: #596371;
+  font-size: 13px;
+  line-height: 1.65;
+  font-weight: 700;
+}
+
+.mypage-guide-body a {
+  color: #06233c;
+  font-size: 12px;
+  font-weight: 950;
+  text-decoration: none;
+}
+
+.mypage-guide-body a:hover {
+  text-decoration: underline;
+}
+
+.mypage .reserve-history-card,
+.mypage-upload-card,
+.mypage-file-card {
+  width: min(1080px, 100%);
+  padding: 30px;
+}
+
+.mypage .adm-card-head {
+  align-items: flex-start;
+  gap: 18px;
+  border-bottom: 1px solid #edf1f4;
+  padding-bottom: 20px;
+  margin-bottom: 22px;
+}
+
+.mypage .reserve-list,
+.mypage-file-list {
+  gap: 14px;
+}
+
+.mypage .reserve-item,
+.mypage-file-item {
+  border-color: #dce3e8;
+  border-radius: 0;
+  padding: 18px;
+  background: #ffffff;
+  box-shadow: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.mypage .reserve-item:hover,
+.mypage-file-item:hover {
+  border-color: #aab8c6;
+  box-shadow: 0 14px 34px rgba(6, 35, 60, 0.08);
+  transform: translateY(-2px);
+}
+
+.mypage .reserve-item strong,
+.mypage-file-info strong {
+  color: #061f35;
+  font-size: 16px;
+}
+
+.mypage-file-type,
+.mypage-upload-icon {
+  border-radius: 0;
+  background: #06233c;
+  color: #ffffff;
+}
+
+.mypage-upload-box {
+  min-height: 280px;
+  border: 1px solid #dce3e8;
+  border-radius: 0;
+  background:
+    linear-gradient(135deg, rgba(6, 35, 60, 0.05), rgba(6, 35, 60, 0.02)),
+    #ffffff;
+}
+
+.mypage-upload-field input,
+.mypage-upload-field textarea {
+  border-radius: 0;
+  border-color: #cfd8e2;
+}
+
+.mypage-upload-field input:focus,
+.mypage-upload-field textarea:focus {
+  border-color: #06233c;
+  box-shadow: 0 0 0 4px rgba(6, 35, 60, 0.08);
+}
+
+.mypage .reserve-empty-box {
+  border-radius: 0;
+  border-color: #d5dce4;
+  background: #f8fafc;
+  color: #596371;
 }
 
 .users-summary-card {
@@ -1462,21 +3095,19 @@
 }
 
 .users-summary-item {
-  padding: 18px 20px;
-
-  display: flex;
-  flex-direction: column;
+  display: grid;
   gap: 8px;
-
-  border: 1px solid #e3e9f0;
-  border-radius: 16px;
+  border: 1px solid #e6eaf0;
+  border-radius: 10px;
+  padding: 18px;
   background: #f8fafc;
 }
 
-.users-summary-item span {
+.users-summary-item span,
+.users-table th {
   color: #657185;
-  font-size: 13px;
-  font-weight: 800;
+  font-size: 12px;
+  font-weight: 900;
 }
 
 .users-summary-item strong {
@@ -1484,46 +3115,15 @@
   font-size: 28px;
 }
 
-.users-list-card {
-  min-width: 0;
-}
-
 .users-list-card .adm-card-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 18px;
-  margin-bottom: 20px;
+  gap: 16px;
 }
 
 .users-search-box {
-  width: 100%;
-  max-width: 340px;
-}
-
-.users-search-box input {
-  width: 100%;
-  box-sizing: border-box;
-
-  padding: 12px 15px;
-
-  border: 1px solid #dfe6ee;
-  border-radius: 14px;
-
-  background: #ffffff;
-  color: #172033;
-
-  font: inherit;
-  outline: none;
-
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.users-search-box input:focus {
-  border-color: #21ad65;
-  box-shadow: 0 0 0 4px rgba(33, 173, 101, 0.12);
+  width: min(340px, 100%);
 }
 
 .users-table-wrap {
@@ -1534,24 +3134,14 @@
 .users-table {
   width: 100%;
   min-width: 900px;
-
   border-collapse: collapse;
 }
 
 .users-table th,
 .users-table td {
-  padding: 15px 14px;
-  text-align: left;
-  vertical-align: middle;
   border-bottom: 1px solid #e8edf3;
-}
-
-.users-table th {
-  color: #657185;
-  font-size: 12px;
-  font-weight: 900;
-  white-space: nowrap;
-  background: #f8fafc;
+  padding: 14px;
+  text-align: left;
 }
 
 .users-table td {
@@ -1559,23 +3149,20 @@
   font-size: 14px;
 }
 
-.users-table tbody tr:hover {
+.users-clickable-row {
+  cursor: pointer;
+}
+
+.users-clickable-row:hover {
   background: #f8fbf9;
 }
 
 .users-provider-badge {
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  min-width: 76px;
-  padding: 6px 10px;
-
   border-radius: 999px;
-
-  background: #ecfdf3;
-  color: #168a4b;
-
+  padding: 5px 9px;
+  color: #1f7a4a;
+  background: #eaf8f0;
   font-size: 12px;
   font-weight: 900;
 }
@@ -1583,189 +3170,326 @@
 .users-uuid {
   display: inline-block;
   max-width: 220px;
-
   overflow: hidden;
+  color: #657185;
   text-overflow: ellipsis;
   white-space: nowrap;
-
-  color: #657185;
-  font-size: 12px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1100px) {
+  .adm-upload-layout,
+  .adm-ai-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .adm-guide-card {
+    position: static;
+  }
+
+  .adm-library-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mypage-primary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mypage-progress-track {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0;
+    height: 24px;
+    padding: 0;
+  }
+
+  .mypage-progress-track::before,
+  .mypage-progress-track::after {
+    left: 4px;
+    right: 4px;
+    top: 50%;
+    bottom: auto;
+    width: auto;
+    height: 2px;
+    transform: translateY(-50%);
+  }
+
+  .mypage-progress-track::after {
+    width: 50%;
+    right: auto;
+  }
+
+  .mypage-progress-track span {
+    justify-self: center;
+  }
+
+  .mypage-progress-labels {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 14px;
+    padding-left: 0;
+  }
+
+  .mypage-progress-labels span {
+    text-align: center;
+  }
+
+  .mypage-progress-checklist {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .adm-library-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .adm-ai-form {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-custom-time {
+    grid-template-columns: 1fr;
+  }
+
+  .mypage-menu-grid,
+  .mypage-status-grid,
   .users-summary-card {
     grid-template-columns: 1fr;
   }
 
+  .reserve-item,
+  .mypage-file-item,
+  .admin-user-file-item,
   .users-list-card .adm-card-head {
     align-items: stretch;
     flex-direction: column;
   }
 
-  .users-search-box {
-    max-width: none;
-  }
-}
-
-.users-clickable-row {
-  cursor: pointer;
-  transition:
-    background-color 0.2s ease,
-    transform 0.2s ease;
-}
-
-.users-clickable-row:hover {
-  background: #f1faf5 !important;
-}
-
-.users-clickable-row:focus-visible {
-  outline: 2px solid #21ad65;
-  outline-offset: -2px;
-}
-
-/* ========================================
-   Admin User Detail Page
-======================================== */
-
-.admin-user-detail-page {
-  display: grid;
-  gap: 22px;
-}
-
-.admin-user-profile-card,
-.admin-user-files-card {
-  min-width: 0;
-}
-
-.admin-user-profile-grid {
-  display: grid;
-  grid-template-columns:
-    repeat(4, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.admin-user-profile-grid > div {
-  min-width: 0;
-  padding: 16px 18px;
-
-  display: grid;
-  gap: 7px;
-
-  border: 1px solid #e3e9f0;
-  border-radius: 15px;
-  background: #f8fafc;
-}
-
-.admin-user-profile-grid span {
-  color: #657185;
-  font-size: 12px;
-  font-weight: 900;
-}
-
-.admin-user-profile-grid strong,
-.admin-user-profile-grid code {
-  color: #172033;
-  font-size: 14px;
-  overflow-wrap: anywhere;
-}
-
-.admin-user-profile-uuid {
-  grid-column: 1 / -1;
-}
-
-.admin-user-file-list {
-  display: grid;
-  gap: 12px;
-}
-
-.admin-user-file-item {
-  width: 100%;
-  padding: 16px 18px;
-  box-sizing: border-box;
-
-  display: flex;
-  align-items: center;
-  gap: 16px;
-
-  border: 1px solid #e1e7ee;
-  border-radius: 16px;
-  background: #ffffff;
-}
-
-.admin-user-file-item .mypage-file-info {
-  min-width: 0;
-  display: grid;
-  gap: 5px;
-}
-
-.admin-user-file-item
-  .mypage-file-info
-  strong {
-  color: #172033;
-  overflow-wrap: anywhere;
-}
-
-.admin-user-file-item
-  .mypage-file-info
-  span {
-  color: #657185;
-  font-size: 13px;
-  font-weight: 700;
-  overflow-wrap: anywhere;
-}
-
-.admin-user-file-item
-  .mypage-file-info
-  small {
-  color: #168a4b;
-  font-weight: 800;
-}
-
-.admin-user-file-actions {
-  margin-left: auto;
-  flex-shrink: 0;
-
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.admin-user-file-actions .adm-btn {
-  width: auto;
-  min-width: 84px;
-  margin: 0;
-}
-
-@media (max-width: 1000px) {
-  .admin-user-profile-grid {
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 768px) {
-  .admin-user-profile-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .admin-user-profile-uuid {
-    grid-column: auto;
-  }
-
-  .admin-user-file-item {
-    align-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  .admin-user-file-actions {
+  .mypage-file-actions {
     width: 100%;
     margin-left: 0;
   }
+}
 
-  .admin-user-file-actions .adm-btn {
+@media (max-width: 720px) {
+  .mypage.reserve-page {
+    padding: 34px 16px 72px;
+  }
+
+  .mypage .reserve-hero {
+    padding: 38px 24px;
+  }
+
+  .mypage .reserve-hero h2 {
+    font-size: 36px;
+  }
+
+  .mypage .reserve-hero span {
+    font-size: 15px;
+  }
+
+  .mypage-sub-nav {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .mypage-menu-card,
+  .mypage .reserve-history-card,
+  .mypage-upload-card,
+  .mypage-file-card {
+    padding: 22px;
+  }
+
+  .mypage-overview-hero {
+    margin: 0 -16px;
+    padding: 46px 16px;
+  }
+
+  .mypage-overview-copy {
+    padding-left: 20px;
+  }
+
+  .mypage-overview-copy p:last-child br {
+    display: none;
+  }
+
+  .mypage-menu-grid {
+    margin-top: 42px;
+  }
+
+  .mypage-status-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 18px;
+  }
+
+  .mypage-status-grid article {
+    padding: 18px;
+  }
+
+  .mypage-status-grid strong {
+    font-size: 19px;
+  }
+
+  .mypage-primary-grid {
+    margin-top: 24px;
+  }
+
+  .mypage-progress-current {
+    margin: 12px 0 22px;
+    text-align: left;
+  }
+
+  .mypage-progress-labels {
+    gap: 4px;
+  }
+
+  .mypage-progress-labels span {
+    font-size: 10px;
+    word-break: keep-all;
+  }
+
+  .mypage-progress-checklist {
+    grid-template-columns: 1fr;
+  }
+
+  .mypage-dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 42px;
+    margin-top: 48px;
+  }
+
+  .mypage-activity-list article {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .mypage-activity-list a {
+    grid-column: 2;
+  }
+
+  .mypage-menu-card {
+    min-height: 300px;
+  }
+
+  .mypage-card-bottom {
+    align-items: stretch;
+    flex-direction: column-reverse;
+    margin-top: 30px;
+  }
+
+  .mypage-card-bottom .adm-btn {
+    width: 100%;
+  }
+
+  .mypage-secondary-area {
+    margin-top: 48px;
+  }
+
+  .mypage .adm-card-head {
+    align-items: stretch;
+  }
+
+  .mypage .adm-card-head .adm-btn {
+    width: 100%;
+  }
+
+  .mypage-file-actions .adm-btn {
     flex: 1;
-    min-width: 90px;
+    min-width: 110px;
+  }
+}
+
+/* 최근 마이페이지 기준: 상단 공백을 줄이고 핵심 카드, 진행 현황, FAQ를 한 흐름으로 정리합니다. */
+.mypage.reserve-page {
+  width: min(100% - 56px, 1240px);
+  padding: 28px 0 48px;
+  gap: 20px;
+}
+
+.mypage-overview-hero {
+  min-height: auto;
+  padding: 26px 0 18px;
+  border-bottom: 1px solid #dce4eb;
+  background: transparent;
+}
+
+.mypage-overview-copy {
+  max-width: 980px;
+}
+
+.mypage-overview-copy h1 {
+  font-size: 40px;
+}
+
+.mypage-overview-copy p:last-child {
+  max-width: 900px;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.mypage-primary-grid {
+  margin-top: 12px;
+}
+
+.mypage-menu-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.mypage-menu-card {
+  min-height: 220px;
+  padding: 24px;
+}
+
+.mypage-menu-content h2 {
+  font-size: 26px;
+}
+
+.mypage-card-bottom {
+  margin-top: 24px;
+}
+
+.mypage-progress-panel {
+  margin-top: 0;
+  padding: 24px;
+}
+
+.mypage-floating-progress {
+  width: 100%;
+  margin-top: 14px;
+}
+
+.mypage-progress-checklist {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.mypage-progress-checklist label {
+  min-height: 48px;
+  padding: 10px 12px;
+}
+
+.mypage-dashboard-grid {
+  display: block;
+  margin-top: 14px;
+}
+
+.mypage-help-panel {
+  width: 100%;
+  padding: 24px;
+}
+
+.mypage-help-panel .mypage-section-head h2 {
+  font-size: 26px;
+}
+
+.mypage-guide-item {
+  margin-top: 10px;
+}
+
+@media (max-width: 900px) {
+  .mypage-menu-grid,
+  .mypage-progress-checklist {
+    grid-template-columns: 1fr;
   }
 }

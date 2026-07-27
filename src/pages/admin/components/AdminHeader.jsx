@@ -13,12 +13,18 @@ export default function AdminHeader() {
 
   return (
     <header className="adm-header">
-      <div>
-        <p className="adm-eyebrow">Admin Dashboard</p>
-        <h1>관리자 페이지</h1>
+      <div className="adm-breadcrumb">
+        <span>Dashboard</span>
+        <span>›</span>
+        <strong>Operational Portal</strong>
       </div>
 
       <div className="adm-header-actions">
+        <div className="adm-header-search">
+          <span>⌕</span>
+          <input placeholder="Search documents or reservations..." />
+        </div>
+
         <Link to="/" className="adm-btn ghost adm-link-btn">
           홈으로
         </Link>
