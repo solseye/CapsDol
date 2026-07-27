@@ -194,7 +194,7 @@ html[data-lang="ja"] .lang-option:last-child {
   top: 100%;
   right: 0;
   width: 140px;
-  height: 14px;
+  height: 18px;
 }
 
 .language-menu-trigger {
@@ -220,7 +220,50 @@ html[data-lang="ja"] .lang-option:last-child {
   place-items: center;
   border-radius: 999px;
   background: #f2f5f9;
-  font-size: 17px;
+}
+
+.language-menu-trigger .language-globe {
+  position: relative;
+  border: 1.5px solid #06233c;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.language-menu-trigger .language-globe::before,
+.language-menu-trigger .language-globe::after,
+.language-menu-trigger .language-globe i {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.language-menu-trigger .language-globe::before {
+  left: 4px;
+  right: 4px;
+  top: 50%;
+  border-top: 1px solid #06233c;
+  transform: translateY(-50%);
+}
+
+.language-menu-trigger .language-globe::after {
+  top: 3px;
+  bottom: 3px;
+  left: 50%;
+  width: 10px;
+  border-right: 1px solid #06233c;
+  border-left: 1px solid #06233c;
+  border-radius: 50%;
+  transform: translateX(-50%);
+}
+
+.language-menu-trigger .language-globe i {
+  left: 4px;
+  right: 4px;
+  top: 8px;
+  bottom: 8px;
+  border-top: 1px solid #06233c;
+  border-bottom: 1px solid #06233c;
+  border-radius: 50%;
 }
 
 .language-menu-trigger strong {
@@ -234,7 +277,7 @@ html[data-lang="ja"] .lang-option:last-child {
   top: calc(100% + 10px);
   right: 0;
   z-index: 80;
-  width: 140px;
+  width: 118px;
   display: grid;
   gap: 4px;
   border: 1px solid rgba(15, 23, 42, 0.1);
@@ -246,7 +289,7 @@ html[data-lang="ja"] .lang-option:last-child {
 
 .language-menu-list button {
   display: grid;
-  grid-template-columns: 24px 1fr;
+  grid-template-columns: 28px 1fr;
   align-items: center;
   gap: 7px;
   min-height: 36px;
@@ -262,15 +305,18 @@ html[data-lang="ja"] .lang-option:last-child {
 
 .language-menu-list button:hover,
 .language-menu-list button.active {
-  background: #eef8f2;
+  background: #edf3f7;
 }
 
 .language-menu-list button span {
-  font-size: 16px;
+  color: #677586;
+  font-size: 10px;
+  font-weight: 700;
 }
 
 .language-menu-list button strong {
-  font-size: 12px;
+  color: #06233c;
+  font-size: 11px;
   font-weight: 900;
   /* 펼쳐진 언어 목록의 한국어/English/日本語 글자 줄 간격은 아래 line-height 값을 조정하면 됩니다. */
   line-height: 1.2;
@@ -1113,12 +1159,16 @@ html[data-lang="ja"] .lang-option:last-child {
 
 .site-header .main-nav a,
 .site-header .nav-logout {
+  position: relative;
   padding: 8px 0;
   border-radius: 0;
   color: #596371;
   font-size: 13px;
   font-weight: 850;
   text-decoration: none;
+  transition:
+    color 180ms ease,
+    transform 180ms ease;
 }
 
 .site-header .main-nav a:hover,
@@ -1126,25 +1176,114 @@ html[data-lang="ja"] .lang-option:last-child {
 .site-header .nav-logout:hover {
   color: #06233c;
   background: transparent;
-  transform: none;
+  transform: translateY(-2px);
 }
 
 .site-header .main-nav a.active {
   font-weight: 950;
 }
 
-.site-header .main-nav a.active::after {
+.site-header .main-nav a::after,
+.site-header .nav-logout::after {
   content: "";
-  display: block;
+  position: absolute;
+  left: 0;
+  bottom: 0;
   width: 100%;
   height: 2px;
-  margin-top: 7px;
   background: #06233c;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 180ms ease;
+}
+
+.site-header .main-nav a:hover::after,
+.site-header .main-nav a.active::after,
+.site-header .nav-logout:hover::after {
+  transform: scaleX(1);
+}
+
+.site-header .nav-dropdown {
+  position: relative;
+}
+
+.site-header .nav-dropdown-trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 0;
+  padding: 8px 0;
+  color: #596371;
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.site-header .nav-dropdown-trigger span {
+  font-size: 15px;
+  line-height: 1;
+  transition: transform 180ms ease;
+}
+
+.site-header .nav-dropdown-trigger:hover,
+.site-header .nav-dropdown-trigger.active,
+.site-header .nav-dropdown-trigger:focus-visible {
+  color: #06233c;
+  outline: none;
+}
+
+.site-header .nav-dropdown-trigger[aria-expanded="true"] span {
+  transform: rotate(180deg);
+}
+
+.site-header .nav-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: -18px;
+  z-index: 20;
+  min-width: 164px;
+  display: grid;
+  padding: 8px;
+  border: 1px solid #d8e0e6;
+  background: #ffffff;
+  box-shadow: 0 12px 24px rgba(6, 35, 60, 0.12);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.site-header .nav-dropdown-menu.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.site-header .nav-dropdown-menu a {
+  padding: 11px 12px;
+  color: #273444;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.site-header .nav-dropdown-menu a:hover,
+.site-header .nav-dropdown-menu a:focus-visible {
+  color: #06233c;
+  background: #f2f6f9;
+  transform: none;
+}
+
+.site-header .nav-dropdown-menu a::after {
+  content: none;
 }
 
 .site-header .nav-cta {
-  min-height: 40px;
-  padding: 0 18px;
+  min-height: auto;
+  padding: 8px 0;
   border-radius: 0;
   font-size: 13px;
 }
@@ -1156,22 +1295,24 @@ html[data-lang="ja"] .lang-option:last-child {
 }
 
 .site-header .btn.primary {
-  border-color: #06233c;
-  background: #06233c;
-  color: #ffffff;
+  border-color: transparent;
+  background: transparent;
+  color: #596371;
   box-shadow: none;
 }
 
 .site-header .btn.ghost {
-  border-color: #cfd8e2;
-  background: #ffffff;
-  color: #06233c;
+  border-color: transparent;
+  background: transparent;
+  color: #596371;
   box-shadow: none;
 }
 
 .site-header .btn:hover {
-  transform: none;
-  border-color: #06233c;
+  transform: translateY(-2px);
+  border-color: transparent;
+  background: transparent;
+  color: #06233c;
   box-shadow: none;
 }
 

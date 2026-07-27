@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import Header from "../../../components/Header";
 import "../../../App.css";
 import "../../admin/admin.css";
+import "../../../styles/my-files-visily.css";
+import "../../../styles/mypage-transition.css";
 
 import {
   deleteClientFile,
@@ -73,6 +75,29 @@ function getFilePath(file) {
   return file.storagePath || file.path || "";
 }
 
+const REQUIRED_DOCUMENTS = [
+  {
+    id: "business-plan",
+    title: "사업계획서",
+    description: "일본 진출 목적과 사업 모델을 정리한 문서",
+  },
+  {
+    id: "articles",
+    title: "정관 또는 정관 초안",
+    description: "회사명, 사업 목적, 자본금이 포함된 문서",
+  },
+  {
+    id: "seal-certificate",
+    title: "인감증명서",
+    description: "발기인·대표자의 인감증명 스캔본",
+  },
+  {
+    id: "address-proof",
+    title: "본국 주소 증명서",
+    description: "대표자 또는 발기인의 주소 확인 자료",
+  },
+];
+
 export default function MyFiles() {
   const fileInputRef = useRef(null);
 
@@ -101,6 +126,19 @@ export default function MyFiles() {
 
   const [downloadLoadingPath, setDownloadLoadingPath] =
     useState(null);
+  const [requiredDocumentType, setRequiredDocumentType] =
+    useState("");
+  const [requiredDocumentChecks, setRequiredDocumentChecks] =
+    useState(() => {
+      try {
+        return JSON.parse(
+          localStorage.getItem("wvaRequiredDocumentChecks") ||
+            "{}"
+        );
+      } catch {
+        return {};
+      }
+    });
 
   const fetchClientFiles = async () => {
     try {
@@ -156,10 +194,29 @@ export default function MyFiles() {
     setSelectedFile(null);
     setFileName("");
     setDescription("");
+    setRequiredDocumentType("");
 
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
+  };
+
+  const markRequiredDocumentPrepared = (documentId) => {
+    if (!documentId) return;
+
+    setRequiredDocumentChecks((current) => {
+      const next = {
+        ...current,
+        [documentId]: true,
+      };
+
+      localStorage.setItem(
+        "wvaRequiredDocumentChecks",
+        JSON.stringify(next)
+      );
+
+      return next;
+    });
   };
 
   const handleFileChange = (event) => {
@@ -222,6 +279,9 @@ export default function MyFiles() {
       if (data.success) {
         setUploadMessage("파일이 성공적으로 업로드되었습니다.");
 
+        // 백엔드 파일 API 형식은 유지하면서 사용자가 고른 필수 문서 종류를
+        // 이 기기의 준비 현황 인덱스에 반영합니다.
+        markRequiredDocumentPrepared(requiredDocumentType);
         resetUploadForm();
 
         await fetchClientFiles();
@@ -337,7 +397,7 @@ export default function MyFiles() {
     }
   };
 
-    const handleDownloadFile = async (file) => {
+  const handleDownloadFile = async (file) => {
     const path = getFilePath(file);
 
     if (!path) {
@@ -392,281 +452,297 @@ export default function MyFiles() {
     }
   };
 
+  const recentFileCount = clientFiles.filter((file) => {
+    const uploadedAt = new Date(
+      file.uploadedAt || file.updatedAt || 0
+    ).getTime();
+
+    return (
+      Number.isFinite(uploadedAt) &&
+      Date.now() - uploadedAt <= 7 * 24 * 60 * 60 * 1000
+    );
+  }).length;
+
+  const preparedRequiredCount = REQUIRED_DOCUMENTS.filter(
+    (document) => requiredDocumentChecks[document.id]
+  ).length;
+
   return (
     <>
       <Header isLoggedIn={isLoggedIn} />
 
-      <main className="reserve-page mypage mypage-files-page">
-        <section className="reserve-hero">
-          <p className="adm-eyebrow">My Files</p>
-          <h2>내 파일 관리</h2>
-
-          <span>
-            상담에 필요한 파일을 제출하고 관리합니다.
-          </span>
-        </section>
-
-        <section className="adm-card mypage-upload-card">
-          <div className="adm-card-head">
+      <main className="my-files-page mypage-page-enter">
+        <div className="my-files-shell">
+          <section className="my-files-heading">
             <div>
-              <p className="adm-eyebrow">File Upload</p>
-              <h2>파일 업로드</h2>
+              <p>MY FILES</p>
+              <h1>내 파일 관리</h1>
+              <span>
+                일본 진출과 전문가 상담에 필요한 자료를
+                제출하고 관리합니다.
+              </span>
             </div>
+          </section>
+
+          <section
+            className="my-files-stats"
+            aria-label="파일 현황"
+          >
+            <article>
+              <span>업로드한 문서</span>
+              <strong>{clientFiles.length}</strong>
+            </article>
+            <article>
+              <span>최근 7일 업로드</span>
+              <strong>{recentFileCount}</strong>
+            </article>
+            <article>
+              <span>필수 서류 준비</span>
+              <strong>
+                {preparedRequiredCount}/{REQUIRED_DOCUMENTS.length}
+              </strong>
+            </article>
+          </section>
+
+          <div className="my-files-workspace">
+            <section className="my-files-panel upload-panel">
+              <header className="my-files-panel-head">
+                <div>
+                  <p>FILE UPLOAD</p>
+                  <h2>파일 업로드</h2>
+                </div>
+              </header>
+
+              <div className="my-files-upload-layout">
+                <div className="my-files-file-picker">
+                  <label
+                    className={`my-files-dropzone ${
+                      selectedFile ? "has-file" : ""
+                    }`}
+                  >
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      onChange={handleFileChange}
+                      disabled={isUploading}
+                    />
+                    <span className="my-files-drop-icon">FILE</span>
+                    <strong>
+                      {selectedFile
+                        ? selectedFile.name
+                        : "상담에 필요한 파일을 이곳에 올려주세요"}
+                    </strong>
+                    <small>
+                      {selectedFile
+                        ? formatFileSize(selectedFile.size)
+                        : "영역을 누르거나 파일을 끌어 놓을 수 있습니다."}
+                    </small>
+                  </label>
+
+                  {selectedFile && (
+                    <button
+                      type="button"
+                      className="my-files-clear"
+                      onClick={handleClearSelectedFile}
+                      disabled={isUploading}
+                    >
+                      선택 취소
+                    </button>
+                  )}
+                </div>
+
+                <div className="my-files-upload-details">
+                  <div className="my-files-form">
+                    <label className="my-files-document-type">
+                      <span>문서 분류</span>
+                      <select
+                        value={requiredDocumentType}
+                        onChange={(event) =>
+                          setRequiredDocumentType(event.target.value)
+                        }
+                        disabled={isUploading}
+                      >
+                        <option value="">일반 제출 문서</option>
+                        {REQUIRED_DOCUMENTS.map((document) => (
+                          <option
+                            key={document.id}
+                            value={document.id}
+                          >
+                            {document.title}
+                          </option>
+                        ))}
+                      </select>
+                      <small>
+                        필수 서류 종류를 선택하면 업로드 완료 후
+                        준비 현황에 자동 반영됩니다.
+                      </small>
+                    </label>
+
+                    <label>
+                      <span>파일 명칭 *</span>
+                      <input
+                        type="text"
+                        value={fileName}
+                        onChange={(event) =>
+                          setFileName(event.target.value)
+                        }
+                        placeholder="사용자에게 표시할 파일 명칭"
+                        disabled={isUploading}
+                        maxLength={200}
+                      />
+                    </label>
+
+                    <label>
+                      <span>파일 설명 *</span>
+                      <input
+                        type="text"
+                        value={description}
+                        onChange={(event) =>
+                          setDescription(event.target.value)
+                        }
+                        placeholder="예: 일본 법인 설립용 사업계획서"
+                        disabled={isUploading}
+                        maxLength={160}
+                      />
+                    </label>
+                  </div>
+
+                  {uploadError && (
+                    <p className="login-error">{uploadError}</p>
+                  )}
+                  {uploadMessage && (
+                    <p className="login-success">{uploadMessage}</p>
+                  )}
+
+                  <button
+                    type="button"
+                    className="my-files-primary"
+                    onClick={handleUpload}
+                    disabled={
+                      isUploading ||
+                      !selectedFile ||
+                      !fileName.trim() ||
+                      !description.trim()
+                    }
+                  >
+                    {isUploading ? "업로드 중..." : "업로드"}
+                  </button>
+                </div>
+              </div>
+            </section>
           </div>
 
-          <div className="mypage-upload-box">
-            <div className="mypage-upload-icon">
-              FILE
-            </div>
-
-            <div className="mypage-upload-description">
-              <h3>
-                상담에 필요한 파일을 제출해 주세요
-              </h3>
-
-              <p>
-                파일을 선택한 뒤 화면에 표시할 파일 명칭과
-                설명을 입력해 주세요.
-              </p>
-            </div>
-
-            <input
-              ref={fileInputRef}
-              type="file"
-              hidden
-              onChange={handleFileChange}
-            />
-
-            <div className="mypage-upload-actions">
+          <section className="my-files-panel file-list-panel">
+            <header className="my-files-panel-head">
+              <div>
+                <p>UPLOADED FILES</p>
+                <h2>업로드된 파일</h2>
+              </div>
               <button
                 type="button"
-                className="adm-btn ghost"
-                onClick={() =>
-                  fileInputRef.current?.click()
-                }
-                disabled={isUploading}
+                className="my-files-secondary"
+                onClick={fetchClientFiles}
+                disabled={isFileListLoading || isUploading}
               >
-                파일 선택
+                {isFileListLoading ? "조회 중..." : "새로고침"}
               </button>
+            </header>
 
-              {selectedFile && (
-                <button
-                  type="button"
-                  className="adm-btn ghost"
-                  onClick={handleClearSelectedFile}
-                  disabled={isUploading}
-                >
-                  선택 취소
-                </button>
-              )}
-            </div>
-
-            <div className="adm-selected-file">
-              {selectedFile
-                ? `${selectedFile.name} · ${formatFileSize(
-                    selectedFile.size
-                  )}`
-                : "선택된 파일이 없습니다."}
-            </div>
-
-            <div className="mypage-upload-form">
-              <label className="mypage-upload-field">
-                <span>
-                  파일 명칭 <strong>*</strong>
-                </span>
-
-                <input
-                  type="text"
-                  value={fileName}
-                  onChange={(event) =>
-                    setFileName(event.target.value)
-                  }
-                  placeholder="사용자에게 표시할 파일 명칭"
-                  disabled={isUploading}
-                  maxLength={200}
-                />
-              </label>
-
-              <label className="mypage-upload-field">
-                <span>
-                  파일 설명 <strong>*</strong>
-                </span>
-
-                <textarea
-                  value={description}
-                  onChange={(event) =>
-                    setDescription(event.target.value)
-                  }
-                  placeholder="파일에 대한 설명을 입력해 주세요."
-                  disabled={isUploading}
-                  rows={4}
-                  maxLength={1000}
-                />
-              </label>
-            </div>
-
-            {uploadError && (
-              <p className="login-error">
-                {uploadError}
-              </p>
+            {fileError && (
+              <p className="login-error">{fileError}</p>
             )}
 
-            {uploadMessage && (
-              <p className="login-success">
-                {uploadMessage}
-              </p>
-            )}
+            {isFileListLoading ? (
+              <div className="my-files-empty">
+                파일 목록을 불러오는 중입니다.
+              </div>
+            ) : clientFiles.length === 0 ? (
+              <div className="my-files-empty">
+                아직 업로드한 파일이 없습니다.
+              </div>
+            ) : (
+              <div className="my-files-list">
+                {clientFiles.map((file) => {
+                  const displayName =
+                    file.fileName ||
+                    file.originalName ||
+                    "이름 없는 파일";
+                  const originalName =
+                    file.originalName || "-";
+                  const filePath = getFilePath(file);
 
-            <button
-              type="button"
-              className="adm-btn primary"
-              onClick={handleUpload}
-              disabled={
-                isUploading ||
-                !selectedFile ||
-                !fileName.trim() ||
-                !description.trim()
-              }
-            >
-              {isUploading ? "업로드 중..." : "업로드"}
-            </button>
-          </div>
-        </section>
-
-        <section className="adm-card mypage-file-card">
-          <div className="adm-card-head">
-            <div>
-              <p className="adm-eyebrow">
-                Uploaded Files
-              </p>
-
-              <h2>업로드된 파일</h2>
-            </div>
-
-            <button
-              type="button"
-              className="adm-btn ghost"
-              onClick={fetchClientFiles}
-              disabled={isFileListLoading || isUploading}
-            >
-              {isFileListLoading
-                ? "조회 중..."
-                : "새로고침"}
-            </button>
-          </div>
-
-          {fileError && (
-            <p className="login-error">
-              {fileError}
-            </p>
-          )}
-
-          {isFileListLoading ? (
-            <div className="reserve-empty-box">
-              파일 목록을 불러오는 중입니다.
-            </div>
-          ) : clientFiles.length === 0 ? (
-            <div className="reserve-empty-box">
-              아직 업로드한 파일이 없습니다.
-            </div>
-          ) : (
-            <div className="mypage-file-list">
-              {clientFiles.map((file) => {
-                const displayName =
-                  file.fileName ||
-                  file.originalName ||
-                  "이름 없는 파일";
-
-                const originalName =
-                  file.originalName || "-";
-
-                return (
-                  <article
-                    key={file.id || getFilePath(file)}
-                    className="mypage-file-item"
-                  >
-                    <div className="mypage-file-type">
-                      {getFileTypeLabel(
-                        file.fileType,
-                        originalName
-                      )}
-                    </div>
-
-                    <div className="mypage-file-info">
-                      <strong>{displayName}</strong>
-
-                      {displayName !== originalName && (
-                        <span>
-                          원본 파일명: {originalName}
-                        </span>
-                      )}
-
-                      <span>
-                        {formatFileSize(file.size)} ·{" "}
-                        {formatDateTime(
-                          file.uploadedAt || file.updatedAt
+                  return (
+                    <article
+                      key={file.id || filePath}
+                      className="my-files-item"
+                    >
+                      <span className="my-files-type">
+                        {getFileTypeLabel(
+                          file.fileType,
+                          originalName
                         )}
                       </span>
-
-                      {file.description && (
-                        <small>
-                          설명: {file.description}
-                        </small>
-                      )}
-                    </div>
-
-                    <div className="mypage-file-actions">
-                      <button
-                        type="button"
-                        className="adm-btn ghost"
-                        onClick={() => handlePreviewFile(file)}
-                        disabled={
-                          previewLoadingPath === getFilePath(file) ||
-                          downloadLoadingPath === getFilePath(file) ||
-                          deleteLoadingPath === getFilePath(file)
-                        }
-                      >
-                        {previewLoadingPath === getFilePath(file)
-                          ? "여는 중..."
-                          : "미리보기"}
-                      </button>
-
-                      <button
-                        type="button"
-                        className="adm-btn ghost"
-                        onClick={() => handleDownloadFile(file)}
-                        disabled={
-                          previewLoadingPath === getFilePath(file) ||
-                          downloadLoadingPath === getFilePath(file) ||
-                          deleteLoadingPath === getFilePath(file)
-                        }
-                      >
-                        {downloadLoadingPath === getFilePath(file)
-                          ? "다운로드 중..."
-                          : "다운로드"}
-                      </button>
-
-                      <button
-                        type="button"
-                        className="adm-btn danger"
-                        onClick={() => handleDeleteFile(file)}
-                        disabled={
-                          previewLoadingPath === getFilePath(file) ||
-                          downloadLoadingPath === getFilePath(file) ||
-                          deleteLoadingPath === getFilePath(file)
-                        }
-                      >
-                        {deleteLoadingPath === getFilePath(file)
-                          ? "삭제 중..."
-                          : "삭제"}
-                      </button>
-                    </div>
-                  </article>
-                );
-              })}
-            </div>
-          )}
-        </section>
+                      <div>
+                        <strong>{displayName}</strong>
+                        <span>
+                          {formatFileSize(file.size)} ·{" "}
+                          {formatDateTime(
+                            file.uploadedAt || file.updatedAt
+                          )}
+                        </span>
+                        {file.description && (
+                          <small>{file.description}</small>
+                        )}
+                      </div>
+                      <div className="my-files-actions">
+                        <button
+                          type="button"
+                          onClick={() => handlePreviewFile(file)}
+                          disabled={
+                            previewLoadingPath === filePath ||
+                            downloadLoadingPath === filePath ||
+                            deleteLoadingPath === filePath
+                          }
+                        >
+                          {previewLoadingPath === filePath
+                            ? "여는 중..."
+                            : "미리보기"}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDownloadFile(file)}
+                          disabled={
+                            previewLoadingPath === filePath ||
+                            downloadLoadingPath === filePath ||
+                            deleteLoadingPath === filePath
+                          }
+                        >
+                          {downloadLoadingPath === filePath
+                            ? "다운로드 중..."
+                            : "다운로드"}
+                        </button>
+                        <button
+                          type="button"
+                          className="danger"
+                          onClick={() => handleDeleteFile(file)}
+                          disabled={
+                            previewLoadingPath === filePath ||
+                            downloadLoadingPath === filePath ||
+                            deleteLoadingPath === filePath
+                          }
+                        >
+                          {deleteLoadingPath === filePath
+                            ? "삭제 중..."
+                            : "삭제"}
+                        </button>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+        </div>
       </main>
     </>
   );

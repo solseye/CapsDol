@@ -85,6 +85,38 @@
   font-weight: 850;
 }
 
+.visily-nav-links a {
+  position: relative;
+  padding: 8px 0;
+  transition:
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.visily-nav-links a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background: #06233c;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 180ms ease;
+}
+
+.visily-nav-links a:hover,
+.visily-nav-links a.active {
+  color: #06233c;
+  transform: translateY(-2px);
+}
+
+.visily-nav-links a:hover::after,
+.visily-nav-links a.active::after {
+  transform: scaleX(1);
+}
+
 .visily-nav-actions {
   min-width: 0;
   display: flex;
@@ -98,6 +130,72 @@
   display: flex;
   align-items: center;
   gap: 14px;
+}
+
+/* 메인 헤더의 실행 메뉴도 마이페이지 헤더와 같은 하단 바 방식으로 표시합니다. */
+.visily-nav .visily-desktop-actions .visily-ghost-btn,
+.visily-nav .visily-desktop-actions .visily-dark-btn {
+  position: relative;
+  min-height: auto;
+  padding: 8px 0;
+  border: 0;
+  background: transparent;
+  color: #596371;
+  box-shadow: none;
+  transition:
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.visily-nav .visily-desktop-actions .visily-ghost-btn {
+  color: #06233c;
+  font-weight: 950;
+}
+
+.visily-nav .visily-desktop-actions .visily-dark-btn {
+  min-height: 36px;
+  padding: 0 16px;
+  border-radius: 3px;
+  color: #ffffff;
+  background: #06233c;
+  font-weight: 950;
+}
+
+.visily-nav .visily-desktop-actions .visily-ghost-btn::after,
+.visily-nav .visily-desktop-actions .visily-dark-btn::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background: #06233c;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 180ms ease;
+}
+
+.visily-nav .visily-desktop-actions .visily-ghost-btn:hover,
+.visily-nav .visily-desktop-actions .visily-ghost-btn:focus-visible {
+  color: #06233c;
+  transform: translateY(-2px);
+}
+
+.visily-nav .visily-desktop-actions .visily-ghost-btn:hover::after,
+.visily-nav .visily-desktop-actions .visily-ghost-btn:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.visily-nav .visily-desktop-actions .visily-dark-btn:hover,
+.visily-nav .visily-desktop-actions .visily-dark-btn:focus-visible {
+  color: #ffffff;
+  background: #0d3657;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(6, 35, 60, 0.16);
+}
+
+.visily-nav .visily-desktop-actions .visily-dark-btn::after {
+  display: none;
 }
 
 .visily-menu-toggle {
@@ -198,13 +296,35 @@
 }
 
 .visily-language-menu .language-menu-trigger {
-  min-height: 40px;
-  border-color: #d5dce4;
-  background: #ffffff;
+  min-height: 38px;
+  border: 0;
+  border-radius: 0;
+  padding: 4px 3px;
+  color: #06233c;
+  background: transparent;
+  box-shadow: inset 0 -2px transparent;
+  transition:
+    color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.visily-language-menu .language-menu-trigger:hover,
+.visily-language-menu .language-menu-trigger:focus-visible,
+.visily-language-menu .language-menu-trigger[aria-expanded="true"] {
+  color: #06233c;
+  box-shadow: inset 0 -2px #06233c;
+  transform: translateY(-2px);
+}
+
+.visily-language-menu .language-menu-trigger .language-globe {
+  background: transparent;
 }
 
 .visily-language-menu .language-menu-list {
   top: calc(100% + 8px);
+  border-radius: 4px;
+  box-shadow: 0 14px 34px rgba(6, 35, 60, 0.14);
 }
 
 /* Common buttons

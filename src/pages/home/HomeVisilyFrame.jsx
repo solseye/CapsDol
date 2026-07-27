@@ -15,7 +15,7 @@ const HOME_COPY = {
     navExperts: "전문가",
     navStandards: "운영 방식",
     adminPage: "관리자 페이지",
-    myPage: "개인 페이지",
+    myPage: "마이 페이지",
     reservation: "상담 예약",
     logout: "로그아웃",
     login: "로그인",
@@ -163,6 +163,9 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
   const [isStandardPaused, setIsStandardPaused] = useState(false);
   const [processProgress, setProcessProgress] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [activeNav, setActiveNav] = useState(() =>
+    window.location.hash.replace("#", "")
+  );
   const processSectionRef = useRef(null);
   const processWorkflowRef = useRef(null);
   const navigate = useNavigate();
@@ -170,6 +173,54 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
   const isAdmin = role === "admin";
   const language = getCurrentLanguage();
   const copy = HOME_COPY[language] || HOME_COPY.ko;
+
+  const handleNavClick = (sectionId) => {
+    setActiveNav(sectionId);
+    setIsMobileMenuOpen(false);
+  };
+
+  // 스크롤 위치에 맞춰 현재 보고 있는 메인 섹션을 헤더에 표시합니다.
+  // URL hash는 변경하지 않아 스크롤 중 화면이 튀거나 방문 기록이 쌓이지 않습니다.
+  useEffect(() => {
+    const sectionIds = ["services", "method", "experts", "standards"];
+    let animationFrameId = null;
+
+    const updateActiveNavigation = () => {
+      const activationLine = 68 + window.innerHeight * 0.3;
+      let nextActiveSection = "";
+
+      sectionIds.forEach((sectionId) => {
+        const section = document.getElementById(sectionId);
+        if (section && section.getBoundingClientRect().top <= activationLine) {
+          nextActiveSection = sectionId;
+        }
+      });
+
+      setActiveNav((currentSection) =>
+        currentSection === nextActiveSection
+          ? currentSection
+          : nextActiveSection
+      );
+      animationFrameId = null;
+    };
+
+    const requestNavigationUpdate = () => {
+      if (animationFrameId !== null) return;
+      animationFrameId = window.requestAnimationFrame(updateActiveNavigation);
+    };
+
+    requestNavigationUpdate();
+    window.addEventListener("scroll", requestNavigationUpdate, { passive: true });
+    window.addEventListener("resize", requestNavigationUpdate);
+
+    return () => {
+      window.removeEventListener("scroll", requestNavigationUpdate);
+      window.removeEventListener("resize", requestNavigationUpdate);
+      if (animationFrameId !== null) {
+        window.cancelAnimationFrame(animationFrameId);
+      }
+    };
+  }, []);
 
   // 히어로 검색창에서 AI 상담 화면으로 이동시키는 로직입니다.
   // 로그인하지 않은 사용자는 먼저 로그인 페이지로 보냅니다.
@@ -307,10 +358,34 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
         </Link>
 
         <nav className="visily-nav-links" aria-label="Main navigation">
-          <a href="#services">{copy.navServices}</a>
-          <a href="#method">{copy.navMethod}</a>
-          <a href="#experts">{copy.navExperts}</a>
-          <a href="#standards">{copy.navStandards}</a>
+          <a
+            href="#services"
+            className={activeNav === "services" ? "active" : ""}
+            onClick={() => handleNavClick("services")}
+          >
+            {copy.navServices}
+          </a>
+          <a
+            href="#method"
+            className={activeNav === "method" ? "active" : ""}
+            onClick={() => handleNavClick("method")}
+          >
+            {copy.navMethod}
+          </a>
+          <a
+            href="#experts"
+            className={activeNav === "experts" ? "active" : ""}
+            onClick={() => handleNavClick("experts")}
+          >
+            {copy.navExperts}
+          </a>
+          <a
+            href="#standards"
+            className={activeNav === "standards" ? "active" : ""}
+            onClick={() => handleNavClick("standards")}
+          >
+            {copy.navStandards}
+          </a>
         </nav>
 
         <div className="visily-nav-actions">
@@ -376,16 +451,28 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
           }`}
         >
           <nav aria-label="Mobile navigation">
-            <a href="#services" onClick={() => setIsMobileMenuOpen(false)}>
+            <a
+              href="#services"
+              onClick={() => handleNavClick("services")}
+            >
               {copy.navServices}
             </a>
-            <a href="#method" onClick={() => setIsMobileMenuOpen(false)}>
+            <a
+              href="#method"
+              onClick={() => handleNavClick("method")}
+            >
               {copy.navMethod}
             </a>
-            <a href="#experts" onClick={() => setIsMobileMenuOpen(false)}>
+            <a
+              href="#experts"
+              onClick={() => handleNavClick("experts")}
+            >
               {copy.navExperts}
             </a>
-            <a href="#standards" onClick={() => setIsMobileMenuOpen(false)}>
+            <a
+              href="#standards"
+              onClick={() => handleNavClick("standards")}
+            >
               {copy.navStandards}
             </a>
           </nav>

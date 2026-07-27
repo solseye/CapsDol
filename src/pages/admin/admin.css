@@ -3398,3 +3398,98 @@
     min-width: 110px;
   }
 }
+
+/* 최근 마이페이지 기준: 상단 공백을 줄이고 핵심 카드, 진행 현황, FAQ를 한 흐름으로 정리합니다. */
+.mypage.reserve-page {
+  width: min(100% - 56px, 1240px);
+  padding: 28px 0 48px;
+  gap: 20px;
+}
+
+.mypage-overview-hero {
+  min-height: auto;
+  padding: 26px 0 18px;
+  border-bottom: 1px solid #dce4eb;
+  background: transparent;
+}
+
+.mypage-overview-copy {
+  max-width: 980px;
+}
+
+.mypage-overview-copy h1 {
+  font-size: 40px;
+}
+
+.mypage-overview-copy p:last-child {
+  max-width: 900px;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.mypage-primary-grid {
+  margin-top: 12px;
+}
+
+.mypage-menu-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.mypage-menu-card {
+  min-height: 220px;
+  padding: 24px;
+}
+
+.mypage-menu-content h2 {
+  font-size: 26px;
+}
+
+.mypage-card-bottom {
+  margin-top: 24px;
+}
+
+.mypage-progress-panel {
+  margin-top: 0;
+  padding: 24px;
+}
+
+.mypage-floating-progress {
+  width: 100%;
+  margin-top: 14px;
+}
+
+.mypage-progress-checklist {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.mypage-progress-checklist label {
+  min-height: 48px;
+  padding: 10px 12px;
+}
+
+.mypage-dashboard-grid {
+  display: block;
+  margin-top: 14px;
+}
+
+.mypage-help-panel {
+  width: 100%;
+  padding: 24px;
+}
+
+.mypage-help-panel .mypage-section-head h2 {
+  font-size: 26px;
+}
+
+.mypage-guide-item {
+  margin-top: 10px;
+}
+
+@media (max-width: 900px) {
+  .mypage-menu-grid,
+  .mypage-progress-checklist {
+    grid-template-columns: 1fr;
+  }
+}

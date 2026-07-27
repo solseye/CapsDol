@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { getCurrentLanguage, setCurrentLanguage } from "../i18n/translations";
 
 const LANGUAGE_OPTIONS = [
-  { code: "ko", label: "한국어", shortLabel: "KO", flag: "🇰🇷" },
-  { code: "en", label: "English", shortLabel: "EN", flag: "🇺🇸" },
-  { code: "ja", label: "日本語", shortLabel: "JA", flag: "🇯🇵" },
+  { code: "ko", label: "한국어", shortLabel: "KO" },
+  { code: "ja", label: "日本語", shortLabel: "JP" },
+  { code: "en", label: "English", shortLabel: "EN" },
 ];
 
 export default function LanguageMenu({ className = "" }) {
@@ -41,7 +41,7 @@ export default function LanguageMenu({ className = "" }) {
     window.clearTimeout(closeTimerRef.current);
     closeTimerRef.current = window.setTimeout(() => {
       setIsOpen(false);
-    }, 280);
+    }, 650);
   };
 
   const handleSelectLanguage = (language) => {
@@ -66,10 +66,13 @@ export default function LanguageMenu({ className = "" }) {
       <button
         type="button"
         className="language-menu-trigger"
-        onClick={() => setIsOpen((prev) => !prev)}
+        onClick={openMenu}
         aria-expanded={isOpen}
+        aria-label={`언어 선택, 현재 ${currentOption.label}`}
       >
-        <span>{currentOption.flag}</span>
+        <span className="language-globe" aria-hidden="true">
+          <i />
+        </span>
         <strong>{currentOption.shortLabel}</strong>
       </button>
 
@@ -83,8 +86,8 @@ export default function LanguageMenu({ className = "" }) {
               onClick={() => handleSelectLanguage(option.code)}
               role="menuitem"
             >
-              <span>{option.flag}</span>
-              <strong>{option.label}</strong>
+              <strong>{option.shortLabel}</strong>
+              <span>{option.label}</span>
             </button>
           ))}
         </div>

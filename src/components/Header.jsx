@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { logoutUser } from "../api/authApi";
 import LanguageMenu from "./LanguageMenu";
 import {
@@ -10,18 +10,33 @@ import {
 export default function Header({ isLoggedIn }) {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMyPageMenuOpen, setIsMyPageMenuOpen] = useState(false);
+  const myPageMenuCloseTimer = useRef(null);
 
   const role = localStorage.getItem("role");
   const language = getCurrentLanguage();
   const t = (key) => translate(language, key);
   const isAdmin = role === "admin";
   const isMyPageSection = location.pathname.startsWith("/mypage");
+  const isReservationSection = location.pathname === "/reservation";
+  const isHearingSection = location.pathname === "/hearing-sheet";
 
-  const mainNavItems = isMyPageSection
+  const mainNavItems = isReservationSection
+    ? [
+        { to: "/mypage", label: "마이 페이지" },
+        { to: "/hearing-sheet", label: "히어링 시트" },
+        { to: "/reservation", label: t("common.navReservation") },
+      ]
+    : isHearingSection
     ? [
         { to: "/mypage", label: "마이페이지" },
-        { to: "/mypage/reservations", label: "내 상담 내역" },
-        { to: "/mypage/files", label: "내 파일 관리" },
+        { to: "/reservation", label: t("common.navReservation") },
+      ]
+    : isMyPageSection
+    ? [
+        { to: "/mypage", label: "마이 페이지" },
+        { to: "/hearing-sheet", label: "히어링 시트" },
+        { to: "/reservation", label: t("common.navReservation") },
       ]
     : [
         { to: "/#services", label: t("common.navService") },
@@ -31,7 +46,14 @@ export default function Header({ isLoggedIn }) {
       ];
 
   const isActivePath = (path) => {
-    if (!isMyPageSection) return false;
+    if (path.startsWith("/#")) {
+      return (
+        location.pathname === "/" &&
+        location.hash === path.slice(1)
+      );
+    }
+
+    if (!isMyPageSection && !isReservationSection && !isHearingSection) return false;
 
     if (path === "/mypage") {
       return location.pathname === "/mypage";
@@ -53,7 +75,22 @@ export default function Header({ isLoggedIn }) {
 
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
+    setIsMyPageMenuOpen(false);
   };
+
+  const openMyPageMenu = () => {
+    window.clearTimeout(myPageMenuCloseTimer.current);
+    setIsMyPageMenuOpen(true);
+  };
+
+  const closeMyPageMenuWithDelay = () => {
+    window.clearTimeout(myPageMenuCloseTimer.current);
+    myPageMenuCloseTimer.current = window.setTimeout(() => {
+      setIsMyPageMenuOpen(false);
+    }, 260);
+  };
+
+  useEffect(() => () => window.clearTimeout(myPageMenuCloseTimer.current), []);
 
   const handleLogout = async () => {
     try {
@@ -89,7 +126,43 @@ export default function Header({ isLoggedIn }) {
         <div className="nav-right">
           <nav className="main-nav" aria-label="주요 메뉴">
             <ul>
-              {mainNavItems.map((item) => (
+              {isMyPageSection && (
+                <li
+                  className="nav-dropdown"
+                  onMouseEnter={openMyPageMenu}
+                  onMouseLeave={closeMyPageMenuWithDelay}
+                  onBlur={(event) => {
+                    if (!event.currentTarget.contains(event.relatedTarget)) {
+                      closeMyPageMenuWithDelay();
+                    }
+                  }}
+                >
+                  <button
+                    type="button"
+                    className={`nav-dropdown-trigger ${location.pathname === "/mypage" ? "active" : ""}`}
+                    aria-expanded={isMyPageMenuOpen}
+                    aria-haspopup="menu"
+                    onClick={() => {
+                      window.clearTimeout(myPageMenuCloseTimer.current);
+                      setIsMyPageMenuOpen((open) => !open);
+                    }}
+                  >
+                    마이 페이지 <span aria-hidden="true">⌄</span>
+                  </button>
+                  <div className={`nav-dropdown-menu ${isMyPageMenuOpen ? "is-open" : ""}`} role="menu">
+                    <Link to="/mypage/reservations" role="menuitem" onClick={() => setIsMyPageMenuOpen(false)}>
+                      내 상담 내역
+                    </Link>
+                    <Link to="/mypage/files" role="menuitem" onClick={() => setIsMyPageMenuOpen(false)}>
+                      내 파일 관리
+                    </Link>
+                  </div>
+                </li>
+              )}
+
+              {mainNavItems
+                .filter((item) => !isMyPageSection || item.to !== "/mypage")
+                .map((item) => (
                 <li key={item.to}>
                   <Link
                     to={item.to}
@@ -116,7 +189,7 @@ export default function Header({ isLoggedIn }) {
                 </li>
               )}
 
-              {isLoggedIn && !isAdmin && !isMyPageSection && (
+              {isLoggedIn && !isAdmin && !isMyPageSection && !isReservationSection && !isHearingSection && (
                 <li>
                   <Link to="/mypage" className="btn ghost nav-cta">
                     {t("common.navMyReservations")}
@@ -124,7 +197,11 @@ export default function Header({ isLoggedIn }) {
                 </li>
               )}
 
-              {isLoggedIn && !isAdmin && (
+              {isLoggedIn &&
+                !isAdmin &&
+                !isMyPageSection &&
+                !isReservationSection &&
+                !isHearingSection && (
                 <li>
                   {/* 주소를 /reservation 으로 정확히 맞춰줍니다 */}
                   <Link to="/reservation" className="btn ghost nav-cta">
@@ -169,6 +246,24 @@ export default function Header({ isLoggedIn }) {
                 {item.label}
               </Link>
             ))}
+            {isMyPageSection && (
+              <>
+                <Link
+                  to="/mypage/reservations"
+                  className={isActivePath("/mypage/reservations") ? "active" : ""}
+                  onClick={closeMobileMenu}
+                >
+                  내 상담 내역
+                </Link>
+                <Link
+                  to="/mypage/files"
+                  className={isActivePath("/mypage/files") ? "active" : ""}
+                  onClick={closeMobileMenu}
+                >
+                  내 파일 관리
+                </Link>
+              </>
+            )}
           </nav>
 
           <div className="site-mobile-actions">
@@ -195,18 +290,20 @@ export default function Header({ isLoggedIn }) {
 
             {isLoggedIn && !isAdmin && (
               <>
-                {!isMyPageSection && (
+                {!isMyPageSection && !isReservationSection && !isHearingSection && (
                   <Link to="/mypage" className="btn ghost" onClick={closeMobileMenu}>
                     {t("common.navMyReservations")}
                   </Link>
                 )}
-                <Link
-                  to="/reservation"
-                  className="btn ghost"
-                  onClick={closeMobileMenu}
-                >
-                  {t("common.navReservation")}
-                </Link>
+                {!isMyPageSection && !isReservationSection && !isHearingSection && (
+                  <Link
+                    to="/reservation"
+                    className="btn ghost"
+                    onClick={closeMobileMenu}
+                  >
+                    {t("common.navReservation")}
+                  </Link>
+                )}
               </>
             )}
 
