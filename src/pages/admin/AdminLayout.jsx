@@ -1,5 +1,4 @@
 import AdminSidebar from "./components/AdminSidebar";
-import "./admin.css";
 
 export default function AdminLayout({ children }) {
   return (

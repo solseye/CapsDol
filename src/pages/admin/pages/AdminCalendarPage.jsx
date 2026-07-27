@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import YearMonthPicker from "../../../components/YearMonthPicker";
+import React, { useState, useRef, useEffect, useMemo } from "react";
+import "./adminCalendarPage.css";
 import {
   getAdminReservationList,
   getAdminReservationListByRange,
@@ -8,39 +8,15 @@ import {
   allowAdminReservation,
   disallowAdminReservation,
 } from "../../../api/reservationApi";
-import "../admin.css";
 
-const weekDays = ["일", "월", "화", "수", "목", "금", "토"];
 const MONTHS_TO_FETCH = 7;
-
-const TIME_OPTIONS = [
-  "09:00",
-  "10:00",
-  "11:00",
-  "13:00",
-  "14:00",
-  "15:00",
-  "16:00",
-  "17:00",
-];
-
-const FIELD_OPTIONS = [
-  { label: "전체", value: null },
-  { label: "인사", value: "hr" },
-  { label: "노무", value: "labor" },
-  { label: "회계", value: "accounting" },
-  { label: "법무", value: "law" },
-];
 
 function getDateKey(dateValue) {
   const date = new Date(dateValue);
-
   if (Number.isNaN(date.getTime())) return "";
-
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
-
   return `${year}-${month}-${day}`;
 }
 
@@ -52,47 +28,16 @@ function getSelectedDateIso(dateKey) {
   return `${dateKey}T00:00:00.000Z`;
 }
 
-function normalizeTimeInput(value) {
-  const match = String(value || "")
-    .trim()
-    .match(/^(\d{1,2}):(\d{2})$/);
-
-  if (!match) return "";
-
-  const hour = Number(match[1]);
-  const minute = Number(match[2]);
-
-  if (hour < 0 || hour > 23 || minute < 0 || minute > 59) return "";
-
-  return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
-}
-
-function buildCalendarDays(viewDate) {
-  const year = viewDate.getFullYear();
-  const month = viewDate.getMonth();
-  const firstDay = new Date(year, month, 1);
-  const lastDay = new Date(year, month + 1, 0);
-  const days = [];
-
-  for (let i = 0; i < firstDay.getDay(); i += 1) days.push(null);
-
-  for (let day = 1; day <= lastDay.getDate(); day += 1) {
-    days.push(getDateKey(new Date(year, month, day)));
-  }
-
-  while (days.length % 7 !== 0) days.push(null);
-
-  return days;
-}
-
-function formatDate(dateValue) {
-  const date = new Date(dateValue);
-  if (Number.isNaN(date.getTime())) return "-";
-  return date.toLocaleDateString("ko-KR");
-}
-
 function formatTime(timeValue) {
   return String(timeValue || "").slice(0, 5);
+}
+
+function addMinutesToTime(timeStr, mins) {
+  const [h, m] = timeStr.split(":").map(Number);
+  const totalMins = h * 60 + m + mins;
+  const newH = Math.floor(totalMins / 60);
+  const newM = totalMins % 60;
+  return `${String(newH).padStart(2, "0")}:${String(newM).padStart(2, "0")}`;
 }
 
 function getFieldLabel(field) {
@@ -112,778 +57,813 @@ function getFieldLabel(field) {
   }
 }
 
-function getStatusLabel(status) {
-  switch (status) {
-    case "pending":
-      return "승인 대기";
-    case "approved":
-      return "승인 완료";
-    case "rejected":
-      return "불허";
-    case "cancelled":
-      return "취소 완료";
-    default:
-      return status || "-";
-  }
-}
-
 export default function AdminCalendarPage() {
-  const today = useMemo(() => new Date(), []);
-  const todayKey = getDateKey(today);
-
-  const [viewDate, setViewDate] = useState(
-    new Date(today.getFullYear(), today.getMonth(), 1)
-  );
-  const [selectedDate, setSelectedDate] = useState(todayKey);
-
-  const [requestYear, setRequestYear] = useState(today.getFullYear());
-  const [requestMonth, setRequestMonth] = useState(today.getMonth() + 1);
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   const [schedules, setSchedules] = useState([]);
   const [blocks, setBlocks] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const [selectedBlockTimes, setSelectedBlockTimes] = useState(["09:00"]);
-  const [customBlockTime, setCustomBlockTime] = useState("");
-  const [selectedBlockFields, setSelectedBlockFields] = useState([null]);
+  const [isBlockMode, setIsBlockMode] = useState(false);
+  const [pendingBlocks, setPendingBlocks] = useState([]);
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalType, setModalType] = useState("");
+  const [selectedSlot, setSelectedSlot] = useState(null);
   const [blockReason, setBlockReason] = useState("");
 
-  const [decisionLoadingId, setDecisionLoadingId] = useState(null);
+  const isMounted = useRef(false);
 
-  const [loading, setLoading] = useState(true);
-  const [isRefreshingList, setIsRefreshingList] = useState(false);
-  const [isBlocking, setIsBlocking] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+
+  const getWeekInfo = (dateObj) => {
+    const target = new Date(dateObj);
+    const day = target.getDay();
+    const diff = 3 - day;
+    target.setDate(target.getDate() + diff);
+
+    return {
+      displayYear: target.getFullYear(),
+      displayMonth: target.getMonth(),
+      displayWeek: Math.floor((target.getDate() - 1) / 7) + 1,
+    };
+  };
+
+  const { displayYear, displayMonth, displayWeek } = getWeekInfo(selectedDate);
 
   const applyListData = (data) => {
-    setSchedules(data.schedules || []);
-    setBlocks(data.blocks || []);
+    setSchedules(data?.schedules || []);
+    setBlocks(data?.blocks || []);
   };
 
   const fetchAdminCalendar = async () => {
     try {
       setLoading(true);
-      setError("");
-      setSuccess("");
-
       const data = await getAdminReservationList();
       applyListData(data);
     } catch (err) {
-      setError(err.message || "관리자 예약 일정을 불러오지 못했습니다.");
+      console.error(err);
+      alert(err.message || "관리자 예약 일정을 불러오지 못했습니다.");
     } finally {
       setLoading(false);
     }
   };
 
   const fetchAdminCalendarByCurrentMonth = async () => {
-    const data = await getAdminReservationListByRange(
-      getMonthStartIso(viewDate),
-      MONTHS_TO_FETCH
-    );
-
-    applyListData(data);
+    try {
+      setLoading(true);
+      const data = await getAdminReservationListByRange(
+        getMonthStartIso(currentDate),
+        MONTHS_TO_FETCH,
+      );
+      applyListData(data);
+    } catch (err) {
+      console.error(err);
+      alert("일정을 새로고침하지 못했습니다.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    fetchAdminCalendar();
+    if (!isMounted.current) {
+      isMounted.current = true;
+      fetchAdminCalendar();
+    } else {
+      fetchAdminCalendarByCurrentMonth();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [year, month]);
 
-  const calendarDays = useMemo(() => buildCalendarDays(viewDate), [viewDate]);
+  const events = useMemo(() => {
+    const newEvents = [];
 
-  const reservationsByDate = useMemo(() => {
-    const result = {};
-
-    schedules.forEach((schedule) => {
-      const dateKey = getDateKey(schedule.selected_date);
-      if (!dateKey) return;
-
-      (schedule.reservations || []).forEach((reservation) => {
-        result[dateKey] = [
-          ...(result[dateKey] || []),
-          {
-            ...reservation,
-            schedule_id: schedule.schedule_id,
-            field: schedule.field,
-            selected_date: schedule.selected_date,
-            selected_time: schedule.selected_time,
-          },
-        ];
+    const parsedBlocks = (blocks || [])
+      .map((b) => ({
+        id: b.id || b.block_id,
+        targetId: b.id || b.block_id,
+        type: "block",
+        title: "일정 차단",
+        date: getDateKey(b.blocked_date),
+        time: formatTime(b.blocked_time),
+        reason: b.reason || "관리자 차단",
+        originalData: b,
+      }))
+      .filter((b) => b.date && b.time)
+      .sort((a, b) => {
+        if (a.date !== b.date) return a.date.localeCompare(b.date);
+        return a.time.localeCompare(b.time);
       });
+
+    let lastBaseBlock = null;
+
+    parsedBlocks.forEach((b) => {
+      if (
+        lastBaseBlock &&
+        lastBaseBlock.date === b.date &&
+        lastBaseBlock.endTime === b.time &&
+        lastBaseBlock.reason === b.reason
+      ) {
+        lastBaseBlock.endTime = addMinutesToTime(b.time, 30);
+        lastBaseBlock.slotSpan += 1;
+        lastBaseBlock.mergedIds.push(b.targetId);
+
+        newEvents.push({
+          ...b,
+          isExtension: true,
+          endTime: addMinutesToTime(b.time, 30),
+          slotSpan: 1,
+        });
+      } else {
+        b.endTime = addMinutesToTime(b.time, 30);
+        b.slotSpan = 1;
+        b.isExtension = false;
+        b.mergedIds = [b.targetId];
+
+        lastBaseBlock = b;
+        newEvents.push(b);
+      }
     });
 
-    return result;
-  }, [schedules]);
+    (schedules || []).forEach((schedule) => {
+      const dKey = getDateKey(schedule.selected_date);
+      const tKey = formatTime(schedule.selected_time);
+      if (dKey && tKey) {
+        (schedule.reservations || []).forEach((res) => {
+          // 💡 1. 불허(rejected) 처리된 예약은 아예 배열에서 제외 (화면 노출 금지)
+          if (res.status === "rejected") return;
 
-  const blocksByDate = useMemo(() => {
-    const result = {};
+          const resId = res.reservation_id || res.id;
+          const isConfirmed =
+            res.status === "approved" || res.status === "confirmed";
 
-    blocks.forEach((block) => {
-      const dateKey = getDateKey(block.blocked_date);
-      if (!dateKey) return;
-      result[dateKey] = [...(result[dateKey] || []), block];
+          if (isConfirmed) {
+            newEvents.push({
+              id: resId,
+              targetId: resId,
+              type: "reservation",
+              title: `[${getFieldLabel(schedule.field)}] ${res.username || "사용자"}`,
+              date: dKey,
+              time: tKey,
+              endTime: addMinutesToTime(tKey, 90),
+              slotSpan: 3,
+              status: res.status,
+              field: schedule.field,
+              isExtension: false,
+              originalData: res,
+            });
+            [30, 60].forEach((offsetMins, idx) => {
+              const slotTime = addMinutesToTime(tKey, offsetMins);
+              newEvents.push({
+                id: `${resId}_ext_${idx}`,
+                targetId: resId,
+                type: "reservation",
+                title: "상담 진행",
+                date: dKey,
+                time: slotTime,
+                endTime: addMinutesToTime(slotTime, 30),
+                slotSpan: 1,
+                status: res.status,
+                field: schedule.field,
+                isExtension: true,
+                originalData: res,
+              });
+            });
+          } else {
+            newEvents.push({
+              id: resId,
+              targetId: resId,
+              type: "reservation",
+              title: `[${getFieldLabel(schedule.field)}] ${res.username || "사용자"}`,
+              date: dKey,
+              time: tKey,
+              endTime: addMinutesToTime(tKey, 30),
+              slotSpan: 1,
+              status: res.status,
+              field: schedule.field,
+              isExtension: false,
+              originalData: res,
+            });
+          }
+        });
+      }
     });
+    return newEvents;
+  }, [schedules, blocks]);
 
-    return result;
-  }, [blocks]);
+  // 💡 KPI 상단 통계에서도 불허(rejected) 제외
+  const allReservations = schedules
+    .flatMap((s) => s.reservations || [])
+    .filter((r) => r.status !== "rejected");
 
-  const selectedReservations = reservationsByDate[selectedDate] || [];
-  const selectedBlocks = blocksByDate[selectedDate] || [];
-  const allReservations = schedules.flatMap((schedule) =>
-    (schedule.reservations || []).map((reservation) => ({
-      ...reservation,
-      schedule_id: schedule.schedule_id,
-      field: schedule.field,
-      selected_date: schedule.selected_date,
-      selected_time: schedule.selected_time,
-    }))
-  );
+  const totalCount = allReservations.length;
   const pendingCount = allReservations.filter(
-    (reservation) => reservation.status === "pending"
+    (r) => r.status === "pending",
   ).length;
-  const approvedCount = allReservations.filter(
-    (reservation) => reservation.status === "approved"
-  ).length;
-  const activeCount = allReservations.filter(
-    (reservation) =>
-      reservation.status === "pending" || reservation.status === "approved"
-  ).length;
-  const availableBlockTimes = useMemo(
-    () => [...new Set([...TIME_OPTIONS, ...selectedBlockTimes])].sort(),
-    [selectedBlockTimes]
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const blanks = Array(firstDay).fill(null);
+  const days = Array.from(
+    { length: daysInMonth },
+    (_, i) => new Date(year, month, i + 1),
   );
 
-  const handlePrevMonth = () => {
-    const nextMonth = new Date(
-      viewDate.getFullYear(),
-      viewDate.getMonth() - 1,
-      1
-    );
+  const getWeekDays = (date) => {
+    const start = new Date(date);
+    start.setDate(start.getDate() - start.getDay());
+    return Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(start);
+      d.setDate(start.getDate() + i);
+      return d;
+    });
+  };
+  const weekDays = getWeekDays(selectedDate);
 
-    setViewDate(nextMonth);
-    setSelectedDate(getDateKey(nextMonth));
-    setRequestYear(nextMonth.getFullYear());
-    setRequestMonth(nextMonth.getMonth() + 1);
+  const times = Array.from({ length: 18 }, (_, i) => {
+    const hour = String(Math.floor(i / 2) + 9).padStart(2, "0");
+    const min = i % 2 === 0 ? "00" : "30";
+    return `${hour}:${min}`;
+  });
+
+  const formatDate = (d) =>
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
+  const handleMonthChange = (targetMonthIndex) => {
+    const newDate = new Date(year, targetMonthIndex, 1);
+    setCurrentDate(newDate);
+    setSelectedDate(newDate);
   };
 
-  const handleNextMonth = () => {
-    const nextMonth = new Date(
-      viewDate.getFullYear(),
-      viewDate.getMonth() + 1,
-      1
-    );
+  const handleSlotClick = (dateStr, timeStr, slotEvents, isPast) => {
+    // 💡 과거의 빈칸은 클릭 방지
+    if (isPast && slotEvents.length === 0) return;
 
-    setViewDate(nextMonth);
-    setSelectedDate(getDateKey(nextMonth));
-    setRequestYear(nextMonth.getFullYear());
-    setRequestMonth(nextMonth.getMonth() + 1);
-  };
-
-  const handleRefreshReservationList = async () => {
-    const nextMonth = new Date(requestYear, requestMonth - 1, 1);
-
-    try {
-      setIsRefreshingList(true);
-      setError("");
-      setSuccess("");
-
-      const data = await getAdminReservationListByRange(
-        getMonthStartIso(nextMonth),
-        MONTHS_TO_FETCH
+    if (isBlockMode) {
+      if (slotEvents.length > 0) return;
+      const slotKey = `${dateStr}_${timeStr}`;
+      setPendingBlocks((prev) =>
+        prev.includes(slotKey)
+          ? prev.filter((k) => k !== slotKey)
+          : [...prev, slotKey],
       );
+    } else {
+      if (slotEvents.length > 0) {
+        const targetIds = slotEvents.map((e) => e.targetId);
+        const baseEvents = events.filter(
+          (e) => targetIds.includes(e.targetId) && !e.isExtension,
+        );
 
-      setViewDate(nextMonth);
-      setSelectedDate(getDateKey(nextMonth));
-      applyListData(data);
-    } catch (err) {
-      setError(err.message || "관리자 예약 일정을 불러오지 못했습니다.");
-    } finally {
-      setIsRefreshingList(false);
-    }
-  };
-
-  const handleToggleBlockField = (fieldValue) => {
-    if (fieldValue === null) {
-      setSelectedBlockFields([null]);
-      return;
-    }
-
-    setSelectedBlockFields((prev) => {
-      const withoutAll = prev.filter((item) => item !== null);
-
-      if (withoutAll.includes(fieldValue)) {
-        const next = withoutAll.filter((item) => item !== fieldValue);
-        return next.length > 0 ? next : [null];
+        setSelectedSlot({
+          date: dateStr,
+          time: timeStr,
+          allEvents: baseEvents,
+        });
+        setModalType("info");
+        setModalOpen(true);
       }
-
-      return [...withoutAll, fieldValue];
-    });
+    }
   };
 
-  const handleToggleBlockTime = (time) => {
-    setSelectedBlockTimes((prev) => {
-      if (prev.includes(time)) {
-        const next = prev.filter((item) => item !== time);
-        return next.length > 0 ? next : ["09:00"];
-      }
-
-      return [...prev, time];
-    });
-  };
-
-  const handleAddCustomBlockTime = () => {
-    const normalizedTime = normalizeTimeInput(customBlockTime);
-
-    if (!normalizedTime) {
-      setError("올바른 시간을 입력해 주세요.");
-      setSuccess("");
-      return;
-    }
-
-    setSelectedBlockTimes((prev) =>
-      prev.includes(normalizedTime) ? prev : [...prev, normalizedTime]
-    );
-    setCustomBlockTime("");
-    setError("");
-    setSuccess("");
-  };
-
-  const handleBlockSchedule = async () => {
-    if (!selectedDate) {
-      setError("차단할 날짜를 선택해 주세요.");
-      return;
-    }
-
-    if (!selectedBlockTimes.length) {
-      setError("차단할 시간을 선택해 주세요.");
-      return;
-    }
-
-    if (!blockReason.trim()) {
-      setError("차단 사유를 입력해 주세요.");
-      return;
-    }
-
-    const ok = window.confirm(
-      `${selectedDate} ${selectedBlockTimes.join(", ")} 일정을 차단하시겠습니까?`
-    );
-
-    if (!ok) return;
-
+  const handleCreateBlock = async () => {
+    if (!blockReason.trim()) return alert("불가 사유를 입력해 주세요.");
     try {
-      setIsBlocking(true);
-      setError("");
-      setSuccess("");
-
+      setLoading(true);
       await Promise.all(
-        selectedBlockTimes.flatMap((time) =>
-          selectedBlockFields.map((field) =>
-            blockAdminReservation({
-              field,
-              selectedDate: getSelectedDateIso(selectedDate),
-              selectedTime: time,
-              reason: blockReason.trim(),
-            })
-          )
-        )
+        pendingBlocks.map((slotKey) => {
+          const [date, time] = slotKey.split("_");
+          return blockAdminReservation({
+            selectedDate: getSelectedDateIso(date),
+            selectedTime: time,
+            blockedDate: getSelectedDateIso(date),
+            blockedTime: time,
+            field: null,
+            reason: blockReason.trim() || null,
+          });
+        }),
       );
-
-      setSuccess("선택한 일정이 차단되었습니다.");
-      setBlockReason("");
-
+      alert("선택한 일정이 모두 차단되었습니다.");
+      setModalOpen(false);
+      setIsBlockMode(false);
+      setPendingBlocks([]);
       await fetchAdminCalendarByCurrentMonth();
     } catch (err) {
-      setError(err.message || "예약 차단에 실패했습니다.");
+      console.error(err);
+      alert(err.message || "예약 차단에 실패했습니다.");
     } finally {
-      setIsBlocking(false);
+      setLoading(false);
     }
   };
 
-  const handleUnblockSchedule = async (blockId) => {
-    const ok = window.confirm("선택한 차단 일정을 해제하시겠습니까?");
-
-    if (!ok) return;
-
-    try {
-      setError("");
-      setSuccess("");
-
-      await unblockAdminReservation(blockId);
-
-      setSuccess("차단 일정이 해제되었습니다.");
-
-      await fetchAdminCalendarByCurrentMonth();
-    } catch (err) {
-      setError(err.message || "차단 해제에 실패했습니다.");
-    }
-  };
-
-  const handleApproveReservation = async (reservation) => {
-    const ok = window.confirm("이 상담 신청을 승인하시겠습니까?");
-    if (!ok) return;
-
-    try {
-      setDecisionLoadingId(reservation.reservation_id);
-      setError("");
-      setSuccess("");
-
-      const selectedRange = (reservation.available_ranges || []).find(
-        (range) =>
-          range.date === reservation.selected_date &&
-          formatTime(range.start_time) === formatTime(reservation.selected_time)
-      );
-
-      if (!selectedRange) {
-        setError("승인할 시간 정보를 찾을 수 없습니다.");
-        return;
+  const handleUnblock = async (ids) => {
+    if (window.confirm("선택한 차단 일정을 해제하시겠습니까?")) {
+      try {
+        setLoading(true);
+        const idArray = Array.isArray(ids) ? ids : [ids];
+        await Promise.all(idArray.map((id) => unblockAdminReservation(id)));
+        setModalOpen(false);
+        await fetchAdminCalendarByCurrentMonth();
+      } catch (err) {
+        alert("차단 해제에 실패했습니다.");
+      } finally {
+        setLoading(false);
       }
-
-      await allowAdminReservation({
-        reservationId: reservation.reservation_id,
-        date: selectedRange.date,
-        startTime: formatTime(selectedRange.start_time),
-        endTime: formatTime(selectedRange.end_time),
-      });
-
-      setSuccess("상담 신청이 승인되었습니다.");
-      await fetchAdminCalendarByCurrentMonth();
-    } catch (err) {
-      setError(err.message || "상담 승인 처리에 실패했습니다.");
-    } finally {
-      setDecisionLoadingId(null);
     }
   };
 
-  const handleRejectReservation = async (reservationId) => {
+  const handleApprove = async (event) => {
+    if (
+      window.confirm(
+        "상담 요청을 승인하시겠습니까? 승인 시 선택된 시간으로 예약이 확정됩니다.",
+      )
+    ) {
+      try {
+        setLoading(true);
+
+        const reservation = event.originalData || {};
+        const selectedRange = (reservation.available_ranges || []).find(
+          (range) =>
+            getDateKey(range.date) === event.date &&
+            formatTime(range.start_time) === event.time,
+        );
+
+        await allowAdminReservation({
+          reservationId: event.targetId || event.id,
+          date: selectedRange?.date || event.date,
+          startTime: formatTime(selectedRange?.start_time || event.time),
+          endTime: formatTime(
+            selectedRange?.end_time || addMinutesToTime(event.time, 90),
+          ),
+        });
+
+        setModalOpen(false);
+        await fetchAdminCalendarByCurrentMonth();
+      } catch (err) {
+        alert(err.message || "승인 처리에 실패했습니다.");
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+  const handleReject = async (id) => {
     const reason = window.prompt(
-      "불허 사유를 입력해 주세요. 비워두면 기본 사유가 저장됩니다.",
-      ""
+      "불허/취소 사유를 입력해 주세요. (미입력 가능)",
+      "",
     );
-
     if (reason === null) return;
-
-    const ok = window.confirm("이 상담 신청을 불허하시겠습니까?");
-    if (!ok) return;
-
-    try {
-      setDecisionLoadingId(reservationId);
-      setError("");
-      setSuccess("");
-
-      await disallowAdminReservation([
-        {
-          id: reservationId,
-          reason: reason.trim() || null,
-        },
-      ]);
-
-      setSuccess("상담 신청이 불허되었습니다.");
-      await fetchAdminCalendarByCurrentMonth();
-    } catch (err) {
-      setError(err.message || "상담 불허 처리에 실패했습니다.");
-    } finally {
-      setDecisionLoadingId(null);
+    if (window.confirm("정말 이 상담 신청을 불허(취소)하시겠습니까?")) {
+      try {
+        setLoading(true);
+        await disallowAdminReservation([
+          { id, reason: reason.trim() || null },
+        ]);
+        setModalOpen(false);
+        await fetchAdminCalendarByCurrentMonth();
+      } catch (err) {
+        alert("불허 처리에 실패했습니다.");
+      } finally {
+        setLoading(false);
+      }
     }
   };
+
+  const selectedDateStr = formatDate(selectedDate);
+  const selectedDateEvents = events
+    .filter((e) => e.date === selectedDateStr && !e.isExtension)
+    .sort((a, b) => a.time.localeCompare(b.time));
+
+  const todayStr = formatDate(new Date());
+  // 💡 현재 시각 객체 (과거 시간 회색 처리용)
+  const now = new Date();
 
   return (
-    <div className="adm-page">
-      <div className="adm-portal-head">
+    <div className="cal-page-wrap">
+      <div className="cal-page-header">
         <div>
-          <h2>Operational Portal</h2>
-          <span>
-            예약 신청 현황을 모니터링하고, 승인·불허·일정 차단을 관리합니다.
-          </span>
-        </div>
-
-        <div className="adm-portal-actions">
-          <button
-            type="button"
-            className="adm-btn ghost"
-            onClick={fetchAdminCalendar}
-            disabled={loading}
-          >
-            {loading ? "조회 중..." : "Schedule View"}
-          </button>
-          <button type="button" className="adm-btn primary">
-            System Audit
-          </button>
+          <h1 className="cal-page-title">예약 현황 관리</h1>
+          <p className="cal-page-subtitle">
+            Manage consultations and schedule blocks
+          </p>
         </div>
       </div>
 
-      {error && <section className="adm-card admin-alert error">{error}</section>}
+      <div className="cal-kpi-grid">
+        <div className="cal-kpi-card">
+          <span className="cal-kpi-label">누적 예약 건수</span>
+          <strong className="cal-kpi-value">{totalCount}</strong>
+        </div>
+        <div className="cal-kpi-card">
+          <span className="cal-kpi-label">승인 대기 예약</span>
+          <strong className="cal-kpi-value orange">{pendingCount}</strong>
+        </div>
+        <div className="cal-kpi-card">
+          <span className="cal-kpi-label">활성화된 예약 (대기+승인)</span>
+          <strong className="cal-kpi-value blue">
+            {
+              allReservations.filter(
+                (r) =>
+                  r.status === "pending" ||
+                  r.status === "approved" ||
+                  r.status === "confirmed",
+              ).length
+            }
+          </strong>
+        </div>
+      </div>
 
-      {success && (
-        <section className="adm-card admin-alert success">{success}</section>
-      )}
-
-      <section className="adm-kpi-grid">
-        <article className="adm-kpi-card">
-          <span>Active Reservations</span>
-          <strong>{activeCount}</strong>
-          <small>예약 대기 및 승인</small>
-        </article>
-        <article className="adm-kpi-card warning">
-          <span>Pending Approvals</span>
-          <strong>{pendingCount}</strong>
-          <small>승인 검토 필요</small>
-        </article>
-        <article className="adm-kpi-card">
-          <span>Approved Sessions</span>
-          <strong>{approvedCount}</strong>
-          <small>승인 완료 상담</small>
-        </article>
-        <article className="adm-kpi-card danger">
-          <span>Blocked Slots</span>
-          <strong>{blocks.length}</strong>
-          <small>관리자 차단 일정</small>
-        </article>
-      </section>
-
-      <section className="adm-ops-grid">
-        <article className="adm-card adm-activity-card">
-          <div className="adm-card-head">
-            <div>
-              <h2>Platform Activity</h2>
-              <span>Reservation requests vs blocked schedules</span>
-            </div>
-            <strong>Last 7 Days</strong>
-          </div>
-          <div className="adm-activity-chart" aria-hidden="true">
-            <span style={{ height: "45%" }} />
-            <span style={{ height: "32%" }} />
-            <span style={{ height: "58%" }} />
-            <span style={{ height: "72%" }} />
-            <span style={{ height: "64%" }} />
-            <span style={{ height: "50%" }} />
-            <span style={{ height: "38%" }} />
-          </div>
-          <div className="adm-chart-legend">
-            <span>예약 신청</span>
-            <span>전문가 검토</span>
-          </div>
-        </article>
-
-        <article className="adm-card adm-queue-card">
-          <div className="adm-card-head">
-            <div>
-              <h2>Approval Queue</h2>
-              <span>승인 대기 중인 상담 신청</span>
-            </div>
-            <b>{pendingCount} Urgent</b>
-          </div>
-          <div className="adm-queue-list">
-            {allReservations
-              .filter((reservation) => reservation.status === "pending")
-              .slice(0, 4)
-              .map((reservation) => (
-                <div key={reservation.reservation_id}>
-                  <strong>{reservation.username || "사용자"}</strong>
-                  <span>
-                    {getFieldLabel(reservation.field)} ·{" "}
-                    {formatTime(reservation.selected_time)}
-                  </span>
-                  <em>Pending</em>
-                </div>
-              ))}
-            {pendingCount === 0 && <p>현재 승인 대기 예약이 없습니다.</p>}
-          </div>
-        </article>
-      </section>
-
-      <section className="adm-card">
-        <div className="adm-card-head">
-          <div>
-            <h2>Reservation Management</h2>
-            <span>날짜별 예약 신청 현황과 차단된 일정을 확인합니다.</span>
-          </div>
-
-          <div className="admin-calendar-tools">
-            <div className="admin-calendar-picker-row">
-              <YearMonthPicker
-                year={requestYear}
-                month={requestMonth}
-                onChangeYear={setRequestYear}
-                onChangeMonth={setRequestMonth}
-                startYear={today.getFullYear()}
-                yearCount={8}
-              />
-
+      <div className="cal-layout">
+        <div className="cal-left-panel">
+          <div className="cal-panel-box">
+            <div className="mini-cal-header">
               <button
-                type="button"
-                className="adm-btn primary"
-                onClick={handleRefreshReservationList}
-                disabled={isRefreshingList}
-              >
-                {isRefreshingList ? "조회 중..." : "일정 조회"}
-              </button>
-            </div>
-
-            <div className="reservation-calendar-nav">
-              <button
-                type="button"
-                className="calendar-arrow"
-                onClick={handlePrevMonth}
-                aria-label="이전 달"
+                className="mini-cal-nav ghost"
+                onClick={() => handleMonthChange(month - 1)}
               >
                 ◀
               </button>
-
-              <div className="calendar-month">
-                {viewDate.getFullYear()}년 {viewDate.getMonth() + 1}월
-              </div>
-
+              <span>
+                {year}. {String(month + 1).padStart(2, "0")}
+              </span>
               <button
-                type="button"
-                className="calendar-arrow"
-                onClick={handleNextMonth}
-                aria-label="다음 달"
+                className="mini-cal-nav ghost"
+                onClick={() => handleMonthChange(month + 1)}
               >
                 ▶
               </button>
             </div>
-          </div>
-        </div>
-
-        {loading ? (
-          <div className="adm-empty admin-loading">
-            예약 데이터를 불러오는 중입니다.
-          </div>
-        ) : (
-          <div className="adm-calendar-layout">
-            <div className="adm-calendar">
-              {weekDays.map((day) => (
-                <div key={day} className="adm-weekday">
-                  {day}
+            <div className="mini-cal-grid">
+              {["일", "월", "화", "수", "목", "금", "토"].map((d) => (
+                <div key={d} className="mini-cal-day-label">
+                  {d}
                 </div>
               ))}
-
-              {calendarDays.map((date, index) => {
-                if (!date) {
-                  return <div key={`empty-${index}`} className="adm-day empty" />;
-                }
-
-                const reservationCount = (reservationsByDate[date] || []).filter(
-                  (reservation) =>
-                    reservation.status === "approved" ||
-                    reservation.status === "pending"
-                ).length;
-                const blockCount = (blocksByDate[date] || []).length;
-
+              {blanks.map((_, i) => (
+                <div key={`blank-${i}`} />
+              ))}
+              {days.map((d) => {
+                const dStr = formatDate(d);
+                const hasEvent = events.some((e) => e.date === dStr);
+                const isSelected = selectedDateStr === dStr;
                 return (
-                  <button
-                    key={date}
-                    type="button"
-                    className={[
-                      "adm-day",
-                      selectedDate === date ? "selected" : "",
-                      blockCount > 0 ? "blocked" : "",
-                    ].join(" ")}
-                    onClick={() => {
-                      setSelectedDate(date);
-                      setError("");
-                      setSuccess("");
-                    }}
+                  <div
+                    key={dStr}
+                    className={`mini-cal-day ${isSelected ? "selected" : ""} ${hasEvent ? "has-event" : ""}`}
+                    onClick={() => setSelectedDate(d)}
                   >
-                    <span>{Number(date.slice(8, 10))}</span>
-                    {reservationCount > 0 && <b>{reservationCount}</b>}
-                    {blockCount > 0 && <em>BLOCKED</em>}
-                  </button>
+                    {d.getDate()}
+                  </div>
                 );
               })}
             </div>
+          </div>
 
-            <aside className="adm-side-panel">
-              <div className="adm-side-panel-head">
-                <h3>{selectedDate}</h3>
-
-                <span className="admin-side-count">
-                  예약{" "}
-                  <strong className="blue">
-                    {selectedReservations.length}
-                  </strong>
-                  건 / 블락{" "}
-                  <strong className="red">{selectedBlocks.length}</strong>건
-                </span>
-              </div>
-
-              <section className="admin-block-panel">
-                <h4>예약 차단</h4>
-
-                <div className="admin-block-stack">
-                  <div>
-                    <small className="admin-block-label">차단 시간</small>
-
-                    <div className="admin-block-grid time-grid">
-                      {availableBlockTimes.map((time) => (
-                        <button
-                          key={time}
-                          type="button"
-                          className={`adm-btn ${
-                            selectedBlockTimes.includes(time) ? "danger" : "ghost"
-                          }`}
-                          onClick={() => handleToggleBlockTime(time)}
-                        >
-                          {time}
-                        </button>
-                      ))}
-                    </div>
-
-                    <div className="admin-custom-time">
-                      <input
-                        type="time"
-                        value={customBlockTime}
-                        onChange={(e) => {
-                          setCustomBlockTime(e.target.value);
-                          setError("");
-                          setSuccess("");
-                        }}
-                        aria-label="직접 차단 시간 입력"
-                      />
-                      <button
-                        type="button"
-                        className="adm-btn ghost"
-                        onClick={handleAddCustomBlockTime}
-                      >
-                        시간 추가
-                      </button>
-                    </div>
-                  </div>
-
-                  <div>
-                    <small className="admin-block-label">차단 분야</small>
-
-                    <div className="admin-block-grid field-grid">
-                      {FIELD_OPTIONS.map((field) => {
-                        const isSelected = selectedBlockFields.includes(
-                          field.value
-                        );
-
-                        return (
-                          <button
-                            key={field.label}
-                            type="button"
-                            className={`adm-btn ${
-                              isSelected ? "danger" : "ghost"
-                            }`}
-                            onClick={() => handleToggleBlockField(field.value)}
-                          >
-                            {field.label}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  <input
-                    value={blockReason}
-                    onChange={(e) => setBlockReason(e.target.value)}
-                    placeholder="차단 사유를 입력하세요"
-                    className="admin-block-reason"
-                  />
-
-                  <button
-                    type="button"
-                    className="adm-btn danger"
-                    onClick={handleBlockSchedule}
-                    disabled={isBlocking}
-                  >
-                    {isBlocking ? "차단 중..." : "선택 일정 예약 막기"}
-                  </button>
-                </div>
-              </section>
-
-              {selectedBlocks.length > 0 && (
-                <div className="admin-block-list">
-                  {selectedBlocks.map((block) => (
-                  <div key={block.id} className="admin-block-item">
-                    <div>
-                      <strong>
-                        [{getFieldLabel(block.field)}] {formatTime(block.blocked_time)}
-                      </strong>
-
-                      <strong> 사유: {block.reason || "-"}</strong>
-                    </div>
-
-                    <button
-                      type="button"
-                      className="adm-btn ghost"
-                      onClick={() => handleUnblockSchedule(block.id)}
-                    >
-                      해제
-                    </button>
-                  </div>
-                  ))}
-                </div>
-              )}
-
-              {selectedReservations.length === 0 ? (
-                <div className="adm-empty admin-empty-panel">
-                  이 날짜에는 예약 신청이 없습니다.
-                </div>
-              ) : (
-              <div className="admin-reservation-list">
-                {selectedReservations.map((reservation) => (
+          <div className="cal-panel-box detail-panel-box">
+            <div className="cal-panel-title sticky-header">
+              {month + 1}월 {selectedDate.getDate()}일 상세 현황
+            </div>
+            <div className="day-event-list">
+              {selectedDateEvents.length > 0 ? (
+                selectedDateEvents.map((e) => (
                   <div
-                    key={reservation.reservation_id}
-                    className="admin-reservation-card"
+                    key={e.id}
+                    className="day-event-item"
+                    onClick={() => handleSlotClick(e.date, e.time, [e], false)}
                   >
-                    <div className="admin-reservation-top">
-                      <div>
-                        <strong className="admin-reservation-name">
-                          {reservation.username}
-                        </strong>
-                        <span className="admin-reservation-field">
-                          {getFieldLabel(reservation.field)} ·{" "}
-                          {formatTime(reservation.selected_time)}
-                        </span>
-                      </div>
-
-                      <span className={`status status-${reservation.status}`}>
-                        {getStatusLabel(reservation.status)}
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        marginBottom: "6px",
+                      }}
+                    >
+                      <span
+                        className={`day-event-badge badge-${e.type === "block" ? "block" : e.status}`}
+                      >
+                        {e.type === "block"
+                          ? "차단됨"
+                          : e.status === "pending"
+                            ? "승인 대기"
+                            : e.status === "approved" ||
+                                e.status === "confirmed"
+                              ? "승인 확정"
+                              : "상태 없음"}
+                      </span>
+                      <span className="day-event-time">
+                        {e.time} ~ {e.endTime}
                       </span>
                     </div>
+                    <span className="day-event-title">{e.title}</span>
+                  </div>
+                ))
+              ) : (
+                <div className="day-empty-msg">등록된 일정이 없습니다.</div>
+              )}
+            </div>
+          </div>
+        </div>
 
-                    <div className="admin-reservation-info">
-                      <span>{reservation.email}</span>
-                      <span>신청일: {formatDate(reservation.requested_at)}</span>
+        <div className="cal-panel-box weekly-panel-box">
+          <div className="weekly-header">
+            <h2 className="weekly-title">
+              {displayYear}년 {displayMonth + 1}월 {displayWeek}주차 일정
+              {loading && (
+                <span className="loading-text">데이터 갱신 중...</span>
+              )}
+            </h2>
+
+            <div className="weekly-actions">
+              <button
+                className="adm-btn ghost"
+                onClick={fetchAdminCalendarByCurrentMonth}
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  style={{ marginRight: "6px" }}
+                >
+                  <polyline points="23 4 23 10 17 10"></polyline>
+                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                </svg>
+                새로고침
+              </button>
+            </div>
+          </div>
+
+          <div className="weekly-grid-container">
+            <div className="weekly-grid">
+              <div className="grid-col-header time-label-header"></div>
+
+              {weekDays.map((d) => {
+                const isToday = formatDate(d) === todayStr;
+                return (
+                  <div
+                    key={d.toISOString()}
+                    className={`grid-col-header ${isToday ? "today" : ""}`}
+                  >
+                    <span className="day-name">
+                      {["일", "월", "화", "수", "목", "금", "토"][d.getDay()]}
+                    </span>
+                    <span className="day-date">{d.getDate()}</span>
+                  </div>
+                );
+              })}
+
+              {times.map((time) => {
+                const isHalfHour = time.endsWith(":30");
+                const isFullHour = time.endsWith(":00");
+
+                return (
+                  <React.Fragment key={time}>
+                    <div
+                      className={`time-label-col ${isHalfHour ? "half-hour" : "full-hour"}`}
+                    >
+                      {isFullHour ? <span>{time}</span> : null}
                     </div>
 
-                    {reservation.status === "pending" && (
-                      <div className="admin-decision-actions">
-                        <button
-                          type="button"
-                          className="adm-btn primary"
-                          disabled={decisionLoadingId === reservation.reservation_id}
-                          onClick={() =>
-                            handleApproveReservation(reservation)
-                          }
-                        >
-                          {decisionLoadingId === reservation.reservation_id
-                            ? "처리 중..."
-                            : "허락"}
-                        </button>
+                    {weekDays.map((d) => {
+                      const dateStr = formatDate(d);
+                      const slotEvents = events.filter(
+                        (e) => e.date === dateStr && e.time === time,
+                      );
 
-                        <button
-                          type="button"
-                          className="adm-btn danger"
-                          disabled={decisionLoadingId === reservation.reservation_id}
+                      const baseEvents = slotEvents.filter(
+                        (e) => !e.isExtension,
+                      );
+                      const displayEvent = baseEvents[0];
+                      const extraCount = baseEvents.length - 1;
+
+                      // 💡 2. 이미 지나간 과거 시간 판별
+                      const [hh, mm] = time.split(":").map(Number);
+                      const slotDateTime = new Date(
+                        d.getFullYear(),
+                        d.getMonth(),
+                        d.getDate(),
+                        hh,
+                        mm,
+                        0,
+                      );
+                      const isPast = slotDateTime < now;
+
+                      // 💡 3. 과거 시간은 블록 생성 모드 금지
+                      const isBlockable =
+                        isBlockMode && slotEvents.length === 0 && !isPast;
+                      const slotKey = `${dateStr}_${time}`;
+                      const isSelected = pendingBlocks.includes(slotKey);
+
+                      return (
+                        <div
+                          key={`${dateStr}-${time}`}
+                          className={`grid-cell ${isHalfHour ? "half-hour" : ""} ${isBlockable ? "blockable" : ""} ${isSelected ? "selected-for-block" : ""} ${isPast && !displayEvent ? "past-slot" : ""}`}
                           onClick={() =>
-                            handleRejectReservation(reservation.reservation_id)
+                            handleSlotClick(dateStr, time, slotEvents, isPast)
                           }
                         >
-                          불허
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-              )}
-            </aside>
+                          {displayEvent && (
+                            <div
+                              // 💡 지나간 일정은 시각적으로 약간 투명해지도록 past-event 추가
+                              className={`event-card ${displayEvent.type === "block" ? "block" : displayEvent.status} ${isPast ? "past-event" : ""}`}
+                              style={{
+                                height: `calc(${displayEvent.slotSpan * 100}% - 2px)`,
+                                zIndex: 10 + displayEvent.slotSpan,
+                              }}
+                            >
+                              <span className="event-title">
+                                {displayEvent.title}
+                              </span>
+                              {extraCount > 0 && (
+                                <span className="event-extra">
+                                  +{extraCount} more
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </React.Fragment>
+                );
+              })}
+            </div>
           </div>
-        )}
-      </section>
+
+          <div className="weekly-footer">
+            {isBlockMode ? (
+              <div style={{ display: "flex", gap: "8px" }}>
+                <button
+                  className="adm-btn secondary"
+                  onClick={() => {
+                    setIsBlockMode(false);
+                    setPendingBlocks([]);
+                  }}
+                >
+                  선택 취소
+                </button>
+                <button
+                  className="adm-btn danger"
+                  onClick={() => {
+                    if (pendingBlocks.length === 0)
+                      return alert(
+                        "표에서 차단할 일정을 먼저 1개 이상 클릭해 주세요.",
+                      );
+                    setBlockReason("");
+                    setModalType("create-block");
+                    setModalOpen(true);
+                  }}
+                >
+                  선택한 {pendingBlocks.length}개 일정 차단하기
+                </button>
+              </div>
+            ) : (
+              <button
+                className="adm-btn primary"
+                onClick={() => setIsBlockMode(true)}
+              >
+                일정 차단 모드
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {modalOpen && (
+        <div className="adm-modal-overlay">
+          <div className="adm-modal" style={{ maxWidth: "440px" }}>
+            {modalType === "info" ? (
+              <>
+                <h3 className="modal-title">
+                  {selectedSlot.allEvents.length > 1
+                    ? "해당 시간 일정 목록"
+                    : selectedSlot.allEvents[0].type === "block"
+                      ? "차단 일정 상세"
+                      : "예약 상세 정보"}
+                </h3>
+                <div className="modal-content-scroll">
+                  {selectedSlot.allEvents.map((evt, idx) => (
+                    <div key={evt.id || idx} className="modal-info-card">
+                      <p>
+                        <strong>시간:</strong> {evt.time} ~ {evt.endTime}
+                      </p>
+                      <p>
+                        <strong>상태:</strong>
+                        <span
+                          className={`day-event-badge badge-${evt.type === "block" ? "block" : evt.status}`}
+                          style={{ marginLeft: "8px" }}
+                        >
+                          {evt.type === "block"
+                            ? "차단됨"
+                            : evt.status === "pending"
+                              ? "승인 대기"
+                              : "승인 확정"}
+                        </span>
+                      </p>
+                      <p>
+                        <strong>내용:</strong> {evt.title}
+                      </p>
+                      {evt.reason && (
+                        <p>
+                          <strong>사유:</strong> {evt.reason}
+                        </p>
+                      )}
+                      <div
+                        className="modal-actions"
+                        style={{
+                          marginTop: "16px",
+                          justifyContent: "flex-start",
+                        }}
+                      >
+                        {evt.type === "block" ? (
+                          <button
+                            className="adm-btn danger"
+                            onClick={() =>
+                              handleUnblock(
+                                evt.mergedIds || evt.targetId || evt.id,
+                              )
+                            }
+                          >
+                            차단 해제
+                          </button>
+                        ) : (
+                          <>
+                            {evt.status === "pending" && (
+                              <button
+                                className="adm-btn primary"
+                                onClick={() =>
+                                  handleApprove(evt)
+                                }
+                              >
+                                승인 확정
+                              </button>
+                            )}
+                            {(evt.status === "pending" ||
+                              evt.status === "approved" ||
+                              evt.status === "confirmed") && (
+                              <button
+                                className="adm-btn danger"
+                                onClick={() =>
+                                  handleReject(evt.targetId || evt.id)
+                                }
+                              >
+                                예약 취소
+                              </button>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="modal-actions">
+                  <button
+                    className="adm-btn secondary"
+                    onClick={() => setModalOpen(false)}
+                  >
+                    닫기
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <h3 className="modal-title">다중 일정 차단</h3>
+                <div className="modal-content">
+                  <p className="modal-desc">
+                    <strong>선택된 구간:</strong> 총{" "}
+                    <strong>{pendingBlocks.length}</strong>개 (30분 단위)
+                  </p>
+                  <label className="modal-label">차단 일괄 사유</label>
+                  <textarea
+                    className="modal-textarea"
+                    value={blockReason}
+                    onChange={(e) => setBlockReason(e.target.value)}
+                    placeholder="사유를 입력하세요 (예: 외부 미팅, 세미나 등)"
+                  />
+                </div>
+                <div className="modal-actions">
+                  <button
+                    className="adm-btn secondary"
+                    onClick={() => setModalOpen(false)}
+                  >
+                    취소
+                  </button>
+                  <button
+                    className="adm-btn danger"
+                    onClick={handleCreateBlock}
+                  >
+                    일괄 차단
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

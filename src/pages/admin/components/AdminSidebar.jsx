@@ -57,13 +57,13 @@ export default function AdminSidebar() {
 
   return (
     <aside className="adm-sidebar">
-      <NavLink to="/" className="adm-brand">
+      <div className="adm-brand">
         <span>◎</span>
         <div>
           <strong>WVA AI Consulting</strong>
           <small>Japan Entry OS</small>
         </div>
-      </NavLink>
+      </div>
 
       <nav className="adm-menu" aria-label="관리자 메뉴">
         {menuItems.map((item) => (
@@ -97,7 +97,7 @@ export default function AdminSidebar() {
             </svg>
           </div>
           <div className="adm-profile-info">
-            <span>Admin</span>
+            <normal>Admin</normal>
           </div>
         </div>
 

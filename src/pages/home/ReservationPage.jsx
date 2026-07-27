@@ -2,7 +2,6 @@ import { Link, Navigate } from "react-router-dom";
 import { useMemo, useState, useEffect } from "react";
 import "../../App.css";
 import Header from "../../components/Header";
-import YearMonthPicker from "../../components/YearMonthPicker";
 import "../../styles/reservation-visily.css";
 import {
   createReservation,
@@ -135,6 +134,19 @@ function addMinutesToTime(time, minutesToAdd) {
   return `${String(endHour).padStart(2, "0")}:${String(endMinute).padStart(2, "0")}`;
 }
 
+function getWeekDates(dateValue) {
+  const date = new Date(dateValue);
+  const start = new Date(date);
+  // Monday is the first column so a work-week reads naturally for consultations.
+  start.setDate(date.getDate() - ((date.getDay() + 6) % 7));
+
+  return Array.from({ length: 7 }, (_, index) => {
+    const day = new Date(start);
+    day.setDate(start.getDate() + index);
+    return day;
+  });
+}
+
 export default function ReservationPage() {
   const language = getCurrentLanguage();
   const t = (key, variables) => translate(language, key, variables);
@@ -146,12 +158,6 @@ export default function ReservationPage() {
 
   const [viewDate, setViewDate] = useState(
     new Date(today.getFullYear(), today.getMonth(), 1)
-  );
-
-  const [requestYear, setRequestYear] = useState(today.getFullYear());
-
-  const [requestMonth, setRequestMonth] = useState(
-    today.getMonth() + 1
   );
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -179,7 +185,6 @@ export default function ReservationPage() {
   const [listError, setListError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isRefreshingList, setIsRefreshingList] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -216,12 +221,12 @@ export default function ReservationPage() {
 
   const calendarDays = useMemo(() => buildCalendarDays(viewDate), [viewDate]);
 
-  const blockedTimes = useMemo(() => {
+  const getBlockedTimesForDate = (dateValue) => {
     const blocked = new Set();
 
-    if (!selectedDate) return blocked;
+    if (!dateValue) return blocked;
 
-    const dateKey = getDateKey(selectedDate);
+    const dateKey = getDateKey(dateValue);
 
     blocks.forEach((block) => {
       if (block.unavailable_date !== dateKey) return;
@@ -251,16 +256,17 @@ export default function ReservationPage() {
     });
 
     return blocked;
-  }, [blocks, selectedDate, selectedField]);
+  };
 
-  const timeOptions = TIME_OPTIONS;
+  const scheduleWeekDays = useMemo(
+    () => getWeekDates(selectedDate || viewDate),
+    [selectedDate, viewDate]
+  );
 
   const moveToMonth = (date) => {
     const nextMonth = new Date(date.getFullYear(), date.getMonth(), 1);
 
     setViewDate(nextMonth);
-    setRequestYear(nextMonth.getFullYear());
-    setRequestMonth(nextMonth.getMonth() + 1);
     setSelectedDate(null);
     setIsSubmitted(false);
     setSubmitError("");
@@ -273,38 +279,6 @@ export default function ReservationPage() {
 
   const handleNextMonth = () => {
     moveToMonth(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1));
-  };
-
-  const handleRefreshReservationList = async () => {
-    if (!requestMonth) {
-      setListError(t("reservation.selectMonthError"));
-      return;
-    }
-
-    const nextMonth = new Date(requestYear, requestMonth - 1, 1);
-
-    try {
-      setIsRefreshingList(true);
-      setListError("");
-      setSubmitSuccess("");
-
-      setViewDate(nextMonth);
-      setSelectedDate(null);
-      setIsSubmitted(false);
-
-      const data = await getReservationListByRange({
-        baseDate: getMonthStartIso(nextMonth),
-        previousMonthCount: 2,
-        nextMonthCount: 4,
-      });
-
-      setBlocks(data.blocks || []);
-    } catch (err) {
-      console.error("예약 일정 재조회 실패:", err);
-      setListError(err.message || t("reservation.listRefreshError"));
-    } finally {
-      setIsRefreshingList(false);
-    }
   };
 
   const handleChange = (e) => {
@@ -444,15 +418,16 @@ export default function ReservationPage() {
     }
   };
 
-  const toggleTimeRange = (time) => {
-    if (!selectedDate) {
+  const toggleTimeRange = (time, dateValue = selectedDate) => {
+    if (!dateValue) {
       setSubmitError("먼저 날짜를 선택해 주세요.");
       return;
     }
 
-    if (blockedTimes.has(time)) return;
+    if (getBlockedTimesForDate(dateValue).has(time)) return;
 
-    const date = getDateKey(selectedDate);
+    const date = getDateKey(dateValue);
+    setSelectedDate(new Date(dateValue));
     const range = {
       date,
       startTime: time,
@@ -807,170 +782,141 @@ export default function ReservationPage() {
             )}
 
             {currentStep === 3 && (
-            <div className="rv-workspace">
-              <section className="rv-panel rv-calendar-panel">
-                <div className="rv-panel-head">
-                  <div>
-                    <span>Step 03</span>
-                    <h2>가능 날짜 확인</h2>
+              <div className="rv-schedule-layout">
+                <section className="rv-schedule-card rv-schedule-month">
+                  <div className="rv-schedule-eyebrow">STEP 03</div>
+                  <div className="rv-schedule-month-title">
+                    <strong>{formatTranslatedMonth(language, viewDate)}</strong>
+                    <span>날짜를 먼저 선택해 주세요</span>
                   </div>
-                  <div className="rv-month-tools">
-                    <YearMonthPicker
-                      year={requestYear}
-                      month={requestMonth}
-                      onChangeYear={setRequestYear}
-                      onChangeMonth={setRequestMonth}
-                      startYear={today.getFullYear()}
-                      yearCount={8}
-                    />
-                    <button
-                      type="button"
-                      onClick={handleRefreshReservationList}
-                      disabled={isRefreshingList}
-                    >
-                      {isRefreshingList
-                        ? t("reservation.refreshing")
-                        : t("reservation.refresh")}
-                    </button>
+                  <div className="rv-schedule-month-nav">
+                    <button type="button" onClick={handlePrevMonth} aria-label={t("reservation.previousMonth")}>‹</button>
+                    <button type="button" onClick={handleNextMonth} aria-label={t("reservation.nextMonth")}>›</button>
                   </div>
-                </div>
+                  <div className="rv-schedule-calendar">
+                    {WEEK_DAYS.slice(1).concat(WEEK_DAYS[0]).map((day) => (
+                      <span key={day}>{t(`reservation.${day}`)}</span>
+                    ))}
+                    {calendarDays.map((date, index) => {
+                      if (!date) return <span key={`empty-${index}`} className="rv-schedule-date empty" />;
+                      const isPast = isPastDate(date, today);
+                      const isToday = isSameDate(date, today);
+                      const isDisabled = isPast && !isToday;
+                      return (
+                        <button
+                          key={date.toISOString()}
+                          type="button"
+                          disabled={isDisabled}
+                          className={[
+                            "rv-schedule-date",
+                            isSameDate(date, selectedDate) ? "selected" : "",
+                            selectedRanges.some((range) => range.date === getDateKey(date)) ? "has-suggestion" : "",
+                            isToday ? "today" : "",
+                          ].join(" ")}
+                          onClick={() => handleDateClick(date, isPast, isToday)}
+                        >
+                          {date.getDate()}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <div className="rv-schedule-guide">
+                    <strong>일정 가이드</strong>
+                    <span>날짜를 고른 뒤 중앙 시간표에서 가능한 시간을 제안해 주세요.</span>
+                  </div>
+                </section>
 
-                <div className="rv-calendar-nav">
-                  <button
-                    type="button"
-                    onClick={handlePrevMonth}
-                    aria-label={t("reservation.previousMonth")}
-                  >
-                    ‹
-                  </button>
-                  <strong>{formatTranslatedMonth(language, viewDate)}</strong>
-                  <button
-                    type="button"
-                    onClick={handleNextMonth}
-                    aria-label={t("reservation.nextMonth")}
-                  >
-                    ›
-                  </button>
-                </div>
-
-                <div className="rv-calendar-board">
-                  {WEEK_DAYS.map((day) => (
-                    <div key={day} className="rv-weekday">
-                      {t(`reservation.${day}`)}
+                <section className="rv-schedule-card rv-schedule-week">
+                  <div className="rv-schedule-week-head">
+                    <div>
+                      <div className="rv-schedule-eyebrow">STEP 03</div>
+                      <h2>상담 가능 시간 제안</h2>
                     </div>
-                  ))}
-
-                  {calendarDays.map((date, index) => {
-                    if (!date) {
-                      return <div key={`empty-${index}`} className="rv-day empty" />;
-                    }
-
-                    const isSelected = isSameDate(date, selectedDate);
-                    const hasSuggestedTime = selectedRanges.some(
-                      (range) => range.date === getDateKey(date)
-                    );
-                    const isPast = isPastDate(date, today);
-                    const isToday = isSameDate(date, today);
-                    const isDisabled = isPast && !isToday;
-
-                    return (
-                      <button
-                        key={date.toISOString()}
-                        type="button"
-                        disabled={isDisabled}
-                        className={[
-                          "rv-day",
-                          isSelected ? "selected" : "",
-                          hasSuggestedTime ? "has-suggestion" : "",
-                          isToday ? "today" : "",
-                          isDisabled ? "disabled" : "",
-                        ].join(" ")}
-                        onClick={() => handleDateClick(date, isPast, isToday)}
-                      >
-                        <span>{date.getDate()}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </section>
-
-              <section className="rv-panel">
-                <div className="rv-panel-head">
-                  <div>
-                    <span>Step 03</span>
-                    <h2>가능 시간대 선택</h2>
+                    <span className="rv-timezone">GMT+9</span>
                   </div>
-                  <small>불가능한 시간은 자동으로 비활성화됩니다</small>
-                </div>
+                  <div className="rv-schedule-grid-scroll">
+                    <div className="rv-schedule-week-grid">
+                      <span className="rv-schedule-grid-corner" />
+                      {scheduleWeekDays.map((day) => (
+                        <button
+                          key={day.toISOString()}
+                          type="button"
+                          className={isSameDate(day, selectedDate) ? "selected-day" : ""}
+                          onClick={() => handleDateClick(day, isPastDate(day, today), isSameDate(day, today))}
+                        >
+                          <small>{["일", "월", "화", "수", "목", "금", "토"][day.getDay()]}</small>
+                          <strong>{day.getDate()}</strong>
+                        </button>
+                      ))}
+                      {TIME_OPTIONS.map((time) => (
+                        <div className="rv-schedule-grid-row" key={time}>
+                          <span className="rv-schedule-grid-time">{time}</span>
+                          {scheduleWeekDays.map((day) => {
+                            const dateKey = getDateKey(day);
+                            const blocked = getBlockedTimesForDate(day).has(time);
+                            const selected = selectedRanges.some(
+                              (range) => range.date === dateKey && range.startTime === time
+                            );
+                            const disabled = (isPastDate(day, today) && !isSameDate(day, today)) || blocked;
+                            return (
+                              <button
+                                key={`${dateKey}-${time}`}
+                                type="button"
+                                disabled={disabled}
+                                className={[
+                                  "rv-schedule-slot",
+                                  selected ? "selected" : "",
+                                  blocked ? "blocked" : "",
+                                ].join(" ")}
+                                onClick={() => toggleTimeRange(time, day)}
+                                aria-label={`${dateKey} ${time} ${selected ? "제안 일정 삭제" : "제안 일정 추가"}`}
+                              >
+                                {selected && <span>{time} - {addMinutesToTime(time, CONSULTATION_DURATION_MINUTES)}</span>}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </section>
 
-                <div className="rv-time-grid">
-                  {timeOptions.map((time) => {
-                    const blocked = blockedTimes.has(time);
-                    const isSelected = selectedDate
-                      ? selectedRanges.some(
-                          (range) =>
-                            range.date === getDateKey(selectedDate) &&
-                            range.startTime === time
-                        )
-                      : false;
-
-                    return (
-                      <button
-                        key={time}
-                        type="button"
-                        disabled={blocked}
-                        className={[
-                          isSelected ? "selected" : "",
-                          blocked ? "blocked" : "",
-                        ].join(" ")}
-                        onClick={() => toggleTimeRange(time)}
-                      >
-                        <strong>{time}</strong>
-                        <span>{blocked ? "예약 불가" : "예약 가능"}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                <div className="rv-suggested-ranges" aria-live="polite">
-                  <div className="rv-suggested-ranges-head">
-                    <strong>제안 일정</strong>
-                    <span>{selectedRanges.length}개 선택</span>
+                <aside className="rv-schedule-card rv-schedule-summary" aria-live="polite">
+                  <div className="rv-schedule-summary-head">
+                    <div className="rv-schedule-eyebrow">SELECTED</div>
+                    <h2>제안된 상담 일정</h2>
                   </div>
                   {selectedRanges.length === 0 ? (
-                    <p>날짜와 가능한 시간을 선택하면 이곳에 추가됩니다.</p>
+                    <p className="rv-schedule-empty">날짜와 시간표에서 가능한 시간을 선택해 주세요.</p>
                   ) : (
-                    <ul>
-                      {selectedRanges.map((range) => (
-                        <li key={`${range.date}-${range.startTime}`}>
-                          <span>
-                            {range.date} · {range.startTime} - {range.endTime}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => removeTimeRange(range)}
-                            aria-label={`${range.date} ${range.startTime} 제안 일정 삭제`}
-                          >
-                            삭제
-                          </button>
-                        </li>
-                      ))}
+                    <ul className="rv-schedule-range-list">
+                      {selectedRanges.map((range) => {
+                        const date = new Date(`${range.date}T00:00:00`);
+                        return (
+                          <li key={`${range.date}-${range.startTime}`}>
+                            <strong>{`${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 (${["일", "월", "화", "수", "목", "금", "토"][date.getDay()]})`}</strong>
+                            <span>{range.startTime} - {range.endTime}</span>
+                            <button
+                              type="button"
+                              onClick={() => removeTimeRange(range)}
+                              aria-label={`${range.date} ${range.startTime} 제안 일정 삭제`}
+                            >
+                              ×
+                            </button>
+                          </li>
+                        );
+                      })}
                     </ul>
                   )}
+                  <button type="button" className="rv-schedule-next" onClick={handleNextStep}>
+                    다음 단계로 이동 <span>→</span>
+                  </button>
+                </aside>
+
+                <div className="rv-schedule-actions">
+                  <button type="button" className="rv-step-prev" onClick={handlePrevStep}>이전 단계</button>
                 </div>
-
-              </section>
-
-              <div className="rv-step-actions rv-step-actions-wide">
-                <button type="button" className="rv-step-prev" onClick={handlePrevStep}>
-                  이전 단계
-                </button>
-                <button type="button" className="rv-step-next" onClick={handleNextStep}>
-                  다음 단계
-                  <span>→</span>
-                </button>
               </div>
-            </div>
             )}
 
             {currentStep === 4 && (

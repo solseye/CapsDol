@@ -102,11 +102,7 @@ export default function AdminChatbotPage() {
         </div>
 
         <div className="adm-portal-actions">
-          <button
-            type="button"
-            className="adm-btn ghost"
-            onClick={handleReset}
-          >
+          <button type="button" className="adm-btn ghost" onClick={handleReset}>
             대화 초기화
           </button>
         </div>
@@ -196,7 +192,9 @@ export default function AdminChatbotPage() {
               </div>
               <div>
                 <strong>운영 원칙</strong>
-                <span>법률·세무 사실은 자료 기반으로만 답변하도록 제한합니다.</span>
+                <span>
+                  법률·세무 사실은 자료 기반으로만 답변하도록 제한합니다.
+                </span>
               </div>
             </div>
           </section>
