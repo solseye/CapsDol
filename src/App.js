@@ -12,7 +12,6 @@ import AdminCalendarPage from "./pages/admin/pages/AdminCalendarPage";
 import AdminChatbotPage from "./pages/admin/pages/AdminChatbotPage";
 import PdfUploadPage from "./pages/admin/pages/PdfUploadPage";
 import PdfListPage from "./pages/admin/pages/PdfListPage";
-import AdminChatLogsPage from "./pages/admin/pages/AdminChatLogsPage";
 import UsersPage from "./pages/admin/pages/UsersPage";
 import UsersDetailPage from "./pages/admin/pages/UsersDetailPage";
 
@@ -96,14 +95,6 @@ function App() {
         element={
           <AdminLayout>
             <UsersDetailPage />
-          </AdminLayout>
-        }
-      />
-      <Route
-        path="/admin/chat-logs"
-        element={
-          <AdminLayout>
-            <AdminChatLogsPage />
           </AdminLayout>
         }
       />

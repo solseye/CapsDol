@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, Navigate, useLocation } from "react-router-dom";
 import { sendQuestion } from "../../api/chatApi";
-import { getMyChatLogs, saveChatLogLocally } from "../../api/chatLogApi";
 import "./chat.css";
 
 const DEFAULT_SYSTEM_PROMPT =
@@ -19,8 +18,6 @@ export default function Chat() {
 
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [chatLogs, setChatLogs] = useState([]);
-  const [logSource, setLogSource] = useState("local");
   const [error, setError] = useState("");
 
   const chatBodyRef = useRef(null);
@@ -31,19 +28,6 @@ export default function Chat() {
     const token = localStorage.getItem("accessToken");
     setIsLoggedIn(!!token);
   }, []);
-
-  useEffect(() => {
-    const fetchChatLogs = async () => {
-      if (!isLoggedIn) return;
-
-      const data = await getMyChatLogs();
-
-      setChatLogs(data.logs || []);
-      setLogSource(data.source || "local");
-    };
-
-    fetchChatLogs();
-  }, [isLoggedIn]);
 
   useEffect(() => {
     if (chatBodyRef.current) {
@@ -77,14 +61,6 @@ export default function Chat() {
           sources: data.sources || [],
         },
       ]);
-
-      const savedLog = saveChatLogLocally({
-        message,
-        answer: data.answer || "답변을 생성하지 못했습니다.",
-        sources: data.sources || [],
-      });
-
-      setChatLogs((prev) => [savedLog, ...prev]);
 
     } catch (err) {
       setError(err.message || "챗봇 응답 생성에 실패했습니다.");
@@ -280,42 +256,6 @@ export default function Chat() {
                   {question}
                 </button>
               ))}
-            </div>
-
-            <div className="ai-context-card">
-              <h3>내 질문 기록</h3>
-              <div className="ai-log-source">
-                {logSource === "server"
-                  ? "서버 기록 기준"
-                  : "이 브라우저에 저장된 임시 기록"}
-              </div>
-
-              <div className="ai-log-list">
-                {chatLogs.length === 0 ? (
-                  <p className="ai-log-empty">아직 저장된 질문이 없습니다.</p>
-                ) : (
-                  chatLogs.slice(0, 6).map((log) => (
-                    <button
-                      key={log.id}
-                      type="button"
-                      className="ai-log-item"
-                      onClick={() =>
-                        setMessages([
-                          { type: "user", text: log.message },
-                          {
-                            type: "bot",
-                            text: log.answer || "저장된 답변이 없습니다.",
-                            sources: log.sources || [],
-                          },
-                        ])
-                      }
-                    >
-                      <strong>{log.message}</strong>
-                      <span>{new Date(log.created_at).toLocaleString("ko-KR")}</span>
-                    </button>
-                  ))
-                )}
-              </div>
             </div>
 
             <div className="ai-context-card">

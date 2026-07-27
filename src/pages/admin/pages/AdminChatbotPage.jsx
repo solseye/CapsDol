@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { sendQuestion } from "../../../api/chatApi";
-import { saveChatLogLocally } from "../../../api/chatLogApi";
 import "../admin.css";
 import "../../Chat/chat.css";
 
@@ -55,12 +54,6 @@ export default function AdminChatbotPage() {
           sources: data.sources || [],
         },
       ]);
-
-      saveChatLogLocally({
-        message,
-        answer: data.answer || "답변을 생성하지 못했습니다.",
-        sources: data.sources || [],
-      });
 
       setLastUsage(data.usage || null);
     } catch (err) {

@@ -23,10 +23,6 @@ const menuItems = [
     to: "/admin/chatbot",
     label: "AI Chatbot",
   },
-  {
-    to: "/admin/chat-logs",
-    label: "Question Logs",
-  },
 ];
 
 export default function AdminSidebar() {
