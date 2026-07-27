@@ -11,7 +11,7 @@ import AdminLayout from "./pages/admin/AdminLayout";
 import AdminCalendarPage from "./pages/admin/pages/AdminCalendarPage";
 import AdminChatbotPage from "./pages/admin/pages/AdminChatbotPage";
 import PdfUploadPage from "./pages/admin/pages/PdfUploadPage";
-import PdfListPage from "./pages/admin/pages/PdfListPage";
+import PdfManagementPage from "./pages/admin/pages/PdfManagementPage";
 import UsersPage from "./pages/admin/pages/UsersPage";
 import UsersDetailPage from "./pages/admin/pages/UsersDetailPage";
 
@@ -70,7 +70,15 @@ function App() {
         path="/admin/pdf-list"
         element={
           <AdminLayout>
-            <PdfListPage />
+            <PdfManagementPage />
+          </AdminLayout>
+        }
+      />
+      <Route
+        path="/admin/pdf"
+        element={
+          <AdminLayout>
+            <PdfManagementPage />
           </AdminLayout>
         }
       />

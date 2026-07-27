@@ -9,7 +9,6 @@ import {
   getReservationListByRange,
 } from "../../api/reservationApi";
 import {
-  formatTranslatedDate,
   formatTranslatedMonth,
   getCurrentLanguage,
   translate,
@@ -41,37 +40,6 @@ const FIELD_OPTIONS = [
   { labelKey: "fieldLabor", value: "labor" },
   { labelKey: "fieldAccounting", value: "accounting" },
   { labelKey: "fieldLaw", value: "law" },
-];
-
-const STAGE_OPTIONS = [
-  {
-    id: "market",
-    title: "시장 조사",
-    subtitle: "타깃 고객, 경쟁사, 초기 진출 가능성 검토",
-    field: "accounting",
-    recommendedExpert: "kim",
-  },
-  {
-    id: "entity",
-    title: "법인 설립",
-    subtitle: "정관, 등기, 인감, 설립 절차 검토",
-    field: "law",
-    recommendedExpert: "kanemura",
-  },
-  {
-    id: "tax",
-    title: "세무 · 회계",
-    subtitle: "기장, 결산, 세무 신고와 운영 구조 상담",
-    field: "accounting",
-    recommendedExpert: "kim",
-  },
-  {
-    id: "labor",
-    title: "노무 · 비자",
-    subtitle: "채용, 사회보험, 비자 발급 가능성 검토",
-    field: "law",
-    recommendedExpert: "kanemura",
-  },
 ];
 
 const CONSULT_TYPES = [
@@ -187,13 +155,14 @@ export default function ReservationPage() {
   );
 
   const [currentStep, setCurrentStep] = useState(1);
-  const [selectedStage, setSelectedStage] = useState(STAGE_OPTIONS[0].id);
-  const [selectedField, setSelectedField] = useState(STAGE_OPTIONS[0].field);
+  // 상담 분야는 진출 단계가 아니라 Step 02에서 선택한 전문가 기준으로 정합니다.
+  const [selectedField, setSelectedField] = useState("");
   const [selectedExpertId, setSelectedExpertId] = useState(null);
   const [consultType, setConsultType] = useState(CONSULT_TYPES[0].id);
   const [additionalRequest, setAdditionalRequest] = useState("");
-  const [selectedTime, setSelectedTime] = useState("");
   const [selectedDate, setSelectedDate] = useState(null);
+  // 여러 후보 시간을 함께 제안하기 위한 예약 범위 목록입니다.
+  const [selectedRanges, setSelectedRanges] = useState([]);
 
   const [form, setForm] = useState({
     name: "",
@@ -284,13 +253,7 @@ export default function ReservationPage() {
     return blocked;
   }, [blocks, selectedDate, selectedField]);
 
-  const timeOptions = useMemo(() => {
-    if (!selectedTime || TIME_OPTIONS.includes(selectedTime)) {
-      return TIME_OPTIONS;
-    }
-
-    return [...TIME_OPTIONS, selectedTime].sort();
-  }, [selectedTime]);
+  const timeOptions = TIME_OPTIONS;
 
   const moveToMonth = (date) => {
     const nextMonth = new Date(date.getFullYear(), date.getMonth(), 1);
@@ -299,7 +262,6 @@ export default function ReservationPage() {
     setRequestYear(nextMonth.getFullYear());
     setRequestMonth(nextMonth.getMonth() + 1);
     setSelectedDate(null);
-    setSelectedTime("");
     setIsSubmitted(false);
     setSubmitError("");
     setSubmitSuccess("");
@@ -328,7 +290,6 @@ export default function ReservationPage() {
 
       setViewDate(nextMonth);
       setSelectedDate(null);
-      setSelectedTime("");
       setIsSubmitted(false);
 
       const data = await getReservationListByRange({
@@ -350,16 +311,6 @@ export default function ReservationPage() {
     const { name, value } = e.target;
 
     setForm((prev) => ({ ...prev, [name]: value }));
-    setSubmitError("");
-    setSubmitSuccess("");
-    setIsSubmitted(false);
-  };
-
-  const handleStageSelect = (stage) => {
-    setSelectedStage(stage.id);
-    setSelectedField(stage.field);
-    setSelectedExpertId(null);
-    setSelectedTime("");
     setSubmitError("");
     setSubmitSuccess("");
     setIsSubmitted(false);
@@ -411,7 +362,7 @@ export default function ReservationPage() {
       return;
     }
 
-    if (currentStep === 3 && (!selectedDate || !selectedTime)) {
+    if (currentStep === 3 && selectedRanges.length === 0) {
       setSubmitError(t("reservation.timeError"));
       return;
     }
@@ -423,7 +374,6 @@ export default function ReservationPage() {
     if (isPast && !isToday) return;
 
     setSelectedDate(date);
-    setSelectedTime("");
     setSubmitError("");
     setSubmitSuccess("");
     setIsSubmitted(false);
@@ -453,13 +403,8 @@ export default function ReservationPage() {
       return;
     }
 
-    if (!selectedDate || !selectedTime) {
+    if (selectedRanges.length === 0) {
       setSubmitError(t("reservation.timeError"));
-      return;
-    }
-
-    if (blockedTimes.has(selectedTime)) {
-      setSubmitError(t("reservation.blockedError"));
       return;
     }
 
@@ -468,24 +413,13 @@ export default function ReservationPage() {
 
       const apiField = API_FIELD_VALUES[selectedField];
 
-      const endTime = addMinutesToTime(
-        selectedTime,
-        CONSULTATION_DURATION_MINUTES
-      );
-
       const data = await createReservation({
         phone: form.phone.trim(),
         companyName: form.CName.trim(),
         kind: form.kind.trim(),
         field: apiField,
         note: additionalRequest,
-        availableRanges: [
-          {
-            date: getDateKey(selectedDate),
-            startTime: selectedTime,
-            endTime: endTime,
-          },
-        ],
+        availableRanges: selectedRanges,
       });
 
       if (data.success) {
@@ -508,6 +442,50 @@ export default function ReservationPage() {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const toggleTimeRange = (time) => {
+    if (!selectedDate) {
+      setSubmitError("먼저 날짜를 선택해 주세요.");
+      return;
+    }
+
+    if (blockedTimes.has(time)) return;
+
+    const date = getDateKey(selectedDate);
+    const range = {
+      date,
+      startTime: time,
+      endTime: addMinutesToTime(time, CONSULTATION_DURATION_MINUTES),
+    };
+
+    setSelectedRanges((prev) => {
+      const exists = prev.some(
+        (item) => item.date === range.date && item.startTime === range.startTime
+      );
+
+      if (exists) {
+        return prev.filter(
+          (item) => !(item.date === range.date && item.startTime === range.startTime)
+        );
+      }
+
+      return [...prev, range].sort(
+        (a, b) => `${a.date} ${a.startTime}`.localeCompare(`${b.date} ${b.startTime}`)
+      );
+    });
+    setSubmitError("");
+    setSubmitSuccess("");
+    setIsSubmitted(false);
+  };
+
+  const removeTimeRange = (range) => {
+    setSelectedRanges((prev) =>
+      prev.filter(
+        (item) => !(item.date === range.date && item.startTime === range.startTime)
+      )
+    );
+    setIsSubmitted(false);
   };
 
   if (isLoggedIn === null) {
@@ -555,10 +533,6 @@ export default function ReservationPage() {
       avatar: "G",
     },
   ];
-
-  const selectedStageOption =
-    STAGE_OPTIONS.find((stage) => stage.id === selectedStage) ||
-    STAGE_OPTIONS[0];
 
   const selectedExpert =
     expertProfiles.find((expert) => expert.id === selectedExpertId) || null;
@@ -630,7 +604,7 @@ export default function ReservationPage() {
 
             <div className="rv-stepper" aria-label="예약 진행 상태">
               <span className={currentStep >= 1 ? "active" : ""}>1</span>
-              <strong>기본 정보 · 진출 단계</strong>
+              <strong>기본 정보 · 상담 방식</strong>
               <i />
               <span className={currentStep >= 2 ? "active" : ""}>2</span>
               <strong>상담 방식 · 전문가</strong>
@@ -665,42 +639,37 @@ export default function ReservationPage() {
                 <div className="rv-panel-head">
                   <div>
                     <span>Step 01</span>
-                    <h2>진출 단계 및 신청자 정보</h2>
+                    <h2>상담 방식 및 신청자 정보</h2>
                   </div>
                 </div>
 
                 <div className="rv-basic-stage rv-basic-stage-top">
                   <div className="rv-section-head">
-                    <span>Entry Stage</span>
-                    <h2>진출 희망 단계</h2>
-                    <p>
-                      현재 준비 중인 단계를 선택하면 상담 분야와 추천 전문가가
-                      자동으로 정리됩니다.
-                    </p>
+                    <span>Consultation Type</span>
+                    <h2>상담 방식</h2>
+                    <p>온라인 또는 오프라인 상담 방식을 선택해 주세요.</p>
                   </div>
 
-                  <div className="rv-stage-grid">
-                    {STAGE_OPTIONS.map((stage) => (
+                  <div className="rv-consult-type-grid">
+                    {CONSULT_TYPES.map((type) => (
                       <button
                         type="button"
-                        key={stage.id}
+                        key={type.id}
                         className={[
-                          "rv-stage-card",
-                          selectedStage === stage.id ? "selected" : "",
+                          "rv-consult-type-card",
+                          consultType === type.id ? "selected" : "",
                         ].join(" ")}
-                        onClick={() => handleStageSelect(stage)}
+                        onClick={() => {
+                          setConsultType(type.id);
+                          setSubmitError("");
+                          setSubmitSuccess("");
+                          setIsSubmitted(false);
+                        }}
                       >
-                        <span>{stage.title}</span>
-                        <strong>{stage.subtitle}</strong>
+                        <span>{type.title}</span>
+                        <strong>{type.subtitle}</strong>
                       </button>
                     ))}
-                  </div>
-
-                  <div className="rv-stage-strip">
-                    <span>현재 선택</span>
-                    <strong>{selectedStageOption.title}</strong>
-                    <small>|</small>
-                    <small>{selectedStageOption.subtitle}</small>
                   </div>
                 </div>
 
@@ -733,17 +702,6 @@ export default function ReservationPage() {
                   </label>
 
                   <label>
-                    <span>{t("reservation.job")}</span>
-                    <input
-                      type="text"
-                      name="kind"
-                      value={form.kind}
-                      onChange={handleChange}
-                      placeholder={t("reservation.job")}
-                    />
-                  </label>
-
-                  <label>
                     <span>{t("reservation.phone")}</span>
                     <input
                       type="text"
@@ -762,6 +720,17 @@ export default function ReservationPage() {
                       value={form.email}
                       onChange={handleChange}
                       placeholder="name@company.com"
+                    />
+                  </label>
+
+                  <label>
+                    <span>{t("reservation.job")}</span>
+                    <input
+                      type="text"
+                      name="kind"
+                      value={form.kind}
+                      onChange={handleChange}
+                      placeholder={t("reservation.job")}
                     />
                   </label>
                 </div>
@@ -786,28 +755,6 @@ export default function ReservationPage() {
                 </p>
               </div>
 
-              <div className="rv-consult-type-grid">
-                {CONSULT_TYPES.map((type) => (
-                  <button
-                    type="button"
-                    key={type.id}
-                    className={[
-                      "rv-consult-type-card",
-                      consultType === type.id ? "selected" : "",
-                    ].join(" ")}
-                    onClick={() => {
-                      setConsultType(type.id);
-                      setSubmitError("");
-                      setSubmitSuccess("");
-                      setIsSubmitted(false);
-                    }}
-                  >
-                    <span>{type.title}</span>
-                    <strong>{type.subtitle}</strong>
-                  </button>
-                ))}
-              </div>
-
               <div className="rv-expert-list compact">
                 {expertProfiles.map((expert) => (
                   <button
@@ -820,7 +767,7 @@ export default function ReservationPage() {
                     onClick={() => {
                       setSelectedExpertId(expert.id);
                       setSelectedField(expert.field);
-                      setSelectedTime("");
+                      setSelectedRanges([]);
                       setSubmitError("");
                       setSubmitSuccess("");
                       setIsSubmitted(false);
@@ -846,21 +793,6 @@ export default function ReservationPage() {
                   </button>
                 ))}
               </div>
-
-              <label className="rv-additional-request">
-                <span>추가 요청</span>
-                <textarea
-                  value={additionalRequest}
-                  onChange={(e) => {
-                    setAdditionalRequest(e.target.value);
-                    setSubmitError("");
-                    setSubmitSuccess("");
-                    setIsSubmitted(false);
-                  }}
-                  rows="4"
-                  placeholder="상담 시 집중적으로 다루고 싶은 내용이나 현재 고민을 입력해 주세요."
-                />
-              </label>
 
               <div className="rv-step-actions">
                 <button type="button" className="rv-step-prev" onClick={handlePrevStep}>
@@ -934,6 +866,9 @@ export default function ReservationPage() {
                     }
 
                     const isSelected = isSameDate(date, selectedDate);
+                    const hasSuggestedTime = selectedRanges.some(
+                      (range) => range.date === getDateKey(date)
+                    );
                     const isPast = isPastDate(date, today);
                     const isToday = isSameDate(date, today);
                     const isDisabled = isPast && !isToday;
@@ -946,6 +881,7 @@ export default function ReservationPage() {
                         className={[
                           "rv-day",
                           isSelected ? "selected" : "",
+                          hasSuggestedTime ? "has-suggestion" : "",
                           isToday ? "today" : "",
                           isDisabled ? "disabled" : "",
                         ].join(" ")}
@@ -970,6 +906,13 @@ export default function ReservationPage() {
                 <div className="rv-time-grid">
                   {timeOptions.map((time) => {
                     const blocked = blockedTimes.has(time);
+                    const isSelected = selectedDate
+                      ? selectedRanges.some(
+                          (range) =>
+                            range.date === getDateKey(selectedDate) &&
+                            range.startTime === time
+                        )
+                      : false;
 
                     return (
                       <button
@@ -977,21 +920,43 @@ export default function ReservationPage() {
                         type="button"
                         disabled={blocked}
                         className={[
-                          selectedTime === time ? "selected" : "",
+                          isSelected ? "selected" : "",
                           blocked ? "blocked" : "",
                         ].join(" ")}
-                        onClick={() => {
-                          if (!blocked) {
-                            setSelectedTime(time);
-                            setIsSubmitted(false);
-                          }
-                        }}
+                        onClick={() => toggleTimeRange(time)}
                       >
                         <strong>{time}</strong>
                         <span>{blocked ? "예약 불가" : "예약 가능"}</span>
                       </button>
                     );
                   })}
+                </div>
+
+                <div className="rv-suggested-ranges" aria-live="polite">
+                  <div className="rv-suggested-ranges-head">
+                    <strong>제안 일정</strong>
+                    <span>{selectedRanges.length}개 선택</span>
+                  </div>
+                  {selectedRanges.length === 0 ? (
+                    <p>날짜와 가능한 시간을 선택하면 이곳에 추가됩니다.</p>
+                  ) : (
+                    <ul>
+                      {selectedRanges.map((range) => (
+                        <li key={`${range.date}-${range.startTime}`}>
+                          <span>
+                            {range.date} · {range.startTime} - {range.endTime}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => removeTimeRange(range)}
+                            aria-label={`${range.date} ${range.startTime} 제안 일정 삭제`}
+                          >
+                            삭제
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
 
               </section>
@@ -1022,6 +987,21 @@ export default function ReservationPage() {
                   선택한 상담 분야, 전문가, 일정과 신청자 정보는 오른쪽 예약 요약에
                   표시됩니다. 내용을 확인한 뒤 아래 버튼으로 신청을 완료해 주세요.
                 </p>
+
+                <label className="rv-additional-request">
+                  <span>추가 요청 사항</span>
+                  <textarea
+                    value={additionalRequest}
+                    onChange={(e) => {
+                      setAdditionalRequest(e.target.value);
+                      setSubmitError("");
+                      setSubmitSuccess("");
+                      setIsSubmitted(false);
+                    }}
+                    rows="4"
+                    placeholder="상담 시 집중적으로 다루고 싶은 내용이나 현재 고민을 입력해 주세요."
+                  />
+                </label>
 
                 <div className="rv-step-actions">
                   <button type="button" className="rv-step-prev" onClick={handlePrevStep}>
@@ -1061,10 +1041,6 @@ export default function ReservationPage() {
 
             <div className="rv-selected-summary">
               <div>
-                <span>진출 희망 단계</span>
-                <strong>{selectedStageOption.title}</strong>
-              </div>
-              <div>
                 <span>상담 분야</span>
                 <strong>{selectedFieldLabel}</strong>
               </div>
@@ -1078,17 +1054,19 @@ export default function ReservationPage() {
                   {isSubmitted ? "승인 대기 신청" : "작성 중"}
                 </strong>
               </div>
-              <div>
-                <span>{t("reservation.date")}</span>
-                <strong>
-                  {selectedDate
-                    ? formatTranslatedDate(language, selectedDate)
-                    : t("common.notSelected")}
-                </strong>
-              </div>
-              <div>
-                <span>{t("reservation.time")}</span>
-                <strong>{selectedTime || t("common.notSelected")}</strong>
+              <div className="rv-summary-range-list">
+                <span>제안 일정</span>
+                {selectedRanges.length === 0 ? (
+                  <strong>{t("common.notSelected")}</strong>
+                ) : (
+                  <ul>
+                    {selectedRanges.map((range) => (
+                      <li key={`${range.date}-${range.startTime}`}>
+                        {range.date} {range.startTime} - {range.endTime}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
               <div>
                 <span>신청자</span>

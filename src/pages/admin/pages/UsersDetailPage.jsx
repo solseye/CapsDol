@@ -2,36 +2,26 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
 import { getAdminUsers } from "../../../api/adminApi";
-
 import {
   deleteClientFile,
   getClientFiles,
   getClientFileSignedUrl,
 } from "../../../api/clientFileApi";
 
+import "./UsersDetailPage.css";
+
+// --- Helper Functions ---
 function formatFileSize(size) {
   const bytes = Number(size || 0);
-
-  if (bytes < 1024) {
-    return `${bytes} B`;
-  }
-
-  if (bytes < 1024 * 1024) {
-    return `${(bytes / 1024).toFixed(1)} KB`;
-  }
-
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 }
 
 function formatDateTime(dateValue) {
   if (!dateValue) return "-";
-
   const date = new Date(dateValue);
-
-  if (Number.isNaN(date.getTime())) {
-    return "-";
-  }
-
+  if (Number.isNaN(date.getTime())) return "-";
   return date.toLocaleString("ko-KR");
 }
 
@@ -39,62 +29,11 @@ function getFilePath(file) {
   return file.storagePath || file.path || "";
 }
 
-function getFileTypeLabel(fileType, originalName) {
-  const fileName = String(originalName || "");
-  const lastDotIndex = fileName.lastIndexOf(".");
-
-  if (
-    lastDotIndex >= 0 &&
-    lastDotIndex < fileName.length - 1
-  ) {
-    return fileName
-      .slice(lastDotIndex + 1)
-      .toUpperCase();
-  }
-
-  if (fileType === "application/pdf") {
-    return "PDF";
-  }
-
-  if (fileType?.includes("word")) {
-    return "DOCX";
-  }
-
-  if (
-    fileType?.includes("spreadsheet") ||
-    fileType?.includes("excel")
-  ) {
-    return "XLSX";
-  }
-
-  if (fileType?.includes("text")) {
-    return "TXT";
-  }
-
-  return "FILE";
-}
-
-function getProviderLabel(provider) {
-  switch (provider) {
-    case "local":
-      return "일반 가입";
-    case "google":
-      return "Google";
-    case "kakao":
-      return "Kakao";
-    case "naver":
-      return "Naver";
-    default:
-      return provider || "-";
-  }
-}
-
 export default function UsersDetailPage() {
   const { uuid: encodedUuid } = useParams();
-
   const uuid = useMemo(
     () => decodeURIComponent(encodedUuid || ""),
-    [encodedUuid]
+    [encodedUuid],
   );
 
   const [selectedUser, setSelectedUser] = useState(null);
@@ -103,12 +42,9 @@ export default function UsersDetailPage() {
   const [clientFiles, setClientFiles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const [previewLoadingPath, setPreviewLoadingPath] =
-    useState(null);
-  const [downloadLoadingPath, setDownloadLoadingPath] =
-    useState(null);
-  const [deleteLoadingPath, setDeleteLoadingPath] =
-    useState(null);
+  const [previewLoadingPath, setPreviewLoadingPath] = useState(null);
+  const [downloadLoadingPath, setDownloadLoadingPath] = useState(null);
+  const [deleteLoadingPath, setDeleteLoadingPath] = useState(null);
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -131,23 +67,13 @@ export default function UsersDetailPage() {
       let hasMore = true;
 
       while (hasMore && !matchedUser) {
-        const data = await getAdminUsers({
-          limit,
-          offset,
-        });
-
-        const users = Array.isArray(data.users)
-          ? data.users
-          : [];
+        const data = await getAdminUsers({ limit, offset });
+        const users = Array.isArray(data.users) ? data.users : [];
 
         matchedUser =
-          users.find(
-            (user) =>
-              String(user.uuid) === String(uuid)
-          ) || null;
+          users.find((user) => String(user.uuid) === String(uuid)) || null;
 
         const total = Number(data.total);
-
         if (Number.isFinite(total) && total > 0) {
           offset += limit;
           hasMore = offset < total;
@@ -157,19 +83,11 @@ export default function UsersDetailPage() {
         }
       }
 
-      if (!matchedUser) {
-        throw new Error(
-          "해당 사용자 정보를 찾을 수 없습니다."
-        );
-      }
-
+      if (!matchedUser) throw new Error("해당 사용자 정보를 찾을 수 없습니다.");
       setSelectedUser(matchedUser);
     } catch (err) {
       setSelectedUser(null);
-      setError(
-        err.message ||
-          "사용자 정보를 불러오지 못했습니다."
-      );
+      setError(err.message || "사용자 정보를 불러오지 못했습니다.");
     } finally {
       setIsUserLoading(false);
     }
@@ -194,29 +112,17 @@ export default function UsersDetailPage() {
         offset: 0,
       });
 
-      const files = Array.isArray(data.files)
-        ? data.files
-        : [];
-
+      const files = Array.isArray(data.files) ? data.files : [];
       const sortedFiles = [...files].sort((a, b) => {
-        const dateA = new Date(
-          a.uploadedAt || a.updatedAt || 0
-        ).getTime();
-
-        const dateB = new Date(
-          b.uploadedAt || b.updatedAt || 0
-        ).getTime();
-
+        const dateA = new Date(a.uploadedAt || a.updatedAt || 0).getTime();
+        const dateB = new Date(b.uploadedAt || b.updatedAt || 0).getTime();
         return dateB - dateA;
       });
 
       setClientFiles(sortedFiles);
     } catch (err) {
       setClientFiles([]);
-      setError(
-        err.message ||
-          "사용자 파일 목록을 불러오지 못했습니다."
-      );
+      setError(err.message || "사용자 파일 목록을 불러오지 못했습니다.");
     } finally {
       setIsLoading(false);
     }
@@ -225,49 +131,30 @@ export default function UsersDetailPage() {
   useEffect(() => {
     fetchSelectedUser();
     fetchUserFiles();
-
-    // uuid가 바뀔 때만 다시 조회합니다.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uuid]);
 
   const handleRefresh = async () => {
     setSuccess("");
-    await Promise.all([
-      fetchSelectedUser(),
-      fetchUserFiles(),
-    ]);
+    await Promise.all([fetchSelectedUser(), fetchUserFiles()]);
   };
 
   const handlePreviewFile = async (file) => {
     const path = getFilePath(file);
-
     if (!path) {
-      setError(
-        "미리보기할 파일 경로를 찾을 수 없습니다."
-      );
+      setError("미리보기할 파일 경로를 찾을 수 없습니다.");
       return;
     }
 
     const previewWindow = window.open("", "_blank");
-
     if (!previewWindow) {
-      setError(
-        "팝업이 차단되었습니다. 브라우저에서 팝업을 허용해 주세요."
-      );
+      setError("팝업이 차단되었습니다. 브라우저에서 팝업을 허용해 주세요.");
       return;
     }
 
     previewWindow.document.title = "파일 미리보기";
     previewWindow.document.body.innerHTML = `
-      <div style="
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0;
-        font-family: sans-serif;
-        color: #555;
-      ">
+      <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; margin: 0; font-family: sans-serif; color: #555;">
         파일을 불러오는 중입니다...
       </div>
     `;
@@ -284,20 +171,13 @@ export default function UsersDetailPage() {
         download: false,
       });
 
-      if (!data.signedUrl) {
-        throw new Error(
-          "미리보기 URL을 받지 못했습니다."
-        );
-      }
+      if (!data.signedUrl) throw new Error("미리보기 URL을 받지 못했습니다.");
 
       previewWindow.opener = null;
       previewWindow.location.replace(data.signedUrl);
     } catch (err) {
       previewWindow.close();
-
-      setError(
-        err.message || "파일 미리보기에 실패했습니다."
-      );
+      setError(err.message || "파일 미리보기에 실패했습니다.");
     } finally {
       setPreviewLoadingPath(null);
     }
@@ -305,11 +185,8 @@ export default function UsersDetailPage() {
 
   const handleDownloadFile = async (file) => {
     const path = getFilePath(file);
-
     if (!path) {
-      setError(
-        "다운로드할 파일 경로를 찾을 수 없습니다."
-      );
+      setError("다운로드할 파일 경로를 찾을 수 없습니다.");
       return;
     }
 
@@ -325,42 +202,25 @@ export default function UsersDetailPage() {
         download: true,
       });
 
-      if (!data.signedUrl) {
-        throw new Error(
-          "다운로드 URL을 받지 못했습니다."
-        );
-      }
+      if (!data.signedUrl) throw new Error("다운로드 URL을 받지 못했습니다.");
 
       const response = await fetch(data.signedUrl);
-
-      if (!response.ok) {
-        throw new Error(
-          "파일 데이터를 불러오지 못했습니다."
-        );
-      }
+      if (!response.ok) throw new Error("파일 데이터를 불러오지 못했습니다.");
 
       const blob = await response.blob();
-      const blobUrl =
-        window.URL.createObjectURL(blob);
-
+      const blobUrl = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
 
       link.href = blobUrl;
       link.download =
-        data.downloadName ||
-        file.originalName ||
-        file.fileName ||
-        "download";
+        data.downloadName || file.originalName || file.fileName || "download";
 
       document.body.appendChild(link);
       link.click();
       link.remove();
-
       window.URL.revokeObjectURL(blobUrl);
     } catch (err) {
-      setError(
-        err.message || "파일 다운로드에 실패했습니다."
-      );
+      setError(err.message || "파일 다운로드에 실패했습니다.");
     } finally {
       setDownloadLoadingPath(null);
     }
@@ -368,23 +228,15 @@ export default function UsersDetailPage() {
 
   const handleDeleteFile = async (file) => {
     const path = getFilePath(file);
-
     if (!path) {
-      setError(
-        "삭제할 파일 경로를 찾을 수 없습니다."
-      );
+      setError("삭제할 파일 경로를 찾을 수 없습니다.");
       return;
     }
 
-    const displayName =
-      file.fileName ||
-      file.originalName ||
-      "파일";
-
+    const displayName = file.fileName || file.originalName || "파일";
     const ok = window.confirm(
-      `"${displayName}"을 삭제하시겠습니까?\n\n관리자가 삭제하면 사용자의 마이페이지에서도 제거됩니다.`
+      `"${displayName}"을 삭제하시겠습니까?\n\n관리자가 삭제하면 사용자의 마이페이지에서도 제거됩니다.`,
     );
-
     if (!ok) return;
 
     try {
@@ -396,24 +248,15 @@ export default function UsersDetailPage() {
         bucket: file.bucket || "users",
         path,
       });
-
-      if (!data.success) {
-        throw new Error(
-          data.message || "파일 삭제에 실패했습니다."
-        );
-      }
+      if (!data.success)
+        throw new Error(data.message || "파일 삭제에 실패했습니다.");
 
       setClientFiles((prev) =>
-        prev.filter(
-          (item) => getFilePath(item) !== path
-        )
+        prev.filter((item) => getFilePath(item) !== path),
       );
-
       setSuccess("사용자 파일이 삭제되었습니다.");
     } catch (err) {
-      setError(
-        err.message || "파일 삭제에 실패했습니다."
-      );
+      setError(err.message || "파일 삭제에 실패했습니다.");
     } finally {
       setDeleteLoadingPath(null);
     }
@@ -421,99 +264,47 @@ export default function UsersDetailPage() {
 
   return (
     <main className="adm-main admin-user-detail-page">
-      <section className="adm-page-head">
-        <div>
-          <p className="adm-eyebrow">
-            User My Page
-          </p>
-
-          <h1>
-            {isUserLoading
-              ? "사용자 정보를 불러오는 중..."
-              : selectedUser?.username ||
-                selectedUser?.uid ||
-                "사용자 상세"}
-          </h1>
-
-          <p>
-            선택한 사용자의 정보와 업로드 파일을
-            확인합니다.
-          </p>
-        </div>
-
-        <Link
-          to="/admin/users"
-          className="adm-btn ghost"
-        >
+      <section className="page-header">
+        <h1 className="page-title">사용자 정보 조회</h1>
+        <Link to="/admin/users" className="adm-btn-back">
           사용자 목록으로
         </Link>
       </section>
 
-      <section className="adm-card admin-user-profile-card">
-        <div className="adm-card-head">
-          <div>
-            <p className="adm-eyebrow">
-              User Information
-            </p>
-            <h2>사용자 정보</h2>
-          </div>
-        </div>
+      {/* 글로벌 에러 및 성공 메시지 */}
+      {error && <p className="login-error text-danger">{error}</p>}
+      {success && <p className="login-success text-primary">{success}</p>}
 
+      {/* 2. 사용자 정보 박스 */}
+      <section className="adm-card info-card mb-2">
+        <h2 className="file-list-title">사용자 정보</h2>
+        <br></br>
         {isUserLoading ? (
-          <div className="reserve-empty-box">
-            사용자 정보를 불러오는 중입니다.
-          </div>
+          <p>사용자 정보를 불러오는 중입니다...</p>
         ) : selectedUser ? (
-          <div className="admin-user-profile-grid">
-            <div>
-              <span>이름</span>
-              <strong>
-                {selectedUser.username || "-"}
-              </strong>
+          <div className="info-card-content">
+            <div className="info-row">
+              <span className="info-label">이름:</span>
+              <span>{selectedUser.username || "-"}</span>
             </div>
-
-            <div>
-              <span>아이디</span>
-              <strong>
-                {selectedUser.uid || "-"}
-              </strong>
-            </div>
-
-            <div>
-              <span>이메일</span>
-              <strong>
-                {selectedUser.email || "-"}
-              </strong>
-            </div>
-
-            <div>
-              <span>가입 방식</span>
-              <strong>
-                {getProviderLabel(
-                  selectedUser.provider
-                )}
-              </strong>
-            </div>
-
-            <div className="admin-user-profile-uuid">
-              <span>UUID</span>
-              <code>{uuid || "-"}</code>
+            <div className="info-row">
+              <span className="info-label">이메일:</span>
+              <span>{selectedUser.email || "-"}</span>
             </div>
           </div>
         ) : (
-          <div className="reserve-empty-box">
-            사용자를 찾을 수 없습니다.
-          </div>
+          <p>사용자를 찾을 수 없습니다.</p>
         )}
       </section>
 
-      <section className="adm-card admin-user-files-card">
-        <div className="adm-card-head">
+      {/* 3. 파일 목록 섹션 */}
+      <section className="adm-card">
+        <div className="file-list-header">
           <div>
-            <p className="adm-eyebrow">
-              Uploaded Files
+            <h2 className="file-list-title">업로드 파일 목록</h2>
+            <p className="file-count">
+              총 {clientFiles.length}개의 파일을 업로드했습니다.
             </p>
-            <h2>사용자 업로드 파일</h2>
           </div>
 
           <button
@@ -522,127 +313,133 @@ export default function UsersDetailPage() {
             onClick={handleRefresh}
             disabled={isLoading || isUserLoading}
           >
-            {isLoading || isUserLoading
-              ? "조회 중..."
-              : "새로고침"}
+            {isLoading || isUserLoading ? "조회 중..." : "새로고침"}
           </button>
         </div>
 
-        {error && (
-          <p className="login-error">{error}</p>
-        )}
-
-        {success && (
-          <p className="login-success">
-            {success}
-          </p>
-        )}
-
+        {/* 4. 파일 목록 테이블 */}
         {isLoading ? (
-          <div className="reserve-empty-box">
-            사용자 파일을 불러오는 중입니다.
+          <div className="reserve-empty-box text-center p-2 border">
+            파일을 불러오는 중입니다...
           </div>
         ) : clientFiles.length === 0 ? (
-          <div className="reserve-empty-box">
-            이 사용자가 업로드한 파일이 없습니다.
+          <div className="reserve-empty-box text-center p-2 border">
+            업로드한 파일이 없습니다.
           </div>
         ) : (
-          <div className="admin-user-file-list">
-            {clientFiles.map((file) => {
-              const path = getFilePath(file);
+          <div className="table-wrapper">
+            <table className="file-table">
+              <thead>
+                <tr>
+                  <th>파일명</th>
+                  <th>용량</th>
+                  <th>업로드 시간</th>
+                  <th>설명</th>
+                  <th className="text-center">관리</th>
+                </tr>
+              </thead>
+              <tbody>
+                {clientFiles.map((file) => {
+                  const path = getFilePath(file);
+                  const displayName =
+                    file.fileName || file.originalName || "이름 없는 파일";
+                  const isBusy =
+                    previewLoadingPath === path ||
+                    downloadLoadingPath === path ||
+                    deleteLoadingPath === path;
 
-              const displayName =
-                file.fileName ||
-                file.originalName ||
-                "이름 없는 파일";
+                  return (
+                    <tr key={file.id || path}>
+                      <td>{displayName}</td>
+                      <td>{formatFileSize(file.size)}</td>
+                      <td>
+                        {formatDateTime(file.uploadedAt || file.updatedAt)}
+                      </td>
+                      <td>{file.description || "-"}</td>
+                      <td className="action-cell">
+                        <button
+                          type="button"
+                          className="icon-btn"
+                          onClick={() => handlePreviewFile(file)}
+                          disabled={isBusy}
+                          title="미리보기"
+                        >
+                          <svg
+                            width="20"
+                            height="20"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                            />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                            />
+                          </svg>
+                        </button>
 
-              const originalName =
-                file.originalName || "-";
+                        <button
+                          type="button"
+                          className="icon-btn"
+                          onClick={() => handleDownloadFile(file)}
+                          disabled={isBusy}
+                          title="다운로드"
+                        >
+                          <svg
+                            width="20"
+                            height="20"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                            />
+                          </svg>
+                        </button>
 
-              const isBusy =
-                previewLoadingPath === path ||
-                downloadLoadingPath === path ||
-                deleteLoadingPath === path;
-
-              return (
-                <article
-                  key={file.id || path}
-                  className="admin-user-file-item"
-                >
-                  <div className="mypage-file-type">
-                    {getFileTypeLabel(
-                      file.fileType,
-                      originalName
-                    )}
-                  </div>
-
-                  <div className="mypage-file-info">
-                    <strong>{displayName}</strong>
-
-                    {displayName !== originalName && (
-                      <span>
-                        원본 파일명: {originalName}
-                      </span>
-                    )}
-
-                    <span>
-                      {formatFileSize(file.size)} ·{" "}
-                      {formatDateTime(
-                        file.uploadedAt ||
-                          file.updatedAt
-                      )}
-                    </span>
-
-                    {file.description && (
-                      <small>
-                        설명: {file.description}
-                      </small>
-                    )}
-                  </div>
-
-                  <div className="admin-user-file-actions">
-                    <button
-                      type="button"
-                      className="adm-btn ghost"
-                      onClick={() =>
-                        handlePreviewFile(file)
-                      }
-                      disabled={isBusy}
-                    >
-                      {previewLoadingPath === path
-                        ? "여는 중..."
-                        : "미리보기"}
-                    </button>
-
-                    <button
-                      type="button"
-                      className="adm-btn ghost"
-                      onClick={() =>
-                        handleDownloadFile(file)
-                      }
-                      disabled={isBusy}
-                    >
-                      {downloadLoadingPath === path
-                        ? "다운로드 중..."
-                        : "다운로드"}
-                    </button>
-
-                    <button
-                      type="button"
-                      className="adm-btn danger"
-                      onClick={() =>
-                        handleDeleteFile(file)
-                      }
-                      disabled={isBusy}
-                    >
-                      {deleteLoadingPath === path
-                        ? "삭제 중..."
-                        : "삭제"}
-                    </button>
-                  </div>
-                </article>
-              );
-            })}
+                        <button
+                          type="button"
+                          className="icon-btn delete-btn"
+                          onClick={() => handleDeleteFile(file)}
+                          disabled={isBusy}
+                          title="삭제"
+                        >
+                          <svg
+                            width="20"
+                            height="20"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            />
+                          </svg>
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         )}
       </section>
