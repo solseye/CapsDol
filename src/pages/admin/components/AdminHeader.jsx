@@ -1,8 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
 
+// 구형 관리자 화면에서 사용하는 상단 헤더입니다.
 export default function AdminHeader() {
   const navigate = useNavigate();
 
+  // 로컬 인증 정보를 비우고 홈으로 이동합니다.
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("user");

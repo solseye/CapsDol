@@ -1,4 +1,4 @@
-const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+import { fetchWithAuth } from "./authFetch";
 
 async function parseJsonResponse(res) {
   try {
@@ -14,13 +14,11 @@ export async function sendQuestion({
   ragMatchCount = 5,
   system,
 }) {
-  const token = localStorage.getItem("accessToken");
 
-  const res = await fetch(`${BASE_URL}/chat`, {
+  const res = await fetchWithAuth(`/chat`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
     credentials: "include",
     body: JSON.stringify({

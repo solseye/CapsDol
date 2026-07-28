@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   getRagFiles,
   getRagFileSignedUrl,
@@ -7,82 +7,21 @@ import {
   createRagIndex,
   uploadRagFile,
 } from "../../../api/adminApi";
+import AdminCard from "../components/AdminCard";
+import {
+  ACCEPTED_FILE_TYPES,
+  FOLDER_OPTIONS,
+  STATUS_OPTIONS,
+  formatBytes,
+  formatDateShort,
+  getFileExtension,
+  isAllowedFile,
+} from "../utils/pdfManagementUtils";
 import "./PdfManagementPage.css";
 
-const FOLDER_OPTIONS = [
-  { label: "통합", value: "normal" },
-  { label: "인사", value: "human" },
-  { label: "노무", value: "labor" },
-  { label: "회계", value: "accounting" },
-  { label: "법무", value: "law" },
-];
-
-const STATUS_OPTIONS = [
-  { label: "사용중", value: "active" },
-  { label: "사용안함", value: "inactive" },
-  { label: "예약 자료", value: "future" },
-  { label: "보관됨", value: "archived" },
-];
-
-const ACCEPTED_FILE_TYPES = ".pdf,.docx,.xlsx,.csv,.txt,.md";
-const ALLOWED_EXTENSIONS = ["pdf", "docx", "xlsx", "csv", "txt", "md"];
-
-function AdminCard({ title, children, className = "", headerRight }) {
-  return (
-    <section className={`adm-card ${className}`}>
-      <div className="adm-card-head">
-        <div className="adm-card-title-group">
-          <h2>{title}</h2>
-          {headerRight && (
-            <div className="adm-card-head-right">{headerRight}</div>
-          )}
-        </div>
-      </div>
-      <div className="adm-card-body">{children}</div>
-    </section>
-  );
-}
-
-function formatDateShort(dateValue) {
-  if (!dateValue) return "-";
-  const date = new Date(dateValue);
-  if (Number.isNaN(date.getTime())) return "-";
-  const yy = String(date.getFullYear()).slice(-2);
-  const mm = String(date.getMonth() + 1).padStart(2, "0");
-  const dd = String(date.getDate()).padStart(2, "0");
-  return `${yy}.${mm}.${dd}`;
-}
-
-function formatBytes(bytes) {
-  if (!bytes || bytes === 0) return "0 B";
-  const k = 1024;
-  const sizes = ["B", "KB", "MB", "GB", "TB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
-}
-
-function getFileExtension(fileName) {
-  if (!fileName) return "-";
-  const ext = fileName.split(".").pop()?.toUpperCase();
-  return ext || "-";
-}
-
-function isAllowedFile(file) {
-  if (!file) return false;
-  const extension = file.name.split(".").pop()?.toLowerCase();
-  return ALLOWED_EXTENSIONS.includes(extension);
-}
-
-function getFilePath(file, folder) {
-  return file.path || `${folder}/${file.name}`;
-}
-
-function getDisplayFileName(fileName) {
-  return String(fileName || "").replace(/^\d+-/, "");
-}
-
+// RAG 문서 업로드, 상태 변경, 인덱싱을 한 화면에서 관리합니다.
 export default function PdfManagementPage() {
-  // 1. 업로드 관련 상태
+  // 업로드, 목록, 인덱싱, 페이지네이션 상태를 화면 단위로 묶어 관리합니다.
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedFolder, setSelectedFolder] = useState("normal");
   const [progress, setProgress] = useState(0);
@@ -90,21 +29,18 @@ export default function PdfManagementPage() {
   const [uploadError, setUploadError] = useState("");
   const [uploadSuccess, setUploadSuccess] = useState("");
 
-  // 2. 자료 목록 및 인덱싱 관련 상태
   const [filesByFolder, setFilesByFolder] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [listError, setListError] = useState("");
   const [isIndexing, setIsIndexing] = useState(false);
   const [indexResult, setIndexResult] = useState(null);
   const [openStatusMenuId, setOpenStatusMenuId] = useState(null);
 
-  // 3. 목록 카테고리 탭 선택 (통합 / 인사 / 노무 / 회계 / 법무)
   const [selectedListCategory, setSelectedListFolder] = useState("normal");
 
-  // 4. 페이지네이션 상태
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  // 알림 메세지 5초 뒤 자동 삭제
   useEffect(() => {
     if (uploadError || uploadSuccess) {
       const timer = setTimeout(() => {
@@ -122,15 +58,17 @@ export default function PdfManagementPage() {
     }
   }, [indexResult]);
 
-  // 데이터 패칭
-  const fetchFilesByFolder = async (folder) => {
+  // 단일 폴더의 서버 파일 목록을 가져옵니다.
+  const fetchFilesByFolder = useCallback(async (folder) => {
     const data = await getRagFiles({ bucket: "chat", folder });
     return data.files || [];
-  };
+  }, []);
 
-  const fetchAllFolders = async () => {
+  // 모든 문서 카테고리를 순회해 목록 탭 데이터를 채웁니다.
+  const fetchAllFolders = useCallback(async () => {
     setIsLoading(true);
     setIndexResult(null);
+    setListError("");
     try {
       const result = {};
       for (const option of FOLDER_OPTIONS) {
@@ -138,25 +76,25 @@ export default function PdfManagementPage() {
       }
       setFilesByFolder(result);
     } catch (error) {
-      console.error("파일 목록을 불러오는 중 오류 발생:", error);
+      setFilesByFolder({});
+      setListError(error.message || "자료 목록을 불러오지 못했습니다.");
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [fetchFilesByFolder]);
 
   useEffect(() => {
     fetchAllFolders();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchAllFolders]);
 
-  // 전체 파일 평탄화
+  // 카테고리별 목록을 통계와 필터링에 쓰기 쉬운 단일 배열로 평탄화합니다.
   const allFiles = useMemo(() => {
     return Object.entries(filesByFolder).flatMap(([folder, files]) =>
       files.map((file) => ({ ...file, folder })),
     );
   }, [filesByFolder]);
 
-  // 핸들러: 파일 업로드
+  // 선택한 파일을 현재 카테고리로 업로드하고 목록을 갱신합니다.
   const handleUpload = async () => {
     if (!selectedFile) {
       setUploadError("업로드할 파일을 먼저 선택해 주세요.");
@@ -194,7 +132,7 @@ export default function PdfManagementPage() {
     }
   };
 
-  // 핸들러: 상태 변경
+  // 파일 메타데이터를 유지한 채 사용 상태만 바꿉니다.
   const handleChangeStatus = async (file, nextStatus) => {
     const currentStatus =
       file.ragMetadata?.file_status || file.status || "active";
@@ -202,7 +140,7 @@ export default function PdfManagementPage() {
 
     if (
       !window.confirm(
-        `${getDisplayFileName(file.name)} 파일 상태를 변경하시겠습니까?`,
+        `${String(file.name || "").replace(/^\d+-/, "")} 파일 상태를 변경하시겠습니까?`,
       )
     )
       return;
@@ -210,7 +148,7 @@ export default function PdfManagementPage() {
     try {
       await updateRagFileStatus({
         bucket: "chat",
-        path: getFilePath(file, file.folder),
+        path: file.path || `${file.folder}/${file.name}`,
         fileStatus: nextStatus,
         sourceName: file.ragMetadata?.source_name || "",
         sourceUrl: file.ragMetadata?.source_url || "",
@@ -225,7 +163,7 @@ export default function PdfManagementPage() {
     }
   };
 
-  // 핸들러: 벡터 DB 제작
+  // 현재 선택된 카테고리 문서로 벡터 인덱스를 재생성합니다.
   const handleCreateIndex = async () => {
     if (!window.confirm("현재 자료들을 기준으로 벡터 DB를 제작하시겠습니까?"))
       return;
@@ -248,11 +186,11 @@ export default function PdfManagementPage() {
     }
   };
 
-  // 파일 액션
+  // 임시 서명 URL을 받아 새 창에서 문서를 미리 봅니다.
   const handlePreview = async (file) => {
     try {
       const data = await getRagFileSignedUrl({
-        path: getFilePath(file, file.folder),
+        path: file.path || `${file.folder}/${file.name}`,
         expiresIn: 600,
       });
       window.open(data.signedUrl || data, "_blank");
@@ -261,10 +199,11 @@ export default function PdfManagementPage() {
     }
   };
 
+  // 서명 URL로 파일을 받아 브라우저 다운로드를 실행합니다.
   const handleDownload = async (file) => {
     try {
       const data = await getRagFileSignedUrl({
-        path: getFilePath(file, file.folder),
+        path: file.path || `${file.folder}/${file.name}`,
         expiresIn: 600,
       });
       const response = await fetch(data.signedUrl || data);
@@ -272,7 +211,7 @@ export default function PdfManagementPage() {
       const blobUrl = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = blobUrl;
-      link.download = getDisplayFileName(file.name);
+      link.download = String(file.name || "").replace(/^\d+-/, "");
       link.click();
       window.URL.revokeObjectURL(blobUrl);
     } catch (err) {
@@ -280,32 +219,33 @@ export default function PdfManagementPage() {
     }
   };
 
+  // 선택한 파일을 서버 저장소에서 삭제하고 목록을 새로고침합니다.
   const handleDelete = async (file) => {
     if (
       !window.confirm(
-        `${getDisplayFileName(file.name)} 파일을 삭제하시겠습니까?`,
+        `${String(file.name || "").replace(/^\d+-/, "")} 파일을 삭제하시겠습니까?`,
       )
     )
       return;
     try {
-      await deleteRagFile(getFilePath(file, file.folder));
+      await deleteRagFile(file.path || `${file.folder}/${file.name}`);
       fetchAllFolders();
     } catch (err) {
       alert("파일 삭제에 실패했습니다.");
     }
   };
 
-  // 선택된 카테고리에 해당하는 파일 필터링
+  // 선택된 탭에 속한 파일만 표에 표시합니다.
   const displayedFiles = useMemo(() => {
     return allFiles.filter((file) => file.folder === selectedListCategory);
   }, [allFiles, selectedListCategory]);
 
-  // 페이지네이션
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = displayedFiles.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(displayedFiles.length / itemsPerPage) || 1;
 
+  // 폴더 값을 표에서 쓰는 카테고리 라벨로 변환합니다.
   const getCategoryLabel = (folderValue) => {
     return (
       FOLDER_OPTIONS.find((opt) => opt.value === folderValue)?.label ||
@@ -315,7 +255,7 @@ export default function PdfManagementPage() {
 
   return (
     <div className="pdf-mgmt-container">
-      {/* 1. 최상단 메인 헤더 */}
+      
       <div className="pdf-mgmt-header">
         <div>
           <h1 className="pdf-mgmt-title">PDF 업로드 및 자료 목록</h1>
@@ -344,7 +284,7 @@ export default function PdfManagementPage() {
         </div>
       </div>
 
-      {/* 2. 상단 업로드 구획 (업로드 박스 + 가이드) */}
+      
       <div className="section-half top-section">
         <div className="upload-layout-grid">
           <AdminCard title="자료 파일 업로드" className="upload-card h-full">
@@ -437,12 +377,12 @@ export default function PdfManagementPage() {
         </div>
       </div>
 
-      {/* 3. 하단 섹션: Pdf List 박스 */}
+      
       <div className="section-half bottom-section">
         <section className="adm-card pdf-list-card">
-          {/* List 박스 헤더 영역 */}
+          
           <div className="pdf-list-header-row">
-            {/* 좌상단: 등록된 PDF 개수 & 각 분야별 자료 개수 */}
+            
             <div className="pdf-list-title-block">
               <div className="registered-pdf-title">
                 등록된 PDF{" "}
@@ -453,7 +393,7 @@ export default function PdfManagementPage() {
               </div>
             </div>
 
-            {/* 우상단: 카테고리 선택 버튼 그룹 (통합, 인사, 노무, 회계, 법무) 및 벡터 DB 결과 */}
+            
             <div className="pdf-list-right-block">
               {indexResult && (
                 <div className="index-result-box">
@@ -483,7 +423,14 @@ export default function PdfManagementPage() {
             </div>
           </div>
 
-          {/* 테이블 영역 */}
+          {listError && (
+            <div className="pdf-list-error">
+              <strong>자료 목록 조회 실패</strong>
+              <span>{listError}</span>
+            </div>
+          )}
+
+          
           <div className="table-wrapper">
             <table className="pdf-table">
               <thead>
@@ -520,20 +467,20 @@ export default function PdfManagementPage() {
 
                     return (
                       <tr key={file.id || index}>
-                        {/* 카테고리 */}
+                        
                         <td className="col-center">
                           {getCategoryLabel(file.folder)}
                         </td>
 
-                        {/* 파일명 */}
+                        
                         <td
                           className="col-filename"
-                          title={getDisplayFileName(file.name)}
+                          title={String(file.name || "").replace(/^\d+-/, "")}
                         >
-                          {getDisplayFileName(file.name)}
+                          {String(file.name || "").replace(/^\d+-/, "")}
                         </td>
 
-                        {/* 업로드 날짜 (xx.xx.xx일 형식) */}
+                        
                         <td className="col-center">
                           {formatDateShort(
                             file.createdAt ||
@@ -542,19 +489,19 @@ export default function PdfManagementPage() {
                           )}
                         </td>
 
-                        {/* 파일 크기 */}
+                        
                         <td className="col-center">
                           {formatBytes(file.metadata?.size || file.size)}
                         </td>
 
-                        {/* 파일 형식 */}
+                        
                         <td className="col-center">
                           <span className="file-format-badge">
                             {getFileExtension(file.name)}
                           </span>
                         </td>
 
-                        {/* 상태 (사용중, 사용안함, 예약 자료, 보관됨) */}
+                        
                         <td className="col-center custom-td-dropdown">
                           <button
                             type="button"
@@ -596,7 +543,7 @@ export default function PdfManagementPage() {
                           )}
                         </td>
 
-                        {/* 관리 (미리보기, 다운로드, 삭제 - 무채색 아이콘) */}
+                        
                         <td className="col-center">
                           <div className="action-icon-group">
                             <button
@@ -672,7 +619,7 @@ export default function PdfManagementPage() {
             </table>
           </div>
 
-          {/* 하단 푸터 (건수 표시 & 페이지네이션) */}
+          
           <div className="list-footer">
             <div className="footer-count-text">
               전체 자료 <strong>{displayedFiles.length}</strong>개 중{" "}

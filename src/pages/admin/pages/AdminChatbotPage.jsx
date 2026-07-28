@@ -6,6 +6,7 @@ import "../../Chat/chat.css";
 const DEFAULT_SYSTEM_PROMPT =
   "너는 CapsDol의 관리자 상담 보조 챗봇이다. 사용자가 다른 언어를 요청하지 않는 한 한국어로 답변한다. 답변은 명확하고 실무적으로 작성하며, 법률·판례·사실관계를 지어내지 않는다.";
 
+// 관리자 전용 RAG 챗봇의 질문, 응답, 출처 표시를 관리합니다.
 export default function AdminChatbotPage() {
   const [messages, setMessages] = useState([
     {
@@ -28,6 +29,7 @@ export default function AdminChatbotPage() {
     }
   }, [messages, loading]);
 
+  // 질문을 API에 전송하고 답변, 출처, 토큰 사용량을 반영합니다.
   const sendMessage = async (textToSend) => {
     const message = textToSend.trim();
 
@@ -71,11 +73,13 @@ export default function AdminChatbotPage() {
     }
   };
 
+  // 입력 폼 제출을 메시지 전송 흐름으로 연결합니다.
   const handleSubmit = (event) => {
     event.preventDefault();
     sendMessage(input);
   };
 
+  // 대화와 사용량 표시를 초기 상태로 되돌립니다.
   const handleReset = () => {
     setMessages([
       {
@@ -93,7 +97,6 @@ export default function AdminChatbotPage() {
     <div className="adm-page">
       <div className="adm-portal-head">
         <div>
-          <p className="adm-eyebrow">RAG Chatbot</p>
           <h2>운영 보조 AI</h2>
           <span>
             등록된 RAG 자료를 기준으로 상담, 문서, 일본 진출 관련 질문에 대한
@@ -112,7 +115,6 @@ export default function AdminChatbotPage() {
         <section className="adm-card adm-ai-console">
           <div className="adm-card-head">
             <div>
-              <p className="adm-eyebrow">Administrator Assistant</p>
               <h2>관리자 상담</h2>
               <span>질문에 관련된 자료가 있으면 함께 표시합니다.</span>
             </div>

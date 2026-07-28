@@ -22,6 +22,7 @@ const FILE_STATUS_OPTIONS = [
   { label: "보관됨", value: "archived" },
 ];
 
+// 기존 PDF 목록 화면에서 반복되는 카드 틀을 제공합니다.
 function AdminCard({ title, action, children }) {
   return (
     <section className="adm-card">
@@ -34,6 +35,7 @@ function AdminCard({ title, action, children }) {
   );
 }
 
+// 파일 업로드일을 한국 날짜 형식으로 표시합니다.
 function formatDate(dateValue) {
   if (!dateValue) return "-";
 
@@ -44,6 +46,7 @@ function formatDate(dateValue) {
   return date.toLocaleDateString("ko-KR");
 }
 
+// 파일 크기를 표에 맞는 짧은 단위로 변환합니다.
 function formatFileSize(size) {
   const bytes = Number(size || 0);
 
@@ -53,22 +56,7 @@ function formatFileSize(size) {
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 }
 
-function getFolderLabel(folder) {
-  return FOLDER_OPTIONS.find((item) => item.value === folder)?.label || folder;
-}
-
-function getFolderGroup(folder) {
-  return FOLDER_OPTIONS.find((item) => item.value === folder)?.group || "-";
-}
-
-function getDisplayFileName(fileName) {
-  return String(fileName || "").replace(/^\d+-/, "");
-}
-
-function getFilePath(file, folder) {
-  return file.path || `${folder}/${file.name}`;
-}
-
+// 기존 RAG 파일 목록, 상태 변경, 인덱싱을 관리하는 화면입니다.
 export default function PdfListPage() {
   const [selectedFolder, setSelectedFolder] = useState("normal");
   const [filesByFolder, setFilesByFolder] = useState({});
@@ -98,6 +86,7 @@ export default function PdfListPage() {
     (file) => (file.ragMetadata?.file_status || "active") !== "active"
   ).length;
 
+  // 단일 폴더의 파일 목록을 서버에서 가져옵니다.
   const fetchFilesByFolder = async (folder) => {
     const data = await getRagFiles({
       bucket: "chat",
@@ -107,6 +96,7 @@ export default function PdfListPage() {
     return data.files || [];
   };
 
+  // 현재 선택된 폴더만 다시 조회합니다.
   const fetchSelectedFolderFiles = async () => {
     try {
       setIsLoading(true);
@@ -126,6 +116,7 @@ export default function PdfListPage() {
     }
   };
 
+  // 모든 폴더를 순회해 전체 파일 통계를 갱신합니다.
   const fetchAllFolders = async () => {
     try {
       setIsLoading(true);
@@ -148,9 +139,9 @@ export default function PdfListPage() {
 
   useEffect(() => {
     fetchAllFolders();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // 서명 URL을 받아 파일을 새 창에서 미리 봅니다.
   const handlePreview = async (file) => {
     const previewWindow = window.open("", "_blank");
 
@@ -159,7 +150,7 @@ export default function PdfListPage() {
       setSuccess("");
 
       const data = await getRagFileSignedUrl({
-        path: getFilePath(file, selectedFolder),
+        path: file.path || `${selectedFolder}/${file.name}`,
         expiresIn: 600,
       });
 
@@ -177,13 +168,14 @@ export default function PdfListPage() {
     }
   };
 
+  // 서명 URL로 파일을 내려받아 브라우저 다운로드를 실행합니다.
   const handleDownload = async (file) => {
     try {
       setError("");
       setSuccess("");
 
       const data = await getRagFileSignedUrl({
-        path: getFilePath(file, selectedFolder),
+        path: file.path || `${selectedFolder}/${file.name}`,
         expiresIn: 600,
       });
 
@@ -194,7 +186,7 @@ export default function PdfListPage() {
 
       const link = document.createElement("a");
       link.href = blobUrl;
-      link.download = getDisplayFileName(file.name);
+      link.download = String(file.name || "").replace(/^\d+-/, "");
       document.body.appendChild(link);
       link.click();
 
@@ -205,6 +197,7 @@ export default function PdfListPage() {
     }
   };
 
+  // 선택한 파일을 삭제하고 현재 폴더 목록을 갱신합니다.
   const handleDelete = async (file) => {
     const ok = window.confirm(`${file.name} 파일을 삭제하시겠습니까?`);
 
@@ -214,7 +207,7 @@ export default function PdfListPage() {
       setError("");
       setSuccess("");
 
-      await deleteRagFile(getFilePath(file, selectedFolder));
+      await deleteRagFile(file.path || `${selectedFolder}/${file.name}`);
 
       setSuccess("파일이 삭제되었습니다.");
 
@@ -224,13 +217,14 @@ export default function PdfListPage() {
     }
   };
 
+  // 파일 메타데이터를 유지한 채 사용 상태만 바꿉니다.
   const handleChangeStatus = async (file, nextStatus) => {
     const currentStatus = file.ragMetadata?.file_status || "active";
 
     if (currentStatus === nextStatus) return;
 
     const ok = window.confirm(
-      `${getDisplayFileName(file.name)} 파일 상태를 ${nextStatus}로 변경하시겠습니까?`
+      `${String(file.name || "").replace(/^\d+-/, "")} 파일 상태를 ${nextStatus}로 변경하시겠습니까?`
     );
 
     if (!ok) return;
@@ -241,7 +235,7 @@ export default function PdfListPage() {
 
       await updateRagFileStatus({
         bucket: "chat",
-        path: getFilePath(file, selectedFolder),
+        path: file.path || `${selectedFolder}/${file.name}`,
         fileStatus: nextStatus,
         sourceName: file.ragMetadata?.source_name || "",
         sourceUrl: file.ragMetadata?.source_url || "",
@@ -258,8 +252,9 @@ export default function PdfListPage() {
     }
   };
 
+  // 현재 선택 폴더의 문서로 벡터 인덱스를 재생성합니다.
   const handleCreateIndex = async () => {
-    const folderLabel = getFolderLabel(selectedFolder);
+    const folderLabel = (FOLDER_OPTIONS.find((item) => item.value === selectedFolder)?.label || selectedFolder);
 
     const ok = window.confirm(
       `${folderLabel} 자료를 기준으로 벡터 DB를 제작하시겠습니까?`
@@ -339,7 +334,7 @@ export default function PdfListPage() {
         <div className="adm-mini-stat">
           <span>현재 분야</span>
           <strong>{selectedFiles.length}</strong>
-          <small>{getFolderLabel(selectedFolder)}</small>
+          <small>{(FOLDER_OPTIONS.find((item) => item.value === selectedFolder)?.label || selectedFolder)}</small>
         </div>
       </div>
 
@@ -370,9 +365,9 @@ export default function PdfListPage() {
         }
       >
         <div className="admin-file-summary">
-          <strong>{getFolderLabel(selectedFolder)} 자료</strong>
+          <strong>{(FOLDER_OPTIONS.find((item) => item.value === selectedFolder)?.label || selectedFolder)} 자료</strong>
           <span>
-            {getFolderGroup(selectedFolder)} 자료 · {selectedFiles.length}개
+            {(FOLDER_OPTIONS.find((item) => item.value === selectedFolder)?.group || "-")} 자료 · {selectedFiles.length}개
           </span>
         </div>
 
@@ -414,17 +409,17 @@ export default function PdfListPage() {
                     <td>
                       <span
                         className={`admin-file-badge ${
-                          getFolderGroup(selectedFolder) === "통합"
+                          (FOLDER_OPTIONS.find((item) => item.value === selectedFolder)?.group || "-") === "통합"
                             ? "normal"
                             : "deep"
                         }`}
                       >
-                        {getFolderGroup(selectedFolder)}
+                        {(FOLDER_OPTIONS.find((item) => item.value === selectedFolder)?.group || "-")}
                       </span>
                     </td>
 
-                    <td>{getFolderLabel(selectedFolder)}</td>
-                    <td>{getDisplayFileName(file.name)}</td>
+                    <td>{(FOLDER_OPTIONS.find((item) => item.value === selectedFolder)?.label || selectedFolder)}</td>
+                    <td>{String(file.name || "").replace(/^\d+-/, "")}</td>
                     <td>{formatDate(file.created_at || file.updated_at || file.ragMetadata?.created_at)}</td>
                     <td>{formatFileSize(file.metadata?.size)}</td>
                     <td>{file.metadata?.mimetype || file.fileType || "-"}</td>

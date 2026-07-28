@@ -1,5 +1,4 @@
-const BASE_URL =
-  process.env.REACT_APP_API_BASE_URL;
+import { fetchWithAuth } from "./authFetch";
 
 async function parseJsonResponse(res) {
   return res.json().catch(() => ({}));
@@ -13,7 +12,6 @@ export async function createReservation({
   note = "",
   availableRanges,
 }) {
-  const token = localStorage.getItem("accessToken");
 
   const requestBody = {
     phone,
@@ -33,11 +31,10 @@ export async function createReservation({
     requestBody.note = trimmedNote;
   }
 
-  const res = await fetch(`${BASE_URL}/reserv`, {
+  const res = await fetchWithAuth(`/reserv`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
     credentials: "include",
     body: JSON.stringify(requestBody),
@@ -56,7 +53,6 @@ export async function cancelReservation({
   reservationId,
   cancelReason = "",
 }) {
-  const token = localStorage.getItem("accessToken");
 
   const requestBody = {
     reservationId,
@@ -68,11 +64,10 @@ export async function cancelReservation({
     requestBody.cancelReason = trimmedReason;
   }
 
-  const res = await fetch(`${BASE_URL}/reserv/cancel`, {
+  const res = await fetchWithAuth(`/reserv/cancel`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
     credentials: "include",
     body: JSON.stringify(requestBody),
@@ -88,13 +83,11 @@ export async function cancelReservation({
 }
 
 export async function deleteReservation({ reservationId }) {
-  const token = localStorage.getItem("accessToken");
 
-  const res = await fetch(`${BASE_URL}/reserv/delete`, {
+  const res = await fetchWithAuth(`/reserv/delete`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
     credentials: "include",
     body: JSON.stringify({
@@ -112,12 +105,10 @@ export async function deleteReservation({ reservationId }) {
 }
 
 export async function getMyReservations() {
-  const token = localStorage.getItem("accessToken");
 
-  const res = await fetch(`${BASE_URL}/reserv/user/list`, {
+  const res = await fetchWithAuth(`/reserv/user/list`, {
     method: "GET",
     headers: {
-      Authorization: `Bearer ${token}`,
     },
     credentials: "include",
   });
@@ -131,13 +122,42 @@ export async function getMyReservations() {
   return data;
 }
 
-export async function getReservationList() {
-  const token = localStorage.getItem("accessToken");
+export async function getUserReservations({
+  uuid,
+  limit = 100,
+  offset = 0,
+} = {}) {
 
-  const res = await fetch(`${BASE_URL}/reserv/list`, {
+  const params = new URLSearchParams({
+    limit: String(limit),
+    offset: String(offset),
+  });
+
+  if (uuid?.trim()) {
+    params.append("uuid", uuid.trim());
+  }
+
+  const res = await fetchWithAuth(`/reserv/user/list?${params.toString()}`, {
     method: "GET",
     headers: {
-      Authorization: `Bearer ${token}`,
+    },
+    credentials: "include",
+  });
+
+  const data = await parseJsonResponse(res);
+
+  if (!res.ok) {
+    throw new Error(data.error || "사용자 상담 신청 내역 조회에 실패했습니다.");
+  }
+
+  return data;
+}
+
+export async function getReservationList() {
+
+  const res = await fetchWithAuth(`/reserv/list`, {
+    method: "GET",
+    headers: {
     },
     credentials: "include",
   });
@@ -156,7 +176,6 @@ export async function getReservationListByRange({
   previousMonthCount = 2,
   nextMonthCount = 4,
 } = {}) {
-  const token = localStorage.getItem("accessToken");
 
   const requestBody = {
     previous_month_count: previousMonthCount,
@@ -167,11 +186,10 @@ export async function getReservationListByRange({
     requestBody.base_date = baseDate;
   }
 
-  const res = await fetch(`${BASE_URL}/reserv/list`, {
+  const res = await fetchWithAuth(`/reserv/list`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
     credentials: "include",
     body: JSON.stringify(requestBody),
@@ -224,12 +242,10 @@ function normalizeAdminListData(data) {
 }
 
 export async function getAdminReservationList() {
-  const token = localStorage.getItem("accessToken");
 
-  const res = await fetch(`${BASE_URL}/reserv/admin/list`, {
+  const res = await fetchWithAuth(`/reserv/admin/list`, {
     method: "GET",
     headers: {
-      Authorization: `Bearer ${token}`,
     },
     credentials: "include",
   });
@@ -247,7 +263,6 @@ export async function getAdminReservationListByRange(
   requestTime,
   monthsToFetch
 ) {
-  const token = localStorage.getItem("accessToken");
 
   const body = {
     base_date: requestTime.slice(0, 10),
@@ -255,11 +270,10 @@ export async function getAdminReservationListByRange(
     next_month_count: 4,
   };
 
-  const res = await fetch(`${BASE_URL}/reserv/admin/list`, {
+  const res = await fetchWithAuth(`/reserv/admin/list`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
     credentials: "include",
     body: JSON.stringify(body),
@@ -278,20 +292,20 @@ export async function blockAdminReservation({
   field,
   selectedDate,
   selectedTime,
+  startTime,
+  endTime,
   reason,
 }) {
-  const token = localStorage.getItem("accessToken");
 
   const date = new Date(selectedDate).toISOString().slice(0, 10);
 
-  const start_time = selectedTime;
-  const end_time = addMinutes(selectedTime, 120);
+  const start_time = startTime || selectedTime;
+  const end_time = endTime || addMinutes(start_time, 120);
 
-  const res = await fetch(`${BASE_URL}/reserv/admin/block`, {
+  const res = await fetchWithAuth(`/reserv/admin/block`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
     credentials: "include",
     body: JSON.stringify({
@@ -328,13 +342,11 @@ function addMinutes(time, minutes) {
 }
 
 export async function unblockAdminReservation(blockId) {
-  const token = localStorage.getItem("accessToken");
 
-  const res = await fetch(`${BASE_URL}/reserv/admin/unblock`, {
+  const res = await fetchWithAuth(`/reserv/admin/unblock`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
     credentials: "include",
     body: JSON.stringify({
@@ -357,13 +369,11 @@ export async function allowAdminReservation({
   startTime,
   endTime,
 }) {
-  const token = localStorage.getItem("accessToken");
 
-  const res = await fetch(`${BASE_URL}/reserv/admin/allow`, {
+  const res = await fetchWithAuth(`/reserv/admin/allow`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
     credentials: "include",
     body: JSON.stringify({
@@ -384,13 +394,11 @@ export async function allowAdminReservation({
 }
 
 export async function disallowAdminReservation(decisions) {
-  const token = localStorage.getItem("accessToken");
 
-  const res = await fetch(`${BASE_URL}/reserv/admin/disallow`, {
+  const res = await fetchWithAuth(`/reserv/admin/disallow`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
     credentials: "include",
     body: JSON.stringify({
@@ -411,13 +419,11 @@ export async function modifyReservation({
   reservationId,
   availableRanges,
 }) {
-  const token = localStorage.getItem("accessToken");
 
-  const res = await fetch(`${BASE_URL}/reserv/modify`, {
+  const res = await fetchWithAuth(`/reserv/modify`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
     credentials: "include",
     body: JSON.stringify({

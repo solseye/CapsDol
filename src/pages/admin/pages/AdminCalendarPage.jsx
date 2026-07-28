@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from "react";
+import React, { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import "./adminCalendarPage.css";
 import {
   getAdminReservationList,
@@ -8,56 +8,185 @@ import {
   allowAdminReservation,
   disallowAdminReservation,
 } from "../../../api/reservationApi";
+import {
+  MONTHS_TO_FETCH,
+  addMinutesToTime,
+  buildAdminCalendarEvents,
+  getDayTimeSlots,
+  getDateKey,
+  getWeekDays,
+  getWeekInfo,
+} from "../utils/calendarUtils";
 
-const MONTHS_TO_FETCH = 7;
+const SLOT_MINUTES = 30;
+const RESERVATION_COLORS = [
+  "#2563eb",
+  "#7c3aed",
+  "#0891b2",
+  "#d97706",
+  "#4f46e5",
+  "#9333ea",
+  "#0ea5e9",
+  "#a855f7",
+  "#f59e0b",
+  "#64748b",
+];
+const FIELD_FILTERS = [
+  { value: "회계", label: "회계" },
+  { value: "법무", label: "법무" },
+];
 
-function getDateKey(dateValue) {
-  const date = new Date(dateValue);
-  if (Number.isNaN(date.getTime())) return "";
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
+function timeToMinutes(time) {
+  const [hour, minute] = String(time || "00:00").split(":").map(Number);
+  return hour * 60 + minute;
 }
 
-function getMonthStartIso(date) {
-  return new Date(date.getFullYear(), date.getMonth(), 1).toISOString();
+function getOrderedRange(startTime, endTime) {
+  const startsFirst = timeToMinutes(startTime) <= timeToMinutes(endTime);
+  const rangeStart = startsFirst ? startTime : endTime;
+  const rangeEnd = startsFirst ? endTime : startTime;
+
+  return {
+    startTime: rangeStart,
+    endTime: addMinutesToTime(rangeEnd, SLOT_MINUTES),
+    startMinutes: timeToMinutes(rangeStart),
+    endMinutes: timeToMinutes(rangeEnd) + SLOT_MINUTES,
+  };
 }
 
-function getSelectedDateIso(dateKey) {
-  return `${dateKey}T00:00:00.000Z`;
+function isTimeInsideRange(time, startTime, endTime) {
+  const current = timeToMinutes(time);
+  const range = getOrderedRange(startTime, endTime);
+  return current >= range.startMinutes && current < range.endMinutes;
 }
 
-function formatTime(timeValue) {
-  return String(timeValue || "").slice(0, 5);
+function canApproveSlot(reservation, date, time) {
+  const slotStart = timeToMinutes(time);
+  const slotEnd = slotStart + SLOT_MINUTES;
+
+  return (reservation?.available_ranges || []).some((range) => {
+    if (getDateKey(range.date) !== date) return false;
+
+    return (
+      timeToMinutes(range.start_time) <= slotStart &&
+      timeToMinutes(range.end_time) >= slotEnd
+    );
+  });
 }
 
-function addMinutesToTime(timeStr, mins) {
-  const [h, m] = timeStr.split(":").map(Number);
-  const totalMins = h * 60 + m + mins;
-  const newH = Math.floor(totalMins / 60);
-  const newM = totalMins % 60;
-  return `${String(newH).padStart(2, "0")}:${String(newM).padStart(2, "0")}`;
+function getReservationKey(reservation) {
+  return String(
+    reservation?.reservation_id ||
+      reservation?.id ||
+      reservation?.phone ||
+      reservation?.username ||
+      "unknown",
+  );
 }
 
-function getFieldLabel(field) {
-  switch (field) {
-    case "law":
-      return "법무";
-    case "accounting":
-      return "회계";
-    case "hr":
-      return "인사";
-    case "labor":
-      return "노무";
-    case null:
-      return "전체";
-    default:
-      return field || "전체";
+function getReservationColor(key) {
+  const chars = String(key);
+  const hash = Array.from(chars).reduce(
+    (sum, char) => sum + char.charCodeAt(0),
+    0,
+  );
+  return RESERVATION_COLORS[hash % RESERVATION_COLORS.length];
+}
+
+function getRangeLabel(range) {
+  return `${String(range.start_time || "").slice(0, 5)} ~ ${String(
+    range.end_time || "",
+  ).slice(0, 5)}`;
+}
+
+function isRangeSlot(range, date, time) {
+  const slotStart = timeToMinutes(time);
+  const slotEnd = slotStart + SLOT_MINUTES;
+
+  return (
+    getDateKey(range.date) === date &&
+    timeToMinutes(range.start_time) <= slotStart &&
+    timeToMinutes(range.end_time) >= slotEnd
+  );
+}
+
+function getDiagonalAvailabilityBackground(paints) {
+  if (paints.length === 0) return undefined;
+  if (paints.length === 1) {
+    return `color-mix(in srgb, ${paints[0].color} 18%, #ffffff)`;
   }
+
+  const step = 100 / paints.length;
+  const stops = paints.map((paint, index) => {
+    const start = Number((index * step).toFixed(2));
+    const end = Number(((index + 1) * step).toFixed(2));
+    return `color-mix(in srgb, ${paint.color} 18%, #ffffff) ${start}% ${end}%`;
+  });
+
+  return `linear-gradient(135deg, ${stops.join(", ")})`;
 }
 
+function hasAvailabilityAt(paints, date, time) {
+  return paints.some((paint) => isRangeSlot(paint.range, date, time));
+}
+
+function getDateFromKey(dateKey) {
+  const [year, month, day] = dateKey.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
+function getBlockRangesFromKeys(slotKeys) {
+  const sortedSlots = [...new Set(slotKeys)]
+    .map((slotKey) => {
+      const dividerIndex = slotKey.lastIndexOf("_");
+      return {
+        date: slotKey.slice(0, dividerIndex),
+        time: slotKey.slice(dividerIndex + 1),
+      };
+    })
+    .sort((a, b) => {
+      if (a.date !== b.date) return a.date.localeCompare(b.date);
+      return timeToMinutes(a.time) - timeToMinutes(b.time);
+    });
+
+  return sortedSlots.reduce((ranges, slot) => {
+    const lastRange = ranges[ranges.length - 1];
+
+    if (
+      lastRange &&
+      lastRange.date === slot.date &&
+      lastRange.endTime === slot.time
+    ) {
+      lastRange.endTime = addMinutesToTime(slot.time, SLOT_MINUTES);
+      lastRange.slotCount += 1;
+      return ranges;
+    }
+
+    ranges.push({
+      date: slot.date,
+      startTime: slot.time,
+      endTime: addMinutesToTime(slot.time, SLOT_MINUTES),
+      slotCount: 1,
+    });
+    return ranges;
+  }, []);
+}
+
+function isSlotInsideBlockRanges(ranges, date, time) {
+  const slotStart = timeToMinutes(time);
+  const slotEnd = slotStart + SLOT_MINUTES;
+
+  return ranges.some(
+    (range) =>
+      range.date === date &&
+      timeToMinutes(range.startTime) <= slotStart &&
+      timeToMinutes(range.endTime) >= slotEnd,
+  );
+}
+
+// 예약/차단 데이터를 주간 캘린더 UI로 조작하는 관리자 화면입니다.
 export default function AdminCalendarPage() {
+  // 현재 월, 선택 날짜, 서버 데이터, 모달 상태를 한 페이지에서 함께 관리합니다.
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
 
@@ -67,38 +196,32 @@ export default function AdminCalendarPage() {
 
   const [isBlockMode, setIsBlockMode] = useState(false);
   const [pendingBlocks, setPendingBlocks] = useState([]);
+  const [dragSelection, setDragSelection] = useState(null);
+  const [approvalDraft, setApprovalDraft] = useState(null);
+  const [approvalFocus, setApprovalFocus] = useState(null);
+  const [suppressNextClick, setSuppressNextClick] = useState(false);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState("");
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [blockReason, setBlockReason] = useState("");
+  const [fieldFilter, setFieldFilter] = useState("회계");
 
   const isMounted = useRef(false);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
-  const getWeekInfo = (dateObj) => {
-    const target = new Date(dateObj);
-    const day = target.getDay();
-    const diff = 3 - day;
-    target.setDate(target.getDate() + diff);
-
-    return {
-      displayYear: target.getFullYear(),
-      displayMonth: target.getMonth(),
-      displayWeek: Math.floor((target.getDate() - 1) / 7) + 1,
-    };
-  };
-
   const { displayYear, displayMonth, displayWeek } = getWeekInfo(selectedDate);
 
-  const applyListData = (data) => {
+  // 서버 응답 형태를 화면 상태에 맞게 반영합니다.
+  const applyListData = useCallback((data) => {
     setSchedules(data?.schedules || []);
     setBlocks(data?.blocks || []);
-  };
+  }, []);
 
-  const fetchAdminCalendar = async () => {
+  // 최초 진입 시 관리자 예약/차단 전체 목록을 가져옵니다.
+  const fetchAdminCalendar = useCallback(async () => {
     try {
       setLoading(true);
       const data = await getAdminReservationList();
@@ -109,13 +232,18 @@ export default function AdminCalendarPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [applyListData]);
 
-  const fetchAdminCalendarByCurrentMonth = async () => {
+  // 월 이동이나 새로고침 시 현재 월 주변 범위만 다시 조회합니다.
+  const fetchAdminCalendarByCurrentMonth = useCallback(async () => {
     try {
       setLoading(true);
       const data = await getAdminReservationListByRange(
-        getMonthStartIso(currentDate),
+        new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          1,
+        ).toISOString(),
         MONTHS_TO_FETCH,
       );
       applyListData(data);
@@ -125,7 +253,7 @@ export default function AdminCalendarPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [applyListData, currentDate]);
 
   useEffect(() => {
     if (!isMounted.current) {
@@ -134,127 +262,35 @@ export default function AdminCalendarPage() {
     } else {
       fetchAdminCalendarByCurrentMonth();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [year, month]);
+  }, [year, month, fetchAdminCalendar, fetchAdminCalendarByCurrentMonth]);
 
-  const events = useMemo(() => {
-    const newEvents = [];
+  // 서버 데이터를 캘린더 셀에 바로 배치할 이벤트 목록으로 변환합니다.
+  const filteredSchedules = useMemo(
+    () =>
+      fieldFilter
+        ? schedules.filter((schedule) => schedule.field === fieldFilter)
+        : [],
+    [fieldFilter, schedules],
+  );
 
-    const parsedBlocks = (blocks || [])
-      .map((b) => ({
-        id: b.id || b.block_id,
-        targetId: b.id || b.block_id,
-        type: "block",
-        title: "일정 차단",
-        date: getDateKey(b.blocked_date),
-        time: formatTime(b.blocked_time),
-        reason: b.reason || "관리자 차단",
-        originalData: b,
-      }))
-      .filter((b) => b.date && b.time)
-      .sort((a, b) => {
-        if (a.date !== b.date) return a.date.localeCompare(b.date);
-        return a.time.localeCompare(b.time);
-      });
+  const filteredBlocks = useMemo(
+    () =>
+      fieldFilter
+        ? blocks.filter((block) => !block.field || block.field === fieldFilter)
+        : [],
+    [blocks, fieldFilter],
+  );
 
-    let lastBaseBlock = null;
+  const events = useMemo(
+    () =>
+      buildAdminCalendarEvents({
+        schedules: filteredSchedules,
+        blocks: filteredBlocks,
+      }),
+    [filteredBlocks, filteredSchedules],
+  );
 
-    parsedBlocks.forEach((b) => {
-      if (
-        lastBaseBlock &&
-        lastBaseBlock.date === b.date &&
-        lastBaseBlock.endTime === b.time &&
-        lastBaseBlock.reason === b.reason
-      ) {
-        lastBaseBlock.endTime = addMinutesToTime(b.time, 30);
-        lastBaseBlock.slotSpan += 1;
-        lastBaseBlock.mergedIds.push(b.targetId);
-
-        newEvents.push({
-          ...b,
-          isExtension: true,
-          endTime: addMinutesToTime(b.time, 30),
-          slotSpan: 1,
-        });
-      } else {
-        b.endTime = addMinutesToTime(b.time, 30);
-        b.slotSpan = 1;
-        b.isExtension = false;
-        b.mergedIds = [b.targetId];
-
-        lastBaseBlock = b;
-        newEvents.push(b);
-      }
-    });
-
-    (schedules || []).forEach((schedule) => {
-      const dKey = getDateKey(schedule.selected_date);
-      const tKey = formatTime(schedule.selected_time);
-      if (dKey && tKey) {
-        (schedule.reservations || []).forEach((res) => {
-          // 💡 1. 불허(rejected) 처리된 예약은 아예 배열에서 제외 (화면 노출 금지)
-          if (res.status === "rejected") return;
-
-          const resId = res.reservation_id || res.id;
-          const isConfirmed =
-            res.status === "approved" || res.status === "confirmed";
-
-          if (isConfirmed) {
-            newEvents.push({
-              id: resId,
-              targetId: resId,
-              type: "reservation",
-              title: `[${getFieldLabel(schedule.field)}] ${res.username || "사용자"}`,
-              date: dKey,
-              time: tKey,
-              endTime: addMinutesToTime(tKey, 90),
-              slotSpan: 3,
-              status: res.status,
-              field: schedule.field,
-              isExtension: false,
-              originalData: res,
-            });
-            [30, 60].forEach((offsetMins, idx) => {
-              const slotTime = addMinutesToTime(tKey, offsetMins);
-              newEvents.push({
-                id: `${resId}_ext_${idx}`,
-                targetId: resId,
-                type: "reservation",
-                title: "상담 진행",
-                date: dKey,
-                time: slotTime,
-                endTime: addMinutesToTime(slotTime, 30),
-                slotSpan: 1,
-                status: res.status,
-                field: schedule.field,
-                isExtension: true,
-                originalData: res,
-              });
-            });
-          } else {
-            newEvents.push({
-              id: resId,
-              targetId: resId,
-              type: "reservation",
-              title: `[${getFieldLabel(schedule.field)}] ${res.username || "사용자"}`,
-              date: dKey,
-              time: tKey,
-              endTime: addMinutesToTime(tKey, 30),
-              slotSpan: 1,
-              status: res.status,
-              field: schedule.field,
-              isExtension: false,
-              originalData: res,
-            });
-          }
-        });
-      }
-    });
-    return newEvents;
-  }, [schedules, blocks]);
-
-  // 💡 KPI 상단 통계에서도 불허(rejected) 제외
-  const allReservations = schedules
+  const allReservations = filteredSchedules
     .flatMap((s) => s.reservations || [])
     .filter((r) => r.status !== "rejected");
 
@@ -271,35 +307,174 @@ export default function AdminCalendarPage() {
     (_, i) => new Date(year, month, i + 1),
   );
 
-  const getWeekDays = (date) => {
-    const start = new Date(date);
-    start.setDate(start.getDate() - start.getDay());
-    return Array.from({ length: 7 }, (_, i) => {
-      const d = new Date(start);
-      d.setDate(start.getDate() + i);
-      return d;
-    });
-  };
   const weekDays = getWeekDays(selectedDate);
+  const times = getDayTimeSlots();
+  const selectedBlockRanges = useMemo(
+    () => getBlockRangesFromKeys(pendingBlocks),
+    [pendingBlocks],
+  );
 
-  const times = Array.from({ length: 18 }, (_, i) => {
-    const hour = String(Math.floor(i / 2) + 9).padStart(2, "0");
-    const min = i % 2 === 0 ? "00" : "30";
-    return `${hour}:${min}`;
-  });
-
-  const formatDate = (d) =>
-    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-
+  // 미니 캘린더의 월 이동과 선택 날짜를 함께 맞춥니다.
   const handleMonthChange = (targetMonthIndex) => {
     const newDate = new Date(year, targetMonthIndex, 1);
     setCurrentDate(newDate);
     setSelectedDate(newDate);
   };
 
+  // 차단 모드에서는 빈 슬롯 선택, 일반 모드에서는 일정 상세 모달을 엽니다.
+  const clearDragSelection = useCallback(() => {
+    setDragSelection(null);
+  }, []);
+
+  const startBlockDrag = (date, time, isPast, slotEvents) => {
+    if (!isBlockMode || isPast || slotEvents.length > 0) return;
+    const slotKey = `${date}_${time}`;
+    const existingBlockKeys = pendingBlocks;
+    setPendingBlocks((prev) =>
+      prev.includes(slotKey) ? prev : [...prev, slotKey],
+    );
+    setDragSelection({
+      mode: "block",
+      date,
+      startTime: time,
+      endTime: time,
+      existingBlockKeys,
+    });
+  };
+
+  const startApprovalDrag = (event, mouseEvent) => {
+    if (event.status !== "pending") return;
+    if (approvalFocus && approvalFocus.event.targetId !== event.targetId)
+      return;
+    mouseEvent.stopPropagation();
+
+    setDragSelection({
+      mode: "approve",
+      date: event.date,
+      startTime: event.time,
+      endTime: event.time,
+      event,
+      reservation: event.originalData || {},
+    });
+  };
+
+  const startFocusedApprovalDrag = (date, time, isPast, slotEvents) => {
+    if (!approvalFocus || isPast) return;
+    if (!canApproveSlot(approvalFocus.reservation, date, time)) return;
+
+    const hasBlockingEvent = slotEvents.some(
+      (slotEvent) =>
+        slotEvent.type === "block" ||
+        (slotEvent.targetId !== approvalFocus.event.targetId &&
+          !slotEvent.isExtension),
+    );
+    if (hasBlockingEvent) return;
+
+    setDragSelection({
+      mode: "approve",
+      date,
+      startTime: time,
+      endTime: time,
+      event: approvalFocus.event,
+      reservation: approvalFocus.reservation,
+    });
+  };
+
+  const beginRangeApprovalMode = (event) => {
+    setApprovalFocus({
+      event,
+      reservation: event.originalData || {},
+    });
+    setSelectedDate(getDateFromKey(event.date));
+    setModalOpen(false);
+  };
+
+  const updateDragSelection = (date, time, isPast, slotEvents) => {
+    if (!dragSelection || dragSelection.date !== date) return;
+
+    if (dragSelection.mode === "block") {
+      if (isPast || slotEvents.length > 0) return;
+
+      const selectedTimes = times.filter((slotTime) =>
+        isTimeInsideRange(slotTime, dragSelection.startTime, time),
+      );
+
+      setPendingBlocks([
+        ...(dragSelection.existingBlockKeys || []),
+        ...selectedTimes.map((slotTime) => `${date}_${slotTime}`),
+      ]);
+      setDragSelection((prev) => ({ ...prev, endTime: time }));
+      return;
+    }
+
+    if (dragSelection.mode === "approve") {
+      if (
+        isPast ||
+        !canApproveSlot(dragSelection.reservation, date, time) ||
+        slotEvents.some(
+          (slotEvent) =>
+            slotEvent.type === "block" ||
+            (slotEvent.targetId !== dragSelection.event.targetId &&
+              !slotEvent.isExtension),
+        )
+      ) {
+        return;
+      }
+
+      setDragSelection((prev) => ({ ...prev, endTime: time }));
+    }
+  };
+
+  const finishDragSelection = useCallback(() => {
+    if (!dragSelection) return;
+
+    const range = getOrderedRange(
+      dragSelection.startTime,
+      dragSelection.endTime,
+    );
+
+    if (dragSelection.mode === "block") {
+      const selectedTimes = times.filter((slotTime) =>
+        isTimeInsideRange(
+          slotTime,
+          dragSelection.startTime,
+          dragSelection.endTime,
+        ),
+      );
+
+      setPendingBlocks([
+        ...(dragSelection.existingBlockKeys || []),
+        ...selectedTimes.map((slotTime) => `${dragSelection.date}_${slotTime}`),
+      ]);
+    }
+
+    if (dragSelection.mode === "approve") {
+      setApprovalDraft({
+        event: dragSelection.event,
+        reservation: dragSelection.reservation,
+        date: dragSelection.date,
+        startTime: range.startTime,
+        endTime: range.endTime,
+      });
+      setModalType("approve-range");
+      setModalOpen(true);
+    }
+
+    clearDragSelection();
+    setSuppressNextClick(true);
+    window.setTimeout(() => setSuppressNextClick(false), 0);
+  }, [clearDragSelection, dragSelection, times]);
+
+  useEffect(() => {
+    const handleWindowMouseUp = () => finishDragSelection();
+    window.addEventListener("mouseup", handleWindowMouseUp);
+    return () => window.removeEventListener("mouseup", handleWindowMouseUp);
+  }, [finishDragSelection]);
+
   const handleSlotClick = (dateStr, timeStr, slotEvents, isPast) => {
-    // 💡 과거의 빈칸은 클릭 방지
+    if (suppressNextClick) return;
     if (isPast && slotEvents.length === 0) return;
+    setSelectedDate(getDateFromKey(dateStr));
 
     if (isBlockMode) {
       if (slotEvents.length > 0) return;
@@ -327,24 +502,28 @@ export default function AdminCalendarPage() {
     }
   };
 
+  // 선택된 여러 30분 슬롯을 서버 차단 요청으로 순차 등록합니다.
   const handleCreateBlock = async () => {
-    if (!blockReason.trim()) return alert("불가 사유를 입력해 주세요.");
+    if (!blockReason.trim()) return alert("차단 사유를 입력해 주세요.");
+    if (selectedBlockRanges.length === 0)
+      return alert("차단할 시간 범위를 먼저 선택해 주세요.");
+
     try {
       setLoading(true);
       await Promise.all(
-        pendingBlocks.map((slotKey) => {
-          const [date, time] = slotKey.split("_");
-          return blockAdminReservation({
-            selectedDate: getSelectedDateIso(date),
-            selectedTime: time,
-            blockedDate: getSelectedDateIso(date),
-            blockedTime: time,
-            field: null,
+        selectedBlockRanges.map((range) =>
+          blockAdminReservation({
+            selectedDate: `${range.date}T00:00:00.000Z`,
+            selectedTime: range.startTime,
+            startTime: range.startTime,
+            endTime: range.endTime,
+            field: fieldFilter,
             reason: blockReason.trim() || null,
-          });
-        }),
+          }),
+        ),
       );
-      alert("선택한 일정이 모두 차단되었습니다.");
+
+      alert("선택한 시간 범위를 차단했습니다.");
       setModalOpen(false);
       setIsBlockMode(false);
       setPendingBlocks([]);
@@ -357,6 +536,29 @@ export default function AdminCalendarPage() {
     }
   };
 
+  const handleApproveDraft = async () => {
+    if (!approvalDraft) return alert("승인할 시간 범위를 먼저 선택해 주세요.");
+
+    try {
+      setLoading(true);
+      await allowAdminReservation({
+        reservationId: approvalDraft.event.targetId || approvalDraft.event.id,
+        date: approvalDraft.date,
+        startTime: approvalDraft.startTime,
+        endTime: approvalDraft.endTime,
+      });
+
+      setApprovalDraft(null);
+      setApprovalFocus(null);
+      setModalOpen(false);
+      await fetchAdminCalendarByCurrentMonth();
+    } catch (err) {
+      alert(err.message || "상담 승인 처리에 실패했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  // 연속 차단으로 병합된 슬롯까지 한 번에 차단 해제합니다.
   const handleUnblock = async (ids) => {
     if (window.confirm("선택한 차단 일정을 해제하시겠습니까?")) {
       try {
@@ -373,40 +575,6 @@ export default function AdminCalendarPage() {
     }
   };
 
-  const handleApprove = async (event) => {
-    if (
-      window.confirm(
-        "상담 요청을 승인하시겠습니까? 승인 시 선택된 시간으로 예약이 확정됩니다.",
-      )
-    ) {
-      try {
-        setLoading(true);
-
-        const reservation = event.originalData || {};
-        const selectedRange = (reservation.available_ranges || []).find(
-          (range) =>
-            getDateKey(range.date) === event.date &&
-            formatTime(range.start_time) === event.time,
-        );
-
-        await allowAdminReservation({
-          reservationId: event.targetId || event.id,
-          date: selectedRange?.date || event.date,
-          startTime: formatTime(selectedRange?.start_time || event.time),
-          endTime: formatTime(
-            selectedRange?.end_time || addMinutesToTime(event.time, 90),
-          ),
-        });
-
-        setModalOpen(false);
-        await fetchAdminCalendarByCurrentMonth();
-      } catch (err) {
-        alert(err.message || "승인 처리에 실패했습니다.");
-      } finally {
-        setLoading(false);
-      }
-    }
-  };
   const handleReject = async (id) => {
     const reason = window.prompt(
       "불허/취소 사유를 입력해 주세요. (미입력 가능)",
@@ -429,14 +597,82 @@ export default function AdminCalendarPage() {
     }
   };
 
-  const selectedDateStr = formatDate(selectedDate);
-  const selectedDateEvents = events
-    .filter((e) => e.date === selectedDateStr && !e.isExtension)
-    .sort((a, b) => a.time.localeCompare(b.time));
+  const selectedDateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, "0")}-${String(selectedDate.getDate()).padStart(2, "0")}`;
+  const pendingAvailabilityUsers = useMemo(() => {
+    const userMap = new Map();
 
-  const todayStr = formatDate(new Date());
-  // 💡 현재 시각 객체 (과거 시간 회색 처리용)
+    filteredSchedules.forEach((schedule) => {
+      (schedule.reservations || []).forEach((reservation) => {
+        if (reservation.status !== "pending") return;
+
+        const dateRanges = (reservation.available_ranges || [])
+          .filter((range) => getDateKey(range.date) === selectedDateStr)
+          .sort((a, b) =>
+            String(a.start_time || "").localeCompare(
+              String(b.start_time || ""),
+            ),
+          );
+
+        if (dateRanges.length === 0) return;
+
+        const key = getReservationKey(reservation);
+        const previous = userMap.get(key);
+        const color = getReservationColor(key);
+        const event = events.find(
+          (item) => item.targetId === (reservation.reservation_id || reservation.id),
+        );
+
+        userMap.set(key, {
+          key,
+          color,
+          reservation,
+          event,
+          name: reservation.username || "사용자",
+          ranges: [...(previous?.ranges || []), ...dateRanges],
+        });
+      });
+    });
+
+    return Array.from(userMap.values()).map((user) => ({
+      ...user,
+      ranges: user.ranges
+        .sort((a, b) =>
+          String(a.start_time || "").localeCompare(String(b.start_time || "")),
+        )
+        .slice(0, 2),
+    }));
+  }, [events, filteredSchedules, selectedDateStr]);
+
+  const pendingAvailabilityPaints = useMemo(() => {
+    const paints = [];
+
+    filteredSchedules.forEach((schedule) => {
+      (schedule.reservations || []).forEach((reservation) => {
+        if (reservation.status !== "pending") return;
+
+        const key = getReservationKey(reservation);
+        const color = getReservationColor(key);
+
+        (reservation.available_ranges || []).forEach((range) => {
+          paints.push({
+            key,
+            color,
+            reservation,
+            range,
+            event: events.find(
+              (item) =>
+                item.targetId === (reservation.reservation_id || reservation.id),
+            ),
+          });
+        });
+      });
+    });
+
+    return paints;
+  }, [events, filteredSchedules]);
+
   const now = new Date();
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 
   return (
     <div className="cal-page-wrap">
@@ -503,7 +739,7 @@ export default function AdminCalendarPage() {
                 <div key={`blank-${i}`} />
               ))}
               {days.map((d) => {
-                const dStr = formatDate(d);
+                const dStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
                 const hasEvent = events.some((e) => e.date === dStr);
                 const isSelected = selectedDateStr === dStr;
                 return (
@@ -524,41 +760,67 @@ export default function AdminCalendarPage() {
               {month + 1}월 {selectedDate.getDate()}일 상세 현황
             </div>
             <div className="day-event-list">
-              {selectedDateEvents.length > 0 ? (
-                selectedDateEvents.map((e) => (
+              {pendingAvailabilityUsers.length > 0 ? (
+                pendingAvailabilityUsers.map((user) => (
                   <div
-                    key={e.id}
-                    className="day-event-item"
-                    onClick={() => handleSlotClick(e.date, e.time, [e], false)}
+                    key={user.key}
+                    className="day-event-item user-availability-item"
+                    style={{ "--user-color": user.color }}
+                    onClick={() => {
+                      const targetId = user.event?.targetId || user.event?.id;
+                      const userEvent = events.find(
+                        (event) =>
+                          targetId &&
+                          event.targetId === targetId &&
+                          !event.isExtension,
+                      );
+                      const firstRange = user.ranges[0];
+                      const detailEvent = {
+                        ...(userEvent || {}),
+                        id: userEvent?.id || user.key,
+                        targetId: userEvent?.targetId || user.key,
+                        type: "reservation",
+                        status: userEvent?.status || "pending",
+                        title: userEvent?.title || user.name,
+                        time: String(
+                          firstRange?.start_time || userEvent?.time || "",
+                        ).slice(0, 5),
+                        endTime: String(
+                          firstRange?.end_time || userEvent?.endTime || "",
+                        ).slice(0, 5),
+                        originalData: user.reservation,
+                      };
+
+                      setSelectedSlot({
+                        date: selectedDateStr,
+                        time:
+                          firstRange?.start_time?.slice(0, 5) ||
+                          userEvent?.time,
+                        allEvents: [detailEvent],
+                        modalTitle: "사용자 일정 목록",
+                      });
+                      setModalType("info");
+                      setModalOpen(true);
+                    }}
                   >
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        marginBottom: "6px",
-                      }}
-                    >
-                      <span
-                        className={`day-event-badge badge-${e.type === "block" ? "block" : e.status}`}
-                      >
-                        {e.type === "block"
-                          ? "차단됨"
-                          : e.status === "pending"
-                            ? "승인 대기"
-                            : e.status === "approved" ||
-                                e.status === "confirmed"
-                              ? "승인 확정"
-                              : "상태 없음"}
-                      </span>
-                      <span className="day-event-time">
-                        {e.time} ~ {e.endTime}
-                      </span>
+                    <div className="availability-user-row">
+                      <span className="availability-color-dot" />
+                      <span className="day-event-title">{user.name}</span>
                     </div>
-                    <span className="day-event-title">{e.title}</span>
+                    <div className="availability-range-list">
+                      {user.ranges.map((range, index) => (
+                        <span
+                          key={`${user.key}-${range.start_time}-${index}`}
+                          className="availability-range-chip"
+                        >
+                          {getRangeLabel(range)}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 ))
               ) : (
-                <div className="day-empty-msg">등록된 일정이 없습니다.</div>
+                <div className="day-empty-msg">승인 대기자가 없습니다.</div>
               )}
             </div>
           </div>
@@ -574,6 +836,21 @@ export default function AdminCalendarPage() {
             </h2>
 
             <div className="weekly-actions">
+              <div className="field-filter-group" aria-label="분야 필터">
+                {FIELD_FILTERS.map((filter) => (
+                  <button
+                    key={filter.value}
+                    className={`field-filter-btn ${fieldFilter === filter.value ? "active" : ""}`}
+                    onClick={() =>
+                      setFieldFilter((current) =>
+                        current === filter.value ? null : filter.value,
+                      )
+                    }
+                  >
+                    {filter.label}
+                  </button>
+                ))}
+              </div>
               <button
                 className="adm-btn ghost"
                 onClick={fetchAdminCalendarByCurrentMonth}
@@ -602,16 +879,20 @@ export default function AdminCalendarPage() {
               <div className="grid-col-header time-label-header"></div>
 
               {weekDays.map((d) => {
-                const isToday = formatDate(d) === todayStr;
+                const dStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+                const isToday = dStr === todayStr;
+                const isSelectedDay = dStr === selectedDateStr;
                 return (
                   <div
                     key={d.toISOString()}
-                    className={`grid-col-header ${isToday ? "today" : ""}`}
+                    className={`grid-col-header ${isSelectedDay ? "selected" : ""} ${isToday ? "today" : ""}`}
+                    onClick={() => setSelectedDate(new Date(d))}
                   >
                     <span className="day-name">
                       {["일", "월", "화", "수", "목", "금", "토"][d.getDay()]}
                     </span>
                     <span className="day-date">{d.getDate()}</span>
+                    {isToday && <span className="today-label">today</span>}
                   </div>
                 );
               })}
@@ -629,7 +910,7 @@ export default function AdminCalendarPage() {
                     </div>
 
                     {weekDays.map((d) => {
-                      const dateStr = formatDate(d);
+                      const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
                       const slotEvents = events.filter(
                         (e) => e.date === dateStr && e.time === time,
                       );
@@ -640,7 +921,6 @@ export default function AdminCalendarPage() {
                       const displayEvent = baseEvents[0];
                       const extraCount = baseEvents.length - 1;
 
-                      // 💡 2. 이미 지나간 과거 시간 판별
                       const [hh, mm] = time.split(":").map(Number);
                       const slotDateTime = new Date(
                         d.getFullYear(),
@@ -652,28 +932,122 @@ export default function AdminCalendarPage() {
                       );
                       const isPast = slotDateTime < now;
 
-                      // 💡 3. 과거 시간은 블록 생성 모드 금지
                       const isBlockable =
                         isBlockMode && slotEvents.length === 0 && !isPast;
                       const slotKey = `${dateStr}_${time}`;
-                      const isSelected = pendingBlocks.includes(slotKey);
+                      const isSelected =
+                        pendingBlocks.includes(slotKey) ||
+                        isSlotInsideBlockRanges(
+                          selectedBlockRanges,
+                          dateStr,
+                          time,
+                        );
+                      const isDragBlockSelected =
+                        dragSelection?.mode === "block" &&
+                        dragSelection.date === dateStr &&
+                        isTimeInsideRange(
+                          time,
+                          dragSelection.startTime,
+                          dragSelection.endTime,
+                        );
+                      const isDragApprovalSelected =
+                        dragSelection?.mode === "approve" &&
+                        dragSelection.date === dateStr &&
+                        isTimeInsideRange(
+                          time,
+                          dragSelection.startTime,
+                          dragSelection.endTime,
+                        );
+                      const isApprovalRangeable =
+                        dragSelection?.mode === "approve" &&
+                        dragSelection.date === dateStr &&
+                        canApproveSlot(dragSelection.reservation, dateStr, time);
+                      const isApprovalFocusAllowed =
+                        approvalFocus &&
+                        canApproveSlot(
+                          approvalFocus.reservation,
+                          dateStr,
+                          time,
+                        );
+                      const isApprovalFocusDimmed =
+                        approvalFocus && !isApprovalFocusAllowed;
+                      const slotAvailabilityPaints =
+                        pendingAvailabilityPaints.filter((paint) =>
+                          isRangeSlot(paint.range, dateStr, time),
+                        );
+                      const hasAvailabilityPaint =
+                        slotAvailabilityPaints.length > 0;
+                      const availabilityBackground =
+                        getDiagonalAvailabilityBackground(
+                          slotAvailabilityPaints,
+                        );
+                      const hasPreviousAvailability =
+                        hasAvailabilityPaint &&
+                        hasAvailabilityAt(
+                          pendingAvailabilityPaints,
+                          dateStr,
+                          addMinutesToTime(time, -SLOT_MINUTES),
+                        );
+                      const hasNextAvailability =
+                        hasAvailabilityPaint &&
+                        hasAvailabilityAt(
+                          pendingAvailabilityPaints,
+                          dateStr,
+                          addMinutesToTime(time, SLOT_MINUTES),
+                        );
 
                       return (
                         <div
                           key={`${dateStr}-${time}`}
-                          className={`grid-cell ${isHalfHour ? "half-hour" : ""} ${isBlockable ? "blockable" : ""} ${isSelected ? "selected-for-block" : ""} ${isPast && !displayEvent ? "past-slot" : ""}`}
+                          className={`grid-cell ${isHalfHour ? "half-hour" : ""} ${isBlockable ? "blockable" : ""} ${hasAvailabilityPaint ? "has-availability" : ""} ${isApprovalFocusAllowed ? "approval-focus-allowed" : ""} ${isApprovalFocusDimmed ? "approval-focus-dimmed" : ""} ${isSelected || isDragBlockSelected ? "selected-for-block" : ""} ${isDragApprovalSelected ? "selected-for-approval" : ""} ${isApprovalRangeable ? "approval-rangeable" : ""} ${isPast && !displayEvent ? "past-slot" : ""}`}
+                          onMouseDown={() =>
+                            approvalFocus
+                              ? startFocusedApprovalDrag(
+                                  dateStr,
+                                  time,
+                                  isPast,
+                                  slotEvents,
+                                )
+                              : startBlockDrag(dateStr, time, isPast, slotEvents)
+                          }
+                          onMouseEnter={() =>
+                            updateDragSelection(dateStr, time, isPast, slotEvents)
+                          }
                           onClick={() =>
                             handleSlotClick(dateStr, time, slotEvents, isPast)
                           }
                         >
+                          {hasAvailabilityPaint && (
+                            <div
+                              className={`availability-fill ${hasPreviousAvailability ? "connect-prev" : ""} ${hasNextAvailability ? "connect-next" : ""}`}
+                              style={{
+                                "--availability-bg": availabilityBackground,
+                              }}
+                            />
+                          )}
                           {displayEvent && (
                             <div
-                              // 💡 지나간 일정은 시각적으로 약간 투명해지도록 past-event 추가
                               className={`event-card ${displayEvent.type === "block" ? "block" : displayEvent.status} ${isPast ? "past-event" : ""}`}
                               style={{
+                                "--event-user-color":
+                                  displayEvent.status === "pending"
+                                    ? getReservationColor(
+                                        getReservationKey(
+                                          displayEvent.originalData,
+                                        ),
+                                      )
+                                    : undefined,
                                 height: `calc(${displayEvent.slotSpan * 100}% - 2px)`,
                                 zIndex: 10 + displayEvent.slotSpan,
                               }}
+                              onMouseDown={(mouseEvent) =>
+                                startApprovalDrag(displayEvent, mouseEvent)
+                              }
+                              title={
+                                displayEvent.status === "pending"
+                                  ? "드래그해서 승인할 시간 범위를 선택"
+                                  : undefined
+                              }
                             >
                               <span className="event-title">
                                 {displayEvent.title}
@@ -695,8 +1069,26 @@ export default function AdminCalendarPage() {
           </div>
 
           <div className="weekly-footer">
-            {isBlockMode ? (
-              <div style={{ display: "flex", gap: "8px" }}>
+            {approvalFocus ? (
+              <div className="block-mode-actions">
+                <span className="block-mode-help">
+                  선택된 예약의 가능 시간 안에서 승인 범위를 드래그하세요.
+                </span>
+                <button
+                  className="adm-btn secondary"
+                  onClick={() => {
+                    setApprovalFocus(null);
+                    setDragSelection(null);
+                  }}
+                >
+                  범위 지정 취소
+                </button>
+              </div>
+            ) : isBlockMode ? (
+              <div className="block-mode-actions">
+                <span className="block-mode-help">
+                  빈 시간대를 드래그해서 차단 범위를 선택하세요.
+                </span>
                 <button
                   className="adm-btn secondary"
                   onClick={() => {
@@ -709,24 +1101,22 @@ export default function AdminCalendarPage() {
                 <button
                   className="adm-btn danger"
                   onClick={() => {
-                    if (pendingBlocks.length === 0)
-                      return alert(
-                        "표에서 차단할 일정을 먼저 1개 이상 클릭해 주세요.",
-                      );
+                    if (selectedBlockRanges.length === 0)
+                      return alert("차단할 시간대를 먼저 선택해 주세요.");
                     setBlockReason("");
                     setModalType("create-block");
                     setModalOpen(true);
                   }}
                 >
-                  선택한 {pendingBlocks.length}개 일정 차단하기
+                  선택한 {selectedBlockRanges.length}개 구간 차단
                 </button>
               </div>
             ) : (
               <button
-                className="adm-btn primary"
+                className="adm-btn danger"
                 onClick={() => setIsBlockMode(true)}
               >
-                일정 차단 모드
+                일정 차단
               </button>
             )}
           </div>
@@ -739,11 +1129,12 @@ export default function AdminCalendarPage() {
             {modalType === "info" ? (
               <>
                 <h3 className="modal-title">
-                  {selectedSlot.allEvents.length > 1
+                  {selectedSlot.modalTitle ||
+                  (selectedSlot.allEvents.length > 1
                     ? "해당 시간 일정 목록"
                     : selectedSlot.allEvents[0].type === "block"
                       ? "차단 일정 상세"
-                      : "예약 상세 정보"}
+                      : "예약 상세 정보")}
                 </h3>
                 <div className="modal-content-scroll">
                   {selectedSlot.allEvents.map((evt, idx) => (
@@ -795,11 +1186,9 @@ export default function AdminCalendarPage() {
                             {evt.status === "pending" && (
                               <button
                                 className="adm-btn primary"
-                                onClick={() =>
-                                  handleApprove(evt)
-                                }
+                                onClick={() => beginRangeApprovalMode(evt)}
                               >
-                                승인 확정
+                                범위 지정 승인
                               </button>
                             )}
                             {(evt.status === "pending" ||
@@ -829,26 +1218,70 @@ export default function AdminCalendarPage() {
                   </button>
                 </div>
               </>
+            ) : modalType === "approve-range" ? (
+              <>
+                <h3 className="modal-title">상담 시간 확정</h3>
+                <div className="modal-content range-confirm">
+                  <p>
+                    <strong>예약:</strong>{" "}
+                    {approvalDraft?.event?.title || "상담 예약"}
+                  </p>
+                  <p>
+                    <strong>확정 시간:</strong> {approvalDraft?.date}{" "}
+                    {approvalDraft?.startTime} ~ {approvalDraft?.endTime}
+                  </p>
+                  <p className="modal-hint">
+                    사용자가 제출한 가능 시간 안에서만 선택됩니다.
+                  </p>
+                </div>
+                <div className="modal-actions">
+                  <button
+                    className="adm-btn secondary"
+                    onClick={() => {
+                      setApprovalDraft(null);
+                      setApprovalFocus(null);
+                      setModalOpen(false);
+                    }}
+                  >
+                    취소
+                  </button>
+                  <button
+                    className="adm-btn primary"
+                    onClick={handleApproveDraft}
+                  >
+                    확정 승인
+                  </button>
+                </div>
+              </>
             ) : (
               <>
-                <h3 className="modal-title">다중 일정 차단</h3>
+                <h3 className="modal-title">일정 차단</h3>
                 <div className="modal-content">
-                  <p className="modal-desc">
-                    <strong>선택된 구간:</strong> 총{" "}
-                    <strong>{pendingBlocks.length}</strong>개 (30분 단위)
-                  </p>
-                  <label className="modal-label">차단 일괄 사유</label>
+                  <div className="block-range-summary">
+                    <strong>선택 범위</strong>
+                    {selectedBlockRanges.map((range) => (
+                      <span
+                        key={`${range.date}-${range.startTime}-${range.endTime}`}
+                        className="block-range-chip"
+                      >
+                        {range.date} {range.startTime} ~ {range.endTime}
+                      </span>
+                    ))}
+                  </div>
+                  <label className="modal-label">차단 사유</label>
                   <textarea
                     className="modal-textarea"
                     value={blockReason}
                     onChange={(e) => setBlockReason(e.target.value)}
-                    placeholder="사유를 입력하세요 (예: 외부 미팅, 세미나 등)"
+                    placeholder="예: 내부 미팅, 점검, 휴무"
                   />
                 </div>
                 <div className="modal-actions">
                   <button
                     className="adm-btn secondary"
-                    onClick={() => setModalOpen(false)}
+                    onClick={() => {
+                      setModalOpen(false);
+                    }}
                   >
                     취소
                   </button>
@@ -856,7 +1289,7 @@ export default function AdminCalendarPage() {
                     className="adm-btn danger"
                     onClick={handleCreateBlock}
                   >
-                    일괄 차단
+                    범위 차단
                   </button>
                 </div>
               </>

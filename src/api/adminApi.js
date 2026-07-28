@@ -1,4 +1,4 @@
-const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+import { fetchWithAuth } from "./authFetch";
 
 async function parseJsonResponse(res) {
   try {
@@ -19,8 +19,6 @@ export async function uploadRagFile({
   effectiveFrom = "",
   effectiveTo = "",
 }) {
-  const token = localStorage.getItem("accessToken");
-
   const formData = new FormData();
 
   formData.append("file", file);
@@ -48,12 +46,8 @@ export async function uploadRagFile({
     formData.append("effective_to", effectiveTo);
   }
 
-  const res = await fetch(`${BASE_URL}/chat/rag/files`, {
+  const res = await fetchWithAuth("/chat/rag/files", {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    credentials: "include",
     body: formData,
   });
 
@@ -68,19 +62,13 @@ export async function uploadRagFile({
 
 
 export async function getRagFiles({ bucket = "chat", folder = "normal" }) {
-  const token = localStorage.getItem("accessToken");
-
   const params = new URLSearchParams({
     bucket,
     folder,
   });
 
-  const res = await fetch(`${BASE_URL}/chat/rag/files?${params.toString()}`, {
+  const res = await fetchWithAuth(`/chat/rag/files?${params.toString()}`, {
     method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    credentials: "include",
   });
 
   const data = await parseJsonResponse(res);
@@ -93,15 +81,11 @@ export async function getRagFiles({ bucket = "chat", folder = "normal" }) {
 }
 
 export async function getRagFileSignedUrl({ path, expiresIn = 600 }) {
-  const token = localStorage.getItem("accessToken");
-
-  const res = await fetch(`${BASE_URL}/chat/rag/files/signed-url`, {
+  const res = await fetchWithAuth("/chat/rag/files/signed-url", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
-    credentials: "include",
     body: JSON.stringify({
       path,
       expires_in: expiresIn,
@@ -118,15 +102,11 @@ export async function getRagFileSignedUrl({ path, expiresIn = 600 }) {
 }
 
 export async function deleteRagFile(path) {
-  const token = localStorage.getItem("accessToken");
-
-  const res = await fetch(`${BASE_URL}/chat/rag/files`, {
+  const res = await fetchWithAuth("/chat/rag/files", {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
-    credentials: "include",
     body: JSON.stringify({ path }),
   });
 
@@ -149,15 +129,11 @@ export async function updateRagFileStatus({
   effectiveFrom = "",
   effectiveTo = "",
 }) {
-  const token = localStorage.getItem("accessToken");
-
-  const res = await fetch(`${BASE_URL}/chat/rag/files/status`, {
+  const res = await fetchWithAuth("/chat/rag/files/status", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
-    credentials: "include",
     body: JSON.stringify({
       bucket,
       path,
@@ -180,15 +156,11 @@ export async function updateRagFileStatus({
 }
 
 export async function createRagIndex({ bucket = "chat", prefix = "normal" }) {
-  const token = localStorage.getItem("accessToken");
-
-  const res = await fetch(`${BASE_URL}/chat/rag/index`, {
+  const res = await fetchWithAuth("/chat/rag/index", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
-    credentials: "include",
     body: JSON.stringify({
       bucket,
       prefix,
@@ -208,26 +180,18 @@ export async function getAdminUsers({
   limit = 100,
   offset = 0,
 } = {}) {
-  const token = localStorage.getItem("accessToken");
-
-  if (!token) {
-    throw new Error("로그인이 필요합니다.");
-  }
-
   const params = new URLSearchParams({
     limit: String(limit),
     offset: String(offset),
   });
 
-  const response = await fetch(
-    `${BASE_URL}/admin/users?${params.toString()}`,
+  const response = await fetchWithAuth(
+    `/admin/users?${params.toString()}`,
     {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      credentials: "include",
     }
   );
 

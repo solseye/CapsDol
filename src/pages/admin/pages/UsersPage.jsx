@@ -5,6 +5,10 @@ import "./UsersPage.css";
 
 const ITEMS_PER_PAGE = 20;
 
+function getInitial(name, email) {
+  return String(name || email || "U").trim().slice(0, 1).toUpperCase();
+}
+
 export default function UsersPage() {
   const navigate = useNavigate();
 
@@ -12,7 +16,6 @@ export default function UsersPage() {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
-
   const [currentPage, setCurrentPage] = useState(1);
 
   const fetchUsers = async () => {
@@ -40,16 +43,13 @@ export default function UsersPage() {
   const filteredUsers = useMemo(() => {
     const keyword = searchKeyword.trim().toLowerCase();
 
-    if (!keyword) {
-      return users;
-    }
+    if (!keyword) return users;
 
     return users.filter((user) => {
       const values = [
         user.uid,
         user.username,
         user.email,
-        user.provider,
         user.uuid,
       ];
 
@@ -83,97 +83,92 @@ export default function UsersPage() {
     }
 
     navigate(`/admin/users/${encodeURIComponent(user.uuid)}`, {
-      state: {
-        user,
-      },
+      state: { user },
     });
   };
 
   return (
     <div className="usr-page-container">
-      {error && (
-        <div
-          className="usr-empty-row"
-          style={{
-            color: "red",
-            padding: "12px",
-            width: "100%",
-            maxWidth: "800px",
-            margin: "0 auto",
-          }}
-        >
-          {error}
+      <div className="usr-page-header">
+        <div>
+          <h1 className="usr-page-title">사용자 목록</h1>
+          <p className="usr-page-subtitle">
+            가입 사용자 정보를 확인하고 상세 파일 관리로 이동합니다.
+          </p>
         </div>
-      )}
+      </div>
 
-      <div className="usr-card">
-        {/* 1. 상단 헤더 영역 */}
-        <div className="usr-card-header">
-          <div className="usr-header-title-group">
-            <h2 className="usr-title">사용자 목록</h2>
-            <p className="usr-subtitle">현재 등록된 사용자 목록</p>
-          </div>
+      <div className="usr-kpi-grid">
+        <div className="usr-kpi-card">
+          <span className="usr-kpi-label">전체 사용자</span>
+          <strong className="usr-kpi-value">{users.length}</strong>
+        </div>
+        <div className="usr-kpi-card">
+          <span className="usr-kpi-label">검색 결과</span>
+          <strong className="usr-kpi-value blue">{totalItems}</strong>
+        </div>
+      </div>
 
-          <div className="usr-header-controls">
-            {/* 검색창 */}
-            <div className="usr-search-wrapper">
-              <svg
-                className="usr-search-icon"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-              </svg>
-              <input
-                type="text"
-                className="usr-search-input"
-                placeholder="이름,이메일,아이디 검색..."
-                value={searchKeyword}
-                onChange={(e) => setSearchKeyword(e.target.value)}
-              />
-            </div>
+      {error && <div className="usr-alert">{error}</div>}
 
-            {/* 새로고침 버튼 */}
-            <button
-              type="button"
-              className="usr-refresh-btn"
-              onClick={fetchUsers}
-              disabled={isLoading}
-              title="목록 새로고침"
+      <section className="usr-panel">
+        <div className="usr-toolbar">
+          <div className="usr-search-wrapper">
+            <svg
+              className="usr-search-icon"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polyline points="23 4 23 10 17 10"></polyline>
-                <polyline points="1 20 1 14 7 14"></polyline>
-                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-              </svg>
-              <span>{isLoading ? "조회 중..." : "새로고침"}</span>
-            </button>
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input
+              type="text"
+              className="usr-search-input"
+              placeholder="이름, 이메일, UID 검색"
+              value={searchKeyword}
+              onChange={(e) => setSearchKeyword(e.target.value)}
+            />
           </div>
+
+          <button
+            type="button"
+            className="usr-refresh-btn"
+            onClick={fetchUsers}
+            disabled={isLoading}
+            title="목록 새로고침"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <polyline points="1 20 1 14 7 14"></polyline>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+            <span>{isLoading ? "조회 중" : "새로고침"}</span>
+          </button>
         </div>
 
-        {/* 2. 테이블 영역 (사용자명, 이메일만 표시) */}
         <div className="usr-table-container">
           <table className="usr-table">
             <thead>
               <tr>
-                <th>사용자명</th>
+                <th>사용자</th>
                 <th>이메일</th>
+                <th className="usr-uuid-col">UUID</th>
               </tr>
             </thead>
             <tbody>
@@ -198,15 +193,25 @@ export default function UsersPage() {
                       }
                     }}
                   >
-                    <td className="col-bold">{user.username || "-"}</td>
-                    <td>{user.email || "-"}</td>
+                    <td>
+                      <div className="usr-user-cell">
+                        <span className="usr-avatar">
+                          {getInitial(user.username, user.email)}
+                        </span>
+                        <div className="usr-user-meta">
+                          <strong>{user.username || "이름 없음"}</strong>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="usr-email-cell">{user.email || "-"}</td>
+                    <td className="usr-uuid-cell">{user.uuid || "-"}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
                   <td colSpan="2" className="usr-empty-row">
                     {searchKeyword.trim()
-                      ? "검색 결과가 존재하지 않습니다."
+                      ? "검색 결과가 없습니다."
                       : "가입된 사용자가 없습니다."}
                   </td>
                 </tr>
@@ -215,14 +220,13 @@ export default function UsersPage() {
           </table>
         </div>
 
-        {/* 3. 하단 푸터 영역 */}
         <div className="usr-card-footer">
           <div className="usr-footer-info">
             총 <strong>{totalItems}</strong>명 중{" "}
             <strong>
               {startItem} - {endItem}
             </strong>
-            번째 표시 중
+            번째 표시
           </div>
 
           <div className="usr-pagination">
@@ -238,7 +242,9 @@ export default function UsersPage() {
               (pageNum) => (
                 <button
                   key={pageNum}
-                  className={`usr-page-btn ${currentPage === pageNum ? "active" : ""}`}
+                  className={`usr-page-btn ${
+                    currentPage === pageNum ? "active" : ""
+                  }`}
                   onClick={() => setCurrentPage(pageNum)}
                 >
                   {pageNum}
@@ -257,7 +263,7 @@ export default function UsersPage() {
             </button>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

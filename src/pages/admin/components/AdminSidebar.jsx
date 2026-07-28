@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import "./adminSidebar.css";
-// import { getCurrentLanguage, translate } from "../../i18n/translations";
 
 const menuItems = [
   {
@@ -22,7 +21,8 @@ const menuItems = [
   },
 ];
 
-export default function AdminSidebar() {
+// 관리자 주요 메뉴, 언어 선택, 로그아웃을 한 곳에서 제공합니다.
+export default function AdminSidebar({ onNavigate }) {
   const navigate = useNavigate();
   const [isLangOpen, setIsLangOpen] = useState(false);
   const langMenuRef = useRef(null);
@@ -31,6 +31,7 @@ export default function AdminSidebar() {
   );
 
   useEffect(() => {
+    // 언어 메뉴 바깥 클릭을 감지해 팝오버를 닫습니다.
     const handleClickOutside = (event) => {
       if (langMenuRef.current && !langMenuRef.current.contains(event.target)) {
         setIsLangOpen(false);
@@ -40,6 +41,7 @@ export default function AdminSidebar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // 로컬 인증 정보를 삭제하고 사용자 홈으로 돌아갑니다.
   const handleLogout = () => {
     if (window.confirm("로그아웃 하시겠습니까?")) {
       localStorage.removeItem("accessToken");
@@ -49,6 +51,7 @@ export default function AdminSidebar() {
     }
   };
 
+  // 선택한 관리자 언어를 로컬 스토리지에 저장합니다.
   const handleSelectLang = (lang) => {
     setSelectedLang(lang);
     localStorage.setItem("adminLang", lang);
@@ -73,6 +76,7 @@ export default function AdminSidebar() {
             className={({ isActive }) =>
               `adm-menu-link ${isActive ? "active" : ""}`
             }
+            onClick={onNavigate}
           >
             <span className="adm-menu-text">{item.label}</span>
           </NavLink>
@@ -101,7 +105,7 @@ export default function AdminSidebar() {
           </div>
         </div>
 
-        {/* 언어 설정 말풍선 */}
+        
         <div className="adm-lang-wrapper" ref={langMenuRef}>
           {isLangOpen && (
             <div className="adm-lang-popover">
@@ -148,7 +152,7 @@ export default function AdminSidebar() {
           </button>
         </div>
 
-        {/* 최하단 로그아웃 버튼 */}
+        
         <button
           type="button"
           className="adm-footer-btn adm-logout-btn"

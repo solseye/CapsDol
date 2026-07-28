@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
 import { getAdminUsers } from "../../../api/adminApi";
@@ -6,11 +6,12 @@ import {
   deleteClientFile,
   getClientFiles,
   getClientFileSignedUrl,
+  uploadClientFile,
 } from "../../../api/clientFileApi";
+import { getUserReservations } from "../../../api/reservationApi";
 
 import "./UsersDetailPage.css";
 
-// --- Helper Functions ---
 function formatFileSize(size) {
   const bytes = Number(size || 0);
   if (bytes < 1024) return `${bytes} B`;
@@ -25,8 +26,31 @@ function formatDateTime(dateValue) {
   return date.toLocaleString("ko-KR");
 }
 
-function getFilePath(file) {
-  return file.storagePath || file.path || "";
+function formatDateOnly(dateValue) {
+  if (!dateValue) return "-";
+  const date = new Date(dateValue);
+  if (Number.isNaN(date.getTime())) return String(dateValue).slice(0, 10);
+  return date.toLocaleDateString("ko-KR");
+}
+
+function formatTime(timeValue) {
+  return String(timeValue || "").slice(0, 5) || "-";
+}
+
+function getStatusLabel(status) {
+  const labels = {
+    pending: "승인 대기",
+    approved: "승인 완료",
+    rejected: "불허",
+    cancelled: "취소",
+  };
+  return labels[status] || status || "-";
+}
+
+function getReservationRanges(reservation) {
+  return Array.isArray(reservation.available_ranges)
+    ? reservation.available_ranges
+    : [];
 }
 
 export default function UsersDetailPage() {
@@ -35,12 +59,15 @@ export default function UsersDetailPage() {
     () => decodeURIComponent(encodedUuid || ""),
     [encodedUuid],
   );
+  const fileInputRef = useRef(null);
 
   const [selectedUser, setSelectedUser] = useState(null);
   const [isUserLoading, setIsUserLoading] = useState(true);
-
+  const [reservations, setReservations] = useState([]);
+  const [isReservationsLoading, setIsReservationsLoading] = useState(true);
   const [clientFiles, setClientFiles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isUploading, setIsUploading] = useState(false);
 
   const [previewLoadingPath, setPreviewLoadingPath] = useState(null);
   const [downloadLoadingPath, setDownloadLoadingPath] = useState(null);
@@ -49,7 +76,7 @@ export default function UsersDetailPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const fetchSelectedUser = async () => {
+  const fetchSelectedUser = useCallback(async () => {
     if (!uuid) {
       setSelectedUser(null);
       setError("사용자 UUID가 없습니다.");
@@ -74,13 +101,10 @@ export default function UsersDetailPage() {
           users.find((user) => String(user.uuid) === String(uuid)) || null;
 
         const total = Number(data.total);
-        if (Number.isFinite(total) && total > 0) {
-          offset += limit;
-          hasMore = offset < total;
-        } else {
-          hasMore = users.length === limit;
-          offset += limit;
-        }
+        offset += limit;
+        hasMore = Number.isFinite(total) && total > 0
+          ? offset < total
+          : users.length === limit;
       }
 
       if (!matchedUser) throw new Error("해당 사용자 정보를 찾을 수 없습니다.");
@@ -91,9 +115,29 @@ export default function UsersDetailPage() {
     } finally {
       setIsUserLoading(false);
     }
-  };
+  }, [uuid]);
 
-  const fetchUserFiles = async () => {
+  const fetchUserReservations = useCallback(async () => {
+    if (!uuid) {
+      setReservations([]);
+      setIsReservationsLoading(false);
+      return;
+    }
+
+    try {
+      setIsReservationsLoading(true);
+      setError("");
+      const data = await getUserReservations({ uuid, limit: 100, offset: 0 });
+      setReservations(Array.isArray(data.reservations) ? data.reservations : []);
+    } catch (err) {
+      setReservations([]);
+      setError(err.message || "상담 신청 내역을 불러오지 못했습니다.");
+    } finally {
+      setIsReservationsLoading(false);
+    }
+  }, [uuid]);
+
+  const fetchUserFiles = useCallback(async () => {
     if (!uuid) {
       setClientFiles([]);
       setError("사용자 UUID가 없습니다.");
@@ -113,34 +157,75 @@ export default function UsersDetailPage() {
       });
 
       const files = Array.isArray(data.files) ? data.files : [];
-      const sortedFiles = [...files].sort((a, b) => {
-        const dateA = new Date(a.uploadedAt || a.updatedAt || 0).getTime();
-        const dateB = new Date(b.uploadedAt || b.updatedAt || 0).getTime();
-        return dateB - dateA;
-      });
-
-      setClientFiles(sortedFiles);
+      setClientFiles(
+        [...files].sort((a, b) => {
+          const dateA = new Date(a.uploadedAt || a.updatedAt || 0).getTime();
+          const dateB = new Date(b.uploadedAt || b.updatedAt || 0).getTime();
+          return dateB - dateA;
+        }),
+      );
     } catch (err) {
       setClientFiles([]);
       setError(err.message || "사용자 파일 목록을 불러오지 못했습니다.");
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [uuid]);
 
   useEffect(() => {
     fetchSelectedUser();
+    fetchUserReservations();
     fetchUserFiles();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [uuid]);
+  }, [fetchSelectedUser, fetchUserReservations, fetchUserFiles]);
 
   const handleRefresh = async () => {
     setSuccess("");
-    await Promise.all([fetchSelectedUser(), fetchUserFiles()]);
+    await Promise.all([
+      fetchSelectedUser(),
+      fetchUserReservations(),
+      fetchUserFiles(),
+    ]);
+  };
+
+  const handleOpenUpload = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleUploadFile = async (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file || !uuid) return;
+
+    const fileName = window.prompt("파일명을 입력하세요.", file.name);
+    if (fileName === null) return;
+
+    const description = window.prompt("파일 설명을 입력하세요.", "관리자 업로드");
+    if (description === null) return;
+
+    try {
+      setIsUploading(true);
+      setError("");
+      setSuccess("");
+
+      await uploadClientFile({
+        file,
+        fileName: fileName.trim() || file.name,
+        description: description.trim() || "관리자 업로드",
+        bucket: "users",
+        uuid,
+      });
+
+      setSuccess("파일이 업로드되었습니다.");
+      await fetchUserFiles();
+    } catch (err) {
+      setError(err.message || "파일 업로드에 실패했습니다.");
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handlePreviewFile = async (file) => {
-    const path = getFilePath(file);
+    const path = file.storagePath || file.path || "";
     if (!path) {
       setError("미리보기할 파일 경로를 찾을 수 없습니다.");
       return;
@@ -184,7 +269,7 @@ export default function UsersDetailPage() {
   };
 
   const handleDownloadFile = async (file) => {
-    const path = getFilePath(file);
+    const path = file.storagePath || file.path || "";
     if (!path) {
       setError("다운로드할 파일 경로를 찾을 수 없습니다.");
       return;
@@ -227,7 +312,7 @@ export default function UsersDetailPage() {
   };
 
   const handleDeleteFile = async (file) => {
-    const path = getFilePath(file);
+    const path = file.storagePath || file.path || "";
     if (!path) {
       setError("삭제할 파일 경로를 찾을 수 없습니다.");
       return;
@@ -252,9 +337,9 @@ export default function UsersDetailPage() {
         throw new Error(data.message || "파일 삭제에 실패했습니다.");
 
       setClientFiles((prev) =>
-        prev.filter((item) => getFilePath(item) !== path),
+        prev.filter((item) => (item.storagePath || item.path || "") !== path),
       );
-      setSuccess("사용자 파일이 삭제되었습니다.");
+      setSuccess("사용자 파일을 삭제했습니다.");
     } catch (err) {
       setError(err.message || "파일 삭제에 실패했습니다.");
     } finally {
@@ -271,24 +356,21 @@ export default function UsersDetailPage() {
         </Link>
       </section>
 
-      {/* 글로벌 에러 및 성공 메시지 */}
       {error && <p className="login-error text-danger">{error}</p>}
       {success && <p className="login-success text-primary">{success}</p>}
 
-      {/* 2. 사용자 정보 박스 */}
       <section className="adm-card info-card mb-2">
         <h2 className="file-list-title">사용자 정보</h2>
-        <br></br>
         {isUserLoading ? (
           <p>사용자 정보를 불러오는 중입니다...</p>
         ) : selectedUser ? (
           <div className="info-card-content">
             <div className="info-row">
-              <span className="info-label">이름:</span>
+              <span className="info-label">이름</span>
               <span>{selectedUser.username || "-"}</span>
             </div>
             <div className="info-row">
-              <span className="info-label">이메일:</span>
+              <span className="info-label">이메일</span>
               <span>{selectedUser.email || "-"}</span>
             </div>
           </div>
@@ -297,27 +379,113 @@ export default function UsersDetailPage() {
         )}
       </section>
 
-      {/* 3. 파일 목록 섹션 */}
+      <section className="adm-card reservation-card mb-2">
+        <div className="file-list-header">
+          <div>
+            <h2 className="file-list-title">상담 신청 내역</h2>
+            <p className="file-count">총 {reservations.length}건의 신청 내역</p>
+          </div>
+        </div>
+
+        {isReservationsLoading ? (
+          <div className="reserve-empty-box text-center p-2 border">
+            상담 신청 내역을 불러오는 중입니다...
+          </div>
+        ) : reservations.length === 0 ? (
+          <div className="reserve-empty-box text-center p-2 border">
+            상담 신청 내역이 없습니다.
+          </div>
+        ) : (
+          <div className="reservation-list">
+            {reservations.map((reservation) => {
+              const ranges = getReservationRanges(reservation);
+              return (
+                <article
+                  className="reservation-item"
+                  key={reservation.reservation_id}
+                >
+                  <div className="reservation-item-header">
+                    <div>
+                      <strong>
+                        {reservation.c_name || "회사명 없음"}
+                        <span>{reservation.kind ? ` · ${reservation.kind}` : ""}</span>
+                      </strong>
+                      <p>{reservation.field || "분야 미지정"}</p>
+                    </div>
+                    <span className={`reservation-status ${reservation.status || ""}`}>
+                      {getStatusLabel(reservation.status)}
+                    </span>
+                  </div>
+                  <div className="reservation-meta">
+                    <span>신청 {formatDateTime(reservation.requested_at)}</span>
+                    <span>연락처 {reservation.phone || "-"}</span>
+                  </div>
+                  {reservation.note && (
+                    <p className="reservation-note">{reservation.note}</p>
+                  )}
+                  <div className="reservation-ranges">
+                    {ranges.length > 0 ? (
+                      ranges.map((range) => (
+                        <span className="reservation-range-chip" key={range.id}>
+                          {formatDateOnly(range.date)} {formatTime(range.start_time)}
+                          -{formatTime(range.end_time)}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="reservation-range-chip muted">
+                        선택된 가능 시간이 없습니다.
+                      </span>
+                    )}
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
       <section className="adm-card">
         <div className="file-list-header">
           <div>
             <h2 className="file-list-title">업로드 파일 목록</h2>
             <p className="file-count">
-              총 {clientFiles.length}개의 파일을 업로드했습니다.
+              총 {clientFiles.length}개의 파일이 업로드되었습니다.
             </p>
           </div>
 
-          <button
-            type="button"
-            className="adm-btn ghost"
-            onClick={handleRefresh}
-            disabled={isLoading || isUserLoading}
-          >
-            {isLoading || isUserLoading ? "조회 중..." : "새로고침"}
-          </button>
+          <div className="file-header-actions">
+            <input
+              ref={fileInputRef}
+              className="hidden-file-input"
+              type="file"
+              onChange={handleUploadFile}
+            />
+            <button
+              type="button"
+              className="adm-btn primary"
+              onClick={handleOpenUpload}
+              disabled={isUploading || isLoading || isUserLoading}
+            >
+              {isUploading ? "업로드 중..." : "파일 업로드"}
+            </button>
+            <button
+              type="button"
+              className="adm-btn ghost"
+              onClick={handleRefresh}
+              disabled={
+                isLoading ||
+                isUserLoading ||
+                isReservationsLoading ||
+                isUploading
+              }
+            >
+              {isLoading || isUserLoading || isReservationsLoading
+                ? "조회 중..."
+                : "새로고침"}
+            </button>
+          </div>
         </div>
 
-        {/* 4. 파일 목록 테이블 */}
         {isLoading ? (
           <div className="reserve-empty-box text-center p-2 border">
             파일을 불러오는 중입니다...
@@ -340,7 +508,7 @@ export default function UsersDetailPage() {
               </thead>
               <tbody>
                 {clientFiles.map((file) => {
-                  const path = getFilePath(file);
+                  const path = file.storagePath || file.path || "";
                   const displayName =
                     file.fileName || file.originalName || "이름 없는 파일";
                   const isBusy =

@@ -1,8 +1,3 @@
-/* =========================================================
-   PdfManagementPage.css - Pdf List 박스 커스텀 뷰
-   ========================================================= */
-
-/* 전체 컨테이너 */
 .pdf-mgmt-container {
   padding: 24px;
   max-width: 1400px;
@@ -16,8 +11,6 @@
   flex-direction: column;
   gap: 24px;
 }
-
-/* 상단 메인 헤더 */
 .pdf-mgmt-header {
   display: flex;
   justify-content: space-between;
@@ -26,7 +19,6 @@
   gap: 16px;
   padding-bottom: 8px;
 }
-
 .pdf-mgmt-title {
   font-size: 1.5rem;
   font-weight: 700;
@@ -34,33 +26,25 @@
   margin: 0 0 4px 0;
   letter-spacing: -0.02em;
 }
-
 .pdf-mgmt-sub {
   font-size: 0.88rem;
   color: #64748b;
   margin: 0;
 }
-
 .header-actions {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
 }
-
-/* 반반 구획 세션 */
 .section-half {
   width: 100%;
 }
-
 .top-section {
   flex: 1;
 }
-
 .bottom-section {
   flex: 1;
 }
-
-/* 공통 카드 스타일 */
 .adm-card {
   background-color: #ffffff;
   border: 1px solid #e2e8f0;
@@ -68,13 +52,11 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   overflow: hidden;
 }
-
 .adm-card.h-full {
   height: 100%;
   display: flex;
   flex-direction: column;
 }
-
 .adm-card-head {
   padding: 16px 20px 12px;
   border-bottom: none;
@@ -82,7 +64,6 @@
   display: flex;
   align-items: center;
 }
-
 .adm-card-title-group {
   display: flex;
   align-items: center;
@@ -90,7 +71,6 @@
   flex-wrap: wrap;
   width: 100%;
 }
-
 .adm-card-head h2 {
   margin: 0;
   font-size: 1.15rem;
@@ -100,33 +80,25 @@
   display: flex;
   align-items: center;
 }
-
 .adm-card-head-right {
   display: flex;
   align-items: center;
 }
-
 .adm-card-body {
   padding: 0 20px 20px;
   flex: 1;
 }
-
-/* =========================================================
-   1. 상단 업로드 레이아웃 (업로드 카드 + 가이드)
-   ========================================================= */
 .upload-layout-grid {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
   gap: 24px;
   align-items: stretch;
 }
-
 @media (max-width: 900px) {
   .upload-layout-grid {
     grid-template-columns: 1fr;
   }
 }
-
 .upload-box-content {
   display: flex;
   align-items: center;
@@ -134,20 +106,17 @@
   flex-wrap: wrap;
   margin-top: 8px;
 }
-
 .upload-field-group {
   display: flex;
   align-items: center;
   gap: 8px;
 }
-
 .upload-label {
   font-size: 0.9rem;
   font-weight: 600;
   color: #475569;
   white-space: nowrap;
 }
-
 .file-input-group {
   flex: 1;
   min-width: 240px;
@@ -156,7 +125,6 @@
   border-radius: 6px;
   padding: 6px 12px;
 }
-
 .file-upload-btn {
   display: inline-block;
   padding: 6px 12px;
@@ -169,11 +137,9 @@
   transition: background-color 0.2s ease;
   white-space: nowrap;
 }
-
 .file-upload-btn:hover {
   background-color: #cbd5e1;
 }
-
 .selected-filename {
   font-size: 0.88rem;
   color: #64748b;
@@ -181,7 +147,6 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
 .adm-progress-bar {
   height: 4px;
   background-color: #e2e8f0;
@@ -189,32 +154,27 @@
   overflow: hidden;
   margin-top: 16px;
 }
-
 .adm-progress-bar span {
   display: block;
   height: 100%;
   background-color: #2563eb;
   transition: width 0.3s ease;
 }
-
 .upload-status-wrapper {
   margin-top: 12px;
   min-height: 20px;
 }
-
 .upload-status-msg {
   font-size: 0.88rem;
   font-weight: 500;
   animation: fadeIn 0.3s ease-out;
 }
-
 .upload-status-msg.success {
   color: #16a34a;
 }
 .upload-status-msg.error {
   color: #dc2626;
 }
-
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -225,7 +185,6 @@
     transform: translateY(0);
   }
 }
-
 .guide-sidebar {
   background-color: #f8fafc;
   padding: 20px 24px;
@@ -237,7 +196,6 @@
   height: 100%;
   box-sizing: border-box;
 }
-
 .guide-title {
   margin: 0 0 12px 0;
   font-size: 1.05rem;
@@ -247,7 +205,6 @@
   align-items: center;
   gap: 8px;
 }
-
 .guide-list {
   padding-left: 18px;
   margin: 0;
@@ -255,7 +212,6 @@
   color: #475569;
   line-height: 1.6;
 }
-
 .guide-list li {
   margin-bottom: 8px;
 }
@@ -269,8 +225,6 @@
   color: #2563eb;
   font-weight: 600;
 }
-
-/* 공통 폼 컴포넌트 */
 .pdf-select,
 .pdf-input {
   height: 38px;
@@ -285,7 +239,6 @@
     border-color 0.2s,
     box-shadow 0.2s;
 }
-
 .wide-select {
   min-width: 130px;
   padding-right: 36px;
@@ -295,13 +248,11 @@
   background-position: right 12px top 50%;
   background-size: 10px auto;
 }
-
 .pdf-select:focus,
 .pdf-input:focus {
   border-color: #2563eb;
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
-
 .pdf-btn {
   height: 38px;
   padding: 0 16px;
@@ -316,7 +267,6 @@
   justify-content: center;
   white-space: nowrap;
 }
-
 .pdf-btn-primary {
   background-color: #0f172a;
   color: #ffffff;
@@ -328,7 +278,6 @@
   background-color: #94a3b8;
   cursor: not-allowed;
 }
-
 .pdf-btn-reset {
   background-color: #e2e8f0;
   color: #334155;
@@ -336,15 +285,9 @@
 .pdf-btn-reset:hover {
   background-color: #cbd5e1;
 }
-
-/* =========================================================
-   2. 하단 리스트 구획 (Pdf List 박스)
-   ========================================================= */
 .pdf-list-card {
   padding: 20px;
 }
-
-/* 헤더 행: 좌측 타이틀/서브텍스트, 우측 카테고리 5개 버튼 */
 .pdf-list-header-row {
   display: flex;
   justify-content: space-between;
@@ -353,39 +296,31 @@
   gap: 16px;
   margin-bottom: 20px;
 }
-
 .pdf-list-title-block {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
-
-/* 등록된 PDF X개 */
 .registered-pdf-title {
   font-size: 1.25rem;
   font-weight: 700;
   color: #0f172a;
   letter-spacing: -0.01em;
 }
-
 .registered-pdf-title .highlight-count {
   color: #2563eb;
 }
-
-/* 각 분야별 자료 x개 */
 .category-sub-count {
   font-size: 0.9rem;
   color: #64748b;
   font-weight: 500;
 }
-
 .pdf-list-right-block {
   display: flex;
   align-items: center;
   gap: 16px;
   flex-wrap: wrap;
 }
-
 .index-result-box {
   background-color: #f0fdf4;
   border: 1px solid #bbf7d0;
@@ -399,15 +334,29 @@
   line-height: 1;
   animation: fadeIn 0.3s ease-out;
 }
-
 .index-result-box strong,
 .index-result-box span {
   display: flex;
   align-items: center;
   line-height: 1;
 }
-
-/* 우상단 5가지 카테고리 선택 버튼 (통합, 인사, 노무, 회계, 법무) */
+.pdf-list-error {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 16px;
+  border: 1px solid #fecdd3;
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: #fff1f2;
+  color: #b42318;
+}
+.pdf-list-error strong {
+  font-size: 0.9rem;
+}
+.pdf-list-error span {
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+}
 .category-button-group {
   display: flex;
   gap: 6px;
@@ -415,7 +364,6 @@
   padding: 4px;
   border-radius: 8px;
 }
-
 .category-btn {
   background: transparent;
   border: none;
@@ -428,36 +376,29 @@
   transition: all 0.2s ease;
   white-space: nowrap;
 }
-
 .category-btn:hover {
   color: #1e293b;
 }
-
 .category-btn.active {
   background-color: #ffffff;
   color: #0f172a;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
-
-/* 테이블 스타일 */
 .table-wrapper {
   overflow-x: auto;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
 }
-
 .pdf-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.9rem;
   min-width: 850px;
 }
-
 .pdf-table thead {
   background-color: #f8fafc;
   border-bottom: 2px solid #e2e8f0;
 }
-
 .pdf-table th {
   padding: 14px;
   font-weight: 600;
@@ -465,7 +406,6 @@
   white-space: nowrap;
   text-align: center;
 }
-
 .pdf-table td {
   padding: 12px 14px;
   border-bottom: 1px solid #f1f5f9;
@@ -473,15 +413,12 @@
   vertical-align: middle;
   text-align: center;
 }
-
 .pdf-table tbody tr:hover {
   background-color: #f8fafc;
 }
-
 .col-center {
   text-align: center;
 }
-
 .col-filename {
   max-width: 240px;
   overflow: hidden;
@@ -490,15 +427,12 @@
   font-weight: 500;
   margin: 0 auto;
 }
-
 .table-empty {
   text-align: center;
   padding: 36px 16px;
   color: #94a3b8;
   font-size: 0.92rem;
 }
-
-/* 파일 형식 뱃지 */
 .file-format-badge {
   display: inline-block;
   padding: 3px 8px;
@@ -510,8 +444,6 @@
   font-weight: 600;
   letter-spacing: 0.02em;
 }
-
-/* 상태 배지 */
 .status-badge {
   display: inline-block;
   padding: 4px 10px;
@@ -522,7 +454,6 @@
   line-height: 1.2;
   white-space: nowrap;
 }
-
 .status-active {
   background-color: #dcfce7;
   color: #15803d;
@@ -543,12 +474,9 @@
   color: #4b5563;
   border: 1px solid #e5e7eb;
 }
-
-/* 상태 드롭다운 */
 .custom-td-dropdown {
   position: relative;
 }
-
 .table-status-trigger {
   width: 100%;
   max-width: 130px;
@@ -566,18 +494,15 @@
     border-color 0.2s;
   white-space: nowrap;
 }
-
 .table-status-trigger:hover {
   background-color: #f8fafc;
   border-color: #cbd5e1;
 }
-
 .table-status-trigger .chevron {
   font-size: 0.7rem;
   color: #94a3b8;
   margin-left: 8px;
 }
-
 .table-status-menu {
   position: absolute;
   top: 100%;
@@ -593,7 +518,6 @@
   overflow: hidden;
   text-align: left;
 }
-
 .table-status-option {
   display: block;
   width: 100%;
@@ -619,14 +543,11 @@
   background-color: #f1f5f9;
   color: #2563eb;
 }
-
-/* 작업 아이콘 버튼 */
 .action-icon-group {
   display: flex;
   justify-content: center;
   gap: 8px;
 }
-
 .icon-btn {
   background: none;
   border: none;
@@ -639,18 +560,14 @@
   justify-content: center;
   transition: all 0.2s ease;
 }
-
 .icon-btn:hover {
   background-color: #f1f5f9;
   color: #0f172a;
 }
-
 .icon-btn-danger:hover {
   background-color: #fee2e2;
   color: #dc2626;
 }
-
-/* 하단 푸터 및 페이지네이션 */
 .list-footer {
   display: flex;
   justify-content: space-between;
@@ -661,29 +578,24 @@
   flex-wrap: wrap;
   gap: 12px;
 }
-
 .footer-count-text {
   font-size: 0.9rem;
   color: #64748b;
 }
-
 .footer-count-text strong {
   color: #0f172a;
 }
-
 .pagination-group {
   display: flex;
   align-items: center;
   gap: 8px;
 }
-
 .page-indicator {
   font-size: 0.9rem;
   color: #475569;
   font-weight: 500;
   margin: 0 8px;
 }
-
 .page-btn {
   height: 32px;
   padding: 0 12px;
@@ -695,15 +607,116 @@
   cursor: pointer;
   transition: all 0.2s ease;
 }
-
 .page-btn:hover:not(:disabled) {
   background-color: #f1f5f9;
   border-color: #94a3b8;
 }
-
 .page-btn:disabled {
   background-color: #f8fafc;
   color: #cbd5e1;
   border-color: #e2e8f0;
   cursor: not-allowed;
+}
+@media (max-width: 980px) {
+  .pdf-mgmt-container {
+    padding: 18px;
+  }
+  .pdf-mgmt-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .header-actions {
+    width: 100%;
+  }
+  .header-actions .pdf-btn {
+    flex: 1 1 180px;
+  }
+  .upload-layout-grid {
+    grid-template-columns: 1fr;
+  }
+  .pdf-list-header-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .pdf-list-right-block {
+    width: 100%;
+    align-items: stretch;
+  }
+  .category-button-group {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(5, minmax(88px, 1fr));
+  }
+  .table-wrapper {
+    overflow-x: auto;
+  }
+  .pdf-table {
+    min-width: 900px;
+  }
+}
+@media (max-width: 640px) {
+  .pdf-mgmt-container {
+    padding: 0;
+    gap: 16px;
+  }
+  .pdf-mgmt-title {
+    font-size: 1.25rem;
+  }
+  .header-actions,
+  .upload-box-content,
+  .upload-field-group,
+  .file-input-group,
+  .list-footer,
+  .pagination-group {
+    align-items: stretch;
+    flex-direction: column;
+    width: 100%;
+  }
+  .pdf-btn,
+  .pdf-select,
+  .file-upload-btn {
+    width: 100%;
+  }
+  .selected-filename {
+    white-space: normal;
+  }
+  .category-button-group {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .adm-card-head,
+  .adm-card-body,
+  .guide-sidebar {
+    padding-inline: 16px;
+  }
+  .index-result-box {
+    width: 100%;
+  }
+  .pdf-list-card {
+    padding: 16px;
+  }
+  .pdf-table {
+    min-width: 820px;
+  }
+  .table-status-menu {
+    left: auto;
+    right: 0;
+    transform: none;
+  }
+}
+@media (max-width: 420px) {
+  .category-button-group {
+    grid-template-columns: 1fr;
+  }
+  .pdf-list-card,
+  .adm-card-body {
+    padding: 14px;
+  }
+  .pdf-table {
+    min-width: 760px;
+  }
+  .page-indicator {
+    margin: 0;
+    text-align: center;
+  }
 }

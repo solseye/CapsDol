@@ -1,7 +1,3 @@
-/* ==========================================================================
-   [공통] 1. 관리자 글로벌 레이아웃 (전체 화면 틀, 메인 콘텐츠 영역, 상단 헤더)
-   * 참고: 사이드바 관련 스타일은 adminSidebar.css로 이관되어 삭제됨
-   ========================================================================== */
 .adm-shell {
   min-height: 100vh;
   display: grid;
@@ -16,13 +12,114 @@
     "Segoe UI",
     sans-serif;
 }
-
+body.adm-sidebar-lock {
+  overflow: hidden;
+}
+.adm-mobile-menu-btn,
+.adm-mobile-header,
+.adm-sidebar-backdrop {
+  display: none;
+}
+.adm-mobile-header {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 1250;
+  height: 68px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 18px;
+  border-bottom: 1px solid rgba(213, 220, 228, 0.72);
+  background: rgba(244, 246, 248, 0.82);
+  backdrop-filter: blur(16px);
+}
+.adm-mobile-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.adm-mobile-brand span {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: #06233c;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 950;
+}
+.adm-mobile-brand div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+.adm-mobile-brand strong {
+  color: #172033;
+  font-size: 13px;
+  font-weight: 950;
+  line-height: 1.1;
+}
+.adm-mobile-brand small {
+  color: #657185;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.adm-mobile-menu-btn {
+  position: fixed;
+  top: 13px;
+  right: 18px;
+  z-index: 1300;
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.48);
+  box-shadow: none;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+}
+.adm-mobile-menu-btn span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  grid-area: 1 / 1;
+  border-radius: 999px;
+  background: #06233c;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+.adm-mobile-menu-btn span:first-child {
+  transform: translateY(-4px);
+}
+.adm-mobile-menu-btn span:last-child {
+  transform: translateY(4px);
+}
+.adm-mobile-menu-btn.is-open span:first-child {
+  transform: rotate(45deg);
+}
+.adm-mobile-menu-btn.is-open span:last-child {
+  transform: rotate(-45deg);
+}
+.adm-mobile-menu-btn:hover,
+.adm-mobile-menu-btn.is-open {
+  background: rgba(255, 255, 255, 0.72);
+}
+.adm-sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  background: rgba(15, 23, 42, 0.22);
+  backdrop-filter: blur(8px);
+}
 .adm-main {
   min-width: 0;
   display: grid;
   grid-template-rows: auto 1fr;
 }
-
 .adm-header {
   min-height: 78px;
   display: flex;
@@ -33,22 +130,19 @@
   background: #ffffff;
   border-bottom: 1px solid #dbe2e7;
 }
-
 .adm-header h1,
 .adm-page-head h2 {
   margin: 0;
   color: #172033;
 }
-
 .adm-eyebrow {
   margin: 0 0 5px;
-  color: #27ae60;
+  color: #0d3657;
   font-size: 12px;
   font-weight: 900;
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
-
 .adm-header-user {
   display: flex;
   align-items: center;
@@ -56,7 +150,6 @@
   color: #657185;
   font-weight: 800;
 }
-
 .adm-breadcrumb {
   display: flex;
   align-items: center;
@@ -65,18 +158,15 @@
   font-size: 14px;
   font-weight: 900;
 }
-
 .adm-breadcrumb strong {
   color: #20242c;
 }
-
 .adm-header-actions {
   margin-left: auto;
   display: flex;
   align-items: center;
   gap: 12px;
 }
-
 .adm-header-search {
   width: min(360px, 32vw);
   min-height: 42px;
@@ -89,7 +179,6 @@
   align-items: center;
   gap: 10px;
 }
-
 .adm-header-search input {
   width: 100%;
   border: 0;
@@ -99,7 +188,6 @@
   font: inherit;
   font-weight: 750;
 }
-
 .adm-header-user strong {
   width: 38px;
   height: 38px;
@@ -109,26 +197,19 @@
   background: #ecfdf3;
   color: #1f8f4f;
 }
-
 .adm-content {
   padding: 32px;
 }
-
-/* ==========================================================================
-   [공통] 2. 범용 UI 디자인 (기본 카드 상자, 버튼 종류, 팝업창 모달 등)
-   ========================================================================== */
 .adm-page {
   display: grid;
   gap: 24px;
 }
-
 .adm-portal-head {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 24px;
 }
-
 .adm-portal-head h2 {
   margin: 0;
   color: #20242c;
@@ -137,7 +218,6 @@
   font-weight: 950;
   letter-spacing: 0;
 }
-
 .adm-portal-head span,
 .adm-card-head span {
   display: block;
@@ -145,12 +225,10 @@
   color: #5d6673;
   font-weight: 750;
 }
-
 .adm-portal-actions {
   display: flex;
   gap: 12px;
 }
-
 .adm-card {
   padding: 24px;
   border: 1px solid #dbe2e7;
@@ -159,7 +237,6 @@
   box-shadow: 0 16px 36px rgba(16, 29, 43, 0.04);
   overflow: visible;
 }
-
 .adm-card-head {
   display: flex;
   align-items: center;
@@ -168,15 +245,12 @@
   margin-bottom: 20px;
   overflow: visible;
 }
-
 .adm-card-head h2 {
   margin: 0;
   color: #172033;
   font-size: 22px;
   overflow: visible;
 }
-
-/* 공통 버튼 디자인 */
 .adm-btn {
   min-height: 40px;
   border: 1px solid transparent;
@@ -185,13 +259,11 @@
   font-weight: 900;
   cursor: pointer;
 }
-
 .adm-btn.primary {
   background: #06233c;
   border-color: #06233c;
   color: #ffffff;
 }
-
 .adm-btn.ghost {
   background: #ffffff;
   border-color: #d5dce4;
@@ -201,7 +273,6 @@
   justify-content: center;
   line-height: 1;
 }
-
 .adm-btn.ghost2 {
   background: #657185;
   color: #f2f5f9;
@@ -210,14 +281,11 @@
   justify-content: center;
   line-height: 1;
 }
-
 .adm-btn.danger {
   background: #fff1f2;
   border-color: #fecdd3;
   color: #dc2626;
 }
-
-/* 글로벌 모달 창 */
 .adm-modal-backdrop {
   position: fixed;
   inset: 0;
@@ -227,7 +295,6 @@
   padding: 20px;
   background: rgba(15, 23, 42, 0.42);
 }
-
 .adm-modal {
   width: min(520px, 100%);
   border-radius: 20px;
@@ -235,45 +302,33 @@
   padding: 22px;
   box-shadow: 0 30px 90px rgba(15, 23, 42, 0.22);
 }
-
 .adm-modal-head {
   display: flex;
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 18px;
 }
-
 .adm-modal-head h3 {
   margin: 0;
 }
-
 .adm-confirm {
   display: grid;
   gap: 14px;
 }
-
 .adm-confirm p {
   margin: 0;
   color: #172033;
 }
-
 .adm-confirm span {
   color: #657185;
   font-weight: 800;
 }
-
 .adm-confirm-actions {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
   margin-top: 6px;
 }
-
-/* ==========================================================================
-   [특수] 3. 아직 개별 파일로 분리되지 않은 페이지용 (챗봇 / 예약 / 마이페이지)
-   ========================================================================== */
-
-/* 챗봇 페이지용 */
 .adm-chat-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 280px;
@@ -306,7 +361,7 @@
 }
 .adm-message.user {
   align-self: flex-end;
-  background: #27ae60;
+  background: #06233c;
   color: #ffffff;
 }
 .adm-chat-form {
@@ -321,8 +376,387 @@
   border-radius: 10px;
   padding: 0 14px;
 }
-
-/* 사용자 MyPage 및 예약 관련 공용 (유지) */
+.adm-ai-layout,
+.adm-upload-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 22px;
+  align-items: start;
+}
+.adm-ai-console {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 170px);
+  padding: 0;
+  overflow: hidden;
+  border-color: rgba(6, 35, 60, 0.08);
+  background: #ffffff;
+  box-shadow: 0 18px 42px rgba(6, 35, 60, 0.07);
+}
+.adm-ai-console .adm-card-head {
+  margin: 0;
+  padding: 22px 24px;
+  border-bottom: 1px solid rgba(6, 35, 60, 0.07);
+  background:
+    linear-gradient(135deg, rgba(230, 238, 247, 0.92), rgba(255, 255, 255, 0.96)),
+    #ffffff;
+}
+.adm-ai-console .adm-card-head h2 {
+  font-size: 24px;
+  letter-spacing: 0;
+}
+.adm-ai-window {
+  flex: 1;
+  height: auto;
+  min-height: 480px;
+  max-height: calc(100vh - 340px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border: 0;
+  border-radius: 0;
+  background:
+    radial-gradient(circle at top right, rgba(6, 35, 60, 0.08), transparent 28%),
+    linear-gradient(180deg, #f8fafc 0%, #f3f7f8 100%);
+  padding: 24px;
+}
+.adm-ai-row {
+  display: flex;
+}
+.adm-ai-row.user {
+  justify-content: flex-end;
+}
+.adm-ai-bubble {
+  max-width: min(760px, 84%);
+  border-radius: 22px;
+  padding: 15px 18px;
+  background: #ffffff;
+  color: #172033;
+  border: 1px solid rgba(6, 35, 60, 0.07);
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.045);
+  line-height: 1.75;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.adm-ai-row.bot .adm-ai-bubble {
+  border-top-left-radius: 10px;
+}
+.adm-ai-row.user .adm-ai-bubble {
+  border: 0;
+  border-top-right-radius: 10px;
+  background: linear-gradient(135deg, #06233c, #0d3657);
+  color: #ffffff;
+  box-shadow: 0 14px 28px rgba(6, 35, 60, 0.2);
+}
+.adm-ai-bubble.loading {
+  color: #657185;
+  font-style: italic;
+}
+.adm-ai-sources {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(148, 163, 184, 0.22);
+  font-size: 13px;
+}
+.adm-ai-sources > strong {
+  color: #0d3657;
+}
+.adm-ai-source {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: #657185;
+  font-weight: 800;
+}
+.adm-ai-bottom {
+  margin-top: 0;
+  padding: 16px;
+  border-top: 1px solid rgba(6, 35, 60, 0.07);
+  background: rgba(255, 255, 255, 0.92);
+}
+.adm-ai-form {
+  display: flex;
+  gap: 10px;
+}
+.adm-ai-form input {
+  flex: 1;
+  min-width: 0;
+  min-height: 48px;
+  border: 1px solid #d8e1e8;
+  border-radius: 16px;
+  padding: 0 16px;
+  background: #f8fafc;
+  color: #172033;
+  font: inherit;
+  font-weight: 750;
+  outline: 0;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+.adm-ai-form input:focus {
+  border-color: rgba(6, 35, 60, 0.45);
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(6, 35, 60, 0.08);
+}
+.adm-ai-form button {
+  min-width: 96px;
+  border: 0;
+  border-radius: 16px;
+  background: #06233c;
+  color: #ffffff;
+  font-weight: 900;
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease,
+    opacity 0.18s ease;
+}
+.adm-ai-form button:hover:not(:disabled) {
+  background: #0d3657;
+  transform: translateY(-1px);
+}
+.adm-ai-form button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.adm-ai-side,
+.adm-guide-list,
+.adm-token-list {
+  display: grid;
+  gap: 14px;
+}
+.adm-ai-side .adm-card {
+  border-color: rgba(6, 35, 60, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 250, 252, 0.96)),
+    #ffffff;
+  box-shadow: 0 14px 30px rgba(6, 35, 60, 0.045);
+}
+.adm-ai-side h3 {
+  margin: 0 0 14px;
+  color: #172033;
+  font-size: 18px;
+}
+.adm-token-list div,
+.adm-guide-list div {
+  display: grid;
+  gap: 4px;
+  border-radius: 12px;
+  padding: 12px;
+  background: #f8fafc;
+  border: 1px solid rgba(6, 35, 60, 0.06);
+}
+.adm-guide-list strong,
+.adm-token-list strong {
+  color: #172033;
+}
+.adm-guide-list span,
+.adm-token-list span {
+  color: #657185;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.55;
+}
+.adm-token-list div {
+  grid-template-columns: 1fr auto;
+}
+.adm-chat-error,
+.adm-empty {
+  margin: 0 0 10px;
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: #fff1f2;
+  color: #dc2626;
+  font-weight: 800;
+}
+.adm-upload-box,
+.adm-guide-card {
+  display: grid;
+  gap: 16px;
+}
+.adm-upload-box {
+  justify-items: start;
+}
+.adm-upload-icon {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: #ecfdf3;
+  color: #1f8f4f;
+  font-weight: 950;
+}
+.adm-upload-field {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.adm-file-picker {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  padding: 0 16px;
+  background: #f1f5f9;
+  color: #344054;
+  font-weight: 900;
+  cursor: pointer;
+}
+.adm-file-picker input {
+  display: none;
+}
+.adm-selected-file {
+  width: 100%;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  padding: 12px;
+  color: #657185;
+  overflow-wrap: anywhere;
+}
+.adm-progress {
+  width: 100%;
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e6eaf0;
+}
+.adm-progress span {
+  display: block;
+  height: 100%;
+  background: #27ae60;
+}
+.adm-upload-status {
+  margin: 0;
+  color: #657185;
+  font-weight: 800;
+}
+.adm-upload-status.error {
+  color: #dc2626;
+}
+.adm-upload-status.success {
+  color: #16a34a;
+}
+.adm-guide-card {
+  padding: 24px;
+  border: 1px solid #dbe2e7;
+  border-radius: 8px;
+  background: #ffffff;
+}
+.adm-library-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.adm-mini-stat {
+  border: 1px solid #dbe2e7;
+  border-radius: 8px;
+  padding: 18px;
+  background: #ffffff;
+}
+.adm-mini-stat span {
+  display: block;
+  color: #657185;
+  font-size: 13px;
+  font-weight: 800;
+}
+.adm-mini-stat strong {
+  display: block;
+  margin-top: 6px;
+  color: #172033;
+  font-size: 24px;
+}
+.admin-page-actions,
+.admin-file-filter,
+.admin-file-summary,
+.admin-file-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.admin-file-summary {
+  justify-content: space-between;
+}
+.admin-index-result,
+.admin-alert {
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-weight: 800;
+}
+.admin-alert.error {
+  border: 1px solid #fecdd3;
+  background: #fff1f2;
+  color: #dc2626;
+}
+.admin-alert.success,
+.admin-index-result {
+  border: 1px solid #bbf7d0;
+  background: #f0fdf4;
+  color: #15803d;
+}
+.adm-table-wrap {
+  overflow-x: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+.adm-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.adm-table th,
+.adm-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #edf1f4;
+  text-align: left;
+  white-space: nowrap;
+}
+.adm-table th {
+  background: #f8fafc;
+  color: #657185;
+  font-size: 13px;
+}
+.custom-select {
+  position: relative;
+}
+.custom-select-trigger,
+.custom-select-option {
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid #d5dce4;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #344054;
+  padding: 0 12px;
+  font-weight: 800;
+  text-align: left;
+}
+.custom-select-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 30;
+  display: grid;
+  gap: 4px;
+  border: 1px solid #dbe2e7;
+  border-radius: 8px;
+  padding: 6px;
+  background: #ffffff;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.14);
+}
+.custom-select-option.selected {
+  border-color: #27ae60;
+  color: #1f8f4f;
+  background: #ecfdf3;
+}
 .reserve-page {
   min-height: 100vh;
   padding: 48px 32px 72px;
@@ -347,8 +781,6 @@
   max-width: 980px;
   margin: 0 auto;
 }
-
-/* 상태 공통 속성 */
 .status {
   font-size: 14px;
   font-weight: 900;
@@ -365,20 +797,70 @@
 .status-cancelled {
   color: #6b7280;
 }
-
-/* ==========================================================================
-   [반응형] 4. 디바이스 해상도별 미디어 쿼리
-   ========================================================================== */
-/* 태블릿 환경 제어 (가로폭 920px 이하) */
 @media (max-width: 920px) {
   .adm-shell {
     grid-template-columns: 1fr;
   }
+  .adm-mobile-header {
+    display: flex;
+  }
+  .adm-mobile-menu-btn {
+    display: grid;
+    place-items: center;
+  }
+  .adm-shell.sidebar-open .adm-sidebar-backdrop {
+    display: block;
+  }
+  .adm-main {
+    grid-template-rows: 1fr;
+  }
+  .adm-content {
+    padding: 92px 24px 28px;
+  }
+  .adm-portal-head {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .adm-portal-head h2 {
+    font-size: 28px;
+  }
+  .adm-portal-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .adm-portal-actions .adm-btn {
+    flex: 1 1 160px;
+  }
   .adm-chat-layout {
     grid-template-columns: 1fr;
   }
+  .adm-ai-layout,
+  .adm-upload-layout {
+    grid-template-columns: 1fr;
+  }
+  .adm-ai-console {
+    min-width: 0;
+    min-height: auto;
+  }
+  .adm-ai-window {
+    max-height: none;
+  }
+  .adm-library-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .admin-page-actions,
+  .admin-file-filter,
+  .admin-file-summary {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .adm-table-wrap {
+    overflow-x: auto;
+  }
+  .adm-table {
+    min-width: 860px;
+  }
 }
-
 @media (max-width: 760px) {
   .reserve-page {
     padding: 32px 18px 56px;
@@ -390,17 +872,100 @@
     font-size: 30px;
   }
 }
-
 @media (max-width: 640px) {
-  .adm-header,
   .adm-content {
-    padding: 20px;
+    padding: 82px 14px 20px;
+  }
+  .adm-page {
+    gap: 16px;
   }
   .adm-card {
-    padding: 18px;
+    padding: 16px;
   }
   .adm-card-head {
     align-items: flex-start;
     flex-direction: column;
+  }
+  .adm-btn {
+    width: 100%;
+  }
+  .adm-mobile-menu-btn {
+    top: 13px;
+    right: 14px;
+  }
+  .adm-mobile-header {
+    height: 66px;
+    padding-inline: 14px;
+  }
+  .adm-mobile-brand strong {
+    font-size: 12px;
+  }
+  .adm-portal-head span,
+  .adm-card-head span {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .adm-modal-backdrop {
+    align-items: end;
+    padding: 12px;
+  }
+  .adm-modal {
+    max-height: calc(100dvh - 24px);
+    overflow-y: auto;
+    border-radius: 16px;
+  }
+  .adm-confirm-actions {
+    flex-direction: column;
+  }
+  .adm-chat-form {
+    grid-template-columns: 1fr;
+  }
+  .adm-message {
+    max-width: 100%;
+  }
+  .adm-ai-layout,
+  .adm-upload-layout {
+    gap: 16px;
+  }
+  .adm-ai-window {
+    height: min(58dvh, 460px);
+    min-height: 360px;
+    padding: 12px;
+  }
+  .adm-ai-bubble {
+    max-width: 100%;
+    border-radius: 18px;
+  }
+  .adm-ai-form,
+  .adm-upload-field,
+  .admin-page-actions,
+  .admin-file-filter,
+  .admin-file-summary,
+  .admin-file-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .adm-ai-form input,
+  .adm-ai-form button,
+  .adm-upload-field .custom-select,
+  .adm-file-picker,
+  .admin-page-actions .adm-btn,
+  .admin-file-filter .adm-btn,
+  .admin-file-actions .adm-btn {
+    width: 100%;
+  }
+  .adm-library-stats {
+    grid-template-columns: 1fr;
+  }
+  .adm-mini-stat,
+  .adm-guide-card {
+    padding: 16px;
+  }
+  .adm-ai-console .adm-card-head,
+  .adm-ai-bottom {
+    padding: 14px;
+  }
+  .adm-ai-side .adm-card {
+    padding: 16px;
   }
 }

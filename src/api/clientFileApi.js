@@ -1,4 +1,4 @@
-const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+import { fetchWithAuth } from "./authFetch";
 
 async function parseJsonResponse(response) {
   try {
@@ -8,23 +8,12 @@ async function parseJsonResponse(response) {
   }
 }
 
-function getAccessToken() {
-  const token = localStorage.getItem("accessToken");
-
-  if (!token) {
-    throw new Error("로그인이 필요합니다.");
-  }
-
-  return token;
-}
-
 export async function getClientFiles({
   bucket = "users",
   prefix = "",
   limit = 100,
   offset = 0,
 } = {}) {
-  const token = getAccessToken();
   const role = localStorage.getItem("role");
 
   const params = new URLSearchParams({
@@ -37,12 +26,10 @@ export async function getClientFiles({
     params.append("prefix", prefix.trim());
   }
 
-  const response = await fetch(
-    `${BASE_URL}/client/files?${params.toString()}`,
+  const response = await fetchWithAuth(`/client/files?${params.toString()}`,
     {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${token}`,
       },
       credentials: "include",
     }
@@ -66,7 +53,6 @@ export async function uploadClientFile({
   bucket = "users",
   uuid = "",
 }) {
-  const token = getAccessToken();
   const role = localStorage.getItem("role");
 
   if (!(file instanceof File)) {
@@ -96,12 +82,10 @@ export async function uploadClientFile({
     formData.append("uuid", uuid.trim());
   }
 
-  const response = await fetch(
-    `${BASE_URL}/client/files`,
+  const response = await fetchWithAuth(`/client/files`,
     {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${token}`,
       },
       credentials: "include",
       body: formData,
@@ -123,18 +107,15 @@ export async function deleteClientFile({
   path,
   bucket = "users",
 }) {
-  const token = getAccessToken();
 
   if (!path?.trim()) {
     throw new Error("삭제할 파일 경로가 없습니다.");
   }
 
-  const response = await fetch(
-    `${BASE_URL}/client/files`,
+  const response = await fetchWithAuth(`/client/files`,
     {
       method: "DELETE",
       headers: {
-        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       credentials: "include",
@@ -162,18 +143,15 @@ export async function getClientFileSignedUrl({
   expiresIn = 600,
   download = false,
 }) {
-  const token = getAccessToken();
 
   if (!path?.trim()) {
     throw new Error("파일 경로가 없습니다.");
   }
 
-  const response = await fetch(
-    `${BASE_URL}/client/files/signed-url`,
+  const response = await fetchWithAuth(`/client/files/signed-url`,
     {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       credentials: "include",

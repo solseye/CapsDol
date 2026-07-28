@@ -13,6 +13,7 @@ const ACCEPTED_FILE_TYPES = ".pdf,.docx,.xlsx,.csv,.txt,.md";
 
 const ALLOWED_EXTENSIONS = ["pdf", "docx", "xlsx", "csv", "txt", "md"];
 
+// 기존 PDF 업로드 화면에서 반복되는 카드 틀을 제공합니다.
 function AdminCard({ title, action, children }) {
   return (
     <section className="adm-card">
@@ -25,6 +26,7 @@ function AdminCard({ title, action, children }) {
   );
 }
 
+// 선택 파일이 RAG 업로드 허용 확장자인지 확인합니다.
 function isAllowedFile(file) {
   if (!file) return false;
 
@@ -33,6 +35,7 @@ function isAllowedFile(file) {
   return ALLOWED_EXTENSIONS.includes(extension);
 }
 
+// 단일 문서를 선택 카테고리로 업로드하는 기존 관리자 화면입니다.
 export default function PdfUploadPage() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedFolder, setSelectedFolder] = useState("normal");
@@ -47,6 +50,7 @@ export default function PdfUploadPage() {
     FOLDER_OPTIONS.find((option) => option.value === selectedFolder)?.label ||
     "통합 챗봇";
 
+  // 파일 검증 후 서버 업로드를 실행하고 진행 상태를 업데이트합니다.
   const handleUpload = async () => {
     if (!selectedFile) {
       setError("업로드할 파일을 먼저 선택해 주세요.");
