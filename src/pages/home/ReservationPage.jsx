@@ -1,5 +1,5 @@
 import { Link, Navigate } from "react-router-dom";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import "../../App.css";
 import Header from "../../components/Header";
 import "../../styles/reservation-visily.css";
@@ -147,6 +147,91 @@ function getTimeMinutes(timeValue) {
   return hour * 60 + minute;
 }
 
+function normalizeSelectedRanges(ranges) {
+  const sortedRanges = [...ranges].sort((a, b) =>
+    `${a.date} ${a.startTime}`.localeCompare(`${b.date} ${b.startTime}`)
+  );
+
+  return sortedRanges.reduce((mergedRanges, range) => {
+    const previousRange = mergedRanges[mergedRanges.length - 1];
+
+    if (
+      previousRange &&
+      previousRange.date === range.date &&
+      getTimeMinutes(range.startTime) <= getTimeMinutes(previousRange.endTime)
+    ) {
+      previousRange.endTime =
+        getTimeMinutes(range.endTime) > getTimeMinutes(previousRange.endTime)
+          ? range.endTime
+          : previousRange.endTime;
+      return mergedRanges;
+    }
+
+    mergedRanges.push({ ...range });
+    return mergedRanges;
+  }, []);
+}
+
+function isTimeSlotSelected(ranges, date, time) {
+  const slotStart = getTimeMinutes(time);
+
+  return ranges.some(
+    (range) =>
+      range.date === date &&
+      slotStart >= getTimeMinutes(range.startTime) &&
+      slotStart < getTimeMinutes(range.endTime)
+  );
+}
+
+function addTimeSlotToRanges(ranges, date, time) {
+  return normalizeSelectedRanges([
+    ...ranges,
+    {
+      date,
+      startTime: time,
+      endTime: addMinutesToTime(time, CONSULTATION_DURATION_MINUTES),
+    },
+  ]);
+}
+
+function removeTimeSlotFromRanges(ranges, date, time) {
+  const slotStart = getTimeMinutes(time);
+  const slotEnd = slotStart + CONSULTATION_DURATION_MINUTES;
+
+  return normalizeSelectedRanges(
+    ranges.flatMap((range) => {
+      const rangeStart = getTimeMinutes(range.startTime);
+      const rangeEnd = getTimeMinutes(range.endTime);
+
+      if (
+        range.date !== date ||
+        slotStart < rangeStart ||
+        slotStart >= rangeEnd
+      ) {
+        return range;
+      }
+
+      const nextRanges = [];
+
+      if (rangeStart < slotStart) {
+        nextRanges.push({
+          ...range,
+          endTime: time,
+        });
+      }
+
+      if (slotEnd < rangeEnd) {
+        nextRanges.push({
+          ...range,
+          startTime: addMinutesToTime(time, CONSULTATION_DURATION_MINUTES),
+        });
+      }
+
+      return nextRanges;
+    })
+  );
+}
+
 function getWeekDates(dateValue) {
   const date = new Date(dateValue);
   const start = new Date(date);
@@ -182,6 +267,8 @@ export default function ReservationPage() {
   const [selectedDate, setSelectedDate] = useState(null);
   // 여러 후보 시간을 함께 제안하기 위한 예약 범위 목록입니다.
   const [selectedRanges, setSelectedRanges] = useState([]);
+  // 시간표에서 드래그하는 동안에는 모든 슬롯에 같은 선택/해제 동작을 적용합니다.
+  const timeRangeDragRef = useRef(null);
 
   const [form, setForm] = useState({
     name: "",
@@ -363,8 +450,11 @@ export default function ReservationPage() {
     setCurrentStep((prev) => Math.min(4, prev + 1));
   };
 
-  const handleDateClick = (date, isPast, isToday) => {
-    if (isPast && !isToday) return;
+  const handleDateClick = (date) => {
+    if (!date || isPastDate(date, today)) {
+      setSubmitError("지난 날짜는 선택할 수 없습니다.");
+      return;
+    }
 
     setSelectedDate(date);
     setSubmitError("");
@@ -396,8 +486,13 @@ export default function ReservationPage() {
       return false;
     }
 
-      if (selectedRanges.length === 0) {
-        setSubmitError(t("reservation.timeError"));
+    if (selectedRanges.length === 0) {
+      setSubmitError(t("reservation.timeError"));
+      return false;
+    }
+
+    if (selectedRanges.some((range) => isPastDate(new Date(`${range.date}T00:00:00`), today))) {
+      setSubmitError("지난 날짜는 예약할 수 없습니다. 날짜와 시간을 다시 선택해 주세요.");
       return false;
     }
 
@@ -448,12 +543,22 @@ export default function ReservationPage() {
       return;
     }
 
+    if (selectedRanges.some((range) => isPastDate(new Date(`${range.date}T00:00:00`), today))) {
+      setSubmitError("지난 날짜는 예약할 수 없습니다. 날짜와 시간을 다시 선택해 주세요.");
+      return;
+    }
+
     setIsConfirmModalOpen(true);
   };
 
-  const toggleTimeRange = (time, dateValue = selectedDate) => {
+  const updateTimeRangeSelection = (time, dateValue = selectedDate, shouldSelect) => {
     if (!dateValue) {
       setSubmitError("먼저 날짜를 선택해 주세요.");
+      return;
+    }
+
+    if (isPastDate(dateValue, today)) {
+      setSubmitError("지난 날짜는 선택할 수 없습니다.");
       return;
     }
 
@@ -461,31 +566,59 @@ export default function ReservationPage() {
 
     const date = getDateKey(dateValue);
     setSelectedDate(new Date(dateValue));
-    const range = {
-      date,
-      startTime: time,
-      endTime: addMinutesToTime(time, CONSULTATION_DURATION_MINUTES),
-    };
 
     setSelectedRanges((prev) => {
-      const exists = prev.some(
-        (item) => item.date === range.date && item.startTime === range.startTime
-      );
+      const exists = isTimeSlotSelected(prev, date, time);
 
-      if (exists) {
-        return prev.filter(
-          (item) => !(item.date === range.date && item.startTime === range.startTime)
-        );
+      if (shouldSelect === false || (shouldSelect === undefined && exists)) {
+        return removeTimeSlotFromRanges(prev, date, time);
       }
 
-      return [...prev, range].sort(
-        (a, b) => `${a.date} ${a.startTime}`.localeCompare(`${b.date} ${b.startTime}`)
-      );
+      if (exists) return prev;
+
+      return addTimeSlotToRanges(prev, date, time);
     });
     setSubmitError("");
     setSubmitSuccess("");
     setIsSubmitted(false);
   };
+
+  const handleTimeSlotPointerDown = (event, time, day, isSelected) => {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+
+    const shouldSelect = !isSelected;
+    timeRangeDragRef.current = { shouldSelect };
+    event.preventDefault();
+    updateTimeRangeSelection(time, day, shouldSelect);
+  };
+
+  const handleTimeSlotPointerEnter = (event, time, day) => {
+    const dragState = timeRangeDragRef.current;
+    if (!dragState || event.buttons === 0) return;
+
+    updateTimeRangeSelection(time, day, dragState.shouldSelect);
+  };
+
+  const handleTimeSlotKeyDown = (event, time, day, isSelected) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+
+    event.preventDefault();
+    updateTimeRangeSelection(time, day, !isSelected);
+  };
+
+  useEffect(() => {
+    const stopTimeRangeDrag = () => {
+      timeRangeDragRef.current = null;
+    };
+
+    window.addEventListener("pointerup", stopTimeRangeDrag);
+    window.addEventListener("pointercancel", stopTimeRangeDrag);
+
+    return () => {
+      window.removeEventListener("pointerup", stopTimeRangeDrag);
+      window.removeEventListener("pointercancel", stopTimeRangeDrag);
+    };
+  }, []);
 
   const removeTimeRange = (range) => {
     setSelectedRanges((prev) =>
@@ -855,7 +988,7 @@ export default function ReservationPage() {
                             selectedRanges.some((range) => range.date === getDateKey(date)) ? "has-suggestion" : "",
                             isToday ? "today" : "",
                           ].join(" ")}
-                          onClick={() => handleDateClick(date, isPast, isToday)}
+                          onClick={() => handleDateClick(date)}
                         >
                           {date.getDate()}
                         </button>
@@ -871,36 +1004,45 @@ export default function ReservationPage() {
 
                 <section className="rv-schedule-card rv-schedule-week">
                   <div className="rv-schedule-week-head">
-                    <div>
-                      <div className="rv-schedule-eyebrow">STEP 03</div>
-                      <h2>상담 가능 시간 제안</h2>
-                      <p className="rv-schedule-recommendation">
-                        원활한 상담을 위해 90분~120분 예약하시는 것을 추천드립니다.
-                      </p>
+                      <div>
+                        <div className="rv-schedule-eyebrow">STEP 03</div>
+                        <h2>상담 가능 시간 제안</h2>
+                        <p className="rv-schedule-recommendation">
+                          원활한 상담을 위해 90분~120분 예약하시는 것을 추천드립니다.
+                        </p>
+                        <p className="rv-schedule-drag-guide">
+                          원하는 시간대를 클릭하거나 드래그해 여러 개 선택할 수 있습니다.
+                        </p>
                     </div>
                     <span className="rv-timezone">GMT+9</span>
                   </div>
                   <div className="rv-schedule-grid-scroll">
                     <div className="rv-schedule-week-grid">
                       <span className="rv-schedule-grid-corner" />
-                      {scheduleWeekDays.map((day) => (
-                        <button
-                          key={day.toISOString()}
-                          type="button"
-                          className={isSameDate(day, selectedDate) ? "selected-day" : ""}
-                          onClick={() => handleDateClick(day, isPastDate(day, today), isSameDate(day, today))}
-                        >
-                          <small>{["일", "월", "화", "수", "목", "금", "토"][day.getDay()]}</small>
-                          <strong>{day.getDate()}</strong>
-                        </button>
-                      ))}
+                      {scheduleWeekDays.map((day) => {
+                        const isPast = isPastDate(day, today);
+
+                        return (
+                          <button
+                            key={day.toISOString()}
+                            type="button"
+                            disabled={isPast}
+                            className={isSameDate(day, selectedDate) ? "selected-day" : ""}
+                            onClick={() => handleDateClick(day)}
+                          >
+                            <small>{["일", "월", "화", "수", "목", "금", "토"][day.getDay()]}</small>
+                            <strong>{day.getDate()}</strong>
+                          </button>
+                        );
+                      })}
                       {TIME_OPTIONS.map((time) => (
                         <div className="rv-schedule-grid-row" key={time}>
                           <span className="rv-schedule-grid-time">{time}</span>
                           {scheduleWeekDays.map((day) => {
                             const dateKey = getDateKey(day);
                             const blocked = getBlockedTimesForDate(day).has(time);
-                            const selected = selectedRanges.some(
+                            const selected = isTimeSlotSelected(selectedRanges, dateKey, time);
+                            const rangeStart = selectedRanges.find(
                               (range) => range.date === dateKey && range.startTime === time
                             );
                             const disabled = (isPastDate(day, today) && !isSameDate(day, today)) || blocked;
@@ -914,13 +1056,16 @@ export default function ReservationPage() {
                                   selected ? "selected" : "",
                                   blocked ? "blocked" : "",
                                 ].join(" ")}
-                                onClick={() => toggleTimeRange(time, day)}
+                                onPointerDown={(event) => handleTimeSlotPointerDown(event, time, day, selected)}
+                                onPointerEnter={(event) => handleTimeSlotPointerEnter(event, time, day)}
+                                onKeyDown={(event) => handleTimeSlotKeyDown(event, time, day, selected)}
                                 aria-label={`${dateKey} ${time} ${selected ? "제안 일정 삭제" : "제안 일정 추가"}`}
+                                aria-pressed={selected}
                               >
                                 {blocked ? (
                                   <span className="rv-schedule-blocked-label">차단됨</span>
                                 ) : (
-                                  selected && <span>{time} - {addMinutesToTime(time, CONSULTATION_DURATION_MINUTES)}</span>
+                                  rangeStart && <span>{rangeStart.startTime} - {rangeStart.endTime}</span>
                                 )}
                               </button>
                             );

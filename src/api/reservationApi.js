@@ -128,23 +128,41 @@ export async function getUserReservations({
   offset = 0,
 } = {}) {
 
+  const trimmedUuid = uuid?.trim() || "";
   const params = new URLSearchParams({
     limit: String(limit),
     offset: String(offset),
   });
 
-  if (uuid?.trim()) {
-    params.append("uuid", uuid.trim());
+  if (trimmedUuid) {
+    params.append("uuid", trimmedUuid);
   }
 
-  const res = await fetchWithAuth(`/reserv/user/list?${params.toString()}`, {
+  let res = await fetchWithAuth(`/reserv/user/list?${params.toString()}`, {
     method: "GET",
     headers: {
     },
     credentials: "include",
   });
 
-  const data = await parseJsonResponse(res);
+  let data = await parseJsonResponse(res);
+
+  if (!res.ok && data.error === "Uuid is required" && trimmedUuid) {
+    res = await fetchWithAuth(`/reserv/user/list`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        uuid: trimmedUuid,
+        limit,
+        offset,
+      }),
+    });
+
+    data = await parseJsonResponse(res);
+  }
 
   if (!res.ok) {
     throw new Error(data.error || "사용자 상담 신청 내역 조회에 실패했습니다.");
@@ -199,6 +217,63 @@ export async function getReservationListByRange({
 
   if (!res.ok) {
     throw new Error(data.error || "예약 일정 조회에 실패했습니다.");
+  }
+
+  return data;
+}
+
+export async function getReservationAvailability({
+  uuid,
+  baseDate,
+  previousMonthCount = 2,
+  nextMonthCount = 4,
+} = {}) {
+
+  const params = new URLSearchParams({
+    previous_month_count: String(previousMonthCount),
+    next_month_count: String(nextMonthCount),
+  });
+
+  if (uuid?.trim()) params.append("uuid", uuid.trim());
+  if (baseDate) params.append("base_date", baseDate);
+
+  const res = await fetchWithAuth(`/reserv/list?${params.toString()}`, {
+    method: "GET",
+    headers: {
+    },
+    credentials: "include",
+  });
+
+  const data = await parseJsonResponse(res);
+
+  if (!res.ok) {
+    throw new Error(data.error || "예약 가능 시간표 조회에 실패했습니다.");
+  }
+
+  return data;
+}
+
+export async function addReservationChat({
+  reservationId,
+  message,
+}) {
+
+  const res = await fetchWithAuth(`/reserv/chat`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify({
+      reservationId,
+      message,
+    }),
+  });
+
+  const data = await parseJsonResponse(res);
+
+  if (!res.ok) {
+    throw new Error(data.error || "상담 채팅 등록에 실패했습니다.");
   }
 
   return data;

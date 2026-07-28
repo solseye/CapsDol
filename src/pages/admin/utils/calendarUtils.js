@@ -154,11 +154,12 @@ export function buildAdminCalendarEvents({ schedules = [], blocks = [] }) {
     if (!dKey || !tKey) return;
 
     (schedule.reservations || []).forEach((res) => {
-      if (res.status === "rejected") return;
+      const status = String(res.status || "").toLowerCase();
+      if (["rejected", "cancelled", "canceled"].includes(status)) return;
 
       const resId = res.reservation_id || res.id;
       const isConfirmed =
-        res.status === "approved" || res.status === "confirmed";
+        status === "approved" || status === "confirmed";
 
       if (isConfirmed) {
         newEvents.push({
@@ -170,7 +171,7 @@ export function buildAdminCalendarEvents({ schedules = [], blocks = [] }) {
           time: tKey,
           endTime: addMinutesToTime(tKey, 90),
           slotSpan: 3,
-          status: res.status,
+          status: status || res.status,
           field: schedule.field,
           isExtension: false,
           originalData: res,
@@ -187,7 +188,7 @@ export function buildAdminCalendarEvents({ schedules = [], blocks = [] }) {
             time: slotTime,
             endTime: addMinutesToTime(slotTime, 30),
             slotSpan: 1,
-            status: res.status,
+            status: status || res.status,
             field: schedule.field,
             isExtension: true,
             originalData: res,
@@ -203,7 +204,7 @@ export function buildAdminCalendarEvents({ schedules = [], blocks = [] }) {
           time: tKey,
           endTime: addMinutesToTime(tKey, 30),
           slotSpan: 1,
-          status: res.status,
+          status: status || res.status,
           field: schedule.field,
           isExtension: false,
           originalData: res,

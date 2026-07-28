@@ -2034,6 +2034,13 @@
   box-shadow: inset 0 -3px 0 #06233c;
 }
 
+.rv-schedule-week-grid > button:disabled {
+  cursor: not-allowed;
+  background: #f1f4f6;
+  color: #a3afba;
+  opacity: 0.72;
+}
+
 .rv-schedule-grid-row {
   display: contents;
 }
@@ -2055,6 +2062,8 @@
   background: #ffffff;
   color: #ffffff;
   cursor: pointer;
+  touch-action: none;
+  user-select: none;
 }
 
 .rv-schedule-slot:hover:not(:disabled) {
@@ -2075,6 +2084,13 @@
   font-weight: 800;
 }
 
+.rv-schedule-slot:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: 3px solid #2f7cc0;
+  outline-offset: -3px;
+}
+
 .rv-schedule-slot.blocked,
 .rv-schedule-slot:disabled {
   background: #eef1f4;
@@ -2088,6 +2104,13 @@
   font-size: 10px;
   font-weight: 800;
   text-align: center;
+}
+
+.rv-schedule-drag-guide {
+  margin: 6px 0 0;
+  color: #587086;
+  font-size: 12px;
+  line-height: 1.45;
 }
 
 .rv-schedule-summary {

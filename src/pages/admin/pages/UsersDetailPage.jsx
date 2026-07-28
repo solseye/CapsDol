@@ -1,5 +1,12 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { Link, useLocation, useParams } from "react-router-dom";
 
 import { getAdminUsers } from "../../../api/adminApi";
 import {
@@ -8,7 +15,11 @@ import {
   getClientFileSignedUrl,
   uploadClientFile,
 } from "../../../api/clientFileApi";
-import { getUserReservations } from "../../../api/reservationApi";
+import {
+  addReservationChat,
+  getReservationAvailability,
+  getUserReservations,
+} from "../../../api/reservationApi";
 
 import "./UsersDetailPage.css";
 
@@ -39,25 +50,99 @@ function formatTime(timeValue) {
 
 function getStatusLabel(status) {
   const labels = {
-    pending: "승인 대기",
-    approved: "승인 완료",
-    rejected: "불허",
-    cancelled: "취소",
+    pending: "\uB300\uAE30",
+    approved: "\uC2B9\uC778",
+    confirmed: "\uC2B9\uC778",
+    rejected: "\uBD88\uD5C8",
+    cancelled: "\uCDE8\uC18C",
+    canceled: "\uCDE8\uC18C",
   };
   return labels[status] || status || "-";
 }
 
 function getReservationRanges(reservation) {
-  return Array.isArray(reservation.available_ranges)
+  return Array.isArray(reservation?.available_ranges)
     ? reservation.available_ranges
     : [];
 }
 
+function getReservationId(reservation) {
+  return reservation?.reservation_id || reservation?.id;
+}
+
+function getFirstRangeLabel(reservation) {
+  const firstRange = getReservationRanges(reservation)[0];
+  if (!firstRange) return "시간 미정";
+  return `${formatDateOnly(firstRange.date)} ${formatTime(firstRange.start_time)}-${formatTime(firstRange.end_time)}`;
+}
+
+function toDateKey(dateValue) {
+  const date = new Date(dateValue);
+  if (Number.isNaN(date.getTime())) return String(dateValue || "").slice(0, 10);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function timeToMinutes(timeValue) {
+  const [hour, minute] = String(timeValue || "00:00").split(":").map(Number);
+  return hour * 60 + minute;
+}
+
+function isTimeInsideRange(slotTime, range) {
+  const slot = timeToMinutes(slotTime);
+  return (
+    slot >= timeToMinutes(range.start_time) &&
+    slot < timeToMinutes(range.end_time)
+  );
+}
+
+function parseChatMessages(note) {
+  if (!note) return [];
+  try {
+    const parsed = typeof note === "string" ? JSON.parse(note) : note;
+    if (Array.isArray(parsed)) return parsed;
+    if (Array.isArray(parsed?.chat)) return parsed.chat;
+    if (Array.isArray(parsed?.messages)) return parsed.messages;
+    return [];
+  } catch {
+    return [];
+  }
+}
+
+function getWeekDateKeys(reservation) {
+  const firstRange = getReservationRanges(reservation)[0];
+  const base = firstRange ? new Date(firstRange.date) : new Date();
+  if (Number.isNaN(base.getTime())) return [];
+
+  const start = new Date(base);
+  start.setDate(start.getDate() - start.getDay());
+
+  return Array.from({ length: 7 }, (_, index) => {
+    const date = new Date(start);
+    date.setDate(start.getDate() + index);
+    return toDateKey(date);
+  });
+}
+
+function getTimeSlots() {
+  return Array.from({ length: 18 }, (_, index) => {
+    const hour = String(Math.floor(index / 2) + 9).padStart(2, "0");
+    const minute = index % 2 === 0 ? "00" : "30";
+    return `${hour}:${minute}`;
+  });
+}
+
 export default function UsersDetailPage() {
   const { uuid: encodedUuid } = useParams();
+  const location = useLocation();
   const uuid = useMemo(
-    () => decodeURIComponent(encodedUuid || ""),
-    [encodedUuid],
+    () =>
+      decodeURIComponent(encodedUuid || "") ||
+      location.state?.user?.uuid ||
+      "",
+    [encodedUuid, location.state],
   );
   const fileInputRef = useRef(null);
 
@@ -68,6 +153,11 @@ export default function UsersDetailPage() {
   const [clientFiles, setClientFiles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
+  const [selectedReservationId, setSelectedReservationId] = useState(null);
+  const [availabilityBlocks, setAvailabilityBlocks] = useState([]);
+  const [isAvailabilityLoading, setIsAvailabilityLoading] = useState(false);
+  const [chatMessage, setChatMessage] = useState("");
+  const [isChatSending, setIsChatSending] = useState(false);
 
   const [previewLoadingPath, setPreviewLoadingPath] = useState(null);
   const [downloadLoadingPath, setDownloadLoadingPath] = useState(null);
@@ -75,6 +165,21 @@ export default function UsersDetailPage() {
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  const selectedReservation = useMemo(
+    () =>
+      reservations.find(
+        (reservation) =>
+          String(getReservationId(reservation)) ===
+          String(selectedReservationId),
+      ) || null,
+    [reservations, selectedReservationId],
+  );
+
+  const selectedChatMessages = useMemo(
+    () => parseChatMessages(selectedReservation?.note),
+    [selectedReservation],
+  );
 
   const fetchSelectedUser = useCallback(async () => {
     if (!uuid) {
@@ -128,7 +233,19 @@ export default function UsersDetailPage() {
       setIsReservationsLoading(true);
       setError("");
       const data = await getUserReservations({ uuid, limit: 100, offset: 0 });
-      setReservations(Array.isArray(data.reservations) ? data.reservations : []);
+      const nextReservations = Array.isArray(data.reservations)
+        ? data.reservations
+        : [];
+      setReservations(nextReservations);
+      setSelectedReservationId((currentId) =>
+        currentId &&
+        nextReservations.some(
+          (reservation) =>
+            String(getReservationId(reservation)) === String(currentId),
+        )
+          ? currentId
+          : null,
+      );
     } catch (err) {
       setReservations([]);
       setError(err.message || "상담 신청 내역을 불러오지 못했습니다.");
@@ -178,6 +295,45 @@ export default function UsersDetailPage() {
     fetchUserFiles();
   }, [fetchSelectedUser, fetchUserReservations, fetchUserFiles]);
 
+  useEffect(() => {
+    if (!uuid || !selectedReservation) {
+      setAvailabilityBlocks([]);
+      return;
+    }
+
+    let ignore = false;
+    const firstRange = getReservationRanges(selectedReservation)[0];
+
+    async function fetchAvailability() {
+      try {
+        setIsAvailabilityLoading(true);
+        const data = await getReservationAvailability({
+          uuid,
+          baseDate: firstRange ? toDateKey(firstRange.date) : undefined,
+          previousMonthCount: 2,
+          nextMonthCount: 4,
+        });
+
+        if (!ignore) {
+          setAvailabilityBlocks(Array.isArray(data.blocks) ? data.blocks : []);
+        }
+      } catch (err) {
+        if (!ignore) {
+          setAvailabilityBlocks([]);
+          setError(err.message || "예약 가능 시간표를 불러오지 못했습니다.");
+        }
+      } finally {
+        if (!ignore) setIsAvailabilityLoading(false);
+      }
+    }
+
+    fetchAvailability();
+
+    return () => {
+      ignore = true;
+    };
+  }, [uuid, selectedReservation]);
+
   const handleRefresh = async () => {
     setSuccess("");
     await Promise.all([
@@ -185,6 +341,40 @@ export default function UsersDetailPage() {
       fetchUserReservations(),
       fetchUserFiles(),
     ]);
+  };
+
+  const handleSendChat = async (event) => {
+    event.preventDefault();
+    if (!selectedReservation) return;
+
+    const message = chatMessage.trim();
+    if (!message) return;
+
+    try {
+      setIsChatSending(true);
+      setError("");
+      setSuccess("");
+
+      const data = await addReservationChat({
+        reservationId: getReservationId(selectedReservation),
+        message,
+      });
+
+      setReservations((current) =>
+        current.map((reservation) =>
+          String(getReservationId(reservation)) ===
+          String(getReservationId(selectedReservation))
+            ? { ...reservation, note: data.note || reservation.note }
+            : reservation,
+        ),
+      );
+      setChatMessage("");
+      setSuccess("채팅 메시지가 등록되었습니다.");
+    } catch (err) {
+      setError(err.message || "채팅 메시지 등록에 실패했습니다.");
+    } finally {
+      setIsChatSending(false);
+    }
   };
 
   const handleOpenUpload = () => {
@@ -347,6 +537,38 @@ export default function UsersDetailPage() {
     }
   };
 
+  const modalWeekDates = selectedReservation
+    ? getWeekDateKeys(selectedReservation)
+    : [];
+  const timeSlots = getTimeSlots();
+  const selectedRanges = getReservationRanges(selectedReservation);
+
+  const getSlotState = (dateKey, slotTime) => {
+    const isAvailable = selectedRanges.some(
+      (range) =>
+        toDateKey(range.date) === dateKey && isTimeInsideRange(slotTime, range),
+    );
+    const block = availabilityBlocks.find((item) => {
+      const blockDate = toDateKey(item.unavailable_date || item.blocked_date);
+      const startTime = String(item.start_time || item.blocked_time || "").slice(
+        0,
+        5,
+      );
+      const endTime = String(item.end_time || "").slice(0, 5) || "23:59";
+
+      return (
+        blockDate === dateKey &&
+        slotTime >= startTime &&
+        slotTime < endTime &&
+        !item.isMine
+      );
+    });
+
+    if (block) return block.type === "manual_block" ? "blocked" : "booked";
+    if (isAvailable) return "available";
+    return "empty";
+  };
+
   return (
     <main className="adm-main admin-user-detail-page">
       <section className="page-header">
@@ -396,53 +618,140 @@ export default function UsersDetailPage() {
             상담 신청 내역이 없습니다.
           </div>
         ) : (
-          <div className="reservation-list">
+          <div className="reservation-list compact">
             {reservations.map((reservation) => {
-              const ranges = getReservationRanges(reservation);
+              const reservationId = getReservationId(reservation);
+
               return (
-                <article
-                  className="reservation-item"
-                  key={reservation.reservation_id}
-                >
-                  <div className="reservation-item-header">
-                    <div>
-                      <strong>
-                        {reservation.c_name || "회사명 없음"}
-                        <span>{reservation.kind ? ` · ${reservation.kind}` : ""}</span>
-                      </strong>
-                      <p>{reservation.field || "분야 미지정"}</p>
-                    </div>
-                    <span className={`reservation-status ${reservation.status || ""}`}>
-                      {getStatusLabel(reservation.status)}
-                    </span>
-                  </div>
-                  <div className="reservation-meta">
-                    <span>신청 {formatDateTime(reservation.requested_at)}</span>
-                    <span>연락처 {reservation.phone || "-"}</span>
-                  </div>
-                  {reservation.note && (
-                    <p className="reservation-note">{reservation.note}</p>
-                  )}
-                  <div className="reservation-ranges">
-                    {ranges.length > 0 ? (
-                      ranges.map((range) => (
-                        <span className="reservation-range-chip" key={range.id}>
-                          {formatDateOnly(range.date)} {formatTime(range.start_time)}
-                          -{formatTime(range.end_time)}
-                        </span>
-                      ))
-                    ) : (
-                      <span className="reservation-range-chip muted">
-                        선택된 가능 시간이 없습니다.
-                      </span>
-                    )}
-                  </div>
-                </article>
+                <button
+                  type="button"
+                  className="reservation-item summary"
+                  key={reservationId}
+                  onClick={() => setSelectedReservationId(reservationId)}
+                ><span className={"reservation-summary-status " + (reservation.status || "")}>
+                    {getStatusLabel(reservation.status)}
+                  </span>
+                  <strong>{reservation.c_name || "회사명 없음"}</strong>
+                  <span>{reservation.field || "분야 미지정"}</span>
+                  <span>{getFirstRangeLabel(reservation)}</span>
+                </button>
               );
             })}
           </div>
         )}
       </section>
+
+      {selectedReservation && (
+        <div className="reservation-modal-overlay">
+          <section className="reservation-modal">
+            <div className="reservation-modal-header">
+              <div>
+                <h2>상담 예약 상세</h2>
+                <p>{selectedReservation.c_name || "회사명 없음"} ? {selectedReservation.field || "분야 미지정"}</p>
+              </div>
+              <button
+                type="button"
+                className="reservation-modal-close"
+                onClick={() => setSelectedReservationId(null)}
+                aria-label="상담 예약 상세 닫기"
+              >
+                x
+              </button>
+            </div>
+
+            <div className="reservation-modal-grid">
+              <div className="reservation-week-board">
+                <div className="reservation-week-title">
+                  <strong>주간 시간표</strong>
+                  <span>파란색 가능 ? 빨간색 차단 ? 초록색 확정</span>
+                </div>
+
+                {isAvailabilityLoading ? (
+                  <div className="reserve-empty-box text-center p-2 border">
+                    시간표를 불러오는 중입니다...
+                  </div>
+                ) : modalWeekDates.length === 0 ? (
+                  <div className="reserve-empty-box text-center p-2 border">
+                    선택한 예약의 가능 시간이 없습니다.
+                  </div>
+                ) : (
+                  <div className="reservation-week-grid">
+                    <div className="reservation-week-corner" />
+                    {modalWeekDates.map((dateKey) => (
+                      <div className="reservation-week-day" key={dateKey}>
+                        {dateKey}
+                      </div>
+                    ))}
+                    {timeSlots.map((slotTime) => (
+                      <Fragment key={slotTime}>
+                        <div className="reservation-week-time">{slotTime}</div>
+                        {modalWeekDates.map((dateKey) => {
+                          const slotState = getSlotState(dateKey, slotTime);
+                          return (
+                            <div
+                              className={"reservation-week-slot " + slotState}
+                              key={dateKey + "-" + slotTime}
+                              title={dateKey + " " + slotTime}
+                            />
+                          );
+                        })}
+                      </Fragment>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <aside className="reservation-modal-side">
+                <div className="selected-reservation-info">
+                  <h3>예약 상세 정보</h3>
+                  <div className="detail-row"><span>회사 이름</span><strong>{selectedReservation.c_name || "-"}</strong></div>
+                  <div className="detail-row"><span>분야</span><strong>{selectedReservation.field || "-"}</strong></div>
+                  <div className="detail-row"><span>상담 유형</span><strong>{selectedReservation.kind || "-"}</strong></div>
+                  <div className="detail-row"><span>상태</span><strong>{getStatusLabel(selectedReservation.status)}</strong></div>
+                  <div className="detail-row"><span>연락처</span><strong>{selectedReservation.phone || "-"}</strong></div>
+                  <div className="detail-row"><span>신청 시간</span><strong>{formatDateTime(selectedReservation.requested_at)}</strong></div>
+                  <div className="detail-ranges">
+                    {selectedRanges.map((range) => (
+                      <span className="reservation-range-chip" key={range.id}>
+                        {formatDateOnly(range.date)} {formatTime(range.start_time)}-{formatTime(range.end_time)}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="reservation-chat-panel">
+                  <h3>채팅</h3>
+                  <div className="reservation-chat-list">
+                    {selectedChatMessages.length > 0 ? (
+                      selectedChatMessages.map((message, index) => (
+                        <div className={"reservation-chat-message " + (message.role || "")} key={(message.created_at || index) + "-" + index}>
+                          <strong>{message.sender_name || message.role || "작성자"}</strong>
+                          <p>{message.message || message.content || ""}</p>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="reservation-chat-empty">등록된 채팅이 없습니다.</p>
+                    )}
+                  </div>
+
+                  <form className="reservation-chat-form" onSubmit={handleSendChat}>
+                    <input
+                      value={chatMessage}
+                      onChange={(event) => setChatMessage(event.target.value)}
+                      placeholder="메시지를 입력하세요"
+                      disabled={isChatSending}
+                    />
+                    <button type="submit" className="adm-btn primary" disabled={isChatSending || !chatMessage.trim()}>
+                      {isChatSending ? "전송 중..." : "전송"}
+                    </button>
+                  </form>
+                </div>
+              </aside>
+            </div>
+          </section>
+        </div>
+      )}
+
 
       <section className="adm-card">
         <div className="file-list-header">

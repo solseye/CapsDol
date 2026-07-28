@@ -115,60 +115,33 @@ export default function Chat() {
       <Header isLoggedIn={isLoggedIn} />
       <div className="ai-page">
         <main className="ai-main">
-          <section className="ai-chat-panel">
-            <div className="ai-chat-head">
-              <div className="ai-chat-head-content">
-                <div>
-                  <p>AI Consultation</p>
-                  <h1>일본 진출 상담 챗봇</h1>
-                  <span>
-                    법인 설립, 세무, 회계, 비자, 노무 관련 질문을 먼저 정리해
-                    보세요.
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  className="ai-reset-top"
-                  onClick={handleReset}
-                >
-                  대화 초기화
-                </button>
-              </div>
+          <section className="ai-chat-intro">
+            <div>
+              <p>AI 상담 지원</p>
+              <h1>일본 진출 상담 챗봇</h1>
+              <span>
+                법인 설립, 세무, 회계, 비자, 노무 관련 질문을 먼저 정리해
+                보세요.
+              </span>
             </div>
+            <button
+              type="button"
+              className="ai-reset-top"
+              onClick={handleReset}
+            >
+              대화 초기화
+            </button>
+          </section>
+
+          <div className="ai-chat-workspace">
+            <div className="ai-chat-column">
+              <section className="ai-chat-panel" aria-label="상담 대화 내용">
 
             <div className="ai-chat-body" ref={chatBodyRef}>
               {messages.map((message, index) => (
                 <div key={index} className={`ai-msg-row ${message.type}`}>
                   <div className="ai-bubble">
-                    <div className="ai-bubble-label">
-                      {message.type === "user" ? "You" : "WVA AI"}
-                    </div>
                     <div className="ai-bubble-text">{message.text}</div>
-
-                    {message.sources?.length > 0 && (
-                      <div className="ai-source-list">
-                        <strong>참고 자료</strong>
-
-                        {message.sources.map((source) => (
-                          <div
-                            key={`${source.fileId}-${source.chunkId}-${source.chunkIndex}`}
-                            className="ai-source-item"
-                          >
-                            <span>
-                              {source.sourceName ||
-                                source.originalName ||
-                                source.storagePath}
-                            </span>
-                            <small>
-                              유사도{" "}
-                              {typeof source.similarity === "number"
-                                ? source.similarity.toFixed(3)
-                                : "-"}
-                            </small>
-                          </div>
-                        ))}
-                      </div>
-                    )}
                   </div>
                 </div>
               ))}
@@ -176,14 +149,13 @@ export default function Chat() {
               {loading && (
                 <div className="ai-msg-row bot">
                   <div className="ai-bubble ai-typing">
-                    <div className="ai-bubble-label">WVA AI</div>
                     답변 생성 중...
                   </div>
                 </div>
               )}
             </div>
 
-            <div className="ai-chat-bottom">
+            <section className="ai-composer-panel" aria-label="질문 입력">
               {error && <p className="ai-chat-error">{error}</p>}
 
               <form className="ai-chat-input" onSubmit={handleSubmit}>
@@ -198,21 +170,16 @@ export default function Chat() {
                   {loading ? "생성 중" : "전송"} <span>→</span>
                 </button>
               </form>
-            </div>
-          </section>
-
-          <aside className="ai-context-panel">
-            <div className="ai-context-card dark">
-              <span>WVA</span>
-              <h2>답변 기준</h2>
-              <p>
-                챗봇은 등록된 RAG 문서를 참고해 답변합니다. 실제 법률·세무
-                판단은 전문가 상담으로 최종 확인해야 합니다.
+              <p className="ai-input-notice">
+                AI 답변은 참고용이며, 최종 법률·세무 판단은 전문가와 확인해 주세요.
               </p>
+            </section>
+              </section>
             </div>
 
+            <aside className="ai-context-panel">
             <div className="ai-context-card">
-              <h3>빠른 질문</h3>
+              <h3>자주 하는 질문</h3>
               {[
                 "일본에 거주하지 않아도 법인을 설립할 수 있어?",
                 "일본 법인 설립 전에 어떤 정보를 준비해야 해?",
@@ -229,12 +196,29 @@ export default function Chat() {
               ))}
             </div>
 
-            <div className="ai-context-card">
+            <div className="ai-next-steps">
               <h3>다음 단계</h3>
-              <Link to="/hearing-sheet">히어링 시트 작성</Link>
-              <Link to="/reservation">전문가 상담 예약</Link>
+              <article className="ai-next-step-card">
+                <h4>히어링 시트 작성</h4>
+                <p>법인 설립과 상담에 필요한 기본 정보를 정리합니다.</p>
+                <Link to="/hearing-sheet">히어링 시트 작성하기 <span>→</span></Link>
+              </article>
+              <article className="ai-next-step-card">
+                <h4>전문가 상담 예약</h4>
+                <p>AI로 정리한 내용을 바탕으로 담당 전문가와 상담 일정을 조율합니다.</p>
+                <Link to="/reservation">상담 예약하기 <span>→</span></Link>
+              </article>
             </div>
-          </aside>
+
+            <details className="ai-answer-policy">
+              <summary>답변 기준 안내</summary>
+              <p>
+                챗봇은 등록된 RAG 문서를 참고해 답변합니다. 실제 법률·세무 판단은
+                전문가 상담으로 최종 확인해야 합니다.
+              </p>
+            </details>
+            </aside>
+          </div>
         </main>
       </div>
     </>

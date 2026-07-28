@@ -4,6 +4,7 @@ import {
   getAdminReservationList,
   getAdminReservationListByRange,
   blockAdminReservation,
+  cancelReservation,
   unblockAdminReservation,
   allowAdminReservation,
   disallowAdminReservation,
@@ -292,7 +293,10 @@ export default function AdminCalendarPage() {
 
   const allReservations = filteredSchedules
     .flatMap((s) => s.reservations || [])
-    .filter((r) => r.status !== "rejected");
+    .filter((r) => {
+      const status = String(r.status || "").toLowerCase();
+      return !["rejected", "cancelled", "canceled"].includes(status);
+    });
 
   const totalCount = allReservations.length;
   const pendingCount = allReservations.filter(
@@ -344,6 +348,7 @@ export default function AdminCalendarPage() {
 
   const startApprovalDrag = (event, mouseEvent) => {
     if (event.status !== "pending") return;
+    if (!approvalFocus) return;
     if (approvalFocus && approvalFocus.event.targetId !== event.targetId)
       return;
     mouseEvent.stopPropagation();
@@ -425,7 +430,7 @@ export default function AdminCalendarPage() {
     }
   };
 
-  const finishDragSelection = useCallback(() => {
+  const finishDragSelection = useCallback(async () => {
     if (!dragSelection) return;
 
     const range = getOrderedRange(
@@ -449,21 +454,38 @@ export default function AdminCalendarPage() {
     }
 
     if (dragSelection.mode === "approve") {
-      setApprovalDraft({
+      const draft = {
         event: dragSelection.event,
         reservation: dragSelection.reservation,
         date: dragSelection.date,
         startTime: range.startTime,
         endTime: range.endTime,
-      });
-      setModalType("approve-range");
-      setModalOpen(true);
+      };
+
+      try {
+        setLoading(true);
+        await allowAdminReservation({
+          reservationId: draft.event.targetId || draft.event.id,
+          date: draft.date,
+          startTime: draft.startTime,
+          endTime: draft.endTime,
+        });
+
+        setApprovalDraft(null);
+        setApprovalFocus(null);
+        setModalOpen(false);
+        await fetchAdminCalendarByCurrentMonth();
+      } catch (err) {
+        alert(err.message || "상담 승인 처리에 실패했습니다.");
+      } finally {
+        setLoading(false);
+      }
     }
 
     clearDragSelection();
     setSuppressNextClick(true);
     window.setTimeout(() => setSuppressNextClick(false), 0);
-  }, [clearDragSelection, dragSelection, times]);
+  }, [clearDragSelection, dragSelection, fetchAdminCalendarByCurrentMonth, times]);
 
   useEffect(() => {
     const handleWindowMouseUp = () => finishDragSelection();
@@ -575,7 +597,7 @@ export default function AdminCalendarPage() {
     }
   };
 
-  const handleReject = async (id) => {
+  const handleReject = async (id, status) => {
     const reason = window.prompt(
       "불허/취소 사유를 입력해 주세요. (미입력 가능)",
       "",
@@ -584,9 +606,16 @@ export default function AdminCalendarPage() {
     if (window.confirm("정말 이 상담 신청을 불허(취소)하시겠습니까?")) {
       try {
         setLoading(true);
-        await disallowAdminReservation([
-          { id, reason: reason.trim() || null },
-        ]);
+        if (status === "approved" || status === "confirmed") {
+          await cancelReservation({
+            reservationId: id,
+            cancelReason: reason.trim(),
+          });
+        } else {
+          await disallowAdminReservation([
+            { id, reason: reason.trim() || null },
+          ]);
+        }
         setModalOpen(false);
         await fetchAdminCalendarByCurrentMonth();
       } catch (err) {
@@ -1197,7 +1226,10 @@ export default function AdminCalendarPage() {
                               <button
                                 className="adm-btn danger"
                                 onClick={() =>
-                                  handleReject(evt.targetId || evt.id)
+                                  handleReject(
+                                    evt.targetId || evt.id,
+                                    evt.status,
+                                  )
                                 }
                               >
                                 예약 취소

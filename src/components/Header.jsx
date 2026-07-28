@@ -10,20 +10,22 @@ import {
 export default function Header({ isLoggedIn }) {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isMyPageMenuOpen, setIsMyPageMenuOpen] = useState(false);
-  const myPageMenuCloseTimer = useRef(null);
+  const [openDropdown, setOpenDropdown] = useState(null);
+  const dropdownAreaRef = useRef(null);
 
   const role = localStorage.getItem("role");
   const language = getCurrentLanguage();
   const t = (key) => translate(language, key);
   const isAdmin = role === "admin";
-  // 챗봇도 개인 작업 흐름에 포함해 마이페이지와 동일한 사용자용 헤더를 사용합니다.
+  const isUserWorkspace = isLoggedIn && !isAdmin;
   const isMyPageSection =
     location.pathname.startsWith("/mypage") || location.pathname === "/chat";
   const isReservationSection = location.pathname === "/reservation";
   const isHearingSection = location.pathname === "/hearing-sheet";
 
-  const mainNavItems = isReservationSection
+  const mainNavItems = isUserWorkspace
+    ? [{ to: "/reservation", label: t("common.navReservation") }]
+    : isReservationSection
     ? [
         { to: "/mypage", label: "마이 페이지" },
         { to: "/hearing-sheet", label: "히어링 시트" },
@@ -55,8 +57,6 @@ export default function Header({ isLoggedIn }) {
       );
     }
 
-    if (!isMyPageSection && !isReservationSection && !isHearingSection) return false;
-
     if (path === "/mypage") {
       return location.pathname === "/mypage";
     }
@@ -77,22 +77,42 @@ export default function Header({ isLoggedIn }) {
 
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
-    setIsMyPageMenuOpen(false);
+    setOpenDropdown(null);
   };
 
-  const openMyPageMenu = () => {
-    window.clearTimeout(myPageMenuCloseTimer.current);
-    setIsMyPageMenuOpen(true);
+  useEffect(() => {
+    const closeDropdownOnOutsideClick = (event) => {
+      if (!dropdownAreaRef.current?.contains(event.target)) {
+        setOpenDropdown(null);
+      }
+    };
+
+    const closeDropdownOnEscape = (event) => {
+      if (event.key === "Escape") setOpenDropdown(null);
+    };
+
+    document.addEventListener("mousedown", closeDropdownOnOutsideClick);
+    document.addEventListener("keydown", closeDropdownOnEscape);
+    return () => {
+      document.removeEventListener("mousedown", closeDropdownOnOutsideClick);
+      document.removeEventListener("keydown", closeDropdownOnEscape);
+    };
+  }, []);
+
+  const toggleDropdown = (menuName) => {
+    setOpenDropdown((current) => (current === menuName ? null : menuName));
   };
 
-  const closeMyPageMenuWithDelay = () => {
-    window.clearTimeout(myPageMenuCloseTimer.current);
-    myPageMenuCloseTimer.current = window.setTimeout(() => {
-      setIsMyPageMenuOpen(false);
-    }, 260);
-  };
-
-  useEffect(() => () => window.clearTimeout(myPageMenuCloseTimer.current), []);
+  const mobileNavItems = isUserWorkspace
+    ? [
+        { to: "/mypage", label: "마이페이지" },
+        { to: "/mypage/reservations", label: "내 상담 내역" },
+        { to: "/mypage/files", label: "내 파일 관리" },
+        { to: "/hearing-sheet", label: "히어링 시트 작성" },
+        { to: "/chat", label: "AI 챗봇" },
+        { to: "/reservation", label: t("common.navReservation") },
+      ]
+    : mainNavItems;
 
   const handleLogout = async () => {
     try {
@@ -126,45 +146,61 @@ export default function Header({ isLoggedIn }) {
         </Link>
 
         <div className="nav-right">
-          <nav className="main-nav" aria-label="주요 메뉴">
+          <nav className="main-nav" aria-label="주요 메뉴" ref={dropdownAreaRef}>
             <ul>
-              {isMyPageSection && (
-                <li
-                  className="nav-dropdown"
-                  onMouseEnter={openMyPageMenu}
-                  onMouseLeave={closeMyPageMenuWithDelay}
-                  onBlur={(event) => {
-                    if (!event.currentTarget.contains(event.relatedTarget)) {
-                      closeMyPageMenuWithDelay();
-                    }
-                  }}
-                >
+              {isUserWorkspace ? (
+                <>
+                  <li className="nav-dropdown">
                   <button
                     type="button"
-                    className={`nav-dropdown-trigger ${location.pathname === "/mypage" ? "active" : ""}`}
-                    aria-expanded={isMyPageMenuOpen}
+                    className={`nav-dropdown-trigger ${location.pathname.startsWith("/mypage") ? "active" : ""}`}
+                    aria-expanded={openDropdown === "mypage"}
                     aria-haspopup="menu"
-                    onClick={() => {
-                      window.clearTimeout(myPageMenuCloseTimer.current);
-                      setIsMyPageMenuOpen((open) => !open);
-                    }}
+                    onClick={() => toggleDropdown("mypage")}
                   >
-                    마이 페이지 <span aria-hidden="true">⌄</span>
+                    마이페이지 <span aria-hidden="true">⌄</span>
                   </button>
-                  <div className={`nav-dropdown-menu ${isMyPageMenuOpen ? "is-open" : ""}`} role="menu">
-                    <Link to="/mypage/reservations" role="menuitem" onClick={() => setIsMyPageMenuOpen(false)}>
+                  <div className={`nav-dropdown-menu ${openDropdown === "mypage" ? "is-open" : ""}`} role="menu">
+                    <Link to="/mypage" role="menuitem" onClick={() => setOpenDropdown(null)}>
+                      마이페이지 홈
+                    </Link>
+                    <Link to="/mypage/reservations" role="menuitem" onClick={() => setOpenDropdown(null)}>
                       내 상담 내역
                     </Link>
-                    <Link to="/mypage/files" role="menuitem" onClick={() => setIsMyPageMenuOpen(false)}>
+                    <Link to="/mypage/files" role="menuitem" onClick={() => setOpenDropdown(null)}>
                       내 파일 관리
                     </Link>
                   </div>
-                </li>
-              )}
+                  </li>
 
-              {mainNavItems
-                .filter((item) => !isMyPageSection || item.to !== "/mypage")
-                .map((item) => (
+                  <li className="nav-dropdown">
+                    <button
+                      type="button"
+                      className={`nav-dropdown-trigger ${(isHearingSection || location.pathname === "/chat") ? "active" : ""}`}
+                      aria-expanded={openDropdown === "tools"}
+                      aria-haspopup="menu"
+                      onClick={() => toggleDropdown("tools")}
+                    >
+                      사전진단 <span aria-hidden="true">⌄</span>
+                    </button>
+                    <div className={`nav-dropdown-menu ${openDropdown === "tools" ? "is-open" : ""}`} role="menu">
+                      <Link to="/hearing-sheet" role="menuitem" onClick={() => setOpenDropdown(null)}>
+                        히어링 시트 작성
+                      </Link>
+                      <Link to="/chat" role="menuitem" onClick={() => setOpenDropdown(null)}>
+                        AI 챗봇
+                      </Link>
+                    </div>
+                  </li>
+
+                  <li>
+                    <Link to="/reservation" className={isReservationSection ? "active" : ""}>
+                      {t("common.navReservation")}
+                    </Link>
+                  </li>
+                </>
+              ) : (
+                mainNavItems.map((item) => (
                 <li key={item.to}>
                   <Link
                     to={item.to}
@@ -173,7 +209,8 @@ export default function Header({ isLoggedIn }) {
                     {item.label}
                   </Link>
                 </li>
-              ))}
+                ))
+              )}
 
               {!isLoggedIn && (
                 <li>
@@ -191,7 +228,7 @@ export default function Header({ isLoggedIn }) {
                 </li>
               )}
 
-              {isLoggedIn && !isAdmin && !isMyPageSection && !isReservationSection && !isHearingSection && (
+              {isLoggedIn && !isAdmin && !isUserWorkspace && !isMyPageSection && !isReservationSection && !isHearingSection && (
                 <li>
                   <Link to="/mypage" className="btn ghost nav-cta">
                     {t("common.navMyReservations")}
@@ -200,7 +237,7 @@ export default function Header({ isLoggedIn }) {
               )}
 
               {isLoggedIn &&
-                !isAdmin &&
+                !isAdmin && !isUserWorkspace &&
                 !isMyPageSection &&
                 !isReservationSection &&
                 !isHearingSection && (
@@ -238,7 +275,7 @@ export default function Header({ isLoggedIn }) {
 
         <div className={`site-mobile-menu ${isMobileMenuOpen ? "is-open" : ""}`}>
           <nav aria-label="모바일 메뉴">
-            {mainNavItems.map((item) => (
+            {mobileNavItems.map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
@@ -248,24 +285,6 @@ export default function Header({ isLoggedIn }) {
                 {item.label}
               </Link>
             ))}
-            {isMyPageSection && (
-              <>
-                <Link
-                  to="/mypage/reservations"
-                  className={isActivePath("/mypage/reservations") ? "active" : ""}
-                  onClick={closeMobileMenu}
-                >
-                  내 상담 내역
-                </Link>
-                <Link
-                  to="/mypage/files"
-                  className={isActivePath("/mypage/files") ? "active" : ""}
-                  onClick={closeMobileMenu}
-                >
-                  내 파일 관리
-                </Link>
-              </>
-            )}
           </nav>
 
           <div className="site-mobile-actions">
@@ -292,12 +311,12 @@ export default function Header({ isLoggedIn }) {
 
             {isLoggedIn && !isAdmin && (
               <>
-                {!isMyPageSection && !isReservationSection && !isHearingSection && (
+                {!isUserWorkspace && !isMyPageSection && !isReservationSection && !isHearingSection && (
                   <Link to="/mypage" className="btn ghost" onClick={closeMobileMenu}>
                     {t("common.navMyReservations")}
                   </Link>
                 )}
-                {!isMyPageSection && !isReservationSection && !isHearingSection && (
+                {!isUserWorkspace && !isMyPageSection && !isReservationSection && !isHearingSection && (
                   <Link
                     to="/reservation"
                     className="btn ghost"
