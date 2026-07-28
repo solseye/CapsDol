@@ -337,8 +337,6 @@
 
 .ai-page {
   min-height: 100vh;
-  display: grid;
-  grid-template-columns: 280px minmax(0, 1fr);
   background: #f4f6f8;
   color: #20242c;
   font-family:
@@ -445,6 +443,19 @@
 
 .ai-shell {
   min-width: 0;
+}
+
+.ai-chat-head-content {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.ai-chat-head .ai-reset-top {
+  flex: 0 0 auto;
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.96);
 }
 
 .ai-topbar {

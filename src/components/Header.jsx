@@ -17,7 +17,9 @@ export default function Header({ isLoggedIn }) {
   const language = getCurrentLanguage();
   const t = (key) => translate(language, key);
   const isAdmin = role === "admin";
-  const isMyPageSection = location.pathname.startsWith("/mypage");
+  // 챗봇도 개인 작업 흐름에 포함해 마이페이지와 동일한 사용자용 헤더를 사용합니다.
+  const isMyPageSection =
+    location.pathname.startsWith("/mypage") || location.pathname === "/chat";
   const isReservationSection = location.pathname === "/reservation";
   const isHearingSection = location.pathname === "/hearing-sheet";
 

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, Navigate, useLocation } from "react-router-dom";
 import { sendQuestion } from "../../api/chatApi";
+import Header from "../../components/Header";
 import "./chat.css";
 
 const DEFAULT_SYSTEM_PROMPT =
@@ -110,58 +111,28 @@ export default function Chat() {
   }
 
   return (
-    <div className="ai-page">
-      <aside className="ai-sidebar">
-        <Link to="/" className="ai-logo">
-          <span>◎</span>
-          <strong>WVA AI Consulting</strong>
-          <small>Japan Entry OS</small>
-        </Link>
-
-        <nav className="ai-side-nav">
-          <Link to="/">Home</Link>
-          <Link to="/hearing-sheet">Hearing Sheet</Link>
-          <Link to="/articles-result">Articles</Link>
-          <Link to="/reservation">Consultations</Link>
-          <Link to="/myreservations">My Reservations</Link>
-          <Link to="/chat" className="active">
-            AI Chatbot
-          </Link>
-        </nav>
-
-        <div className="ai-sidebar-note">
-          <strong>RAG Knowledge</strong>
-          <p>등록된 일본 진출 자료를 기반으로 답변합니다.</p>
-        </div>
-      </aside>
-
-      <div className="ai-shell">
-        <header className="ai-topbar">
-          <div className="ai-breadcrumb">
-            <Link to="/">Dashboard</Link>
-            <span>›</span>
-            <strong>AI Chatbot</strong>
-          </div>
-
-          <button
-            type="button"
-            className="ai-reset-top"
-            onClick={handleReset}
-          >
-            대화 초기화
-          </button>
-        </header>
-
+    <>
+      <Header isLoggedIn={isLoggedIn} />
+      <div className="ai-page">
         <main className="ai-main">
           <section className="ai-chat-panel">
             <div className="ai-chat-head">
-              <div>
-                <p>AI Consultation</p>
-                <h1>일본 진출 상담 챗봇</h1>
-                <span>
-                  법인 설립, 세무, 회계, 비자, 노무 관련 질문을 먼저 정리해
-                  보세요.
-                </span>
+              <div className="ai-chat-head-content">
+                <div>
+                  <p>AI Consultation</p>
+                  <h1>일본 진출 상담 챗봇</h1>
+                  <span>
+                    법인 설립, 세무, 회계, 비자, 노무 관련 질문을 먼저 정리해
+                    보세요.
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className="ai-reset-top"
+                  onClick={handleReset}
+                >
+                  대화 초기화
+                </button>
               </div>
             </div>
 
@@ -266,6 +237,6 @@ export default function Chat() {
           </aside>
         </main>
       </div>
-    </div>
+    </>
   );
 }
