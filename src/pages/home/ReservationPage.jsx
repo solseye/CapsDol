@@ -23,16 +23,13 @@ const WEEK_DAYS = [
   "weekdaySat",
 ];
 
-const TIME_OPTIONS = [
-  "09:00",
-  "10:00",
-  "11:00",
-  "13:00",
-  "14:00",
-  "15:00",
-  "16:00",
-  "17:00",
-];
+// 오전 9시부터 오후 6시까지 30분 단위로 상담 가능 시간을 제안합니다.
+const TIME_OPTIONS = Array.from({ length: 19 }, (_, index) => {
+  const totalMinutes = 9 * 60 + index * 30;
+  const hour = Math.floor(totalMinutes / 60);
+  const minute = totalMinutes % 60;
+  return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+});
 
 const FIELD_OPTIONS = [
   { labelKey: "fieldHr", value: "hr" },
@@ -50,11 +47,11 @@ const CONSULT_TYPES = [
   {
     id: "offline",
     title: "오프라인 상담",
-    subtitle: "Tokyo Office 방문 상담",
+    subtitle: "Osaka Office 방문 상담",
   },
 ];
 
-const CONSULTATION_DURATION_MINUTES = 120;
+const CONSULTATION_DURATION_MINUTES = 30;
 
 const API_FIELD_VALUES = {
   hr: "인사",
@@ -107,6 +104,12 @@ function buildCalendarDays(viewDate) {
 }
 
 function getDateKey(dateValue) {
+  // API dates are calendar dates. Preserve their YYYY-MM-DD portion to avoid timezone shifts.
+  if (typeof dateValue === "string") {
+    const match = dateValue.match(/^(\d{4}-\d{2}-\d{2})/);
+    if (match) return match[1];
+  }
+
   const date = new Date(dateValue);
   if (Number.isNaN(date.getTime())) return "";
   const year = date.getFullYear();
@@ -132,6 +135,16 @@ function addMinutesToTime(time, minutesToAdd) {
   const endMinute = totalMinutes % 60;
 
   return `${String(endHour).padStart(2, "0")}:${String(endMinute).padStart(2, "0")}`;
+}
+
+function getTimeMinutes(timeValue) {
+  const [hour, minute] = String(timeValue || "")
+    .slice(0, 5)
+    .split(":")
+    .map(Number);
+
+  if (!Number.isInteger(hour) || !Number.isInteger(minute)) return null;
+  return hour * 60 + minute;
 }
 
 function getWeekDates(dateValue) {
@@ -184,7 +197,8 @@ export default function ReservationPage() {
   const [submitSuccess, setSubmitSuccess] = useState("");
   const [listError, setListError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [, setIsSubmitted] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -229,25 +243,30 @@ export default function ReservationPage() {
     const dateKey = getDateKey(dateValue);
 
     blocks.forEach((block) => {
-      if (block.unavailable_date !== dateKey) return;
+      // The current API returns blocked_date/blocked_time. Keep legacy keys as a fallback.
+      const blockDate = getDateKey(
+        block.blocked_date || block.unavailable_date || block.selected_date || block.date
+      );
+      if (blockDate !== dateKey) return;
 
       if (
         block.field &&
+        block.field !== selectedField &&
         API_FIELD_VALUES[selectedField] !== block.field
       )
         return;
 
-      const start = block.start_time.slice(0, 5);
-      const end = block.end_time.slice(0, 5);
+      const start = getTimeMinutes(
+        block.blocked_time || block.start_time || block.selected_time
+      );
+      if (start === null) return;
+
+      const end = getTimeMinutes(block.end_time) ?? start + CONSULTATION_DURATION_MINUTES;
 
       TIME_OPTIONS.forEach((time) => {
-        const endTime = addMinutesToTime(
-          time,
-          CONSULTATION_DURATION_MINUTES
-        );
-
-        const overlap =
-          !(endTime <= start || time >= end);
+        const slotStart = getTimeMinutes(time);
+        const slotEnd = slotStart + CONSULTATION_DURATION_MINUTES;
+        const overlap = !(slotEnd <= start || slotStart >= end);
 
         if (overlap) {
           blocked.add(time);
@@ -318,7 +337,7 @@ export default function ReservationPage() {
 
       if (!form.phone.trim()) {
         setSubmitError(t("reservation.phoneError"));
-        return;
+      return false;
       }
 
       if (!form.email.trim()) {
@@ -362,24 +381,24 @@ export default function ReservationPage() {
       return;
     }
 
-    if (!form.CName.trim()) {
-      setSubmitError(t("reservation.companyError"));
-      return;
+      if (!form.CName.trim()) {
+        setSubmitError(t("reservation.companyError"));
+      return false;
     }
 
-    if (!form.kind.trim()) {
-      setSubmitError(t("reservation.kindError"));
-      return;
+      if (!form.kind.trim()) {
+        setSubmitError(t("reservation.kindError"));
+      return false;
     }
 
-    if (!selectedField) {
-      setSubmitError(t("reservation.fieldError"));
-      return;
+      if (!selectedField) {
+        setSubmitError(t("reservation.fieldError"));
+      return false;
     }
 
-    if (selectedRanges.length === 0) {
-      setSubmitError(t("reservation.timeError"));
-      return;
+      if (selectedRanges.length === 0) {
+        setSubmitError(t("reservation.timeError"));
+      return false;
     }
 
     try {
@@ -407,15 +426,29 @@ export default function ReservationPage() {
         });
 
         setBlocks(listData.blocks || []);
+        return true;
       } else {
         setSubmitSuccess(t("reservation.submitFallbackSuccess"));
         setIsSubmitted(true);
+        return true;
       }
     } catch (err) {
       setSubmitError(err.message || t("reservation.submitError"));
+      return false;
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const openSubmitConfirmation = () => {
+    setSubmitError("");
+
+    if (selectedRanges.length === 0) {
+      setSubmitError(t("reservation.timeError"));
+      return;
+    }
+
+    setIsConfirmModalOpen(true);
   };
 
   const toggleTimeRange = (time, dateValue = selectedDate) => {
@@ -568,7 +601,8 @@ export default function ReservationPage() {
           <section className="rv-content">
             <div className="rv-hero">
               <div>
-                <h1>상담예약</h1>
+                <p className="rv-hero-eyebrow">전문가 상담 신청</p>
+                <h1>상담 예약</h1>
                 <p>
                   원하는 상담 분야와 가능한 시간대를 선택하면 예약 신청이
                   접수됩니다. 담당 전문가는 신청 내용을 확인한 뒤 승인 또는
@@ -578,17 +612,22 @@ export default function ReservationPage() {
             </div>
 
             <div className="rv-stepper" aria-label="예약 진행 상태">
-              <span className={currentStep >= 1 ? "active" : ""}>1</span>
-              <strong>기본 정보 · 상담 방식</strong>
-              <i />
-              <span className={currentStep >= 2 ? "active" : ""}>2</span>
-              <strong>상담 방식 · 전문가</strong>
-              <i />
-              <span className={currentStep >= 3 ? "active" : ""}>3</span>
-              <strong>일정 선택</strong>
-              <i />
-              <span className={currentStep >= 4 ? "active" : ""}>4</span>
-              <strong>승인 요청</strong>
+              <div className="rv-step">
+                <span className={currentStep >= 1 ? "active" : ""}>1</span>
+                <strong>기본 정보 · 상담 방식</strong>
+              </div>
+              <div className="rv-step">
+                <span className={currentStep >= 2 ? "active" : ""}>2</span>
+                <strong>전문가 선택</strong>
+              </div>
+              <div className="rv-step">
+                <span className={currentStep >= 3 ? "active" : ""}>3</span>
+                <strong>일정 선택</strong>
+              </div>
+              <div className="rv-step">
+                <span className={currentStep >= 4 ? "active" : ""}>4</span>
+                <strong>승인 요청</strong>
+              </div>
             </div>
 
             <section className="rv-approval-flow" aria-label="예약 승인 흐름">
@@ -620,9 +659,8 @@ export default function ReservationPage() {
 
                 <div className="rv-basic-stage rv-basic-stage-top">
                   <div className="rv-section-head">
-                    <span>Consultation Type</span>
+                    <span>01</span>
                     <h2>상담 방식</h2>
-                    <p>온라인 또는 오프라인 상담 방식을 선택해 주세요.</p>
                   </div>
 
                   <div className="rv-consult-type-grid">
@@ -649,8 +687,10 @@ export default function ReservationPage() {
                 </div>
 
                 <div className="rv-form-title">
-                  <strong>신청자 정보 입력</strong>
-                  <small>상담 안내와 승인 결과를 받을 정보를 입력해 주세요.</small>
+                  <strong>
+                    <span>02</span>
+                    신청자 정보
+                  </strong>
                 </div>
 
                 <div className="rv-form rv-basic-form">
@@ -723,11 +763,7 @@ export default function ReservationPage() {
             <section className="rv-expert-section rv-step-screen">
               <div className="rv-section-head">
                 <span>Step 02</span>
-                <h2>상담 방식 및 전문가 선택</h2>
-                <p>
-                  상담을 온라인 또는 오프라인으로 진행할지 선택하고, 추천된
-                  전문가 중 상담할 담당자를 고릅니다.
-                </p>
+                <h2>전문가 선택</h2>
               </div>
 
               <div className="rv-expert-list compact">
@@ -782,12 +818,18 @@ export default function ReservationPage() {
             )}
 
             {currentStep === 3 && (
-              <div className="rv-schedule-layout">
+              <>
+                <section className="rv-schedule-intro">
+                  <span>STEP 03</span>
+                  <h2>날짜와 가능한 시간을 선택해 주세요</h2>
+                  <p>먼저 날짜를 고른 뒤, 원하는 시간대를 선택해 상담 일정을 제안할 수 있습니다.</p>
+                </section>
+
+                <div className="rv-schedule-layout">
                 <section className="rv-schedule-card rv-schedule-month">
-                  <div className="rv-schedule-eyebrow">STEP 03</div>
                   <div className="rv-schedule-month-title">
                     <strong>{formatTranslatedMonth(language, viewDate)}</strong>
-                    <span>날짜를 먼저 선택해 주세요</span>
+                    <span>먼저 상담 희망 날짜를 선택해 주세요</span>
                   </div>
                   <div className="rv-schedule-month-nav">
                     <button type="button" onClick={handlePrevMonth} aria-label={t("reservation.previousMonth")}>‹</button>
@@ -820,9 +862,10 @@ export default function ReservationPage() {
                       );
                     })}
                   </div>
-                  <div className="rv-schedule-guide">
-                    <strong>일정 가이드</strong>
-                    <span>날짜를 고른 뒤 중앙 시간표에서 가능한 시간을 제안해 주세요.</span>
+                  <div className="rv-schedule-month-actions">
+                    <button type="button" className="rv-step-prev" onClick={handlePrevStep}>
+                      이전 단계
+                    </button>
                   </div>
                 </section>
 
@@ -831,6 +874,9 @@ export default function ReservationPage() {
                     <div>
                       <div className="rv-schedule-eyebrow">STEP 03</div>
                       <h2>상담 가능 시간 제안</h2>
+                      <p className="rv-schedule-recommendation">
+                        원활한 상담을 위해 90분~120분 예약하시는 것을 추천드립니다.
+                      </p>
                     </div>
                     <span className="rv-timezone">GMT+9</span>
                   </div>
@@ -871,7 +917,11 @@ export default function ReservationPage() {
                                 onClick={() => toggleTimeRange(time, day)}
                                 aria-label={`${dateKey} ${time} ${selected ? "제안 일정 삭제" : "제안 일정 추가"}`}
                               >
-                                {selected && <span>{time} - {addMinutesToTime(time, CONSULTATION_DURATION_MINUTES)}</span>}
+                                {blocked ? (
+                                  <span className="rv-schedule-blocked-label">차단됨</span>
+                                ) : (
+                                  selected && <span>{time} - {addMinutesToTime(time, CONSULTATION_DURATION_MINUTES)}</span>
+                                )}
                               </button>
                             );
                           })}
@@ -913,10 +963,8 @@ export default function ReservationPage() {
                   </button>
                 </aside>
 
-                <div className="rv-schedule-actions">
-                  <button type="button" className="rv-step-prev" onClick={handlePrevStep}>이전 단계</button>
                 </div>
-              </div>
+              </>
             )}
 
             {currentStep === 4 && (
@@ -926,13 +974,7 @@ export default function ReservationPage() {
                     <span>Step 04</span>
                     <h2>예약 신청 내용 확인</h2>
                   </div>
-                  <small>오른쪽 요약을 확인한 뒤 한 번만 승인 요청을 보내세요.</small>
                 </div>
-
-                <p className="rv-review-note">
-                  선택한 상담 분야, 전문가, 일정과 신청자 정보는 오른쪽 예약 요약에
-                  표시됩니다. 내용을 확인한 뒤 아래 버튼으로 신청을 완료해 주세요.
-                </p>
 
                 <label className="rv-additional-request">
                   <span>추가 요청 사항</span>
@@ -956,129 +998,76 @@ export default function ReservationPage() {
                   <button
                     type="button"
                     className="rv-step-next"
-                    onClick={handleSubmit}
-                    disabled={isSubmitting}
+                    onClick={openSubmitConfirmation}
                   >
-                    {isSubmitting ? t("common.sending") : "전문가 승인 요청하기"}
+                    예약 내용 확인하기
                     <span>→</span>
                   </button>
                 </div>
               </section>
             )}
           </section>
-
-          <aside className="rv-summary-panel">
-            <div className="rv-summary-head">
-              <h2>예약 요약</h2>
-              <div className="rv-summary-expert">
-                <span className="rv-expert-avatar">
-                  {selectedExpert ? selectedExpert.avatar : "?"}
-                </span>
-                <div>
-                  <strong>{selectedExpert ? selectedExpert.name : "-"}</strong>
-                  <small>
-                    {selectedExpert
-                      ? selectedExpert.title
-                      : "Step 02에서 전문가를 선택해 주세요"}
-                  </small>
-                </div>
-              </div>
-            </div>
-
-            <div className="rv-selected-summary">
-              <div>
-                <span>상담 분야</span>
-                <strong>{selectedFieldLabel}</strong>
-              </div>
-              <div>
-                <span>상담 방식</span>
-                <strong>{selectedConsultType.title}</strong>
-              </div>
-              <div>
-                <span>예약 상태</span>
-                <strong className={isSubmitted ? "rv-status-pending" : "rv-status-draft"}>
-                  {isSubmitted ? "승인 대기 신청" : "작성 중"}
-                </strong>
-              </div>
-              <div className="rv-summary-range-list">
-                <span>제안 일정</span>
-                {selectedRanges.length === 0 ? (
-                  <strong>{t("common.notSelected")}</strong>
-                ) : (
-                  <ul>
-                    {selectedRanges.map((range) => (
-                      <li key={`${range.date}-${range.startTime}`}>
-                        {range.date} {range.startTime} - {range.endTime}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-              <div>
-                <span>신청자</span>
-                <strong>{form.name.trim() || "미입력"}</strong>
-              </div>
-              <div>
-                <span>회사명</span>
-                <strong>{form.CName.trim() || "미입력"}</strong>
-              </div>
-              <div>
-                <span>연락처</span>
-                <strong>{form.phone.trim() || "미입력"}</strong>
-              </div>
-              <div>
-                <span>이메일</span>
-                <strong>{form.email.trim() || "미입력"}</strong>
-              </div>
-              <div>
-                <span>직책/상담 종류</span>
-                <strong>{form.kind.trim() || "미입력"}</strong>
-              </div>
-              <div>
-                <span>추가 요청</span>
-                <strong>{additionalRequest.trim() || "미입력"}</strong>
-              </div>
-            </div>
-
-            <div className="rv-cost-box">
-              <span>상담 비용</span>
-              <strong>상담 후 안내</strong>
-              <p>
-                예약 신청은 상담 확정이 아닙니다. 전문가가 신청 내용을 확인한
-                뒤 최종 승인 여부와 비용 범위를 안내합니다.
-              </p>
-            </div>
-
-            {listError && <p className="rv-error">{listError}</p>}
-            {submitError && <p className="rv-error">{submitError}</p>}
-            {submitSuccess && <p className="rv-success">{submitSuccess}</p>}
-
-            <div className="rv-summary-progress" aria-label="예약 작성 진행 상태">
-              <span>예약 작성 진행</span>
-              <strong>{currentStep}/4 단계</strong>
-              <i aria-hidden="true">
-                <b style={{ width: `${currentStep * 25}%` }} />
-              </i>
-            </div>
-
-            <div className="rv-advisory">
-              <strong>승인 방식 안내</strong>
-              <p>
-                신청한 시간은 전문가가 승인해야 최종 확정됩니다. 상담 전
-                히어링 시트를 작성하면 승인 검토와 상담 준비가 더 빨라집니다.
-              </p>
-              <Link
-                to="/hearing-sheet"
-                title="상담 전에 회사와 설립 정보를 정리하면 전문가 검토가 더 빨라집니다."
-                aria-label="상담 준비를 위한 히어링 시트 작성으로 이동"
-              >
-                히어링 시트 작성
-              </Link>
-            </div>
-            </aside>
           </main>
         </div>
       </div>
+
+      {(listError || submitError || submitSuccess) && (
+        <div className="rv-feedback" aria-live="polite">
+          {listError && <p className="rv-error">{listError}</p>}
+          {submitError && <p className="rv-error">{submitError}</p>}
+          {submitSuccess && <p className="rv-success">{submitSuccess}</p>}
+        </div>
+      )}
+
+      {isConfirmModalOpen && (
+        <div className="rv-confirm-backdrop" role="presentation" onMouseDown={() => !isSubmitting && setIsConfirmModalOpen(false)}>
+          <section
+            className="rv-confirm-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="reservation-confirm-title"
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <div className="rv-confirm-modal-head">
+              <div>
+                <span>예약 내용 확인</span>
+                <h2 id="reservation-confirm-title">이 내용으로 상담을 신청할까요?</h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsConfirmModalOpen(false)}
+                disabled={isSubmitting}
+                aria-label="확인 창 닫기"
+              >
+                ×
+              </button>
+            </div>
+            <dl className="rv-confirm-list">
+              <div><dt>상담 분야</dt><dd>{selectedFieldLabel}</dd></div>
+              <div><dt>상담 방식</dt><dd>{selectedConsultType.title}</dd></div>
+              <div><dt>전문가</dt><dd>{selectedExpert?.name || "-"}</dd></div>
+              <div><dt>신청자</dt><dd>{form.name || "-"}</dd></div>
+              <div className="rv-confirm-ranges"><dt>제안 일정</dt><dd>{selectedRanges.map((range) => `${range.date} ${range.startTime}-${range.endTime}`).join(", ")}</dd></div>
+            </dl>
+            <p>신청 후에는 전문가의 검토가 진행되며, 승인 결과는 예약 내역에서 확인할 수 있습니다.</p>
+            <div className="rv-confirm-actions">
+              <button type="button" className="rv-step-prev" onClick={() => setIsConfirmModalOpen(false)} disabled={isSubmitting}>수정하기</button>
+              <button
+                type="button"
+                className="rv-step-next"
+                onClick={async () => {
+                  const isSuccess = await handleSubmit();
+                  if (isSuccess) setIsConfirmModalOpen(false);
+                }}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? t("common.sending") : "전송하기"}
+                <span>→</span>
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
     </>
   );
 }

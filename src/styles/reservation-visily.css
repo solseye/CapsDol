@@ -2078,7 +2078,16 @@
 .rv-schedule-slot.blocked,
 .rv-schedule-slot:disabled {
   background: #eef1f4;
+  color: #677587;
   cursor: not-allowed;
+}
+
+.rv-schedule-blocked-label {
+  display: block;
+  color: #677587;
+  font-size: 10px;
+  font-weight: 800;
+  text-align: center;
 }
 
 .rv-schedule-summary {
@@ -3473,5 +3482,849 @@
   .rv-stage-strip {
     grid-template-columns: 1fr;
     grid-column: auto;
+  }
+}
+
+/* 2026-07-28: 예약 요약은 최종 확인 모달로 이동하고, 입력 영역을 전체 폭으로 확장합니다. */
+.rv-main {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.rv-content {
+  width: 100%;
+}
+
+.rv-schedule-layout {
+  grid-template-columns: 236px minmax(0, 1fr) 242px;
+}
+
+.rv-schedule-grid-time,
+.rv-schedule-slot {
+  min-height: 34px;
+}
+
+.rv-schedule-grid-time {
+  padding-top: 5px;
+}
+
+.rv-schedule-slot.selected {
+  padding: 2px 4px;
+}
+
+.rv-schedule-slot.selected span {
+  font-size: 9px;
+}
+
+.rv-feedback {
+  position: fixed;
+  z-index: 30;
+  right: 24px;
+  bottom: 24px;
+  width: min(420px, calc(100% - 48px));
+}
+
+.rv-feedback .rv-error,
+.rv-feedback .rv-success {
+  margin: 0;
+  padding: 13px 16px;
+  border: 1px solid currentColor;
+  background: #ffffff;
+  box-shadow: 0 12px 30px rgba(6, 35, 60, 0.14);
+}
+
+.rv-confirm-backdrop {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(6, 35, 60, 0.48);
+}
+
+.rv-confirm-modal {
+  width: min(560px, 100%);
+  max-height: min(720px, calc(100vh - 48px));
+  overflow: auto;
+  padding: 26px;
+  border: 1px solid #d7e0e7;
+  background: #ffffff;
+  box-shadow: 0 24px 64px rgba(6, 35, 60, 0.3);
+}
+
+.rv-confirm-modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #d7e0e7;
+}
+
+.rv-confirm-modal-head span {
+  color: #087f5b;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.rv-confirm-modal-head h2 {
+  margin: 6px 0 0;
+  color: #06233c;
+  font-size: 24px;
+  line-height: 1.35;
+}
+
+.rv-confirm-modal-head > button {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  background: transparent;
+  color: #536070;
+  font-size: 28px;
+  line-height: 1;
+}
+
+.rv-confirm-list {
+  display: grid;
+  gap: 0;
+  margin: 18px 0;
+  border-top: 1px solid #d7e0e7;
+}
+
+.rv-confirm-list div {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid #d7e0e7;
+}
+
+.rv-confirm-list dt {
+  color: #637183;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.rv-confirm-list dd {
+  min-width: 0;
+  margin: 0;
+  color: #06233c;
+  font-size: 14px;
+  font-weight: 900;
+  overflow-wrap: anywhere;
+}
+
+.rv-confirm-modal > p {
+  margin: 0;
+  color: #536070;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.rv-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+@media (max-width: 900px) {
+  .rv-schedule-layout {
+    grid-template-columns: 236px minmax(0, 1fr);
+  }
+
+  .rv-schedule-summary,
+  .rv-schedule-actions {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 720px) {
+  .rv-schedule-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .rv-schedule-summary,
+  .rv-schedule-actions {
+    grid-column: auto;
+  }
+
+  .rv-feedback {
+    right: 14px;
+    bottom: 14px;
+    width: calc(100% - 28px);
+  }
+
+  .rv-confirm-backdrop {
+    padding: 14px;
+  }
+
+  .rv-confirm-modal {
+    padding: 20px;
+  }
+
+  .rv-confirm-list div {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .rv-confirm-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/*
+ * 상담 예약도 히어링 시트와 동일한 업무용 입력 화면 흐름을 사용합니다.
+ * 예약 단계와 API 요청 로직은 유지하고, 페이지의 시각적 구조만 통일합니다.
+ */
+.rv-page {
+  min-height: calc(100vh - 72px);
+  display: block;
+  overflow-x: hidden;
+  background: #f5f7f8;
+  color: #1c2733;
+}
+
+.rv-shell {
+  width: min(1200px, calc(100% - 48px));
+  margin: 0 auto;
+}
+
+.rv-main {
+  display: block;
+  min-height: auto;
+  padding: 32px 0 56px;
+}
+
+.rv-content {
+  width: 100%;
+  padding: 0;
+  background: transparent;
+}
+
+.rv-hero {
+  margin: 0 0 14px;
+  padding: 4px 0 13px 18px;
+  border-left: 4px solid #0a2a45;
+  background: transparent;
+}
+
+.rv-hero h1 {
+  margin: 0;
+  color: #0a2239;
+  font-size: 34px;
+  line-height: 1.15;
+  font-weight: 950;
+}
+
+.rv-hero p {
+  max-width: 780px;
+  margin: 6px 0 0;
+  color: #5c6979;
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 600;
+}
+
+.rv-stepper {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: center;
+  gap: 0;
+  margin: 0 0 14px;
+  padding: 0 14px;
+  border: 1px solid #dbe2e7;
+  border-top: 3px solid #0a2a45;
+  border-radius: 0;
+  background: #ffffff;
+  box-shadow: none;
+}
+
+.rv-stepper span {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 50%;
+  background: #edf2f5;
+  color: #718294;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.rv-stepper span.active {
+  background: #06233c;
+  color: #ffffff;
+}
+
+.rv-stepper strong {
+  min-width: 0;
+  margin: 0;
+  color: #758291;
+  font-size: 13px;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.rv-stepper span.active + strong {
+  color: #1c2733;
+}
+
+.rv-step {
+  position: relative;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+}
+
+.rv-step:not(:last-child)::after {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 1px;
+  height: 22px;
+  background: #dbe2e7;
+  content: "";
+}
+
+.rv-basic-panel,
+.rv-review-panel,
+.rv-expert-section,
+.rv-schedule-card {
+  border: 1px solid #dbe2e7;
+  border-top: 3px solid #0a2a45;
+  border-radius: 0;
+  background: #ffffff;
+  box-shadow: none;
+}
+
+.rv-basic-panel,
+.rv-review-panel,
+.rv-expert-section {
+  min-height: 0;
+  padding: 22px 24px;
+}
+
+.rv-panel-head,
+.rv-section-head {
+  margin-bottom: 18px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #dbe2e7;
+}
+
+.rv-panel-head span,
+.rv-section-head span,
+.rv-schedule-eyebrow {
+  color: #718294;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.rv-panel-head h2,
+.rv-section-head h2 {
+  margin: 6px 0 0;
+  color: #1c2733;
+  font-size: 21px;
+  line-height: 1.25;
+  font-weight: 900;
+}
+
+.rv-section-head p {
+  margin: 7px 0 0;
+  color: #667381;
+  font-size: 13px;
+  line-height: 1.55;
+  font-weight: 600;
+}
+
+.rv-basic-stage-top {
+  margin: 0 0 20px;
+  padding: 0 0 20px;
+  border-bottom: 1px solid #dbe2e7;
+}
+
+.rv-basic-stage-top .rv-section-head {
+  display: block;
+}
+
+.rv-consult-type-grid,
+.rv-basic-form {
+  gap: 12px;
+}
+
+/* 1단계는 설명보다 선택과 입력이 먼저 보이도록 간격을 압축합니다. */
+.rv-basic-stage-top {
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+}
+
+.rv-basic-stage-top .rv-section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.rv-basic-stage-top .rv-section-head > span {
+  flex: 0 0 auto;
+  margin: 0;
+  color: #718294;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+}
+
+.rv-basic-stage-top .rv-section-head h2 {
+  margin: 0;
+}
+
+.rv-form-title strong {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 9px;
+}
+
+.rv-form-title strong span {
+  color: #718294;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+}
+
+/* 2단계는 전문가를 한 명씩 비교할 수 있도록 세로 목록으로 구성합니다. */
+.rv-expert-section {
+  min-height: 440px;
+}
+
+.rv-expert-list.compact {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  margin-top: 0;
+}
+
+.rv-expert-list.compact .rv-expert-card {
+  min-height: 154px;
+  grid-template-columns: 104px minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+  padding: 20px;
+}
+
+.rv-expert-list.compact .rv-expert-avatar {
+  width: 92px;
+  height: 92px;
+  font-size: 25px;
+}
+
+.rv-expert-list.compact .rv-expert-copy {
+  display: block;
+}
+
+.rv-expert-list.compact .rv-expert-copy strong {
+  font-size: 18px;
+}
+
+.rv-expert-list.compact .rv-expert-copy em {
+  margin-top: 5px;
+  font-size: 13px;
+}
+
+.rv-expert-list.compact .rv-expert-copy small {
+  max-width: none;
+  margin-top: 9px;
+  color: #586a7a;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.rv-expert-list.compact .rv-expert-tags {
+  display: flex;
+  gap: 6px;
+  margin-top: 9px;
+}
+
+.rv-expert-list.compact .rv-expert-tags b {
+  margin: 0;
+}
+
+.rv-basic-form {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* 이름도 다른 기본 정보와 같은 폭으로 배치하고, 마지막 직종만 한 줄을 사용합니다. */
+.rv-basic-form label:first-child {
+  grid-column: auto;
+}
+
+.rv-basic-form label:last-child {
+  grid-column: 1 / -1;
+}
+
+.rv-consult-type-card {
+  min-height: 76px;
+  border-color: #dbe2e7;
+  border-radius: 0;
+  background: #f8fafb;
+  box-shadow: none;
+}
+
+.rv-consult-type-card.selected {
+  border-color: #06233c;
+  background: #ffffff;
+  box-shadow: inset 0 3px 0 #06233c;
+}
+
+.rv-form-title {
+  margin: 0 0 14px;
+  padding: 0;
+  border: 0;
+}
+
+.rv-form-title strong {
+  color: #1c2733;
+}
+
+.rv-form label span,
+.rv-additional-request > span {
+  color: #1c2733;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.rv-form input,
+.rv-additional-request textarea {
+  border-color: #dbe2e7;
+  border-radius: 0;
+  background: #ffffff;
+}
+
+.rv-step-actions {
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid #dbe2e7;
+}
+
+.rv-step-prev,
+.rv-step-next,
+.rv-schedule-next {
+  min-height: 44px;
+  border-radius: 0;
+  font-weight: 900;
+}
+
+.rv-schedule-layout {
+  align-items: start;
+}
+
+.rv-schedule-card {
+  padding: 18px;
+}
+
+.rv-schedule-summary {
+  border-top-color: #0a2a45;
+}
+
+@media (max-width: 920px) {
+  .rv-stepper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 10px;
+    padding: 14px;
+  }
+
+  .rv-step {
+    flex: 1 1 calc(50% - 10px);
+    padding: 6px 0;
+  }
+
+  .rv-step:not(:last-child)::after {
+    display: none;
+  }
+
+  .rv-stepper i {
+    display: none;
+  }
+
+  .rv-stepper strong {
+    margin-right: 12px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 720px) {
+  .rv-shell {
+    width: min(100% - 28px, 1200px);
+  }
+
+  .rv-main {
+    padding: 22px 0 42px;
+  }
+
+  .rv-hero h1 {
+    font-size: 28px;
+  }
+
+  .rv-basic-panel,
+  .rv-review-panel,
+  .rv-expert-section,
+  .rv-schedule-card {
+    padding: 18px;
+  }
+
+  .rv-basic-form,
+  .rv-basic-form label:first-child,
+  .rv-basic-form label:last-child {
+    grid-column: auto;
+  }
+}
+
+/* Step 03은 넓은 화면에서는 3열, 중간 화면에서는 2열, 모바일에서는 한 흐름으로 전환합니다. */
+.rv-schedule-guide .rv-schedule-recommendation {
+  margin-top: 3px;
+  color: #0a2a45;
+  font-size: 12px;
+  font-weight: 850;
+  line-height: 1.55;
+}
+
+/* Step 3의 시작점에서 날짜 선택 순서를 먼저 안내합니다. */
+.rv-schedule-intro {
+  margin: 0 0 14px;
+  padding: 18px 22px;
+  border: 1px solid #dbe2e7;
+  border-top: 3px solid #0a2a45;
+  background: #ffffff;
+}
+
+.rv-schedule-intro > span {
+  color: #718294;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+}
+
+.rv-schedule-intro h2 {
+  margin: 5px 0 0;
+  color: #1c2733;
+  font-size: 21px;
+  line-height: 1.25;
+  font-weight: 900;
+}
+
+.rv-schedule-intro p {
+  margin: 6px 0 0;
+  color: #637183;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.55;
+}
+
+.rv-schedule-week-head {
+  margin-bottom: 12px;
+}
+
+.rv-schedule-week-head .rv-schedule-recommendation {
+  max-width: 430px;
+  margin: 7px 0 0;
+  color: #0a2a45;
+  font-size: 12px;
+  font-weight: 850;
+  line-height: 1.5;
+}
+
+.rv-schedule-month-actions {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #dbe2e7;
+}
+
+.rv-schedule-month-actions .rv-step-prev {
+  width: 100%;
+}
+
+/* 월 이동 버튼은 제목과 독립된 우측 상단 위치를 사용해 겹침을 방지합니다. */
+.rv-schedule-month {
+  position: relative;
+}
+
+.rv-schedule-month-title {
+  padding-right: 88px;
+}
+
+.rv-schedule-month-nav {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  margin: 0;
+}
+
+/* 히어링 시트의 제목 블록과 같은 위계와 여백을 예약 화면에도 적용합니다. */
+.rv-hero {
+  margin: 0 0 12px;
+  padding: 4px 0 13px 18px;
+  border-left: 4px solid #0a2a45;
+}
+
+.rv-hero-eyebrow {
+  margin: 0 0 5px;
+  color: #667588;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.14em;
+}
+
+.rv-hero h1 {
+  margin: 0 0 5px;
+  color: #0a2239;
+  font-size: 34px;
+  line-height: 1.15;
+  font-weight: 950;
+}
+
+.rv-hero p:not(.rv-hero-eyebrow) {
+  max-width: 780px;
+  margin: 0;
+  color: #5c6979;
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+@media (max-width: 1280px) and (min-width: 721px) {
+  .rv-schedule-layout {
+    grid-template-columns: 250px minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .rv-schedule-summary {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1.2fr) auto;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .rv-schedule-summary-head,
+  .rv-schedule-empty,
+  .rv-schedule-range-list {
+    margin: 0;
+  }
+
+  .rv-schedule-next {
+    width: auto;
+    min-width: 190px;
+    margin: 0;
+  }
+}
+
+@media (max-width: 720px) {
+  .rv-hero {
+    padding-left: 14px;
+  }
+
+  .rv-hero h1 {
+    font-size: 28px;
+  }
+
+  .rv-schedule-intro {
+    padding: 16px 18px;
+  }
+
+  .rv-schedule-intro h2 {
+    font-size: 18px;
+  }
+
+  .rv-stepper {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    padding: 0;
+  }
+
+  .rv-step {
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr);
+    align-items: center;
+    gap: 9px;
+    min-height: 54px;
+    padding: 10px 12px;
+    border-bottom: 1px solid #dbe2e7;
+  }
+
+  .rv-step:nth-last-child(-n + 2) {
+    border-bottom: 0;
+  }
+
+  .rv-step:nth-child(odd) {
+    border-right: 1px solid #dbe2e7;
+  }
+
+  .rv-step:not(:last-child)::after {
+    display: none;
+  }
+
+  .rv-stepper span {
+    display: grid;
+    width: 30px;
+    height: 30px;
+    place-items: center;
+  }
+
+  .rv-stepper strong {
+    display: block;
+    margin: 0;
+    overflow: visible;
+    color: #1c2733;
+    font-size: 12px;
+    line-height: 1.3;
+    white-space: normal;
+  }
+
+  .rv-schedule-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .rv-schedule-month,
+  .rv-schedule-week,
+  .rv-schedule-summary,
+  .rv-schedule-actions {
+    grid-column: auto;
+  }
+
+  .rv-schedule-grid-scroll {
+    width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+  }
+
+  .rv-schedule-week-grid {
+    grid-template-columns: 42px repeat(7, minmax(54px, 1fr));
+    min-width: 420px;
+  }
+
+  .rv-schedule-summary {
+    display: grid;
+    gap: 14px;
+  }
+
+  .rv-schedule-next {
+    margin-top: 0;
+  }
+
+  .rv-schedule-actions {
+    justify-content: stretch;
+  }
+
+  .rv-schedule-actions .rv-step-prev {
+    width: 100%;
   }
 }
