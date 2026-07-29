@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import AdminSidebar from "./components/AdminSidebar";
+import "./admin.css";
 
 // 관리자 사이드바와 본문 영역을 모든 관리자 화면에 동일하게 적용합니다.
 export default function AdminLayout({ children }) {
