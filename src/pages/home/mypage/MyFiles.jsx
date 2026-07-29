@@ -18,6 +18,8 @@ import {
   ensureRequiredDocumentsChecklist,
   saveRequiredDocumentsChecklist,
 } from "../../../utils/requiredDocumentsStorage";
+import { markWorkflowEvent } from "../../../utils/workflowProgress";
+import { confirmAction } from "../../../utils/notifications";
 
 function formatFileSize(size) {
   const bytes = Number(size || 0);
@@ -287,6 +289,7 @@ export default function MyFiles() {
 
       if (data.success) {
         setUploadMessage("파일이 성공적으로 업로드되었습니다.");
+        markWorkflowEvent("fileUploadedAt", new Date().toISOString());
 
         const refreshedFiles = await fetchClientFiles();
         const uploadedFile =
@@ -321,9 +324,12 @@ export default function MyFiles() {
       return;
     }
 
-    const ok = window.confirm(
-      `"${file.fileName || file.originalName || "파일"}"을 삭제하시겠습니까?`
-    );
+    const ok = await confirmAction({
+      title: "파일을 삭제할까요?",
+      message: `"${file.fileName || file.originalName || "파일"}"은 삭제 후 복구할 수 없습니다.`,
+      confirmLabel: "삭제",
+      tone: "danger",
+    });
 
     if (!ok) return;
 

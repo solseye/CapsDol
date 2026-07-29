@@ -1,0 +1,47 @@
+.not-found-page {
+  min-height: calc(100vh - 86px);
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 12px;
+  padding: 48px 20px;
+  text-align: center;
+  background: #f4f7fa;
+  color: #0b2941;
+}
+
+.not-found-page > p {
+  margin: 0;
+  color: #16815f;
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+}
+
+.not-found-page h1,
+.not-found-page span {
+  margin: 0;
+}
+
+.not-found-page span {
+  color: #6b7b89;
+}
+
+.not-found-page div {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.not-found-page a {
+  padding: 12px 18px;
+  border: 1px solid #0b2941;
+  color: #0b2941;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.not-found-page a:first-child {
+  background: #0b2941;
+  color: #fff;
+}

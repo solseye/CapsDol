@@ -6,6 +6,8 @@ import {
   getCurrentLanguage,
   translate,
 } from "../i18n/translations";
+import { clearSession } from "../utils/authSession";
+import { confirmAction } from "../utils/notifications";
 
 export default function Header({ isLoggedIn }) {
   const location = useLocation();
@@ -22,31 +24,34 @@ export default function Header({ isLoggedIn }) {
     location.pathname.startsWith("/mypage") || location.pathname === "/chat";
   const isReservationSection = location.pathname === "/reservation";
   const isHearingSection = location.pathname === "/hearing-sheet";
+  const showLanguageMenu = ["/", "/reservation", "/hearing-sheet"].includes(
+    location.pathname
+  );
 
   const mainNavItems = isUserWorkspace
     ? [{ to: "/reservation", label: t("common.navReservation") }]
     : isReservationSection
     ? [
-        { to: "/mypage", label: "마이 페이지" },
-        { to: "/hearing-sheet", label: "히어링 시트" },
+        { to: "/mypage", label: t("common.navMyPage") },
+        { to: "/hearing-sheet", label: t("common.navHearing") },
         { to: "/reservation", label: t("common.navReservation") },
       ]
     : isHearingSection
     ? [
-        { to: "/mypage", label: "마이페이지" },
+        { to: "/mypage", label: t("common.navMyPage") },
         { to: "/reservation", label: t("common.navReservation") },
       ]
     : isMyPageSection
     ? [
-        { to: "/mypage", label: "마이 페이지" },
-        { to: "/hearing-sheet", label: "히어링 시트" },
+        { to: "/mypage", label: t("common.navMyPage") },
+        { to: "/hearing-sheet", label: t("common.navHearing") },
         { to: "/reservation", label: t("common.navReservation") },
       ]
     : [
         { to: "/#services", label: t("common.navService") },
         { to: "/#method", label: t("common.navFlow") },
-        { to: "/#experts", label: "전문가" },
-        { to: "/#standards", label: "운영 방식" },
+        { to: "/#experts", label: t("common.navExperts") },
+        { to: "/#standards", label: t("common.navOperation") },
       ];
 
   const isActivePath = (path) => {
@@ -115,21 +120,21 @@ export default function Header({ isLoggedIn }) {
     : mainNavItems;
 
   const handleLogout = async () => {
+    const confirmed = await confirmAction({
+      title: "로그아웃할까요?",
+      message: "브라우저에 저장된 작성 중인 내용은 유지됩니다.",
+      confirmLabel: "로그아웃",
+    });
+
+    if (!confirmed) return;
+
     try {
       await logoutUser();
-
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("user");
-      localStorage.removeItem("role");
-
+      clearSession();
       window.location.href = "/";
     } catch (err) {
       console.error("로그아웃 실패:", err);
-
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("user");
-      localStorage.removeItem("role");
-
+      clearSession();
       window.location.href = "/";
     }
   };
@@ -259,7 +264,7 @@ export default function Header({ isLoggedIn }) {
             </ul>
           </nav>
 
-          <LanguageMenu />
+          {showLanguageMenu && <LanguageMenu />}
 
           <button
             type="button"

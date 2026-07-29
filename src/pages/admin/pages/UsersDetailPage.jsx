@@ -21,6 +21,7 @@ import {
   getUserReservations,
 } from "../../../api/reservationApi";
 import { parseReservationNote } from "../../../utils/reservationNoteUtils";
+import { confirmAction } from "../../../utils/notifications";
 
 import "./UsersDetailPage.css";
 
@@ -505,9 +506,12 @@ export default function UsersDetailPage() {
     }
 
     const displayName = file.fileName || file.originalName || "파일";
-    const ok = window.confirm(
-      `"${displayName}"을 삭제하시겠습니까?\n\n관리자가 삭제하면 사용자의 마이페이지에서도 제거됩니다.`,
-    );
+    const ok = await confirmAction({
+      title: "사용자 파일을 삭제할까요?",
+      message: `"${displayName}"을 삭제하면 사용자의 마이페이지에서도 즉시 제거되며 복구할 수 없습니다.`,
+      confirmLabel: "파일 삭제",
+      tone: "danger",
+    });
     if (!ok) return;
 
     try {

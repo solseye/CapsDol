@@ -8,6 +8,7 @@ import {
   uploadRagFile,
 } from "../../../api/adminApi";
 import AdminCard from "../components/AdminCard";
+import { confirmAction, notify } from "../../../utils/notifications";
 import {
   ACCEPTED_FILE_TYPES,
   FOLDER_OPTIONS,
@@ -138,12 +139,12 @@ export default function PdfManagementPage() {
       file.ragMetadata?.file_status || file.status || "active";
     if (currentStatus === nextStatus) return;
 
-    if (
-      !window.confirm(
-        `${String(file.name || "").replace(/^\d+-/, "")} 파일 상태를 변경하시겠습니까?`,
-      )
-    )
-      return;
+    const confirmed = await confirmAction({
+      title: "파일 상태를 변경할까요?",
+      message: `${String(file.name || "").replace(/^\d+-/, "")} 파일의 사용 상태가 변경됩니다.`,
+      confirmLabel: "상태 변경",
+    });
+    if (!confirmed) return;
 
     try {
       await updateRagFileStatus({
@@ -156,17 +157,21 @@ export default function PdfManagementPage() {
         effectiveFrom: file.ragMetadata?.effective_from || "",
         effectiveTo: file.ragMetadata?.effective_to || "",
       });
-      alert("파일 상태가 변경되었습니다.");
+      notify("파일 상태가 변경되었습니다.", "success");
       fetchAllFolders();
     } catch (err) {
-      alert("파일 상태 변경에 실패했습니다: " + err.message);
+      notify("파일 상태 변경에 실패했습니다: " + err.message, "error");
     }
   };
 
   // 현재 선택된 카테고리 문서로 벡터 인덱스를 재생성합니다.
   const handleCreateIndex = async () => {
-    if (!window.confirm("현재 자료들을 기준으로 벡터 DB를 제작하시겠습니까?"))
-      return;
+    const confirmed = await confirmAction({
+      title: "벡터 DB를 새로 제작할까요?",
+      message: "현재 선택된 자료를 기준으로 검색 인덱스를 다시 생성합니다.",
+      confirmLabel: "제작 시작",
+    });
+    if (!confirmed) return;
     try {
       setIsIndexing(true);
       setIndexResult(null);
@@ -180,7 +185,7 @@ export default function PdfManagementPage() {
 
       setIndexResult(data);
     } catch (err) {
-      alert("벡터 DB 제작에 실패했습니다: " + err.message);
+      notify("벡터 DB 제작에 실패했습니다: " + err.message, "error");
     } finally {
       setIsIndexing(false);
     }
@@ -195,7 +200,7 @@ export default function PdfManagementPage() {
       });
       window.open(data.signedUrl || data, "_blank");
     } catch (err) {
-      alert("미리보기를 불러올 수 없습니다.");
+      notify("미리보기를 불러올 수 없습니다.", "error");
     }
   };
 
@@ -215,23 +220,24 @@ export default function PdfManagementPage() {
       link.click();
       window.URL.revokeObjectURL(blobUrl);
     } catch (err) {
-      alert("파일 다운로드에 실패했습니다.");
+      notify("파일 다운로드에 실패했습니다.", "error");
     }
   };
 
   // 선택한 파일을 서버 저장소에서 삭제하고 목록을 새로고침합니다.
   const handleDelete = async (file) => {
-    if (
-      !window.confirm(
-        `${String(file.name || "").replace(/^\d+-/, "")} 파일을 삭제하시겠습니까?`,
-      )
-    )
-      return;
+    const confirmed = await confirmAction({
+      title: "관리 문서를 삭제할까요?",
+      message: `${String(file.name || "").replace(/^\d+-/, "")} 파일은 삭제 후 복구할 수 없습니다.`,
+      confirmLabel: "삭제",
+      tone: "danger",
+    });
+    if (!confirmed) return;
     try {
       await deleteRagFile(file.path || `${file.folder}/${file.name}`);
       fetchAllFolders();
     } catch (err) {
-      alert("파일 삭제에 실패했습니다.");
+      notify("파일 삭제에 실패했습니다.", "error");
     }
   };
 

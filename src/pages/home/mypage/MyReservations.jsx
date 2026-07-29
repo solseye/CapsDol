@@ -15,6 +15,7 @@ import {
   createLocalReservationNote,
   parseReservationNote,
 } from "../../../utils/reservationNoteUtils";
+import { confirmAction } from "../../../utils/notifications";
 
 function formatDate(dateString) {
   if (!dateString) return "-";
@@ -226,7 +227,12 @@ export default function MyReservations() {
   };
 
   const handleCancel = async (reservationId) => {
-    const ok = window.confirm("상담 예약을 취소하시겠습니까?");
+    const ok = await confirmAction({
+      title: "상담 예약을 취소할까요?",
+      message: "취소한 일정은 다시 승인받아야 합니다.",
+      confirmLabel: "예약 취소",
+      tone: "danger",
+    });
 
     if (!ok) return;
 
@@ -267,7 +273,12 @@ export default function MyReservations() {
   };
 
   const handleDeleteReservation = async (reservationId) => {
-    const ok = window.confirm("이 상담 내역을 삭제하시겠습니까?");
+    const ok = await confirmAction({
+      title: "상담 내역을 삭제할까요?",
+      message: "상담 메시지를 포함한 내역이 목록에서 제거되며 복구할 수 없습니다.",
+      confirmLabel: "내역 삭제",
+      tone: "danger",
+    });
 
     if (!ok) return;
 

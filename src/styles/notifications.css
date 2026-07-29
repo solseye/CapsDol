@@ -1,0 +1,130 @@
+.notification-stack {
+  position: fixed;
+  z-index: 2000;
+  top: 96px;
+  right: 24px;
+  display: grid;
+  width: min(380px, calc(100vw - 32px));
+  gap: 10px;
+  pointer-events: none;
+}
+
+.notification-toast {
+  display: grid;
+  grid-template-columns: 24px 1fr 24px;
+  align-items: start;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1px solid #cfdbe2;
+  border-left: 4px solid #16815f;
+  background: #fff;
+  box-shadow: 0 16px 38px rgba(8, 39, 62, 0.16);
+  color: #173249;
+  pointer-events: auto;
+}
+
+.notification-toast.is-error {
+  border-left-color: #b54545;
+}
+
+.notification-toast > span {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #e7f4ef;
+  color: #16815f;
+  font-size: 12px;
+  font-weight: 900;
+  place-items: center;
+}
+
+.notification-toast.is-error > span {
+  background: #f9eaea;
+  color: #b54545;
+}
+
+.notification-toast p {
+  margin: 1px 0 0;
+  line-height: 1.5;
+}
+
+.notification-toast button {
+  border: 0;
+  background: transparent;
+  color: #6d7c88;
+  cursor: pointer;
+}
+
+.notification-confirm-backdrop {
+  position: fixed;
+  z-index: 2100;
+  inset: 0;
+  display: grid;
+  padding: 20px;
+  background: rgba(5, 24, 38, 0.55);
+  place-items: center;
+}
+
+.notification-confirm {
+  width: min(430px, 100%);
+  padding: 28px;
+  border: 1px solid #d6e0e6;
+  background: #fff;
+  box-shadow: 0 24px 60px rgba(5, 24, 38, 0.24);
+}
+
+.notification-confirm > p {
+  margin: 0 0 8px;
+  color: #16815f;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+}
+
+.notification-confirm h2 {
+  margin: 0 0 10px;
+  color: #0b2941;
+}
+
+.notification-confirm > span {
+  display: block;
+  color: #637483;
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+.notification-confirm > div {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.notification-confirm button {
+  min-width: 88px;
+  padding: 11px 16px;
+  border: 1px solid #bdcad3;
+  background: #fff;
+  color: #18344a;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.notification-confirm button:last-child {
+  border-color: #0b2941;
+  background: #0b2941;
+  color: #fff;
+}
+
+.notification-confirm button.is-danger {
+  border-color: #a93838;
+  background: #a93838;
+}
+
+@media (max-width: 640px) {
+  .notification-stack {
+    top: 76px;
+    right: 16px;
+  }
+}

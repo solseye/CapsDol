@@ -1,8 +1,12 @@
 import "../App.css";
 import "../styles/auth-visily.css";
 import { useEffect, useRef, useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { loginUser, loginWithGoogle } from "../api/authApi";
+import {
+  getSafeReturnPath,
+  saveSession,
+} from "../utils/authSession";
 
 const GOOGLE_CLIENT_ID =
   process.env.REACT_APP_GOOGLE_CLIENT_ID ||
@@ -10,6 +14,7 @@ const GOOGLE_CLIENT_ID =
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
   const googleButtonRef = useRef(null);
 
   const [form, setForm] = useState({
@@ -25,9 +30,12 @@ export default function Login() {
     const token = localStorage.getItem("accessToken");
     if (token) {
       const role = localStorage.getItem("role");
-      navigate(role === "admin" ? "/admin/calendar" : "/");
+      navigate(getSafeReturnPath(location.state, role), {
+        replace: true,
+        state: location.state?.routeState,
+      });
     }
-  }, [navigate]);
+  }, [location.state, navigate]);
 
   const handleGoogleCredentialResponse = useCallback(
     async (response) => {
@@ -43,20 +51,14 @@ export default function Login() {
           throw new Error("구글 로그인 실패");
         }
 
-        localStorage.setItem("accessToken", data.accessToken);
-        localStorage.setItem("role", data.role);
-        localStorage.setItem(
-          "user",
-          JSON.stringify(
-            data.user || {
-              username: data.username || "Google 사용자",
-              email: data.email || "",
-              role: data.role,
-            }
-          )
-        );
-
-        navigate(data.role === "admin" ? "/admin/calendar" : "/");
+        saveSession(data, {
+          username: "Google 사용자",
+          role: data.role,
+        });
+        navigate(getSafeReturnPath(location.state, data.role), {
+          replace: true,
+          state: location.state?.routeState,
+        });
       } catch (err) {
         console.error("구글 로그인 에러:", err);
         setError("구글 로그인에 실패했습니다.");
@@ -64,7 +66,7 @@ export default function Login() {
         setGoogleLoading(false);
       }
     },
-    [navigate]
+    [location.state, navigate]
   );
 
   useEffect(() => {
@@ -136,19 +138,15 @@ export default function Login() {
         throw new Error("로그인 실패");
       }
 
-      localStorage.setItem("accessToken", data.accessToken);
-      localStorage.setItem("role", data.role);
-      localStorage.setItem(
-        "user",
-        JSON.stringify(
-          data.user || {
-            username: form.username.trim(),
-            email: data.email || "",
-            role: data.role,
-          }
-        )
-      );
-      navigate(data.role === "admin" ? "/admin/calendar" : "/");
+      saveSession(data, {
+        username: form.username.trim(),
+        email: data.email || "",
+        role: data.role,
+      });
+      navigate(getSafeReturnPath(location.state, data.role), {
+        replace: true,
+        state: location.state?.routeState,
+      });
     } catch (err) {
       console.error("로그인 실패:", err);
       setError("아이디 또는 비밀번호를 다시 확인해 주세요.");
@@ -217,7 +215,10 @@ export default function Login() {
             <button type="button" className="active">
               로그인
             </button>
-            <button type="button" onClick={() => navigate("/signup")}>
+            <button
+              type="button"
+              onClick={() => navigate("/signup", { state: location.state })}
+            >
               회원가입
             </button>
           </div>
@@ -254,11 +255,13 @@ export default function Login() {
               />
             </div>
 
-            <label className="authv-remember">
-              <input type="checkbox" />
-              <span>이 기기에서 로그인 상태 유지</span>
-            </label>
+            <p className="authv-remember">
+              <span>공용 기기에서는 이용 후 반드시 로그아웃해 주세요.</span>
+            </p>
 
+            {location.state?.message && !error && (
+              <p className="authv-success">{location.state.message}</p>
+            )}
             {error && <p className="authv-error">{error}</p>}
 
             <button type="submit" className="authv-submit" disabled={loading}>
@@ -271,8 +274,8 @@ export default function Login() {
               아이디 찾기
             </button>
             <span>도움이 필요하신가요?</span>
-            <button type="button" onClick={() => navigate("/reservation")}>
-              전문가 상담
+            <button type="button" onClick={() => navigate("/#experts")}>
+              전문가 안내
             </button>
           </div>
 

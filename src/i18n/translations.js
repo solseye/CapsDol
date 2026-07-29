@@ -19,6 +19,10 @@ const translations = {
       navAdmin: "관리자 페이지",
       navReservation: "상담 예약",
       navMyReservations: "상담 내역",
+      navMyPage: "마이페이지",
+      navHearing: "히어링 시트",
+      navExperts: "전문가",
+      navOperation: "운영 방식",
       navLogout: "로그아웃",
     },
     reservation: {
@@ -299,6 +303,10 @@ const translations = {
       navAdmin: "Admin",
       navReservation: "Book Consultation",
       navMyReservations: "My Reservations",
+      navMyPage: "My Page",
+      navHearing: "Hearing Sheet",
+      navExperts: "Experts",
+      navOperation: "How We Work",
       navLogout: "Logout",
     },
     reservation: {
@@ -587,6 +595,10 @@ const translations = {
       navAdmin: "管理者ページ",
       navReservation: "相談予約",
       navMyReservations: "相談履歴",
+      navMyPage: "マイページ",
+      navHearing: "ヒアリングシート",
+      navExperts: "専門家",
+      navOperation: "運営方法",
       navLogout: "ログアウト",
     },
     reservation: {

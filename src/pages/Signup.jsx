@@ -1,8 +1,12 @@
 import "../App.css";
 import "../styles/auth-visily.css";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { loginWithGoogle, signupUser } from "../api/authApi";
+import { useLocation, useNavigate } from "react-router-dom";
+import { loginUser, loginWithGoogle, signupUser } from "../api/authApi";
+import {
+  getSafeReturnPath,
+  saveSession,
+} from "../utils/authSession";
 
 const GOOGLE_CLIENT_ID =
   process.env.REACT_APP_GOOGLE_CLIENT_ID ||
@@ -10,6 +14,7 @@ const GOOGLE_CLIENT_ID =
 
 export default function Signup() {
   const navigate = useNavigate();
+  const location = useLocation();
   const googleButtonRef = useRef(null);
 
   const [form, setForm] = useState({
@@ -21,14 +26,18 @@ export default function Signup() {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState("");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (token) {
       const role = localStorage.getItem("role");
-      navigate(role === "admin" ? "/admin/calendar" : "/");
+      navigate(getSafeReturnPath(location.state, role), {
+        replace: true,
+        state: location.state?.routeState,
+      });
     }
-  }, [navigate]);
+  }, [location.state, navigate]);
 
   const handleGoogleCredentialResponse = useCallback(
     async (response) => {
@@ -49,20 +58,14 @@ export default function Signup() {
           );
         }
 
-        localStorage.setItem("accessToken", data.accessToken);
-        localStorage.setItem("role", data.role || "user");
-        localStorage.setItem(
-          "user",
-          JSON.stringify(
-            data.user || {
-              username: data.username || "Google 사용자",
-              email: data.email || "",
-              role: data.role || "user",
-            }
-          )
-        );
-
-        navigate(data.role === "admin" ? "/admin/calendar" : "/");
+        saveSession(data, {
+          username: "Google 사용자",
+          role: data.role || "user",
+        });
+        navigate(getSafeReturnPath(location.state, data.role), {
+          replace: true,
+          state: location.state?.routeState,
+        });
       } catch (err) {
         console.error("구글 회원가입 에러:", err);
         setError(
@@ -72,7 +75,7 @@ export default function Signup() {
         setGoogleLoading(false);
       }
     },
-    [navigate]
+    [location.state, navigate]
   );
 
   useEffect(() => {
@@ -144,6 +147,11 @@ export default function Signup() {
       return;
     }
 
+    if (!acceptedTerms) {
+      setError("서비스 이용을 위한 계정 생성에 동의해 주세요.");
+      return;
+    }
+
     try {
       setLoading(true);
       setError("");
@@ -158,8 +166,31 @@ export default function Signup() {
         throw new Error(data.error || data.msg || "회원가입 실패");
       }
 
-      alert("회원가입이 완료되었습니다. 로그인해 주세요.");
-      navigate("/login");
+      const loginData = await loginUser(
+        form.username.trim(),
+        form.password
+      );
+
+      if (loginData.success && loginData.accessToken) {
+        saveSession(loginData, {
+          username: form.username.trim(),
+          email: form.email.trim(),
+          role: loginData.role || "user",
+        });
+        navigate(getSafeReturnPath(location.state, loginData.role), {
+          replace: true,
+          state: location.state?.routeState,
+        });
+        return;
+      }
+
+      navigate("/login", {
+        replace: true,
+        state: {
+          ...location.state,
+          message: "회원가입이 완료되었습니다. 로그인해 주세요.",
+        },
+      });
     } catch (err) {
       console.error("회원가입 실패:", err);
       setError(err.message || "회원가입에 실패했습니다.");
@@ -225,7 +256,10 @@ export default function Signup() {
           </div>
 
           <div className="authv-tabs">
-            <button type="button" onClick={() => navigate("/login")}>
+            <button
+              type="button"
+              onClick={() => navigate("/login", { state: location.state })}
+            >
               로그인
             </button>
             <button type="button" className="active">
@@ -274,7 +308,11 @@ export default function Signup() {
             </div>
 
             <label className="authv-remember">
-              <input type="checkbox" />
+              <input
+                type="checkbox"
+                checked={acceptedTerms}
+                onChange={(event) => setAcceptedTerms(event.target.checked)}
+              />
               <span>서비스 이용을 위한 계정 생성에 동의합니다</span>
             </label>
 
@@ -287,7 +325,10 @@ export default function Signup() {
 
           <div className="authv-help">
             <span>이미 계정이 있으신가요?</span>
-            <button type="button" onClick={() => navigate("/login")}>
+            <button
+              type="button"
+              onClick={() => navigate("/login", { state: location.state })}
+            >
               로그인하기
             </button>
           </div>

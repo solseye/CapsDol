@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import LanguageMenu from "../../components/LanguageMenu";
 import image3 from "../../assets/image3-web.jpg";
 import { getCurrentLanguage } from "../../i18n/translations";
+import { clearSession } from "../../utils/authSession";
+import { confirmAction } from "../../utils/notifications";
 import "../../styles/home-visily-frame.css";
 
 // 메인 페이지에서 직접 사용하는 다국어 문구입니다.
@@ -286,8 +288,13 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
     if (!query.trim()) return;
 
     if (!localStorage.getItem("accessToken")) {
-      alert(copy.loginRequired);
-      navigate("/login");
+      navigate("/login", {
+        state: {
+          from: "/chat",
+          routeState: { initialQuery: query.trim() },
+          message: copy.loginRequired,
+        },
+      });
       return;
     }
 
@@ -296,12 +303,17 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
 
   // 로그아웃 시 로컬 토큰과 권한 정보를 제거합니다.
   // 모바일 메뉴가 열려 있을 수 있으므로 함께 닫습니다.
-  const handleLogout = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("role");
+  const handleLogout = async () => {
+    const confirmed = await confirmAction({
+      title: "로그아웃할까요?",
+      message: "작성 중인 히어링 시트 초안은 회원별로 유지됩니다.",
+      confirmLabel: "로그아웃",
+    });
+    if (!confirmed) return;
+
+    clearSession();
     setIsMobileMenuOpen(false);
-    navigate("/login");
+    navigate("/");
   };
 
   // 전문가 섹션에 표시되는 임시/정적 데이터입니다.
@@ -855,7 +867,7 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
                 </div>
 
                 <div className="visily-zigzag-hover">
-                  <h4>{step.title}</h4>
+                  <strong>{step.title}</strong>
                   <ul>
                     {step.items.map((item) => (
                       <li key={item}>{item}</li>

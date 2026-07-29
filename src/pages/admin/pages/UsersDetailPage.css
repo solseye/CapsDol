@@ -789,6 +789,14 @@
   .admin-user-detail-page .file-table {
     min-width: 760px;
   }
+  .admin-user-detail-page .file-table th:first-child,
+  .admin-user-detail-page .file-table td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: #fff;
+    box-shadow: 8px 0 12px rgba(13, 42, 63, 0.06);
+  }
 }
 @media (max-width: 420px) {
   .admin-user-detail-page .action-cell {

@@ -12,6 +12,7 @@ import {
   getCurrentLanguage,
   translate,
 } from "../../i18n/translations";
+import { markWorkflowEvent } from "../../utils/workflowProgress";
 
 const WEEK_DAYS = [
   "weekdaySun",
@@ -511,6 +512,7 @@ export default function ReservationPage() {
       });
 
       if (data.success) {
+        markWorkflowEvent("reservationSubmittedAt", new Date().toISOString());
         setSubmitSuccess(t("reservation.submitSuccess"));
         setIsSubmitted(true);
 
@@ -523,6 +525,7 @@ export default function ReservationPage() {
         setBlocks(listData.blocks || []);
         return true;
       } else {
+        markWorkflowEvent("reservationSubmittedAt", new Date().toISOString());
         setSubmitSuccess(t("reservation.submitFallbackSuccess"));
         setIsSubmitted(true);
         return true;

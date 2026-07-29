@@ -1,10 +1,20 @@
+import { getSessionOwner } from "./authSession";
+
 export const HEARING_SHEET_DRAFT_KEY = "wvaHearingSheetDraft";
+
+function getDraftKey(owner = getSessionOwner()) {
+  return `${HEARING_SHEET_DRAFT_KEY}:${owner}`;
+}
 
 export function loadHearingSheetDraft() {
   if (typeof window === "undefined") return null;
 
   try {
-    const savedDraft = window.localStorage.getItem(HEARING_SHEET_DRAFT_KEY);
+    const ownerKey = getDraftKey();
+    const savedDraft =
+      window.localStorage.getItem(ownerKey) ||
+      window.localStorage.getItem(getDraftKey("guest")) ||
+      window.localStorage.getItem(HEARING_SHEET_DRAFT_KEY);
     if (!savedDraft) return null;
 
     const parsed = JSON.parse(savedDraft);
@@ -18,7 +28,7 @@ export function saveHearingSheetDraft(source, currentStep) {
   if (typeof window === "undefined") return;
 
   window.localStorage.setItem(
-    HEARING_SHEET_DRAFT_KEY,
+    getDraftKey(),
     JSON.stringify({
       source,
       currentStep,
@@ -29,6 +39,8 @@ export function saveHearingSheetDraft(source, currentStep) {
 
 export function clearHearingSheetDraft() {
   if (typeof window === "undefined") return;
+  window.localStorage.removeItem(getDraftKey());
+  window.localStorage.removeItem(getDraftKey("guest"));
   window.localStorage.removeItem(HEARING_SHEET_DRAFT_KEY);
 }
 

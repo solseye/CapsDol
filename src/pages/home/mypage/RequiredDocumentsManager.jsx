@@ -4,12 +4,37 @@ import { REQUIRED_DOCUMENT_GROUPS } from "../../../utils/requiredDocumentsStorag
 export default function RequiredDocumentsManager() {
   const [isOpen, setIsOpen] = useState(false);
   const closeButtonRef = useRef(null);
+  const modalRef = useRef(null);
 
   useEffect(() => {
     if (!isOpen) return undefined;
 
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
     const handleKeyDown = (event) => {
-      if (event.key === "Escape") setIsOpen(false);
+      if (event.key === "Escape") {
+        setIsOpen(false);
+        return;
+      }
+
+      if (event.key !== "Tab" || !modalRef.current) return;
+      const focusable = Array.from(
+        modalRef.current.querySelectorAll(
+          'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
+      );
+      if (focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     };
 
     document.addEventListener("keydown", handleKeyDown);
@@ -17,6 +42,7 @@ export default function RequiredDocumentsManager() {
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = previousOverflow;
     };
   }, [isOpen]);
 
@@ -50,6 +76,7 @@ export default function RequiredDocumentsManager() {
           }}
         >
           <section
+            ref={modalRef}
             className="required-documents-modal"
             role="dialog"
             aria-modal="true"

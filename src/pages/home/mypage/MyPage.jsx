@@ -2,18 +2,20 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import Header from "../../../components/Header";
 import { getMyReservations } from "../../../api/reservationApi";
+import { getClientFiles } from "../../../api/clientFileApi";
 import { parseReservationNote } from "../../../utils/reservationNoteUtils";
+import { loadWorkflowEvents } from "../../../utils/workflowProgress";
 import "../../../App.css";
 import "../../admin/admin.css";
 import "../../../styles/my-page-visily.css";
 import "../../../styles/mypage-transition.css";
 
 const PROGRESS_STEPS = [
-  ["consult", "초기 상담 완료"],
-  ["strategy", "전략 정리 완료"],
-  ["files", "자료 준비 중"],
+  ["strategy", "사전 정보 전송"],
+  ["consult", "상담 신청 완료"],
+  ["files", "자료 업로드"],
   ["review", "전문가 검토 대기"],
-  ["meeting", "상담 진행 예정"],
+  ["meeting", "상담 일정 확정"],
 ];
 
 const FAQ_ITEMS = [
@@ -104,32 +106,11 @@ function getFieldLabel(field) {
 export default function MyPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(null);
   const [reservations, setReservations] = useState([]);
+  const [clientFiles, setClientFiles] = useState([]);
   const [reservationLoading, setReservationLoading] = useState(true);
   const [reservationError, setReservationError] = useState("");
   const [selectedReservation, setSelectedReservation] = useState(null);
   const [openFaq, setOpenFaq] = useState("reservation");
-  const [checkedSteps, setCheckedSteps] = useState(() => {
-    try {
-      return JSON.parse(
-        localStorage.getItem("wvaMyPageProgress") ||
-          JSON.stringify({
-            consult: true,
-            strategy: false,
-            files: false,
-            review: false,
-            meeting: false,
-          })
-      );
-    } catch {
-      return {
-        consult: true,
-        strategy: false,
-        files: false,
-        review: false,
-        meeting: false,
-      };
-    }
-  });
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -142,14 +123,30 @@ export default function MyPage() {
       return;
     }
 
-    const fetchReservations = async () => {
+    const fetchWorkspace = async () => {
       try {
         setReservationLoading(true);
         setReservationError("");
-        const data = await getMyReservations();
-        setReservations(
-          Array.isArray(data.reservations) ? data.reservations : []
-        );
+        const [reservationResult, fileResult] = await Promise.allSettled([
+          getMyReservations(),
+          getClientFiles({ bucket: "users", limit: 100, offset: 0 }),
+        ]);
+
+        if (reservationResult.status === "fulfilled") {
+          setReservations(
+            Array.isArray(reservationResult.value.reservations)
+              ? reservationResult.value.reservations
+              : []
+          );
+        } else {
+          throw reservationResult.reason;
+        }
+
+        if (fileResult.status === "fulfilled") {
+          setClientFiles(
+            Array.isArray(fileResult.value.files) ? fileResult.value.files : []
+          );
+        }
       } catch (error) {
         setReservationError(
           error.message || "예약 목록을 불러오지 못했습니다."
@@ -159,7 +156,7 @@ export default function MyPage() {
       }
     };
 
-    fetchReservations();
+    fetchWorkspace();
   }, []);
 
   const upcomingReservation = useMemo(() => {
@@ -184,29 +181,25 @@ export default function MyPage() {
       )[0];
   }, [reservations]);
 
-  const completedStepCount = Object.values(checkedSteps).filter(
-    Boolean
-  ).length;
+  const checkedSteps = useMemo(() => {
+    const events = loadWorkflowEvents();
+    const hasPendingReview = reservations.some((item) => item.status === "pending");
+    const hasApprovedMeeting = reservations.some((item) => item.status === "approved");
+
+    return {
+      strategy: Boolean(events.hearingSubmittedAt),
+      consult: reservations.length > 0,
+      files: clientFiles.length > 0 || Boolean(events.fileUploadedAt),
+      review: hasPendingReview || hasApprovedMeeting,
+      meeting: hasApprovedMeeting,
+    };
+  }, [clientFiles, reservations]);
+
+  const completedStepCount = Object.values(checkedSteps).filter(Boolean).length;
   const selectedNote = useMemo(
     () => parseReservationNote(selectedReservation?.note),
     [selectedReservation]
   );
-
-  const toggleStep = (stepId) => {
-    setCheckedSteps((current) => {
-      const next = {
-        ...current,
-        [stepId]: !current[stepId],
-      };
-
-      localStorage.setItem(
-        "wvaMyPageProgress",
-        JSON.stringify(next)
-      );
-
-      return next;
-    });
-  };
 
   return (
     <>
@@ -312,7 +305,7 @@ export default function MyPage() {
                 <span>
                   {completedStepCount === 5
                     ? "상담 준비 완료"
-                    : "항목을 눌러 진행 상태를 기록하세요."}
+                    : "실제 상담과 자료 상태를 기준으로 자동 반영됩니다."}
                 </span>
               </div>
               <div
@@ -327,21 +320,18 @@ export default function MyPage() {
               </div>
               <div className="my-page-step-list">
                 {PROGRESS_STEPS.map(([id, label], index) => (
-                  <button
-                    type="button"
+                  <div
                     className={checkedSteps[id] ? "is-complete" : ""}
                     key={id}
-                    onClick={() => toggleStep(id)}
-                    aria-pressed={checkedSteps[id]}
                   >
                     <span>
                       {checkedSteps[id] ? "✓" : index + 1}
                     </span>
                     {label}
-                  </button>
+                  </div>
                 ))}
               </div>
-              <small>이 기기에 진행 단계가 자동 저장됩니다.</small>
+              <small>상담 신청, 파일 제출, 승인 상태가 자동으로 반영됩니다.</small>
             </aside>
           </section>
 

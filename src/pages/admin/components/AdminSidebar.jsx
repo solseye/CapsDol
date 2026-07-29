@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import "./adminSidebar.css";
+import { clearSession } from "../../../utils/authSession";
+import { confirmAction } from "../../../utils/notifications";
 
 const menuItems = [
   {
@@ -42,13 +44,16 @@ export default function AdminSidebar({ onNavigate }) {
   }, []);
 
   // 로컬 인증 정보를 삭제하고 사용자 홈으로 돌아갑니다.
-  const handleLogout = () => {
-    if (window.confirm("로그아웃 하시겠습니까?")) {
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("user");
-      localStorage.removeItem("role");
-      navigate("/");
-    }
+  const handleLogout = async () => {
+    const confirmed = await confirmAction({
+      title: "관리자 계정에서 로그아웃할까요?",
+      message: "진행 중인 저장 작업이 있다면 먼저 완료해 주세요.",
+      confirmLabel: "로그아웃",
+    });
+    if (!confirmed) return;
+
+    clearSession();
+    navigate("/");
   };
 
   // 선택한 관리자 언어를 로컬 스토리지에 저장합니다.

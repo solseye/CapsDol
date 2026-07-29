@@ -23,6 +23,38 @@
 .hs-form,
 .reservation-field-group,
 .login-field,
+.route-loading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: #526574;
+  font-weight: 700;
+  background: #f8fafb;
+}
+
+.route-loading span {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #d8e2e8;
+  border-top-color: #16815f;
+  border-radius: 50%;
+  animation: route-loading-spin 0.7s linear infinite;
+}
+
+@keyframes route-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-loading span {
+    animation: none;
+  }
+}
+
 .google-login-section {
   display: grid;
 }

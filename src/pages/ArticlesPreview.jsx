@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { createArticles } from "../api/articleApi";
 import Header from "../components/Header";
 import {
@@ -10,6 +10,7 @@ import {
   REQUIRED_DOCUMENT_GROUPS,
   ensureRequiredDocumentsChecklist,
 } from "../utils/requiredDocumentsStorage";
+import { markWorkflowEvent } from "../utils/workflowProgress";
 import "../App.css";
 import "../styles/articles-result-visily.css";
 
@@ -66,6 +67,7 @@ function participantTitle(participant, index) {
 
 export default function ArticlesPreview() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [fallbackDraft] = useState(loadHearingSheetDraft);
   const source =
     location.state?.articlesData?.source || fallbackDraft?.source;
@@ -105,11 +107,20 @@ export default function ArticlesPreview() {
   const handleSubmit = async () => {
     if (!source || isSubmitting || submittedResult) return;
 
+    if (!isLoggedIn) {
+      setSubmitError("전송하려면 로그인이 필요합니다. 작성 내용은 브라우저에 안전하게 보관됩니다.");
+      navigate("/login", {
+        state: { from: "/articles-result" },
+      });
+      return;
+    }
+
     try {
       setIsSubmitting(true);
       setSubmitError("");
       const result = await createArticles(source);
       ensureRequiredDocumentsChecklist();
+      markWorkflowEvent("hearingSubmittedAt", new Date().toISOString());
       clearHearingSheetDraft();
       setSubmittedResult(result);
     } catch (error) {
