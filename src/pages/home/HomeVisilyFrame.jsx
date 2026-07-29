@@ -163,11 +163,15 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
   const [isStandardPaused, setIsStandardPaused] = useState(false);
   const [processProgress, setProcessProgress] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSearchDocked, setIsSearchDocked] = useState(false);
   const [activeNav, setActiveNav] = useState(() =>
     window.location.hash.replace("#", "")
   );
   const processSectionRef = useRef(null);
   const processWorkflowRef = useRef(null);
+  const heroSearchRef = useRef(null);
+  const heroSearchInputRef = useRef(null);
+  const navSearchInputRef = useRef(null);
   const navigate = useNavigate();
   const role = localStorage.getItem("role");
   const isAdmin = role === "admin";
@@ -178,6 +182,59 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
     setActiveNav(sectionId);
     setIsMobileMenuOpen(false);
   };
+
+  // 히어로의 AI 입력창이 헤더를 지나면 같은 입력창을 헤더 내부에 고정합니다.
+  // 위로 다시 스크롤하면 원래 입력창으로 자연스럽게 돌아갑니다.
+  useEffect(() => {
+    let animationFrameId = null;
+
+    const updateDockedSearch = () => {
+      const search = heroSearchRef.current;
+      if (!search) return;
+
+      const headerHeight = window.innerWidth <= 860 ? 64 : 68;
+      const shouldDock = search.getBoundingClientRect().top <= headerHeight;
+
+      setIsSearchDocked((current) =>
+        current === shouldDock ? current : shouldDock
+      );
+      animationFrameId = null;
+    };
+
+    const requestDockedSearchUpdate = () => {
+      if (animationFrameId !== null) return;
+      animationFrameId = window.requestAnimationFrame(updateDockedSearch);
+    };
+
+    requestDockedSearchUpdate();
+    window.addEventListener("scroll", requestDockedSearchUpdate, {
+      passive: true,
+    });
+    window.addEventListener("resize", requestDockedSearchUpdate);
+
+    return () => {
+      window.removeEventListener("scroll", requestDockedSearchUpdate);
+      window.removeEventListener("resize", requestDockedSearchUpdate);
+      if (animationFrameId !== null) {
+        window.cancelAnimationFrame(animationFrameId);
+      }
+    };
+  }, []);
+
+  // 입력 중에 스크롤하더라도 커서가 원래 입력창과 헤더 입력창 사이에서 이어집니다.
+  useEffect(() => {
+    if (
+      isSearchDocked &&
+      document.activeElement === heroSearchInputRef.current
+    ) {
+      navSearchInputRef.current?.focus({ preventScroll: true });
+    } else if (
+      !isSearchDocked &&
+      document.activeElement === navSearchInputRef.current
+    ) {
+      heroSearchInputRef.current?.focus({ preventScroll: true });
+    }
+  }, [isSearchDocked]);
 
   // 스크롤 위치에 맞춰 현재 보고 있는 메인 섹션을 헤더에 표시합니다.
   // URL hash는 변경하지 않아 스크롤 중 화면이 튀거나 방문 기록이 쌓이지 않습니다.
@@ -348,7 +405,9 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
   return (
     <div className="visily-home">
       {/* Header: 데스크톱은 전체 메뉴를 보여주고, 좁은 화면은 Apple식 햄버거 메뉴로 전환합니다. */}
-      <header className="visily-nav">
+      <header
+        className={`visily-nav ${isSearchDocked ? "is-search-docked" : ""}`}
+      >
         <Link to="/" className="visily-brand" aria-label="WVA home">
           <span className="visily-brand-mark">◎</span>
           <span>
@@ -387,6 +446,23 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
             {copy.navStandards}
           </a>
         </nav>
+
+        <form
+          className="visily-nav-search"
+          onSubmit={handleSearch}
+          aria-label={copy.aiConsult}
+        >
+          <span aria-hidden="true">⌕</span>
+          <input
+            ref={navSearchInputRef}
+            type="text"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder={copy.searchPlaceholder}
+            tabIndex={isSearchDocked ? 0 : -1}
+          />
+          <button type="submit">{copy.aiConsult}</button>
+        </form>
 
         <div className="visily-nav-actions">
           <LanguageMenu className="visily-language-menu" />
@@ -551,9 +627,14 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
           </h1>
           <p className="visily-hero-copy">{copy.heroCopy}</p>
 
-          <form className="visily-ai-search" onSubmit={handleSearch}>
+          <form
+            ref={heroSearchRef}
+            className="visily-ai-search"
+            onSubmit={handleSearch}
+          >
             <span aria-hidden="true">⌕</span>
             <input
+              ref={heroSearchInputRef}
               type="text"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
@@ -888,14 +969,20 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
         </div>
 
         <div className="visily-contact-panel">
-          {/* 현재는 정적 연락처입니다. 실제 회사 정보 확정 시 위치/이메일을 여기서 수정하면 됩니다. */}
           <div className="visily-contact-copy">
             <h3>Strategy & Contact</h3>
 
             <div className="visily-contact-detail">
               <span>Location</span>
-              <strong>Tokyo, Japan / Seoul, Korea</strong>
-              <p>일본 진출 상담은 온라인 상담과 현지 전문가 연계를 기준으로 진행합니다.</p>
+              <strong>
+                〒530-0026
+                <br />
+                일본 오사카부 오사카시 기타구 가미야마초 8-1
+              </strong>
+              <p>
+                일본 오사카 사무소에서 일본 진출 상담과 현지 전문가 연계를
+                지원합니다.
+              </p>
             </div>
 
             <div className="visily-contact-detail">
@@ -909,14 +996,21 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
             </div>
           </div>
 
-          <div className="visily-map-placeholder" aria-label="Tokyo office location">
-            <span>▱</span>
-            <strong>Tokyo Office Location</strong>
-            <small>
-              Tokyo Office
-              <br />
-              Minato City, Tokyo, Japan
-            </small>
+          <div className="visily-map-placeholder">
+            <iframe
+              title="WVA 오사카 사무소 Google 지도"
+              src="https://www.google.com/maps?q=8-1%20Kamiyamacho%2C%20Kita%20Ward%2C%20Osaka%2C%20530-0026&output=embed"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            />
+            <a
+              href="https://www.google.com/maps/search/?api=1&query=8-1%20Kamiyamacho%2C%20Kita%20Ward%2C%20Osaka%2C%20530-0026"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Google 지도에서 보기 ↗
+            </a>
           </div>
         </div>
       </section>

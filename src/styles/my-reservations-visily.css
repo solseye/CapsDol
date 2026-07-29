@@ -426,6 +426,153 @@
   line-height: 1.6;
 }
 
+.my-reservation-request {
+  margin-top: 14px;
+  padding: 14px;
+  border-left: 3px solid #0f766e;
+  background: #f0fdfa;
+}
+
+.my-reservation-request strong {
+  color: #115e59;
+  font-size: 12px;
+}
+
+.my-reservation-request p {
+  margin: 6px 0 0;
+  color: #405566;
+  font-size: 13px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.my-reservation-chat {
+  margin-top: 14px;
+  padding-top: 16px;
+  border-top: 1px solid #d8e0e6;
+}
+
+.my-reservation-chat-head {
+  display: grid;
+  gap: 4px;
+}
+
+.my-reservation-chat-head strong {
+  color: #0a2740;
+  font-size: 15px;
+}
+
+.my-reservation-chat-head span {
+  color: #687583;
+  font-size: 12px;
+}
+
+.my-reservation-chat-list {
+  height: 216px;
+  min-height: 216px;
+  max-height: 216px;
+  margin-top: 12px;
+  padding: 10px;
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  overflow-y: auto;
+  border: 1px solid #d8e0e6;
+  background: #f5f7f9;
+}
+
+.my-reservation-chat-message {
+  width: fit-content;
+  max-width: 82%;
+  padding: 10px 12px;
+  background: #ffffff;
+  border: 1px solid #e1e7eb;
+}
+
+.my-reservation-chat-message.is-own {
+  justify-self: end;
+  border-top-right-radius: 2px;
+}
+
+.my-reservation-chat-message.is-other {
+  justify-self: start;
+  border-top-left-radius: 2px;
+}
+
+.my-reservation-chat-message.admin {
+  border-color: #c8d8e4;
+  background: #eef5fa;
+}
+
+.my-reservation-chat-message.user {
+  border-color: #cce2d8;
+  background: #f0f7f3;
+}
+
+.my-reservation-chat-message strong {
+  color: #405566;
+  font-size: 11px;
+}
+
+.my-reservation-chat-message p,
+.my-reservation-chat-empty {
+  margin: 5px 0 0;
+  color: #334b5d;
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.my-reservation-chat-empty {
+  margin: 0;
+  padding: 12px;
+  text-align: center;
+  color: #6a7683;
+}
+
+.my-reservation-chat-form {
+  margin-top: 9px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
+.my-reservation-chat-form input {
+  min-width: 0;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid #cbd5dd;
+  color: #0a2740;
+  font: inherit;
+  font-size: 13px;
+  outline: none;
+}
+
+.my-reservation-chat-form input:focus {
+  border-color: #0a2740;
+  box-shadow: 0 0 0 2px rgba(10, 39, 64, 0.1);
+}
+
+.my-reservation-chat-form button {
+  width: auto;
+  min-width: 64px;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid #0a2740;
+  background: #0a2740;
+  color: #ffffff;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.my-reservation-chat-form button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
 .my-reservation-modal-actions {
   margin-top: 20px;
   display: flex;
@@ -538,6 +685,20 @@
 
   .my-reservation-modal dl {
     grid-template-columns: 1fr;
+  }
+
+  .my-reservation-chat-form {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .my-reservation-chat-list {
+    height: 200px;
+    min-height: 200px;
+    max-height: 200px;
+  }
+
+  .my-reservation-chat-form button {
+    min-height: 36px;
   }
 }
 

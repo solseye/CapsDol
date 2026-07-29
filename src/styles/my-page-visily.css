@@ -133,7 +133,7 @@
 
 .my-page-action-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -374,6 +374,8 @@
 
 .my-page-modal {
   width: min(520px, 100%);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
   padding: 24px;
   background: #fff;
   box-shadow: 0 28px 90px rgba(4, 20, 34, 0.28);
@@ -425,6 +427,46 @@
   font-weight: 800;
 }
 
+.my-page-reservation-note,
+.my-page-reservation-messages {
+  margin: 0 0 14px;
+  padding: 13px 14px;
+  border-left: 3px solid #0f766e;
+  background: #f0fdfa;
+}
+
+.my-page-reservation-note > strong,
+.my-page-reservation-messages > strong {
+  color: #115e59;
+  font-size: 12px;
+}
+
+.my-page-reservation-note p,
+.my-page-reservation-messages p {
+  margin: 5px 0 0;
+  color: #405566;
+  font-size: 13px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.my-page-reservation-messages {
+  border-left-color: #0a2a45;
+  background: #f3f7fa;
+}
+
+.my-page-reservation-messages article {
+  margin-top: 9px;
+  padding-top: 9px;
+  border-top: 1px solid #dce4ea;
+}
+
+.my-page-reservation-messages article span {
+  color: #667588;
+  font-size: 11px;
+  font-weight: 800;
+}
+
 @media (max-width: 900px) {
   .my-page-content-grid {
     grid-template-columns: 1fr;
@@ -433,6 +475,10 @@
   .my-page-faq {
     grid-template-columns: 1fr;
     gap: 16px;
+  }
+
+  .my-page-action-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

@@ -1,58 +1,93 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { createArticles } from "../api/articleApi";
 import "../App.css";
 import Header from "../components/Header";
 import { getCurrentLanguage, translate } from "../i18n/translations";
+import {
+  collectionToArray,
+  loadHearingSheetDraft,
+  saveHearingSheetDraft,
+} from "../utils/hearingSheetDraft";
 import "../styles/hearing-sheet-visily.css";
+
+const convertArrayToObject = (array) =>
+  array.reduce((acc, item, index) => {
+    acc[index + 1] = item;
+    return acc;
+  }, {});
 
 export default function HearingSheet() {
   const language = getCurrentLanguage();
   const t = (key, variables) => translate(language, key, variables);
+  const [storedDraft] = useState(loadHearingSheetDraft);
+  const initialSource = storedDraft?.source || {};
 
-  const [companyName, setCompanyName] = useState("");
-  const [companyNameEn, setCompanyNameEn] = useState("");
-  const [headOfficeAddress, setHeadOfficeAddress] = useState("");
-  const [capital, setCapital] = useState("");
-  const [totalSharesAuthorized, setTotalSharesAuthorized] = useState("");
-  const [initialIssuedShares, setInitialIssuedShares] = useState("");
-  const [bankName, setBankName] = useState("");
-  const [branchName, setBranchName] = useState("");
-  const [businessYearStart, setBusinessYearStart] = useState("");
-  const [businessYearEnd, setBusinessYearEnd] = useState("");
-  const [firstBusinessYearStart, setFirstBusinessYearStart] = useState("");
-  const [firstBusinessYearEnd, setFirstBusinessYearEnd] = useState("");
-  const [representativeDirector, setRepresentativeDirector] = useState("");
-  const [directorTerm, setDirectorTerm] = useState("");
-  const [currentStep, setCurrentStep] = useState(0);
+  const [companyName, setCompanyName] = useState(initialSource.companyName || "");
+  const [companyNameEn, setCompanyNameEn] = useState(initialSource.companyNameEn || "");
+  const [headOfficeAddress, setHeadOfficeAddress] = useState(initialSource.headOfficeAddress || "");
+  const [capital, setCapital] = useState(initialSource.capital || "");
+  const [totalSharesAuthorized, setTotalSharesAuthorized] = useState(
+    initialSource.totalSharesAuthorized || ""
+  );
+  const [initialIssuedShares, setInitialIssuedShares] = useState(
+    initialSource.initialIssuedShares || ""
+  );
+  const [bankName, setBankName] = useState(
+    initialSource.capitalPaymentBank?.bankName || ""
+  );
+  const [branchName, setBranchName] = useState(
+    initialSource.capitalPaymentBank?.branchName || ""
+  );
+  const [businessYearStart, setBusinessYearStart] = useState(
+    initialSource.businessYear?.start || ""
+  );
+  const [businessYearEnd, setBusinessYearEnd] = useState(
+    initialSource.businessYear?.end || ""
+  );
+  const [firstBusinessYearStart, setFirstBusinessYearStart] = useState(
+    initialSource.firstBusinessYear?.start || ""
+  );
+  const [firstBusinessYearEnd, setFirstBusinessYearEnd] = useState(
+    initialSource.firstBusinessYear?.end || ""
+  );
+  const [representativeDirector, setRepresentativeDirector] = useState(
+    initialSource.representativeDirector || ""
+  );
+  const [directorTerm, setDirectorTerm] = useState(initialSource.directorTerm || "");
+  const [currentStep, setCurrentStep] = useState(storedDraft?.currentStep || 0);
   const [fieldErrors, setFieldErrors] = useState({});
   const [validationIssues, setValidationIssues] = useState([]);
   const [isSummaryOpen, setIsSummaryOpen] = useState(false);
   const isLoggedIn = Boolean(localStorage.getItem("accessToken"));
 
-  const [purposes, setPurposes] = useState([{ content: "" }]);
+  const [purposes, setPurposes] = useState(() =>
+    collectionToArray(initialSource.Purpose, [{ content: "" }])
+  );
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
 
-  const [founders, setFounders] = useState([
-    {
-      address: "",
-      name: "",
-      investmentAmount: "",
-      isFounder: false,
-      isInvestor: false,
-    },
-  ]);
+  const [founders, setFounders] = useState(() =>
+    collectionToArray(initialSource.Founder, [
+      {
+        address: "",
+        name: "",
+        investmentAmount: "",
+        isFounder: false,
+        isInvestor: false,
+      },
+    ])
+  );
 
-  const [directors, setDirectors] = useState([
-    {
-      address: "",
-      name: "",
-      romanizedName: "",
-    },
-  ]);
+  const [directors, setDirectors] = useState(() =>
+    collectionToArray(initialSource.Director, [
+      {
+        address: "",
+        name: "",
+        romanizedName: "",
+      },
+    ])
+  );
 
   const addPurpose = () => {
     const nextIndex = purposes.length;
@@ -139,12 +174,53 @@ export default function HearingSheet() {
     setDirectors(next);
   };
 
-  const convertArrayToObject = (array) => {
-    return array.reduce((acc, item, index) => {
-      acc[index + 1] = item;
-      return acc;
-    }, {});
-  };
+  const hearingSheetData = useMemo(
+    () => ({
+      companyName,
+      companyNameEn,
+      Purpose: convertArrayToObject(purposes),
+      capital,
+      capitalPaymentBank: {
+        bankName,
+        branchName,
+      },
+      Founder: convertArrayToObject(founders),
+      Director: convertArrayToObject(directors),
+      representativeDirector,
+      directorTerm,
+      headOfficeAddress,
+      totalSharesAuthorized,
+      businessYear: {
+        start: businessYearStart,
+        end: businessYearEnd,
+      },
+      initialIssuedShares,
+      firstBusinessYear: {
+        start: firstBusinessYearStart,
+        end: firstBusinessYearEnd,
+      },
+      description: "히어링 시트 기반 정관",
+    }),
+    [
+      bankName,
+      branchName,
+      businessYearEnd,
+      businessYearStart,
+      capital,
+      companyName,
+      companyNameEn,
+      directorTerm,
+      directors,
+      firstBusinessYearEnd,
+      firstBusinessYearStart,
+      founders,
+      headOfficeAddress,
+      initialIssuedShares,
+      purposes,
+      representativeDirector,
+      totalSharesAuthorized,
+    ]
+  );
 
   const formatList = (items, formatter) => {
     return items.map((item, index) => formatter(item, index)).join("\n");
@@ -355,6 +431,10 @@ ${directorText}
     setRepresentativeDirector(directors[0]?.name || "");
   }, [directors]);
 
+  useEffect(() => {
+    saveHearingSheetDraft(hearingSheetData, currentStep);
+  }, [currentStep, hearingSheetData]);
+
   const toFieldId = (key) => `hsv-${key.replace(/[^a-zA-Z0-9]+/g, "-")}`;
   const requiredNotice = (
     <p className="hsv-required-legend">
@@ -514,7 +594,7 @@ ${directorText}
     return { errors, issues };
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     const normalizedStep = Math.min(currentStep, steps.length - 1);
@@ -536,71 +616,22 @@ ${directorText}
       return;
     }
 
-    const hearingSheetData = {
-      companyName,
-      companyNameEn,
+    setSubmitError("");
+    setFieldErrors({});
+    setValidationIssues([]);
 
-      Purpose: convertArrayToObject(purposes),
-
-      capital,
-
-      capitalPaymentBank: {
-        bankName,
-        branchName,
-      },
-
-      Founder: convertArrayToObject(founders),
-
-      Director: convertArrayToObject(directors),
-
-      representativeDirector,
-      directorTerm,
-      headOfficeAddress,
-      totalSharesAuthorized,
-      businessYear: {
-        start: businessYearStart,
-        end: businessYearEnd,
-      },
-      initialIssuedShares,
-      firstBusinessYear: {
-        start: firstBusinessYearStart,
-        end: firstBusinessYearEnd,
-      },
-      description: "히어링 시트 기반 정관",
+    const articlesData = {
+      source: hearingSheetData,
+      content: buildArticlesContent(hearingSheetData),
+      sections: buildArticlesSections(hearingSheetData),
     };
 
-    try {
-      setIsSubmitting(true);
-      setSubmitError("");
-      setFieldErrors({});
-      setValidationIssues([]);
-
-      // master 정관자동저장API 반영:
-      // 화면 디자인은 현재 브랜치의 단계형 UI를 유지하고, 제출 데이터만 백엔드에 저장/생성 요청합니다.
-      const result = await createArticles(hearingSheetData);
-
-      const articlesData = {
-        source: hearingSheetData,
-        content: buildArticlesContent(hearingSheetData),
-        sections: buildArticlesSections(hearingSheetData),
-      };
-
-      navigate("/articles-result", {
-        state: {
-          articlesData,
-          createdFile: result.file,
-        },
-      });
-    } catch (error) {
-      console.error("정관 생성 실패:", error);
-
-      setSubmitError(
-        error.message ||
-          "정관 생성 중 오류가 발생했습니다."
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
+    // 이 단계에서는 서버로 전송하지 않고 최종 확인 화면으로만 이동합니다.
+    navigate("/articles-result", {
+      state: {
+        articlesData,
+      },
+    });
   };
 
   const steps = [
@@ -1271,7 +1302,7 @@ ${directorText}
                   type="button"
                   className="hsv-secondary-btn"
                   onClick={goPrevStep}
-                  disabled={safeCurrentStep === 0 || isSubmitting}
+                  disabled={safeCurrentStep === 0}
                 >
                   이전
                 </button>
@@ -1281,13 +1312,12 @@ ${directorText}
                     type="button"
                     className="hsv-primary-btn"
                     onClick={goNextStep}
-                    disabled={isSubmitting}
                   >
                     다음 단계로 이동
                   </button>
                 ) : (
-                  <button type="submit" className="hsv-primary-btn" disabled={isSubmitting}>
-                    {isSubmitting ? "전송 중..." : "전송하기"}
+                  <button type="submit" className="hsv-primary-btn">
+                    최종 내용 확인
                   </button>
                 )}
               </div>

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import Header from "../../../components/Header";
 import "../../../App.css";
@@ -6,10 +6,15 @@ import "../../../styles/my-reservations-visily.css";
 import "../../../styles/mypage-transition.css";
 
 import {
+  addReservationChat,
   cancelReservation,
   deleteReservation,
   getMyReservations,
 } from "../../../api/reservationApi";
+import {
+  createLocalReservationNote,
+  parseReservationNote,
+} from "../../../utils/reservationNoteUtils";
 
 function formatDate(dateString) {
   if (!dateString) return "-";
@@ -110,6 +115,9 @@ export default function MyReservations() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [periodFilter, setPeriodFilter] = useState("all");
   const [selectedReservation, setSelectedReservation] = useState(null);
+  const [chatMessage, setChatMessage] = useState("");
+  const [isChatSending, setIsChatSending] = useState(false);
+  const reservationChatListRef = useRef(null);
 
   const fetchReservations = async () => {
     try {
@@ -149,6 +157,73 @@ export default function MyReservations() {
     window.addEventListener("keydown", closeOnEscape);
     return () => window.removeEventListener("keydown", closeOnEscape);
   }, [selectedReservation]);
+
+  useEffect(() => {
+    setChatMessage("");
+  }, [selectedReservation?.reservation_id]);
+
+  const selectedNote = useMemo(
+    () => parseReservationNote(selectedReservation?.note),
+    [selectedReservation]
+  );
+
+  useEffect(() => {
+    const chatList = reservationChatListRef.current;
+    if (!chatList) return;
+
+    chatList.scrollTop = chatList.scrollHeight;
+  }, [selectedReservation?.reservation_id, selectedNote.messages.length]);
+
+  const handleSendChat = async (event) => {
+    event.preventDefault();
+    if (!selectedReservation) return;
+
+    const message = chatMessage.trim();
+    if (!message) return;
+
+    const reservationId = selectedReservation.reservation_id;
+
+    try {
+      setIsChatSending(true);
+      setError("");
+      setSuccess("");
+
+      const data = await addReservationChat({
+        reservationId,
+        message,
+      });
+      const fallbackMessage = {
+        role: "user",
+        sender_name: "나",
+        message,
+        created_at: new Date().toISOString(),
+      };
+      const nextNote =
+        data.note ||
+        data.reservation?.note ||
+        createLocalReservationNote(selectedNote.initialRequest, [
+          ...selectedNote.messages,
+          fallbackMessage,
+        ]);
+
+      setReservations((current) =>
+        current.map((reservation) =>
+          String(reservation.reservation_id) === String(reservationId)
+            ? { ...reservation, note: nextNote }
+            : reservation
+        )
+      );
+      setSelectedReservation((current) =>
+        current ? { ...current, note: nextNote } : current
+      );
+      setChatMessage("");
+      setSuccess("메시지가 등록되었습니다.");
+    } catch (err) {
+      setError(err.message || "메시지 등록에 실패했습니다.");
+    } finally {
+      setIsChatSending(false);
+    }
+  };
 
   const handleCancel = async (reservationId) => {
     const ok = window.confirm("상담 예약을 취소하시겠습니까?");
@@ -506,6 +581,13 @@ export default function MyReservations() {
               </div>
             </dl>
 
+            {selectedNote.initialRequest && (
+              <section className="my-reservation-request">
+                <strong>신청 시 추가 요청 사항</strong>
+                <p>{selectedNote.initialRequest}</p>
+              </section>
+            )}
+
             {(selectedReservation.reject_reason ||
               selectedReservation.cancel_reason ||
               localCancelReasons[selectedReservation.reservation_id]) && (
@@ -518,6 +600,58 @@ export default function MyReservations() {
                 </p>
               </div>
             )}
+
+            <section className="my-reservation-chat" aria-label="상담 메시지">
+              <div className="my-reservation-chat-head">
+                <strong>상담 메시지</strong>
+                <span>관리자와 추가 내용을 주고받을 수 있습니다.</span>
+              </div>
+              <div
+                className="my-reservation-chat-list"
+                aria-live="polite"
+                ref={reservationChatListRef}
+              >
+                {selectedNote.messages.length > 0 ? (
+                  selectedNote.messages.map((message, index) => (
+                    <article
+                      className={`my-reservation-chat-message ${
+                        message.role || ""
+                      } ${
+                        message.role === "admin" ? "is-other" : "is-own"
+                      }`}
+                      key={`${message.created_at || index}-${index}`}
+                    >
+                      <strong>
+                        {message.sender_name ||
+                          (message.role === "admin" ? "관리자" : "고객")}
+                      </strong>
+                      <p>{message.message || message.content || ""}</p>
+                    </article>
+                  ))
+                ) : (
+                  <p className="my-reservation-chat-empty">
+                    아직 등록된 메시지가 없습니다.
+                  </p>
+                )}
+              </div>
+              <form
+                className="my-reservation-chat-form"
+                onSubmit={handleSendChat}
+              >
+                <input
+                  value={chatMessage}
+                  onChange={(event) => setChatMessage(event.target.value)}
+                  placeholder="관리자에게 전달할 메시지를 입력하세요"
+                  disabled={isChatSending}
+                />
+                <button
+                  type="submit"
+                  disabled={isChatSending || !chatMessage.trim()}
+                >
+                  {isChatSending ? "전송 중..." : "전송"}
+                </button>
+              </form>
+            </section>
 
             <div className="my-reservation-modal-actions">
               <button

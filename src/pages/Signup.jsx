@@ -1,11 +1,16 @@
 import "../App.css";
 import "../styles/auth-visily.css";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { signupUser } from "../api/authApi";
+import { loginWithGoogle, signupUser } from "../api/authApi";
+
+const GOOGLE_CLIENT_ID =
+  process.env.REACT_APP_GOOGLE_CLIENT_ID ||
+  "1008976808306-khvao892b8n9rv6lmk89k9qoba9i03m6.apps.googleusercontent.com";
 
 export default function Signup() {
   const navigate = useNavigate();
+  const googleButtonRef = useRef(null);
 
   const [form, setForm] = useState({
     email: "",
@@ -14,7 +19,111 @@ export default function Signup() {
   });
 
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      const role = localStorage.getItem("role");
+      navigate(role === "admin" ? "/admin/calendar" : "/");
+    }
+  }, [navigate]);
+
+  const handleGoogleCredentialResponse = useCallback(
+    async (response) => {
+      if (!response?.credential) {
+        setError("구글 인증 정보를 받지 못했습니다. 다시 시도해 주세요.");
+        return;
+      }
+
+      try {
+        setGoogleLoading(true);
+        setError("");
+
+        const data = await loginWithGoogle(response.credential);
+
+        if (!data.success || !data.accessToken) {
+          throw new Error(
+            data.error || data.msg || "구글 계정 생성에 실패했습니다."
+          );
+        }
+
+        localStorage.setItem("accessToken", data.accessToken);
+        localStorage.setItem("role", data.role || "user");
+        localStorage.setItem(
+          "user",
+          JSON.stringify(
+            data.user || {
+              username: data.username || "Google 사용자",
+              email: data.email || "",
+              role: data.role || "user",
+            }
+          )
+        );
+
+        navigate(data.role === "admin" ? "/admin/calendar" : "/");
+      } catch (err) {
+        console.error("구글 회원가입 에러:", err);
+        setError(
+          err.message || "구글 계정으로 회원가입하지 못했습니다."
+        );
+      } finally {
+        setGoogleLoading(false);
+      }
+    },
+    [navigate]
+  );
+
+  useEffect(() => {
+    const initializeGoogleSignup = () => {
+      if (!window.google || !googleButtonRef.current) return;
+
+      window.google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: handleGoogleCredentialResponse,
+      });
+
+      googleButtonRef.current.innerHTML = "";
+      window.google.accounts.id.renderButton(googleButtonRef.current, {
+        theme: "outline",
+        size: "large",
+        shape: "pill",
+        width: 320,
+        text: "signup_with",
+        logo_alignment: "left",
+      });
+    };
+
+    const existingScript = document.querySelector(
+      'script[src="https://accounts.google.com/gsi/client"]'
+    );
+
+    if (existingScript) {
+      if (window.google) {
+        initializeGoogleSignup();
+      } else {
+        existingScript.addEventListener("load", initializeGoogleSignup, {
+          once: true,
+        });
+      }
+
+      return () => {
+        existingScript.removeEventListener("load", initializeGoogleSignup);
+      };
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
+    script.onload = initializeGoogleSignup;
+    document.body.appendChild(script);
+
+    return () => {
+      script.onload = null;
+    };
+  }, [handleGoogleCredentialResponse]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -104,6 +213,15 @@ export default function Signup() {
           <div className="authv-title">
             <h2>계정 만들기</h2>
             <p>WVA의 AI 상담과 전문가 연결 기능을 이용할 계정을 생성합니다.</p>
+          </div>
+
+          <div className="authv-google-box">
+            <div ref={googleButtonRef} className="authv-google-button" />
+            {googleLoading && <p>구글 계정 생성 중...</p>}
+          </div>
+
+          <div className="authv-divider">
+            <span>또는 이메일로 계정 만들기</span>
           </div>
 
           <div className="authv-tabs">

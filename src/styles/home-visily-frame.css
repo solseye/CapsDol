@@ -29,6 +29,125 @@
   backdrop-filter: blur(14px);
 }
 
+.visily-brand {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.visily-nav-links,
+.visily-nav-search {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.visily-nav-actions {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+.visily-nav-search {
+  width: min(540px, 38vw);
+  min-width: 0;
+  height: 46px;
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 6px 5px 16px;
+  border: 1px solid #d7e0e6;
+  border-radius: 8px;
+  background: #f4f7f9;
+  box-shadow: 0 8px 24px rgba(6, 35, 60, 0.1);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  filter: blur(2px);
+  transform: translateY(18px) scale(0.76);
+  transform-origin: center;
+  transition:
+    opacity 220ms ease,
+    filter 340ms ease,
+    transform 420ms cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 220ms ease;
+  will-change: opacity, filter, transform;
+}
+
+.visily-nav.is-search-docked .visily-nav-search {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  filter: blur(0);
+  transform: translateY(0) scale(1);
+}
+
+.visily-nav.is-search-docked {
+  grid-template-columns: auto auto minmax(280px, 1fr) auto;
+  gap: 20px;
+}
+
+.visily-nav.is-search-docked .visily-brand > span:last-child {
+  display: none;
+}
+
+.visily-nav.is-search-docked .visily-nav-links {
+  grid-column: 2;
+  position: static;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: none;
+}
+
+.visily-nav.is-search-docked .visily-nav-search {
+  grid-column: 3;
+}
+
+.visily-nav.is-search-docked .visily-nav-actions {
+  grid-column: 4;
+}
+
+.visily-nav-search span {
+  flex: 0 0 auto;
+  color: #70808e;
+  font-size: 20px;
+}
+
+.visily-nav-search input {
+  min-width: 0;
+  flex: 1;
+  border: 0;
+  outline: 0;
+  color: #06233c;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.visily-nav-search input::placeholder {
+  color: #87929d;
+}
+
+.visily-nav-search button {
+  height: 34px;
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 4px;
+  padding: 0 16px;
+  color: #ffffff;
+  background: #06233c;
+  font-size: 12px;
+  font-weight: 950;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.visily-nav-links {
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease,
+    visibility 160ms ease;
+}
+
 .visily-brand,
 .visily-footer-brand {
   min-width: 0;
@@ -75,6 +194,14 @@
   align-items: center;
   gap: 34px;
   white-space: nowrap;
+}
+
+.visily-nav:not(.is-search-docked) .visily-nav-links {
+  grid-column: 1 / -1;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .visily-nav-links a,
@@ -445,6 +572,21 @@
   border-radius: 10px;
   background: rgba(232, 239, 244, 0.78);
   box-shadow: 0 24px 48px rgba(0, 0, 0, 0.24);
+  filter: blur(0);
+  transform: translateY(0) scale(1);
+  transform-origin: top center;
+  transition:
+    opacity 210ms ease,
+    filter 300ms ease,
+    transform 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: opacity, filter, transform;
+}
+
+.visily-nav.is-search-docked ~ .visily-hero .visily-ai-search {
+  opacity: 0;
+  filter: blur(3px);
+  transform: translateY(-48px) scale(0.84);
+  pointer-events: none;
 }
 
 .visily-ai-search span {
@@ -2041,45 +2183,42 @@
 
 .visily-map-placeholder {
   min-height: 270px;
-  display: grid;
-  place-items: center;
   position: relative;
   overflow: hidden;
+  border: 1px solid #c7d6e2;
   border-radius: 8px;
-  color: #08754b;
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.18), transparent 48%),
-    #cdddf0;
-  text-align: center;
+  background: #dbe5ec;
 }
 
-.visily-map-placeholder > span {
-  font-size: 44px;
-  line-height: 1;
-  transform: rotate(90deg);
+.visily-map-placeholder iframe {
+  width: 100%;
+  min-height: 270px;
+  display: block;
+  border: 0;
 }
 
-.visily-map-placeholder > strong {
-  margin-top: -80px;
-  color: #244053;
-  font-size: 13px;
-  font-weight: 950;
-  letter-spacing: 0.04em;
-}
-
-.visily-map-placeholder > small {
+.visily-map-placeholder > a {
   position: absolute;
-  left: 28px;
-  bottom: 28px;
+  right: 14px;
+  bottom: 14px;
   border-radius: 4px;
-  padding: 12px 14px;
-  color: #172033;
-  background: rgba(255, 255, 255, 0.9);
-  text-align: left;
-  font-size: 11px;
-  line-height: 1.45;
+  padding: 10px 12px;
+  color: #ffffff;
+  background: rgba(6, 35, 60, 0.92);
+  text-decoration: none;
+  font-size: 12px;
   font-weight: 900;
-  box-shadow: 0 10px 24px rgba(16, 29, 43, 0.08);
+  box-shadow: 0 8px 20px rgba(6, 35, 60, 0.2);
+}
+
+.visily-map-placeholder > a:hover,
+.visily-map-placeholder > a:focus-visible {
+  background: #0b426f;
+}
+
+.visily-map-placeholder > a:focus-visible {
+  outline: 3px solid rgba(8, 117, 75, 0.35);
+  outline-offset: 3px;
 }
 
 .visily-cta {
@@ -2146,6 +2285,11 @@
     padding: 0 40px;
   }
 
+  .visily-nav.is-search-docked {
+    grid-template-columns: auto auto minmax(260px, 1fr) auto;
+    gap: 14px;
+  }
+
   .visily-nav-links {
     gap: 22px;
   }
@@ -2180,6 +2324,36 @@
 
   .visily-nav-links {
     display: none;
+  }
+
+  .visily-nav-actions {
+    grid-column: 2;
+  }
+
+  .visily-nav.is-search-docked {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 14px;
+  }
+
+  .visily-nav.is-search-docked .visily-brand {
+    grid-column: 1;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .visily-nav.is-search-docked .visily-nav-links {
+    display: none;
+  }
+
+  .visily-nav.is-search-docked .visily-nav-search {
+    grid-column: 2;
+    width: 100%;
+    justify-self: stretch;
+  }
+
+  .visily-nav.is-search-docked .visily-nav-actions {
+    grid-column: 3;
   }
 
   .visily-desktop-actions {
@@ -2239,6 +2413,26 @@
 
   .visily-brand {
     gap: 9px;
+  }
+
+  .visily-nav-search {
+    height: 44px;
+    gap: 7px;
+    padding: 4px 5px 4px 11px;
+  }
+
+  .visily-nav-search span {
+    display: none;
+  }
+
+  .visily-nav-search input {
+    font-size: 12px;
+  }
+
+  .visily-nav-search button {
+    height: 34px;
+    padding: 0 10px;
+    font-size: 11px;
   }
 
   .visily-brand-mark {
@@ -2496,5 +2690,12 @@
   .visily-footer nav {
     display: grid;
     width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .visily-nav-search,
+  .visily-ai-search {
+    transition-duration: 1ms;
   }
 }

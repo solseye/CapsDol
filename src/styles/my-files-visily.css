@@ -71,6 +71,7 @@
 
 .my-files-workspace {
   display: block;
+  margin-top: 12px;
 }
 
 .my-files-panel {
@@ -82,6 +83,10 @@
 .upload-panel,
 .file-list-panel {
   padding: 20px;
+}
+
+.upload-panel {
+  scroll-margin-top: 86px;
 }
 
 .my-files-panel-head {

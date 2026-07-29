@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Navigate, Routes, Route, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 
 import Home from "./pages/Home";
@@ -42,6 +42,10 @@ function App() {
       <Route path="/mypage" element={<MyPage />} />
       <Route path="/mypage/reservations" element={<MyPageReservations />} />
       <Route path="/mypage/files" element={<MyFiles />} />
+      <Route
+        path="/mypage/required-documents"
+        element={<Navigate to="/mypage/files#required-documents" replace />}
+      />
       <Route path="/chat" element={<Chat />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/lostid" element={<LostId />} />

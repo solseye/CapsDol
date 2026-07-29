@@ -4,6 +4,10 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginUser, loginWithGoogle } from "../api/authApi";
 
+const GOOGLE_CLIENT_ID =
+  process.env.REACT_APP_GOOGLE_CLIENT_ID ||
+  "1008976808306-khvao892b8n9rv6lmk89k9qoba9i03m6.apps.googleusercontent.com";
+
 export default function Login() {
   const navigate = useNavigate();
   const googleButtonRef = useRef(null);
@@ -68,8 +72,7 @@ export default function Login() {
       if (!window.google || !googleButtonRef.current) return;
 
       window.google.accounts.id.initialize({
-        client_id:
-          "1008976808306-khvao892b8n9rv6lmk89k9qoba9i03m6.apps.googleusercontent.com",
+        client_id: GOOGLE_CLIENT_ID,
         callback: handleGoogleCredentialResponse,
       });
 

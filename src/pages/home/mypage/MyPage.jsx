@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import Header from "../../../components/Header";
 import { getMyReservations } from "../../../api/reservationApi";
+import { parseReservationNote } from "../../../utils/reservationNoteUtils";
 import "../../../App.css";
 import "../../admin/admin.css";
 import "../../../styles/my-page-visily.css";
@@ -186,6 +187,10 @@ export default function MyPage() {
   const completedStepCount = Object.values(checkedSteps).filter(
     Boolean
   ).length;
+  const selectedNote = useMemo(
+    () => parseReservationNote(selectedReservation?.note),
+    [selectedReservation]
+  );
 
   const toggleStep = (stepId) => {
     setCheckedSteps((current) => {
@@ -292,7 +297,7 @@ export default function MyPage() {
                   </p>
                   <h2>내 파일 관리</h2>
                   <span>
-                    상담 자료를 업로드하고 제출 이력을 확인합니다.
+                    필요 서류의 준비 상태와 발급일, 제출 파일을 한곳에서 관리합니다.
                   </span>
                 </div>
                 <Link to="/mypage/files">파일 관리하기</Link>
@@ -444,8 +449,28 @@ export default function MyPage() {
                 </div>
               )}
             </dl>
+            {selectedNote.initialRequest && (
+              <section className="my-page-reservation-note">
+                <strong>신청 시 추가 요청 사항</strong>
+                <p>{selectedNote.initialRequest}</p>
+              </section>
+            )}
+            {selectedNote.messages.length > 0 && (
+              <section className="my-page-reservation-messages">
+                <strong>최근 상담 메시지</strong>
+                {selectedNote.messages.slice(-2).map((message, index) => (
+                  <article key={`${message.created_at || index}-${index}`}>
+                    <span>
+                      {message.sender_name ||
+                        (message.role === "admin" ? "관리자" : "고객")}
+                    </span>
+                    <p>{message.message || message.content || ""}</p>
+                  </article>
+                ))}
+              </section>
+            )}
             <Link to="/mypage/reservations">
-              전체 상담 내역 보기
+              메시지 확인 및 답장
             </Link>
           </section>
         </div>

@@ -1,8 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Header from "../../../components/Header";
+import RequiredDocumentsManager from "./RequiredDocumentsManager";
 import "../../../App.css";
 import "../../admin/admin.css";
 import "../../../styles/my-files-visily.css";
+import "../../../styles/required-documents.css";
 import "../../../styles/mypage-transition.css";
 
 import {
@@ -11,6 +13,11 @@ import {
   getClientFileSignedUrl,
   uploadClientFile,
 } from "../../../api/clientFileApi";
+import {
+  REQUIRED_DOCUMENT_GROUPS,
+  ensureRequiredDocumentsChecklist,
+  saveRequiredDocumentsChecklist,
+} from "../../../utils/requiredDocumentsStorage";
 
 function formatFileSize(size) {
   const bytes = Number(size || 0);
@@ -75,29 +82,6 @@ function getFilePath(file) {
   return file.storagePath || file.path || "";
 }
 
-const REQUIRED_DOCUMENTS = [
-  {
-    id: "business-plan",
-    title: "사업계획서",
-    description: "일본 진출 목적과 사업 모델을 정리한 문서",
-  },
-  {
-    id: "articles",
-    title: "정관 또는 정관 초안",
-    description: "회사명, 사업 목적, 자본금이 포함된 문서",
-  },
-  {
-    id: "seal-certificate",
-    title: "인감증명서",
-    description: "발기인·대표자의 인감증명 스캔본",
-  },
-  {
-    id: "address-proof",
-    title: "본국 주소 증명서",
-    description: "대표자 또는 발기인의 주소 확인 자료",
-  },
-];
-
 export default function MyFiles() {
   const fileInputRef = useRef(null);
 
@@ -128,17 +112,7 @@ export default function MyFiles() {
     useState(null);
   const [requiredDocumentType, setRequiredDocumentType] =
     useState("");
-  const [requiredDocumentChecks, setRequiredDocumentChecks] =
-    useState(() => {
-      try {
-        return JSON.parse(
-          localStorage.getItem("wvaRequiredDocumentChecks") ||
-            "{}"
-        );
-      } catch {
-        return {};
-      }
-    });
+  const [, setRequiredDocumentsChecklist] = useState(null);
 
   const fetchClientFiles = async () => {
     try {
@@ -168,10 +142,12 @@ export default function MyFiles() {
       });
 
       setClientFiles(sortedFiles);
+      return sortedFiles;
     } catch (err) {
       setFileError(
         err.message || "파일 목록을 불러오지 못했습니다."
       );
+      return [];
     } finally {
       setIsFileListLoading(false);
     }
@@ -183,6 +159,9 @@ export default function MyFiles() {
     setIsLoggedIn(!!token);
 
     if (token) {
+      setRequiredDocumentsChecklist(
+        ensureRequiredDocumentsChecklist()
+      );
       fetchClientFiles();
     } else {
       setIsFileListLoading(false);
@@ -201,22 +180,52 @@ export default function MyFiles() {
     }
   };
 
-  const markRequiredDocumentPrepared = (documentId) => {
-    if (!documentId) return;
-
-    setRequiredDocumentChecks((current) => {
-      const next = {
-        ...current,
-        [documentId]: true,
-      };
-
-      localStorage.setItem(
-        "wvaRequiredDocumentChecks",
-        JSON.stringify(next)
-      );
-
-      return next;
+  const updateRequiredDocuments = (updater) => {
+    setRequiredDocumentsChecklist((current) => {
+      if (!current) return current;
+      return saveRequiredDocumentsChecklist(updater(current));
     });
+  };
+
+  const getRequiredDocumentSelection = (value) => {
+    if (!value) return null;
+    const [groupId, itemId] = value.split(":");
+    if (!groupId || !itemId) return null;
+    return { groupId, itemId };
+  };
+
+  const markRequiredDocumentUploaded = (selectionValue, uploadedFile) => {
+    const selection = getRequiredDocumentSelection(selectionValue);
+    if (!selection) return;
+
+    updateRequiredDocuments((current) => ({
+      ...current,
+      groups: current.groups.map((group) =>
+        group.id === selection.groupId
+          ? {
+              ...group,
+              items: group.items.map((item) =>
+                item.id === selection.itemId
+                  ? {
+                      ...item,
+                      status: "uploaded",
+                      linkedFileName:
+                        uploadedFile?.fileName ||
+                        uploadedFile?.originalName ||
+                        selectedFile?.name ||
+                        fileName.trim(),
+                      linkedFilePath:
+                        uploadedFile?.storagePath ||
+                        uploadedFile?.path ||
+                        "",
+                      updatedAt: new Date().toISOString(),
+                    }
+                  : item
+              ),
+            }
+          : group
+      ),
+    }));
   };
 
   const handleFileChange = (event) => {
@@ -279,12 +288,21 @@ export default function MyFiles() {
       if (data.success) {
         setUploadMessage("파일이 성공적으로 업로드되었습니다.");
 
-        // 백엔드 파일 API 형식은 유지하면서 사용자가 고른 필수 문서 종류를
-        // 이 기기의 준비 현황 인덱스에 반영합니다.
-        markRequiredDocumentPrepared(requiredDocumentType);
-        resetUploadForm();
+        const refreshedFiles = await fetchClientFiles();
+        const uploadedFile =
+          data.file ||
+          data.data ||
+          refreshedFiles.find(
+            (file) =>
+              file.fileName === fileName.trim() ||
+              file.originalName === selectedFile.name
+          );
 
-        await fetchClientFiles();
+        markRequiredDocumentUploaded(
+          requiredDocumentType,
+          uploadedFile
+        );
+        resetUploadForm();
       }
     } catch (err) {
       setUploadError(
@@ -325,6 +343,27 @@ export default function MyFiles() {
               (item.storagePath || item.path) !== path
           )
         );
+
+        updateRequiredDocuments((current) => ({
+          ...current,
+          groups: current.groups.map((group) => ({
+            ...group,
+            items: group.items.map((item) =>
+              item.linkedFilePath === path
+                ? {
+                    ...item,
+                    status:
+                      item.status === "uploaded"
+                        ? "ready"
+                        : item.status,
+                    linkedFileName: "",
+                    linkedFilePath: "",
+                    updatedAt: new Date().toISOString(),
+                  }
+                : item
+            ),
+          })),
+        }));
       }
     } catch (err) {
       setFileError(
@@ -463,9 +502,16 @@ export default function MyFiles() {
     );
   }).length;
 
-  const preparedRequiredCount = REQUIRED_DOCUMENTS.filter(
-    (document) => requiredDocumentChecks[document.id]
-  ).length;
+  const requiredDocumentOptions = useMemo(
+    () =>
+      REQUIRED_DOCUMENT_GROUPS.flatMap((group) =>
+        group.items.map((item) => ({
+          value: `${group.id}:${item.id}`,
+          label: `${group.title} · ${item.label}`,
+        }))
+      ),
+    []
+  );
 
   return (
     <>
@@ -497,12 +543,14 @@ export default function MyFiles() {
               <strong>{recentFileCount}</strong>
             </article>
             <article>
-              <span>필수 서류 준비</span>
-              <strong>
-                {preparedRequiredCount}/{REQUIRED_DOCUMENTS.length}
-              </strong>
+              <span>필수 서류 안내</span>
+              <strong>{requiredDocumentOptions.length}항목</strong>
             </article>
           </section>
+
+          <div id="required-documents">
+            <RequiredDocumentsManager />
+          </div>
 
           <div className="my-files-workspace">
             <section className="my-files-panel upload-panel">
@@ -563,12 +611,12 @@ export default function MyFiles() {
                         disabled={isUploading}
                       >
                         <option value="">일반 제출 문서</option>
-                        {REQUIRED_DOCUMENTS.map((document) => (
+                        {requiredDocumentOptions.map((document) => (
                           <option
-                            key={document.id}
-                            value={document.id}
+                            key={document.value}
+                            value={document.value}
                           >
-                            {document.title}
+                            {document.label}
                           </option>
                         ))}
                       </select>

@@ -1193,6 +1193,7 @@ export default function ReservationPage() {
               <div><dt>전문가</dt><dd>{selectedExpert?.name || "-"}</dd></div>
               <div><dt>신청자</dt><dd>{form.name || "-"}</dd></div>
               <div className="rv-confirm-ranges"><dt>제안 일정</dt><dd>{selectedRanges.map((range) => `${range.date} ${range.startTime}-${range.endTime}`).join(", ")}</dd></div>
+              <div className="rv-confirm-note"><dt>추가 요청 사항</dt><dd>{additionalRequest.trim() || "없음"}</dd></div>
             </dl>
             <p>신청 후에는 전문가의 검토가 진행되며, 승인 결과는 예약 내역에서 확인할 수 있습니다.</p>
             <div className="rv-confirm-actions">

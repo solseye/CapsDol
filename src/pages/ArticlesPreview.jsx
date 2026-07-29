@@ -1,5 +1,15 @@
+import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { createArticles } from "../api/articleApi";
 import Header from "../components/Header";
+import {
+  clearHearingSheetDraft,
+  loadHearingSheetDraft,
+} from "../utils/hearingSheetDraft";
+import {
+  REQUIRED_DOCUMENT_GROUPS,
+  ensureRequiredDocumentsChecklist,
+} from "../utils/requiredDocumentsStorage";
 import "../App.css";
 import "../styles/articles-result-visily.css";
 
@@ -56,8 +66,61 @@ function participantTitle(participant, index) {
 
 export default function ArticlesPreview() {
   const location = useLocation();
-  const source = location.state?.articlesData?.source;
+  const [fallbackDraft] = useState(loadHearingSheetDraft);
+  const source =
+    location.state?.articlesData?.source || fallbackDraft?.source;
   const isLoggedIn = Boolean(localStorage.getItem("accessToken"));
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [submittedResult, setSubmittedResult] = useState(null);
+  const [documentsConfirmed, setDocumentsConfirmed] = useState(false);
+  const [showScrollGuide, setShowScrollGuide] = useState(Boolean(source));
+  const submitActionsRef = useRef(null);
+
+  useEffect(() => {
+    if (!source || submittedResult) {
+      setShowScrollGuide(false);
+      return undefined;
+    }
+
+    const updateScrollGuide = () => {
+      const actions = submitActionsRef.current;
+      setShowScrollGuide(
+        Boolean(actions) &&
+          actions.getBoundingClientRect().top > window.innerHeight - 90
+      );
+    };
+
+    const frameId = window.requestAnimationFrame(updateScrollGuide);
+    window.addEventListener("scroll", updateScrollGuide, { passive: true });
+    window.addEventListener("resize", updateScrollGuide);
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      window.removeEventListener("scroll", updateScrollGuide);
+      window.removeEventListener("resize", updateScrollGuide);
+    };
+  }, [source, submittedResult]);
+
+  const handleSubmit = async () => {
+    if (!source || isSubmitting || submittedResult) return;
+
+    try {
+      setIsSubmitting(true);
+      setSubmitError("");
+      const result = await createArticles(source);
+      ensureRequiredDocumentsChecklist();
+      clearHearingSheetDraft();
+      setSubmittedResult(result);
+    } catch (error) {
+      console.error("히어링 시트 전송 실패:", error);
+      setSubmitError(
+        error.message || "히어링 시트 전송 중 오류가 발생했습니다."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   if (!source) {
     return (
@@ -111,17 +174,17 @@ export default function ArticlesPreview() {
       <Header isLoggedIn={isLoggedIn} />
       <main className="articles-review-page">
         <div className="articles-review-container">
-          <header className="articles-review-hero">
+          <div className="articles-review-hero">
             <div>
               <p className="articles-review-eyebrow">입력 내용 확인</p>
               <h1>히어링 시트 내용을 다시 확인해 주세요</h1>
-              <p>
-                제출한 기본 정보를 한 번 더 검토하세요. 수정이 필요하면 히어링
-                시트에서 바로 변경할 수 있습니다.
+              <p className="articles-review-description">
+                전송하기 전에 입력한 정보를 한 번 더 검토하세요. 수정이 필요하면
+                히어링 시트로 돌아가 변경할 수 있습니다.
               </p>
             </div>
             <p className="articles-review-count">입력 항목 {completedCount}개</p>
-          </header>
+          </div>
 
           <div className="articles-review-grid">
             <ReviewSection number="01" title="회사 정보">
@@ -202,15 +265,115 @@ export default function ArticlesPreview() {
             </ReviewSection>
           </div>
 
-          <div className="articles-review-actions">
-            <Link className="articles-review-secondary-link" to="/hearing-sheet">
-              입력 내용 수정
-            </Link>
-            <Link className="articles-review-primary-link" to="/reservation">
-              상담 예약하기
-            </Link>
-          </div>
+          {!submittedResult && (
+            <section className="articles-required-documents">
+              <div className="articles-required-documents-head">
+                <div>
+                  <p className="articles-review-eyebrow">필요 서류 확인</p>
+                  <h2>법인 설립에 필요한 서류를 확인해 주세요</h2>
+                </div>
+                <strong>모든 서류는 발급일로부터 1개월 이내</strong>
+              </div>
+              <div className="articles-required-documents-grid">
+                {REQUIRED_DOCUMENT_GROUPS.map((group, index) => (
+                  <article key={group.id}>
+                    <h3>
+                      <span>{String(index + 1).padStart(2, "0")}</span>
+                      {group.title}
+                    </h3>
+                    <p>{group.description}</p>
+                    <ul>
+                      {group.items.map((item) => (
+                        <li key={item.id}>{item.label}</li>
+                      ))}
+                    </ul>
+                  </article>
+                ))}
+              </div>
+              <label className="articles-required-documents-confirm">
+                <input
+                  type="checkbox"
+                  checked={documentsConfirmed}
+                  onChange={(event) =>
+                    setDocumentsConfirmed(event.target.checked)
+                  }
+                />
+                <span>
+                  필요 서류와 발급일 기준을 확인했습니다. 전송 후 마이페이지의
+                  내 파일 관리에서 서류를 업로드하겠습니다.
+                </span>
+              </label>
+              <p className="articles-required-documents-next">
+                아래로 내려가 <strong>전송하기</strong>를 눌러 완료해 주세요.
+                <span aria-hidden="true">↓</span>
+              </p>
+            </section>
+          )}
+
+          {submitError && (
+            <p className="articles-review-submit-error" role="alert">
+              {submitError}
+            </p>
+          )}
+
+          {submittedResult ? (
+            <section className="articles-review-complete" aria-live="polite">
+              <div>
+                <p className="articles-review-eyebrow">전송 완료</p>
+                <h2>히어링 시트가 정상적으로 전송되었습니다.</h2>
+                <p>
+                  입력한 내용을 바탕으로 정관 초안이 생성되었습니다. 이어서 상담을
+                  예약하거나 홈으로 이동할 수 있습니다.
+                </p>
+              </div>
+              <div className="articles-review-complete-actions">
+                <Link className="articles-review-secondary-link" to="/">
+                  홈으로 가기
+                </Link>
+                <Link
+                  className="articles-review-secondary-link"
+                  to="/mypage/required-documents"
+                >
+                  내 파일 관리
+                </Link>
+                <Link className="articles-review-primary-link" to="/reservation">
+                  예약하기
+                </Link>
+              </div>
+            </section>
+          ) : (
+            <div className="articles-review-actions" ref={submitActionsRef}>
+              <Link className="articles-review-secondary-link" to="/hearing-sheet">
+                입력 내용 수정
+              </Link>
+              <button
+                type="button"
+                className="articles-review-primary-link articles-review-submit-btn"
+                onClick={handleSubmit}
+                disabled={isSubmitting || !documentsConfirmed}
+              >
+                {isSubmitting ? "전송 중..." : "전송하기"}
+              </button>
+            </div>
+          )}
         </div>
+
+        {!submittedResult && showScrollGuide && (
+          <button
+            type="button"
+            className="articles-review-floating-guide"
+            aria-label="아래 내용 계속 보기"
+            onClick={() =>
+              window.scrollBy({
+                top: Math.max(window.innerHeight * 0.7, 420),
+                behavior: "smooth",
+              })
+            }
+          >
+            <span>SCROLL</span>
+            <strong aria-hidden="true">↓</strong>
+          </button>
+        )}
       </main>
     </>
   );

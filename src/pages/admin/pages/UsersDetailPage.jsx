@@ -20,6 +20,7 @@ import {
   getReservationAvailability,
   getUserReservations,
 } from "../../../api/reservationApi";
+import { parseReservationNote } from "../../../utils/reservationNoteUtils";
 
 import "./UsersDetailPage.css";
 
@@ -98,19 +99,6 @@ function isTimeInsideRange(slotTime, range) {
   );
 }
 
-function parseChatMessages(note) {
-  if (!note) return [];
-  try {
-    const parsed = typeof note === "string" ? JSON.parse(note) : note;
-    if (Array.isArray(parsed)) return parsed;
-    if (Array.isArray(parsed?.chat)) return parsed.chat;
-    if (Array.isArray(parsed?.messages)) return parsed.messages;
-    return [];
-  } catch {
-    return [];
-  }
-}
-
 function getWeekDateKeys(reservation) {
   const firstRange = getReservationRanges(reservation)[0];
   const base = firstRange ? new Date(firstRange.date) : new Date();
@@ -158,6 +146,7 @@ export default function UsersDetailPage() {
   const [isAvailabilityLoading, setIsAvailabilityLoading] = useState(false);
   const [chatMessage, setChatMessage] = useState("");
   const [isChatSending, setIsChatSending] = useState(false);
+  const reservationChatListRef = useRef(null);
 
   const [previewLoadingPath, setPreviewLoadingPath] = useState(null);
   const [downloadLoadingPath, setDownloadLoadingPath] = useState(null);
@@ -176,10 +165,17 @@ export default function UsersDetailPage() {
     [reservations, selectedReservationId],
   );
 
-  const selectedChatMessages = useMemo(
-    () => parseChatMessages(selectedReservation?.note),
+  const selectedNote = useMemo(
+    () => parseReservationNote(selectedReservation?.note),
     [selectedReservation],
   );
+
+  useEffect(() => {
+    const chatList = reservationChatListRef.current;
+    if (!chatList) return;
+
+    chatList.scrollTop = chatList.scrollHeight;
+  }, [selectedReservationId, selectedNote.messages.length]);
 
   const fetchSelectedUser = useCallback(async () => {
     if (!uuid) {
@@ -720,11 +716,27 @@ export default function UsersDetailPage() {
                 </div>
 
                 <div className="reservation-chat-panel">
-                  <h3>채팅</h3>
-                  <div className="reservation-chat-list">
-                    {selectedChatMessages.length > 0 ? (
-                      selectedChatMessages.map((message, index) => (
-                        <div className={"reservation-chat-message " + (message.role || "")} key={(message.created_at || index) + "-" + index}>
+                  <h3>상담 메모 및 채팅</h3>
+                  {selectedNote.initialRequest && (
+                    <div className="reservation-initial-request">
+                      <strong>고객 추가 요청 사항</strong>
+                      <p>{selectedNote.initialRequest}</p>
+                    </div>
+                  )}
+                  <div
+                    className="reservation-chat-list"
+                    ref={reservationChatListRef}
+                  >
+                    {selectedNote.messages.length > 0 ? (
+                      selectedNote.messages.map((message, index) => (
+                        <div
+                          className={`reservation-chat-message ${
+                            message.role || ""
+                          } ${
+                            message.role === "admin" ? "is-own" : "is-other"
+                          }`}
+                          key={(message.created_at || index) + "-" + index}
+                        >
                           <strong>{message.sender_name || message.role || "작성자"}</strong>
                           <p>{message.message || message.content || ""}</p>
                         </div>
