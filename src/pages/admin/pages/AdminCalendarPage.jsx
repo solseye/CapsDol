@@ -18,7 +18,6 @@ import {
   getWeekDays,
   getWeekInfo,
 } from "../utils/calendarUtils";
-import { confirmAction, notify } from "../../../utils/notifications";
 
 const SLOT_MINUTES = 30;
 const RESERVATION_COLORS = [
@@ -230,7 +229,7 @@ export default function AdminCalendarPage() {
       applyListData(data);
     } catch (err) {
       console.error(err);
-      notify(err.message || "관리자 예약 일정을 불러오지 못했습니다.", "error");
+      alert(err.message || "관리자 예약 일정을 불러오지 못했습니다.");
     } finally {
       setLoading(false);
     }
@@ -251,7 +250,7 @@ export default function AdminCalendarPage() {
       applyListData(data);
     } catch (err) {
       console.error(err);
-      notify("일정을 새로고침하지 못했습니다.", "error");
+      alert("일정을 새로고침하지 못했습니다.");
     } finally {
       setLoading(false);
     }
@@ -477,7 +476,7 @@ export default function AdminCalendarPage() {
         setModalOpen(false);
         await fetchAdminCalendarByCurrentMonth();
       } catch (err) {
-        notify(err.message || "상담 승인 처리에 실패했습니다.", "error");
+        alert(err.message || "상담 승인 처리에 실패했습니다.");
       } finally {
         setLoading(false);
       }
@@ -527,12 +526,9 @@ export default function AdminCalendarPage() {
 
   // 선택된 여러 30분 슬롯을 서버 차단 요청으로 순차 등록합니다.
   const handleCreateBlock = async () => {
-    if (!blockReason.trim()) {
-      notify("차단 사유를 입력해 주세요.", "error");
-      return;
-    }
+    if (!blockReason.trim()) return alert("차단 사유를 입력해 주세요.");
     if (selectedBlockRanges.length === 0)
-      return notify("차단할 시간 범위를 먼저 선택해 주세요.", "error");
+      return alert("차단할 시간 범위를 먼저 선택해 주세요.");
 
     try {
       setLoading(true);
@@ -549,24 +545,21 @@ export default function AdminCalendarPage() {
         ),
       );
 
-      notify("선택한 시간 범위를 차단했습니다.", "success");
+      alert("선택한 시간 범위를 차단했습니다.");
       setModalOpen(false);
       setIsBlockMode(false);
       setPendingBlocks([]);
       await fetchAdminCalendarByCurrentMonth();
     } catch (err) {
       console.error(err);
-      notify(err.message || "예약 차단에 실패했습니다.", "error");
+      alert(err.message || "예약 차단에 실패했습니다.");
     } finally {
       setLoading(false);
     }
   };
 
   const handleApproveDraft = async () => {
-    if (!approvalDraft) {
-      notify("승인할 시간 범위를 먼저 선택해 주세요.", "error");
-      return;
-    }
+    if (!approvalDraft) return alert("승인할 시간 범위를 먼저 선택해 주세요.");
 
     try {
       setLoading(true);
@@ -582,30 +575,25 @@ export default function AdminCalendarPage() {
       setModalOpen(false);
       await fetchAdminCalendarByCurrentMonth();
     } catch (err) {
-      notify(err.message || "상담 승인 처리에 실패했습니다.", "error");
+      alert(err.message || "상담 승인 처리에 실패했습니다.");
     } finally {
       setLoading(false);
     }
   };
   // 연속 차단으로 병합된 슬롯까지 한 번에 차단 해제합니다.
   const handleUnblock = async (ids) => {
-    const confirmed = await confirmAction({
-      title: "차단 일정을 해제할까요?",
-      message: "선택한 시간대를 다시 예약 가능한 상태로 변경합니다.",
-      confirmLabel: "차단 해제",
-    });
-    if (!confirmed) return;
-
-    try {
-      setLoading(true);
-      const idArray = Array.isArray(ids) ? ids : [ids];
-      await Promise.all(idArray.map((id) => unblockAdminReservation(id)));
-      setModalOpen(false);
-      await fetchAdminCalendarByCurrentMonth();
-    } catch (err) {
-      notify("차단 해제에 실패했습니다.", "error");
-    } finally {
-      setLoading(false);
+    if (window.confirm("선택한 차단 일정을 해제하시겠습니까?")) {
+      try {
+        setLoading(true);
+        const idArray = Array.isArray(ids) ? ids : [ids];
+        await Promise.all(idArray.map((id) => unblockAdminReservation(id)));
+        setModalOpen(false);
+        await fetchAdminCalendarByCurrentMonth();
+      } catch (err) {
+        alert("차단 해제에 실패했습니다.");
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -615,34 +603,26 @@ export default function AdminCalendarPage() {
       "",
     );
     if (reason === null) return;
-    const confirmed = await confirmAction({
-      title: "상담 신청을 불허할까요?",
-      message: reason.trim()
-        ? `사용자에게 전달할 사유: ${reason.trim()}`
-        : "사유 없이 불허 또는 취소 처리합니다.",
-      confirmLabel: "불허 처리",
-      tone: "danger",
-    });
-    if (!confirmed) return;
-
-    try {
-      setLoading(true);
-      if (status === "approved" || status === "confirmed") {
-        await cancelReservation({
-          reservationId: id,
-          cancelReason: reason.trim(),
-        });
-      } else {
-        await disallowAdminReservation([
-          { id, reason: reason.trim() || null },
-        ]);
+    if (window.confirm("정말 이 상담 신청을 불허(취소)하시겠습니까?")) {
+      try {
+        setLoading(true);
+        if (status === "approved" || status === "confirmed") {
+          await cancelReservation({
+            reservationId: id,
+            cancelReason: reason.trim(),
+          });
+        } else {
+          await disallowAdminReservation([
+            { id, reason: reason.trim() || null },
+          ]);
+        }
+        setModalOpen(false);
+        await fetchAdminCalendarByCurrentMonth();
+      } catch (err) {
+        alert("불허 처리에 실패했습니다.");
+      } finally {
+        setLoading(false);
       }
-      setModalOpen(false);
-      await fetchAdminCalendarByCurrentMonth();
-    } catch (err) {
-      notify("불허 처리에 실패했습니다.", "error");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -1151,7 +1131,7 @@ export default function AdminCalendarPage() {
                   className="adm-btn danger"
                   onClick={() => {
                     if (selectedBlockRanges.length === 0)
-                      return notify("차단할 시간대를 먼저 선택해 주세요.", "error");
+                      return alert("차단할 시간대를 먼저 선택해 주세요.");
                     setBlockReason("");
                     setModalType("create-block");
                     setModalOpen(true);

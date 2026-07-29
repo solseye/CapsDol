@@ -41,11 +41,7 @@ function UserRoute({ children }) {
 }
 
 function AdminRoute({ children }) {
-  return (
-    <ProtectedRoute role="admin">
-      <AdminLayout>{children}</AdminLayout>
-    </ProtectedRoute>
-  );
+  return <AdminLayout>{children}</AdminLayout>;
 }
 
 function App() {
@@ -85,8 +81,8 @@ function App() {
 
           <Route path="/admin/calendar" element={<AdminRoute><AdminCalendarPage /></AdminRoute>} />
           <Route path="/admin/pdf-upload" element={<AdminRoute><PdfUploadPage /></AdminRoute>} />
+          <Route path="/admin/pdf-list" element={<AdminRoute><PdfManagementPage /></AdminRoute>} />
           <Route path="/admin/pdf" element={<AdminRoute><PdfManagementPage /></AdminRoute>} />
-          <Route path="/admin/pdf-list" element={<Navigate to="/admin/pdf" replace />} />
           <Route path="/admin/chatbot" element={<AdminRoute><AdminChatbotPage /></AdminRoute>} />
           <Route path="/admin/users" element={<AdminRoute><UsersPage /></AdminRoute>} />
           <Route path="/admin/users/:uuid" element={<AdminRoute><UsersDetailPage /></AdminRoute>} />
