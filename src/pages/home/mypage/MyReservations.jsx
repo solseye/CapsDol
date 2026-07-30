@@ -250,10 +250,10 @@ export default function MyReservations() {
       setSuccess("");
       setCancelLoadingId(reservationId);
 
-      const data = await cancelReservation(
+      const data = await cancelReservation({
         reservationId,
-        trimmedReason || null
-      );
+        cancelReason: trimmedReason,
+      });
 
       if (data.success) {
         setLocalCancelReasons((prev) => ({
@@ -287,7 +287,7 @@ export default function MyReservations() {
       setSuccess("");
       setDeleteLoadingId(reservationId);
 
-      const data = await deleteReservation(reservationId);
+      const data = await deleteReservation({ reservationId });
 
       if (data.success) {
         setSuccess("상담 내역이 삭제되었습니다.");
