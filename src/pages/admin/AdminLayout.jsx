@@ -45,9 +45,9 @@ export default function AdminLayout({ children }) {
     <div className={`adm-shell ${isSidebarOpen ? "sidebar-open" : ""}`}>
       <header className="adm-mobile-header">
         <div className="adm-mobile-brand">
-          <span>W</span>
+          <span>M</span>
           <div>
-            <strong>WVA AI Consulting</strong>
+            <strong>M&amp;K 사무소</strong>
             <small>Admin Console</small>
           </div>
         </div>

@@ -1,18 +1,21 @@
 import { Link } from "react-router-dom";
 import "../styles/sonny-selected-home.css";
+import { getCurrentLanguage, translate } from "../i18n/translations";
 
 export default function FloatingChatBtn() {
+  const language = getCurrentLanguage();
+
   return (
     <Link
       to="/chat"
       className="selected-floating-chat"
-      aria-label="AI 상담 챗봇으로 이동"
+      aria-label={translate(language, "common.floatingChat")}
     >
       <span className="selected-floating-pulse" aria-hidden="true" />
       <span className="selected-floating-icon" aria-hidden="true">
         ◌
       </span>
-      <span>AI 상담</span>
+      <span>{translate(language, "common.aiChat")}</span>
     </Link>
   );
 }

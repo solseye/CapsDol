@@ -24,9 +24,7 @@ export default function Header({ isLoggedIn }) {
     location.pathname.startsWith("/mypage") || location.pathname === "/chat";
   const isReservationSection = location.pathname === "/reservation";
   const isHearingSection = location.pathname === "/hearing-sheet";
-  const showLanguageMenu = ["/", "/reservation", "/hearing-sheet"].includes(
-    location.pathname
-  );
+  const showLanguageMenu = true;
 
   const mainNavItems = isUserWorkspace
     ? [{ to: "/reservation", label: t("common.navReservation") }]
@@ -110,20 +108,20 @@ export default function Header({ isLoggedIn }) {
 
   const mobileNavItems = isUserWorkspace
     ? [
-        { to: "/mypage", label: "마이페이지" },
-        { to: "/mypage/reservations", label: "내 상담 내역" },
-        { to: "/mypage/files", label: "내 파일 관리" },
-        { to: "/hearing-sheet", label: "히어링 시트 작성" },
-        { to: "/chat", label: "AI 챗봇" },
+        { to: "/mypage", label: t("common.navMyPage") },
+        { to: "/mypage/reservations", label: t("common.myConsultations") },
+        { to: "/mypage/files", label: t("common.myFiles") },
+        { to: "/hearing-sheet", label: t("common.hearingWrite") },
+        { to: "/chat", label: t("common.aiChat") },
         { to: "/reservation", label: t("common.navReservation") },
       ]
     : mainNavItems;
 
   const handleLogout = async () => {
     const confirmed = await confirmAction({
-      title: "로그아웃할까요?",
-      message: "브라우저에 저장된 작성 중인 내용은 유지됩니다.",
-      confirmLabel: "로그아웃",
+      title: t("common.logoutTitle"),
+      message: t("common.logoutMessage"),
+      confirmLabel: t("common.navLogout"),
     });
 
     if (!confirmed) return;
@@ -145,13 +143,13 @@ export default function Header({ isLoggedIn }) {
         <Link to="/" className="brand" onClick={handleLogoClick}>
           <span className="logo" aria-hidden="true">◎</span>
           <span className="brand-copy">
-            <strong>WVA AI Consulting</strong>
-            <small>일본 진출 운영 시스템</small>
+            <strong>{t("common.brandName")}</strong>
+            <small>{t("common.brandSub")}</small>
           </span>
         </Link>
 
         <div className="nav-right">
-          <nav className="main-nav" aria-label="주요 메뉴" ref={dropdownAreaRef}>
+          <nav className="main-nav" aria-label={t("common.mainMenu")} ref={dropdownAreaRef}>
             <ul>
               {isUserWorkspace ? (
                 <>
@@ -163,17 +161,17 @@ export default function Header({ isLoggedIn }) {
                     aria-haspopup="menu"
                     onClick={() => toggleDropdown("mypage")}
                   >
-                    마이페이지 <span aria-hidden="true">⌄</span>
+                    {t("common.navMyPage")} <span aria-hidden="true">⌄</span>
                   </button>
                   <div className={`nav-dropdown-menu ${openDropdown === "mypage" ? "is-open" : ""}`} role="menu">
                     <Link to="/mypage" role="menuitem" onClick={() => setOpenDropdown(null)}>
-                      마이페이지 홈
+                      {t("common.myPageHome")}
                     </Link>
                     <Link to="/mypage/reservations" role="menuitem" onClick={() => setOpenDropdown(null)}>
-                      내 상담 내역
+                      {t("common.myConsultations")}
                     </Link>
                     <Link to="/mypage/files" role="menuitem" onClick={() => setOpenDropdown(null)}>
-                      내 파일 관리
+                      {t("common.myFiles")}
                     </Link>
                   </div>
                   </li>
@@ -186,14 +184,14 @@ export default function Header({ isLoggedIn }) {
                       aria-haspopup="menu"
                       onClick={() => toggleDropdown("tools")}
                     >
-                      사전진단 <span aria-hidden="true">⌄</span>
+                      {t("common.precheck")} <span aria-hidden="true">⌄</span>
                     </button>
                     <div className={`nav-dropdown-menu ${openDropdown === "tools" ? "is-open" : ""}`} role="menu">
                       <Link to="/hearing-sheet" role="menuitem" onClick={() => setOpenDropdown(null)}>
-                        히어링 시트 작성
+                        {t("common.hearingWrite")}
                       </Link>
                       <Link to="/chat" role="menuitem" onClick={() => setOpenDropdown(null)}>
-                        AI 챗봇
+                        {t("common.aiChat")}
                       </Link>
                     </div>
                   </li>
@@ -269,7 +267,7 @@ export default function Header({ isLoggedIn }) {
           <button
             type="button"
             className={`site-menu-toggle ${isMobileMenuOpen ? "is-open" : ""}`}
-            aria-label="메뉴 열기"
+            aria-label={t("common.menuOpen")}
             aria-expanded={isMobileMenuOpen}
             onClick={() => setIsMobileMenuOpen((prev) => !prev)}
           >
@@ -279,7 +277,7 @@ export default function Header({ isLoggedIn }) {
         </div>
 
         <div className={`site-mobile-menu ${isMobileMenuOpen ? "is-open" : ""}`}>
-          <nav aria-label="모바일 메뉴">
+          <nav aria-label={t("common.mobileMenu")}>
             {mobileNavItems.map((item) => (
               <Link
                 key={item.to}
@@ -299,7 +297,7 @@ export default function Header({ isLoggedIn }) {
                   {t("common.navLogin")}
                 </Link>
                 <Link to="/signup" className="btn primary" onClick={closeMobileMenu}>
-                  회원가입
+                  {t("common.navSignup")}
                 </Link>
               </>
             )}

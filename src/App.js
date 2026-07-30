@@ -3,6 +3,8 @@ import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RouteMeta from "./components/RouteMeta";
 import NotificationCenter from "./components/NotificationCenter";
+import LegacyPageLocalization from "./components/LegacyPageLocalization";
+import { getCurrentLanguage, translate } from "./i18n/translations";
 
 const Home = lazy(() => import("./pages/Home"));
 const HearingSheet = lazy(() => import("./pages/HearingSheet"));
@@ -28,10 +30,12 @@ const UsersPage = lazy(() => import("./pages/admin/pages/UsersPage"));
 const UsersDetailPage = lazy(() => import("./pages/admin/pages/UsersDetailPage"));
 
 function LoadingScreen() {
+  const language = getCurrentLanguage();
+
   return (
     <div className="route-loading" role="status" aria-live="polite">
       <span />
-      페이지를 불러오고 있습니다.
+      {translate(language, "common.loadingPage")}
     </div>
   );
 }
@@ -55,6 +59,7 @@ function App() {
     <>
       <RouteMeta />
       <NotificationCenter />
+      <LegacyPageLocalization />
       <Suspense fallback={<LoadingScreen />}>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -64,7 +69,14 @@ function App() {
           <Route path="/lostpw" element={<LostPw />} />
           <Route path="/reset-password" element={<ResetPassword />} />
 
-          <Route path="/hearing-sheet" element={<HearingSheet />} />
+          <Route
+            path="/hearing-sheet"
+            element={
+              <UserRoute>
+                <HearingSheet />
+              </UserRoute>
+            }
+          />
           <Route path="/articles-result" element={<ArticlesPreview />} />
 
           <Route path="/reservation" element={<UserRoute><Reservations /></UserRoute>} />

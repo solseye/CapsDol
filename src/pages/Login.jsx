@@ -7,12 +7,15 @@ import {
   getSafeReturnPath,
   saveSession,
 } from "../utils/authSession";
+import { getPageCopy } from "../i18n/pageCopy";
+import { getCurrentLanguage } from "../i18n/translations";
 
 const GOOGLE_CLIENT_ID =
   process.env.REACT_APP_GOOGLE_CLIENT_ID ||
   "1008976808306-khvao892b8n9rv6lmk89k9qoba9i03m6.apps.googleusercontent.com";
 
 export default function Login() {
+  const copy = getPageCopy("auth");
   const navigate = useNavigate();
   const location = useLocation();
   const googleButtonRef = useRef(null);
@@ -48,11 +51,11 @@ export default function Login() {
         const data = await loginWithGoogle(idToken);
 
         if (!data.success || !data.accessToken) {
-          throw new Error("구글 로그인 실패");
+          throw new Error(copy.googleError);
         }
 
         saveSession(data, {
-          username: "Google 사용자",
+          username: copy.googleUser,
           role: data.role,
         });
         navigate(getSafeReturnPath(location.state, data.role), {
@@ -61,15 +64,17 @@ export default function Login() {
         });
       } catch (err) {
         console.error("구글 로그인 에러:", err);
-        setError("구글 로그인에 실패했습니다.");
+        setError(copy.googleError);
       } finally {
         setGoogleLoading(false);
       }
     },
-    [location.state, navigate]
+    [copy.googleError, copy.googleUser, location.state, navigate]
   );
 
   useEffect(() => {
+    const googleLocale = getCurrentLanguage();
+    const googleScriptSrc = `https://accounts.google.com/gsi/client?hl=${googleLocale}`;
     const initializeGoogleLogin = () => {
       if (!window.google || !googleButtonRef.current) return;
 
@@ -87,12 +92,11 @@ export default function Login() {
         width: 320,
         text: "signin_with",
         logo_alignment: "left",
+        locale: getCurrentLanguage(),
       });
     };
 
-    const existingScript = document.querySelector(
-      'script[src="https://accounts.google.com/gsi/client"]'
-    );
+    const existingScript = document.querySelector('script[src^="https://accounts.google.com/gsi/client"]');
 
     if (existingScript) {
       initializeGoogleLogin();
@@ -100,7 +104,7 @@ export default function Login() {
     }
 
     const script = document.createElement("script");
-    script.src = "https://accounts.google.com/gsi/client";
+    script.src = googleScriptSrc;
     script.async = true;
     script.defer = true;
     script.onload = initializeGoogleLogin;
@@ -124,7 +128,7 @@ export default function Login() {
     e.preventDefault();
 
     if (!form.username.trim() || !form.password.trim()) {
-      setError("아이디와 비밀번호를 모두 입력해 주세요.");
+      setError(copy.requiredError);
       return;
     }
 
@@ -149,7 +153,7 @@ export default function Login() {
       });
     } catch (err) {
       console.error("로그인 실패:", err);
-      setError("아이디 또는 비밀번호를 다시 확인해 주세요.");
+      setError(copy.loginError);
     } finally {
       setLoading(false);
     }
@@ -162,75 +166,72 @@ export default function Login() {
           type="button"
           className="authv-brand"
           onClick={() => navigate("/")}
-          aria-label="WVA 홈으로 이동"
+          aria-label={copy.brandHome}
         >
           <span>◎</span>
-          <strong>WVA AI Consulting</strong>
+          <strong>{copy.brandName}</strong>
         </button>
 
         <div className="authv-brand-copy">
           <h1>
-            AI로 일본 진출 준비를
-            <span>더 빠르고 정확하게</span>
+            {copy.heroTitle}
+            <span>{copy.heroAccent}</span>
           </h1>
-          <p>
-            법인 설립, 정관 초안, 세무·회계 질문, 전문가 상담 예약까지
-            하나의 업무 흐름으로 정리하세요.
-          </p>
+          <p>{copy.heroBody}</p>
 
           <div className="authv-proof-grid">
             <div>
               <span>✓</span>
-              <strong>문서 중심 보안</strong>
-              <p>기업 정보와 법무 자료를 업무 단위로 정리합니다.</p>
+              <strong>{copy.proof1Title}</strong>
+              <p>{copy.proof1Body}</p>
             </div>
             <div>
               <span>✓</span>
-              <strong>전문가 연결</strong>
-              <p>AI가 정리한 내용을 상담 예약으로 이어갑니다.</p>
+              <strong>{copy.proof2Title}</strong>
+              <p>{copy.proof2Body}</p>
             </div>
           </div>
         </div>
 
-        <p className="authv-trust">일본 시장 진출을 준비하는 기업을 위한 WVA 업무 플랫폼</p>
+        <p className="authv-trust">{copy.trust}</p>
       </section>
 
       <section className="authv-form-panel">
         <div className="authv-card">
           <div className="authv-title">
-            <h2>다시 오신 것을 환영합니다</h2>
-            <p>일본 진출 운영 시스템에 접속하려면 로그인해 주세요.</p>
+            <h2>{copy.welcome}</h2>
+            <p>{copy.loginIntro}</p>
           </div>
 
           <div className="authv-google-box">
             <div ref={googleButtonRef} className="authv-google-button" />
-            {googleLoading && <p>구글 로그인 처리 중...</p>}
+            {googleLoading && <p>{copy.googleLoading}</p>}
           </div>
 
           <div className="authv-divider">
-            <span>또는 아이디로 계속하기</span>
+            <span>{copy.continueId}</span>
           </div>
 
           <div className="authv-tabs">
             <button type="button" className="active">
-              로그인
+              {copy.login}
             </button>
             <button
               type="button"
               onClick={() => navigate("/signup", { state: location.state })}
             >
-              회원가입
+              {copy.signup}
             </button>
           </div>
 
           <form className="authv-form" onSubmit={handleLogin}>
             <div className="authv-field">
-              <label htmlFor="username">아이디</label>
+              <label htmlFor="username">{copy.username}</label>
               <input
                 id="username"
                 type="text"
                 name="username"
-                placeholder="아이디를 입력하세요"
+                placeholder={copy.usernamePlaceholder}
                 value={form.username}
                 onChange={handleChange}
                 autoComplete="username"
@@ -239,16 +240,16 @@ export default function Login() {
 
             <div className="authv-field">
               <div className="authv-label-row">
-                <label htmlFor="password">비밀번호</label>
+                <label htmlFor="password">{copy.password}</label>
                 <button type="button" onClick={() => navigate("/lostpw")}>
-                  비밀번호 찾기
+                  {copy.findPassword}
                 </button>
               </div>
               <input
                 id="password"
                 type="password"
                 name="password"
-                placeholder="비밀번호를 입력하세요"
+                placeholder={copy.passwordPlaceholder}
                 value={form.password}
                 onChange={handleChange}
                 autoComplete="current-password"
@@ -256,7 +257,7 @@ export default function Login() {
             </div>
 
             <p className="authv-remember">
-              <span>공용 기기에서는 이용 후 반드시 로그아웃해 주세요.</span>
+              <span>{copy.publicDevice}</span>
             </p>
 
             {location.state?.message && !error && (
@@ -265,24 +266,24 @@ export default function Login() {
             {error && <p className="authv-error">{error}</p>}
 
             <button type="submit" className="authv-submit" disabled={loading}>
-              {loading ? "로그인 중..." : "WVA에 로그인"} <span>→</span>
+              {loading ? copy.loggingIn : copy.loginButton} <span>→</span>
             </button>
           </form>
 
           <div className="authv-help">
             <button type="button" onClick={() => navigate("/lostid")}>
-              아이디 찾기
+              {copy.findId}
             </button>
-            <span>도움이 필요하신가요?</span>
+            <span>{copy.needHelp}</span>
             <button type="button" onClick={() => navigate("/#experts")}>
-              전문가 안내
+              {copy.expertInfo}
             </button>
           </div>
 
           <div className="authv-compliance">
-            <span>문서 기반 상담</span>
-            <span>AI 상담 지원</span>
-            <span>전문가 검토 연결</span>
+            <span>{copy.compliance1}</span>
+            <span>{copy.compliance2}</span>
+            <span>{copy.compliance3}</span>
           </div>
         </div>
       </section>

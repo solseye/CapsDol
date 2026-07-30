@@ -7,9 +7,26 @@ const LANGUAGE_OPTIONS = [
   { code: "en", label: "English", shortLabel: "EN" },
 ];
 
+const LANGUAGE_MENU_COPY = {
+  ko: {
+    label: "언어 선택",
+    current: (language) => `언어 선택, 현재 ${language}`,
+  },
+  en: {
+    label: "Select language",
+    current: (language) => `Select language, current language: ${language}`,
+  },
+  ja: {
+    label: "言語を選択",
+    current: (language) => `言語を選択、現在の言語：${language}`,
+  },
+};
+
 export default function LanguageMenu({ className = "" }) {
   const [isOpen, setIsOpen] = useState(false);
   const currentLanguage = getCurrentLanguage();
+  const copy =
+    LANGUAGE_MENU_COPY[currentLanguage] || LANGUAGE_MENU_COPY.ko;
   const menuRef = useRef(null);
   const closeTimerRef = useRef(null);
 
@@ -18,6 +35,9 @@ export default function LanguageMenu({ className = "" }) {
     LANGUAGE_OPTIONS[0];
 
   useEffect(() => {
+    document.documentElement.lang = currentLanguage;
+    document.documentElement.setAttribute("data-lang", currentLanguage);
+
     const handleClickOutside = (event) => {
       if (!menuRef.current?.contains(event.target)) {
         setIsOpen(false);
@@ -30,7 +50,7 @@ export default function LanguageMenu({ className = "" }) {
       document.removeEventListener("mousedown", handleClickOutside);
       window.clearTimeout(closeTimerRef.current);
     };
-  }, []);
+  }, [currentLanguage]);
 
   const openMenu = () => {
     window.clearTimeout(closeTimerRef.current);
@@ -58,7 +78,7 @@ export default function LanguageMenu({ className = "" }) {
     <div
       className={`language-menu ${className}`.trim()}
       ref={menuRef}
-      aria-label="언어 선택"
+      aria-label={copy.label}
       onMouseEnter={openMenu}
       onMouseLeave={closeMenuWithDelay}
       onFocus={openMenu}
@@ -68,7 +88,7 @@ export default function LanguageMenu({ className = "" }) {
         className="language-menu-trigger"
         onClick={openMenu}
         aria-expanded={isOpen}
-        aria-label={`언어 선택, 현재 ${currentOption.label}`}
+        aria-label={copy.current(currentOption.label)}
       >
         <span className="language-globe" aria-hidden="true">
           <i />

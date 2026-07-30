@@ -48,6 +48,7 @@ export default function SupportInfo() {
         t("home.expert2Specialty3"),
         t("home.expert2Specialty4"),
         t("home.expert2Specialty5"),
+        t("home.expert2Specialty6"),
       ],
     },
   ];

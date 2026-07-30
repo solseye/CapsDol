@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import "../App.css";
 import Header from "../components/Header";
 import { getCurrentLanguage, translate } from "../i18n/translations";
+import { getHearingUiCopy } from "../i18n/hearingUi";
 import {
   collectionToArray,
   loadHearingSheetDraft,
@@ -20,6 +21,7 @@ const convertArrayToObject = (array) =>
 export default function HearingSheet() {
   const language = getCurrentLanguage();
   const t = (key, variables) => translate(language, key, variables);
+  const ui = getHearingUiCopy();
   const [storedDraft] = useState(loadHearingSheetDraft);
   const initialSource = storedDraft?.source || {};
 
@@ -420,11 +422,12 @@ ${directorText}
   };
 
   const navigate = useNavigate();
+  const brandName = t("common.brandName");
 
   useEffect(() => {
-    document.documentElement.lang = "ko";
-    document.title = "WVA AI Consulting | 법인 설립 정보 입력";
-  }, []);
+    document.documentElement.lang = language;
+    document.title = `${ui.pageTitle} | ${brandName}`;
+  }, [brandName, language, ui.pageTitle]);
 
   useEffect(() => {
     // 대표이사 선택값은 기존 제출 payload의 representativeDirector 필드를 유지한다.
@@ -634,38 +637,13 @@ ${directorText}
     });
   };
 
-  const steps = [
-    {
-      id: "company",
-      title: "회사 정보",
-      desc: "상호, 영문 상호, 본점 소재지",
-      icon: "01",
-    },
-    {
-      id: "business",
-      title: "사업·회계 정보",
-      desc: "사업 목적, 최초 사업연도, 매년 사업연도",
-      icon: "02",
-    },
-    {
-      id: "finance",
-      title: "금융·자본 정보",
-      desc: "납입 은행, 자본금, 주식 정보",
-      icon: "03",
-    },
-    {
-      id: "founders",
-      title: "주주",
-      desc: "주주와 출자 정보",
-      icon: "04",
-    },
-    {
-      id: "officers",
-      title: "임원 정보",
-      desc: "대표이사, 이사, 임기",
-      icon: "05",
-    },
-  ];
+  const stepIds = ["company", "business", "finance", "founders", "officers"];
+  const steps = ui.steps.map(([title, desc], index) => ({
+    id: stepIds[index],
+    title,
+    desc,
+    icon: String(index + 1).padStart(2, "0"),
+  }));
 
   const safeCurrentStep = Math.min(currentStep, steps.length - 1);
   const currentStepData = steps[safeCurrentStep] || steps[steps.length - 1];
@@ -715,7 +693,7 @@ ${directorText}
     if (invalidFields.length > 0) {
       setFieldErrors((current) => ({ ...current, ...errors }));
       setValidationIssues([]);
-      setSubmitError("현재 단계의 필수 항목을 확인해 주세요.");
+      setSubmitError(ui.currentRequired);
       focusField(invalidFields[0].key);
       return;
     }
@@ -796,11 +774,11 @@ ${directorText}
     const count = index + 1;
     const roles = [];
 
-    if (founder.isFounder) roles.push("발기인");
-    if (founder.isInvestor) roles.push("출자자");
+    if (founder.isFounder) roles.push(ui.founder);
+    if (founder.isInvestor) roles.push(ui.investor);
 
     return {
-      title: `주주 ${count}`,
+      title: `${ui.shareholders} ${count}`,
       roleTag: roles.length > 0 ? `(${roles.join("·")})` : "",
     };
   };
@@ -813,7 +791,7 @@ ${directorText}
         <section className="hsv-form-card">
           <div className="hsv-card-head">
             <div>
-              <h2><span className="hsv-section-number">01</span>회사 정보</h2>
+              <h2><span className="hsv-section-number">01</span>{ui.sectionCompany}</h2>
             </div>
           </div>
 
@@ -828,7 +806,7 @@ ${directorText}
 
             {renderTextInput({
               fieldKey: "companyNameEn",
-              label: "영문 상호",
+              label: ui.englishName,
               value: companyNameEn,
               onChange: setCompanyNameEn,
               placeholder: t("hearing.companyNameEnPlaceholder"),
@@ -852,7 +830,7 @@ ${directorText}
         <section className="hsv-form-card">
           <div className="hsv-card-head">
             <div>
-              <h2><span className="hsv-section-number">02</span>사업·회계 정보</h2>
+              <h2><span className="hsv-section-number">02</span>{ui.sectionBusiness}</h2>
             </div>
             <button type="button" className="hsv-small-btn" onClick={addPurpose}>
               + 추가
@@ -880,7 +858,7 @@ ${directorText}
                   label: `사업 목적 ${index + 1}`,
                   value: purpose.content,
                   onChange: (value) => updatePurpose(index, value),
-                  placeholder: "사업 목적을 입력해 주세요",
+                  placeholder: ui.purposePlaceholder,
                   labelHidden: true,
                 })}
               </div>
@@ -888,15 +866,15 @@ ${directorText}
           </div>
 
           <div className="hsv-subsection-head">
-            <h3>사업연도</h3>
+            <h3>{ui.fiscalYear}</h3>
           </div>
           <div className="hsv-fiscal-year-grid">
             <section className="hsv-fiscal-year-block" aria-labelledby="first-fiscal-year-title">
-              <h3 id="first-fiscal-year-title">최초 사업연도</h3>
+              <h3 id="first-fiscal-year-title">{ui.firstFiscal}</h3>
               <div className="hsv-grid2">
                 {renderTextInput({
                   fieldKey: "firstBusinessYearStart",
-                  label: "시작일",
+                  label: ui.start,
                   value: firstBusinessYearStart,
                   onChange: updateFirstBusinessYearStart,
                   placeholder: t("hearing.firstBusinessYearStartPlaceholder"),
@@ -904,7 +882,7 @@ ${directorText}
                 })}
                 {renderTextInput({
                   fieldKey: "firstBusinessYearEnd",
-                  label: "종료일",
+                  label: ui.end,
                   value: firstBusinessYearEnd,
                   onChange: setFirstBusinessYearEnd,
                   placeholder: t("hearing.firstBusinessYearEndPlaceholder"),
@@ -913,11 +891,11 @@ ${directorText}
               </div>
             </section>
             <section className="hsv-fiscal-year-block" aria-labelledby="annual-fiscal-year-title">
-              <h3 id="annual-fiscal-year-title">매년 사업연도</h3>
+              <h3 id="annual-fiscal-year-title">{ui.annualFiscal}</h3>
               <div className="hsv-grid2">
                 {renderTextInput({
                   fieldKey: "businessYearStart",
-                  label: "시작일",
+                  label: ui.start,
                   value: businessYearStart,
                   onChange: updateBusinessYearStart,
                   placeholder: t("hearing.businessYearStartPlaceholder"),
@@ -925,7 +903,7 @@ ${directorText}
                 })}
                 {renderTextInput({
                   fieldKey: "businessYearEnd",
-                  label: "종료일",
+                  label: ui.end,
                   value: businessYearEnd,
                   onChange: setBusinessYearEnd,
                   placeholder: t("hearing.businessYearEndPlaceholder"),
@@ -943,7 +921,7 @@ ${directorText}
         <section className="hsv-form-card">
           <div className="hsv-card-head">
             <div>
-              <h2><span className="hsv-section-number">03</span>금융·자본 정보</h2>
+              <h2><span className="hsv-section-number">03</span>{ui.sectionFinance}</h2>
             </div>
           </div>
 
@@ -974,7 +952,7 @@ ${directorText}
 
             {renderTextInput({
               fieldKey: "totalSharesAuthorized",
-              label: "발행가능주식총수",
+              label: ui.authorizedShares,
               value: totalSharesAuthorized,
               onChange: setTotalSharesAuthorized,
               placeholder: t("hearing.totalSharesAuthorizedPlaceholder"),
@@ -982,7 +960,7 @@ ${directorText}
 
             {renderTextInput({
               fieldKey: "initialIssuedShares",
-              label: "설립 시 발행주식수",
+              label: ui.initialShares,
               value: initialIssuedShares,
               onChange: setInitialIssuedShares,
               placeholder: t("hearing.initialIssuedSharesPlaceholder"),
@@ -998,7 +976,7 @@ ${directorText}
         <section className="hsv-form-card">
           <div className="hsv-card-head">
             <div>
-              <h2><span className="hsv-section-number">04</span>주주</h2>
+              <h2><span className="hsv-section-number">04</span>{ui.sectionShareholders}</h2>
             </div>
             <button type="button" className="hsv-small-btn" onClick={addFounder}>
               + 추가
@@ -1036,7 +1014,7 @@ ${directorText}
                           *
                         </span>
                       </span>
-                      <small>복수 선택 가능</small>
+                      <small>{ui.multiple}</small>
                     </div>
                     <div
                       className="hsv-role-options"
@@ -1054,7 +1032,7 @@ ${directorText}
                             updateFounder(index, "isFounder", event.target.checked)
                           }
                         />
-                        <span>발기인</span>
+                        <span>{ui.founder}</span>
                       </label>
                       <label className={founder.isInvestor ? "is-active" : ""}>
                         <input
@@ -1064,7 +1042,7 @@ ${directorText}
                             updateFounder(index, "isInvestor", event.target.checked)
                           }
                         />
-                        <span>출자자</span>
+                        <span>{ui.investor}</span>
                       </label>
                     </div>
                     {renderFieldError(`founders.${index}.role`)}
@@ -1072,21 +1050,21 @@ ${directorText}
 
                   {renderTextInput({
                     fieldKey: `founders.${index}.address`,
-                    label: "주소",
+                    label: t("hearing.address"),
                     value: founder.address,
                     onChange: (value) => updateFounder(index, "address", value),
                     placeholder: t("hearing.addressPlaceholder"),
                   })}
                   {renderTextInput({
                     fieldKey: `founders.${index}.name`,
-                    label: "이름",
+                    label: ui.name,
                     value: founder.name,
                     onChange: (value) => updateFounder(index, "name", value),
                     placeholder: t("hearing.namePlaceholder"),
                   })}
                   {renderTextInput({
                     fieldKey: `founders.${index}.investmentAmount`,
-                    label: "출자금액",
+                    label: ui.investment,
                     value: founder.investmentAmount,
                     onChange: (value) =>
                       updateFounder(index, "investmentAmount", value),
@@ -1105,12 +1083,12 @@ ${directorText}
       <section className="hsv-form-card">
         <div className="hsv-card-head">
           <div>
-            <h2><span className="hsv-section-number">05</span>임원 정보</h2>
+            <h2><span className="hsv-section-number">05</span>{ui.sectionOfficers}</h2>
           </div>
         </div>
 
         <div className="hsv-subsection-head">
-          <h3>대표이사</h3>
+          <h3>{ui.representative}</h3>
         </div>
         <p className="hsv-section-hint">
           대표이사 정보는 이사 목록의 첫 번째 이사로 자동 등록됩니다.
@@ -1120,28 +1098,28 @@ ${directorText}
           <div className="hsv-grid2">
             {renderTextInput({
               fieldKey: "directors.0.name",
-              label: "이름",
+              label: ui.name,
               value: directors[0]?.name || "",
               onChange: (value) => updateDirector(0, "name", value),
               placeholder: t("hearing.namePlaceholder"),
             })}
             {renderTextInput({
               fieldKey: "directors.0.address",
-              label: "주소",
+              label: t("hearing.address"),
               value: directors[0]?.address || "",
               onChange: (value) => updateDirector(0, "address", value),
               placeholder: t("hearing.addressPlaceholder"),
             })}
             {renderTextInput({
               fieldKey: "directors.0.romanizedName",
-              label: "로마자 성명",
+              label: ui.romanized,
               value: directors[0]?.romanizedName || "",
               onChange: (value) => updateDirector(0, "romanizedName", value),
               placeholder: t("hearing.romanizedNamePlaceholder"),
             })}
             {renderTextInput({
               fieldKey: "directorTerm",
-              label: "이사 임기",
+              label: ui.term,
               value: directorTerm,
               onChange: setDirectorTerm,
               placeholder: t("hearing.directorTermPlaceholder"),
@@ -1151,8 +1129,8 @@ ${directorText}
 
         <div className="hsv-subsection-head hsv-additional-directors-head">
           <div>
-            <h3>추가 이사</h3>
-            <p>필요한 경우에만 이사를 추가해 주세요.</p>
+            <h3>{ui.additionalDirectors}</h3>
+            <p>{ui.optionalDirectors}</p>
           </div>
           <button type="button" className="hsv-small-btn" onClick={addDirector}>
             + 추가
@@ -1180,21 +1158,21 @@ ${directorText}
                   <div className="hsv-grid2">
                     {renderTextInput({
                       fieldKey: `directors.${directorIndex}.name`,
-                      label: "이름",
+                      label: ui.name,
                       value: director.name,
                       onChange: (value) => updateDirector(directorIndex, "name", value),
                       placeholder: t("hearing.namePlaceholder"),
                     })}
                     {renderTextInput({
                       fieldKey: `directors.${directorIndex}.address`,
-                      label: "주소",
+                      label: t("hearing.address"),
                       value: director.address,
                       onChange: (value) => updateDirector(directorIndex, "address", value),
                       placeholder: t("hearing.addressPlaceholder"),
                     })}
                     {renderTextInput({
                       fieldKey: `directors.${directorIndex}.romanizedName`,
-                      label: "로마자 성명",
+                      label: ui.romanized,
                       value: director.romanizedName,
                       onChange: (value) =>
                         updateDirector(directorIndex, "romanizedName", value),
@@ -1220,19 +1198,15 @@ ${directorText}
           <section className="hsv-content">
             <div className="hsv-hero">
               <div>
-                <p className="hsv-time">법인 설립 정보 입력</p>
-                <h1>법인 설립 정보 입력</h1>
-                <p>
-                  히어링 시트는 일본 법인 설립과 정관 초안 작성을 위해 필요한
-                  정보를 정리하는 입력 양식입니다. 입력한 내용은 정관 초안 페이지에
-                  반영됩니다.
-                </p>
+                <p className="hsv-time">{ui.pageTitle}</p>
+                <h1>{ui.pageTitle}</h1>
+                <p>{ui.intro}</p>
               </div>
             </div>
 
             <div className="hsv-progress-panel">
               <div className="hsv-progress-head">
-                <strong>정관 작성 진행</strong>
+                <strong>{ui.progress}</strong>
                 <span>
                   {safeCurrentStep + 1}/{steps.length} · {currentStepData.title}
                 </span>
@@ -1245,7 +1219,7 @@ ${directorText}
                 <p>{currentStepData.desc}</p>
               </div>
 
-              <div className="hsv-stepper" role="list" aria-label="히어링 시트 작성 단계">
+              <div className="hsv-stepper" role="list" aria-label={ui.stepper}>
                 {steps.map((step, index) => {
                   const state =
                     index === safeCurrentStep
@@ -1304,7 +1278,7 @@ ${directorText}
                   onClick={goPrevStep}
                   disabled={safeCurrentStep === 0}
                 >
-                  이전
+                  {ui.previous}
                 </button>
 
                 {!isFinalInputStep ? (
@@ -1313,11 +1287,11 @@ ${directorText}
                     className="hsv-primary-btn"
                     onClick={goNextStep}
                   >
-                    다음 단계로 이동
+                    {ui.next}
                   </button>
                 ) : (
                   <button type="submit" className="hsv-primary-btn">
-                    최종 내용 확인
+                    {ui.final}
                   </button>
                 )}
               </div>
@@ -1333,87 +1307,87 @@ ${directorText}
               aria-controls="hsv-summary-body"
               onClick={() => setIsSummaryOpen((open) => !open)}
             >
-              <span>입력 내용 요약 보기</span>
-              <strong>{completedFieldCount}개 입력 · {progress}%</strong>
+              <span>{ui.summaryToggle}</span>
+              <strong>{completedFieldCount}{ui.entered} · {progress}%</strong>
             </button>
 
             <div className="hsv-summary-head">
-              <h2>입력 내용 요약</h2>
-              <span>초안</span>
+              <h2>{ui.summaryTitle}</h2>
+              <span>{ui.draft}</span>
             </div>
 
             <div className="hsv-summary-body" id="hsv-summary-body">
             <div className="hsv-summary-section">
-              <h3>기본 정보</h3>
+              <h3>{ui.basic}</h3>
               <dl>
                 <div>
-                  <dt>상호</dt>
+                  <dt>{ui.companyName}</dt>
                   <dd>{summaryValue(companyName)}</dd>
                 </div>
                 <div>
-                  <dt>영문 상호</dt>
+                  <dt>{ui.companyNameEn}</dt>
                   <dd>{summaryValue(companyNameEn)}</dd>
                 </div>
                 <div>
-                  <dt>본점 소재지</dt>
+                  <dt>{ui.address}</dt>
                   <dd>{summaryValue(headOfficeAddress)}</dd>
                 </div>
               </dl>
             </div>
 
             <div className="hsv-summary-section">
-              <h3>금융·자본 정보</h3>
+              <h3>{ui.finance}</h3>
               <dl>
                 <div>
-                  <dt>출자 재산 가액(자본금)</dt>
+                  <dt>{ui.capital}</dt>
                   <dd>{summaryValue(capital)}</dd>
                 </div>
                 <div>
-                  <dt>자본금 납입 은행</dt>
+                  <dt>{ui.bank}</dt>
                   <dd>{bankName || branchName ? `${bankName} ${branchName}` : "-"}</dd>
                 </div>
                 <div>
-                  <dt>발행가능주식총수</dt>
+                  <dt>{ui.authorized}</dt>
                   <dd>{summaryValue(totalSharesAuthorized)}</dd>
                 </div>
                 <div>
-                  <dt>설립 시 발행주식수</dt>
+                  <dt>{ui.issued}</dt>
                   <dd>{summaryValue(initialIssuedShares)}</dd>
                 </div>
               </dl>
             </div>
 
             <div className="hsv-summary-section">
-              <h3>구성원 정보</h3>
+              <h3>{ui.members}</h3>
               <dl>
                 <div>
-                  <dt>사업 목적</dt>
-                  <dd>{filledPurposes}개 입력</dd>
+                  <dt>{ui.purposes}</dt>
+                  <dd>{filledPurposes}{ui.itemCount}</dd>
                 </div>
                 <div>
-                  <dt>주주</dt>
-                  <dd>{filledFounders}명 입력</dd>
+                  <dt>{ui.shareholders}</dt>
+                  <dd>{filledFounders}{ui.personCount}</dd>
                 </div>
                 <div>
-                  <dt>이사</dt>
-                  <dd>{filledDirectors}명 입력</dd>
+                  <dt>{ui.directors}</dt>
+                  <dd>{filledDirectors}{ui.personCount}</dd>
                 </div>
                 <div>
-                  <dt>대표이사</dt>
+                  <dt>{ui.representative}</dt>
                   <dd>{summaryValue(representativeDirector)}</dd>
                 </div>
                 <div>
-                  <dt>이사의 임기</dt>
+                  <dt>{ui.term}</dt>
                   <dd>{summaryValue(directorTerm)}</dd>
                 </div>
               </dl>
             </div>
 
             <div className="hsv-summary-section">
-              <h3>사업연도</h3>
+              <h3>{ui.businessYear}</h3>
               <dl>
                 <div>
-                  <dt>최초 사업 연도</dt>
+                  <dt>{ui.firstYear}</dt>
                   <dd>
                     {firstBusinessYearStart || firstBusinessYearEnd
                       ? `${firstBusinessYearStart || "-"} ~ ${
@@ -1423,7 +1397,7 @@ ${directorText}
                   </dd>
                 </div>
                 <div>
-                  <dt>사업 연도</dt>
+                  <dt>{ui.annualYear}</dt>
                   <dd>
                     {businessYearStart || businessYearEnd
                       ? `${businessYearStart || "-"} ~ ${businessYearEnd || "-"}`
@@ -1433,12 +1407,12 @@ ${directorText}
               </dl>
             </div>
 
-            <div className="hsv-summary-quick-actions" aria-label="다음 도움 기능">
+            <div className="hsv-summary-quick-actions" aria-label={ui.quickActions}>
               <Link to="/reservation" className="hsv-summary-quick-action">
-                상담 예약하기
+                {ui.book}
               </Link>
               <Link to="/chat" className="hsv-summary-quick-action">
-                챗봇으로 이동
+                {ui.chat}
               </Link>
             </div>
 

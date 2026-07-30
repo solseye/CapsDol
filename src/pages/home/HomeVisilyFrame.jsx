@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import LanguageMenu from "../../components/LanguageMenu";
 import image3 from "../../assets/image3-web.jpg";
+import mkOfficeLogo from "../../assets/mk-office-logo-transparent.png";
 import { getCurrentLanguage } from "../../i18n/translations";
 import { clearSession } from "../../utils/authSession";
 import { confirmAction } from "../../utils/notifications";
@@ -27,7 +28,7 @@ const HOME_COPY = {
     heroTitle: "일본 진출 준비를",
     heroTitleAccent: "AI와 전문가 상담으로 정리합니다",
     heroCopy:
-      "WVA는 한국 기업이 일본 법인 설립, 세무·회계, 비자, 노무, 정관 초안 작성, 전문가 상담 예약까지 한 흐름으로 준비할 수 있도록 돕는 AI 컨설팅 플랫폼입니다.",
+      "M&K 사무소는 한국 기업이 일본 법인 설립, 세무·회계, 비자, 노무, 정관 초안 작성, 전문가 상담 예약까지 한 흐름으로 준비할 수 있도록 돕는 일본 진출 파트너입니다.",
     searchPlaceholder:
       "일본 법인 설립, 세무, 비자, 정관 작성에 대해 질문해 보세요...",
     aiConsult: "AI 상담",
@@ -67,14 +68,14 @@ const HOME_COPY = {
     heroTitle: "Prepare your Japan expansion",
     heroTitleAccent: "with AI and expert consultation",
     heroCopy:
-      "WVA helps Korean companies prepare incorporation, tax and accounting, visas, labor issues, articles drafts, and expert consultations in one connected workflow.",
+      "M&K Office helps Korean companies prepare incorporation, tax and accounting, visas, labor matters, draft articles of incorporation, and expert consultations in one connected workflow.",
     searchPlaceholder:
       "Ask about Japanese incorporation, tax, visas, or articles drafting...",
     aiConsult: "Ask AI",
     trustText: "Document and consultation workflow for companies entering Japan",
     servicesTitle: "Core Services",
     servicesDesc:
-      "From initial questions to hearing sheets, articles drafts, and expert review, WVA organizes Japan entry preparation into one workflow.",
+      "From initial questions to hearing sheets, draft articles of incorporation, and expert review, M&K Office organizes Japan-entry preparation into one workflow.",
     viewMethod: "View Method",
     moveNow: "Open",
     service1Label: "AI Automation",
@@ -107,7 +108,7 @@ const HOME_COPY = {
     heroTitle: "日本進出準備を",
     heroTitleAccent: "AIと専門家相談で整理します",
     heroCopy:
-      "WVAは、韓国企業が日本法人設立、税務・会計、ビザ、労務、定款草案、専門家相談予約まで一つの流れで準備できるよう支援するAIコンサルティングプラットフォームです。",
+      "M&K事務所は、韓国企業が日本法人設立、税務・会計、ビザ、労務、定款草案、専門家相談予約まで一つの流れで準備できるよう支援するAIコンサルティングプラットフォームです。",
     searchPlaceholder:
       "日本法人設立、税務、ビザ、定款作成について質問してください...",
     aiConsult: "AI相談",
@@ -157,6 +158,818 @@ const STANDARD_ITEMS = [
   },
 ];
 
+// 중앙 히어링 시트 카드의 hover에 가격표처럼 나열하는 회사 실무 범위입니다.
+const CORE_SERVICE_SUMMARIES = [
+  {
+    title: "법인 설립·등기",
+    description: "설립 컨설팅, 정관 인증, 인감 제작, 법인 등기",
+  },
+  {
+    title: "세무·회계감사",
+    description: "각종 세무 신고, 세무조사 대응, 회사법·PKG 감사",
+  },
+  {
+    title: "인사·노무",
+    description: "사회보험·노동보험 가입 및 관련 신고",
+  },
+  {
+    title: "비자·인허가·보조금",
+    description: "체류자격, 사업별 인허가, 보조금 신청",
+  },
+  {
+    title: "계좌·부동산",
+    description: "법인 계좌 개설, 은행·부동산 업체 연결",
+  },
+  {
+    title: "실사·조직재편·M&A",
+    description: "계약·세무·시장 리스크 분석 및 투자 지원",
+  },
+];
+
+const HOME_SECTIONS = {
+  ko: {
+    brandName: "M&K 사무소",
+    brandHomeAria: "M&K 사무소 홈",
+    menuOpen: "메뉴 열기",
+    trustAria: "M&K 사무소 소개",
+    logoutDialog: {
+      title: "로그아웃할까요?",
+      message: "작성 중인 히어링 시트 초안은 회원별로 유지됩니다.",
+      confirmLabel: "로그아웃",
+    },
+    pricing: {
+      eyebrow: "서비스 및 가격",
+      title: "필요한 준비 단계부터 시작하세요",
+      description:
+        "AI 상담, 문서 초안, 전문가 검토를 하나의 흐름으로 제공하되 비용은 필요한 준비 범위에 맞춰 이해할 수 있도록 정리했습니다.",
+      start: {
+        overlayTitle: "즉시 상담 가능",
+        overlayDescription:
+          "회원가입 후 바로 AI 답변 서비스를 이용하고, 일본 진출 기초 질문을 먼저 정리할 수 있습니다.",
+        label: "시작",
+        title: "AI 기초 상담",
+        price: "무료",
+        description:
+          "일본 법인 설립, 세무, 비자, 노무 관련 기초 질문을 먼저 정리합니다.",
+        benefits: [
+          "RAG 기반 AI 답변",
+          "기초 진출 질문 정리",
+          "히어링 시트 작성 전 가이드",
+        ],
+        cta: "AI 상담 시작",
+      },
+      core: {
+        aria: "히어링 시트 작성과 상담 연계 업무 보기",
+        overlayBadge: "상담 연계 업무",
+        overlayTitle: "상담 가능 업무",
+        label: "핵심",
+        title: "히어링 시트·실무 준비",
+        price: "프로젝트별 안내",
+        description:
+          "회사 기본 정보를 작성해 법인 설립 상담 자료와 정관 초안을 준비합니다. 필요한 후속 업무는 전문가 상담에서 확인합니다.",
+        benefits: [
+          "법인 설립·등기 / 세무·회계감사",
+          "인사·노무 / 비자·인허가·보조금",
+          "계좌·부동산 / 실사 / 조직재편 · M&A",
+        ],
+        cta: "히어링 시트 작성",
+        services: CORE_SERVICE_SUMMARIES,
+      },
+      expert: {
+        aria: "전문가 상담 대표 견적 보기",
+        overlayBadge: "대표 견적",
+        estimates: [
+          {
+            title: "법인 설립",
+            price: "약 45만 엔 ~",
+            description:
+              "세금 및 사법서사 설립 보수 포함. 조건에 따라 변동됩니다.",
+          },
+          {
+            title: "설립 관련 업무",
+            price: "20만 엔 ~",
+            description:
+              "한국어 지원, 계좌개설 지원 등. 세무서 제출 서류는 계약 범위에 따라 포함됩니다.",
+          },
+          {
+            title: "비자 신청·취득 지원",
+            price: "상담 후 안내",
+            description:
+              "체류자격 종류와 신청 난이도에 따라 달라집니다.",
+          },
+          {
+            title: "회계·세무 고문",
+            price: "월 7만 엔 ~",
+            description:
+              "기장, 결산, 세무 신고 범위와 운영 규모에 따라 산정됩니다.",
+          },
+          {
+            title: "인사·노무",
+            price: "12만 엔 ~",
+            description: "사회보험, 급여 계산, 취업규칙 등 범위별 산정.",
+          },
+        ],
+        estimateNote: "정확한 가격은 상담 후 제시드립니다.",
+        label: "전문가",
+        title: "전문가 상담 예약",
+        price: "상담 범위별 견적",
+        description:
+          "AI로 정리한 내용을 바탕으로 회계·세무·법무 전문가와 실제 상담 일정을 예약합니다.",
+        benefits: [
+          "분야별 전문가 연결",
+          "문서 검토 범위 협의",
+          "상담 후 후속 업무 안내",
+        ],
+        cta: "상담 예약",
+      },
+      note:
+        "실제 비용은 기업의 설립 형태, 상담 내역, 문서 검토 범위, 전문가 상담 분야에 따라 달라질 수 있습니다.",
+    },
+    method: {
+      title: "일본 시장으로 이어지는 준비 흐름",
+      description:
+        "M&K 사무소는 흩어진 일본 진출 준비 과정을 단계별 워크플로우로 바꿉니다. 기업 정보를 정리하고, 문서 초안을 만들고, 전문가 검토로 최종 방향을 구체화합니다.",
+      cta: "히어링 시트 작성하기",
+      steps: [
+        {
+          number: "01",
+          title: "상담 및 사전 준비",
+          position: "down",
+          items: [
+            "초기 상담 및 진출 전략 협의",
+            "법인 형태 결정 (KK / GK)",
+            "자본금·사업 목적 설정",
+          ],
+        },
+        {
+          number: "02",
+          title: "법인 설립 절차",
+          position: "up",
+          items: ["정관 작성 및 인증", "자본금 납입", "등기 신청·인감 등록"],
+        },
+        {
+          number: "03",
+          title: "세무·회계 고문",
+          position: "down",
+          items: ["세무·회계 자문", "기장 대행 및 결산", "정기 재무 리포트"],
+        },
+        {
+          number: "04",
+          title: "노무·사회보험",
+          position: "up",
+          items: [
+            "사회보험 가입 절차",
+            "급여 계산 체계 구축",
+            "연말정산 및 노무 자문",
+          ],
+        },
+      ],
+    },
+    experts: {
+      title: "일본 비즈니스 실무를 아는 전문가",
+      description:
+        "M&K 사무소는 AI가 정리한 상담 자료를 바탕으로 일본 현지 실무 경험을 가진 전문가와의 상담으로 이어질 수 있도록 돕습니다.",
+      careerLabel: "주요 경력",
+      specialtyLabel: "전문 분야",
+      people: [
+        {
+          initial: "K",
+          name: "김명구",
+          role: "공인회계사·세무사",
+          careers: [
+            "2008년 공인회계사 시험 합격",
+            "2008년~2014년 아라타 감사법인 (현 PwC Japan 유한책임감사법인)",
+            "2014년 공인회계사 등록",
+            "2014년 김공인회계사사무소 설립",
+            "2015년 세무사 등록",
+            "2015년 김공인회계사·세무사사무소 설립",
+          ],
+          specialties: [
+            "일본·국제 세무",
+            "회계 감사",
+            "내부통제 구축 지원",
+            "조직재편·M&A",
+            "경영계획 수립·사업 재생",
+            "주식 공개(IPO) 지원",
+            "회계·재무 지원",
+          ],
+        },
+        {
+          initial: "G",
+          name: "김충황",
+          role: "사법서사·행정서사",
+          careers: [
+            "2011년 오사카 체육대학 건강복지학부 졸업",
+            "2016년 한일을 연결하는 사법서사 사무소 근무",
+            "2023년 사법서사 시험 합격",
+            "2024년 히카리 사법서사 사무소 개업",
+            "2024년 행정서사 시험 합격",
+            "2025년 히카리 행정서사 사무소 개업",
+          ],
+          specialties: [
+            "회사 설립",
+            "비자 취득",
+            "각종 인허가",
+            "보조금 신청",
+            "부동산 매매",
+            "조직재편·M&A",
+          ],
+        },
+      ],
+    },
+    standards: {
+      title: "일본 진출을 실행으로 바꾸는 기준",
+      description:
+        "M&K 사무소는 문서 준비, 다국어 지원, 상담 연결, 실행 워크플로우를 하나로 묶어 일본 진출 준비를 더 명확하게 만듭니다.",
+      badge: "M&K 기준",
+      items: STANDARD_ITEMS,
+    },
+    contact: {
+      title: "오시는 길·문의",
+      locationLabel: "오시는 길",
+      address: "일본 오사카부 오사카시 기타구 가미야마초 8-1",
+      locationDescription:
+        "일본 오사카 사무소에서 일본 진출 상담과 현지 전문가 연계를 지원합니다.",
+      onlineLabel: "온라인 문의",
+      onlineLink: "상담 예약 및 문의하기",
+      onlineDescription:
+        "상담 분야와 원하는 일정을 남기면 확인 후 안내해 드립니다.",
+      mapTitle: "M&K 오사카 사무소 Google 지도",
+      mapLink: "Google 지도에서 보기",
+    },
+    footer: {
+      copyright: "© 2026 M&K 사무소. All rights reserved.",
+      ai: "AI 상담",
+      reservation: "상담 예약",
+      hearing: "히어링 시트",
+      support: "고객 지원",
+    },
+  },
+  en: {
+    brandName: "M&K Office",
+    brandHomeAria: "M&K Office home",
+    menuOpen: "Open menu",
+    trustAria: "About M&K Office",
+    logoutDialog: {
+      title: "Log out?",
+      message: "Your hearing sheet draft is retained for your account.",
+      confirmLabel: "Log out",
+    },
+    pricing: {
+      eyebrow: "Services & Pricing",
+      title: "Start with the preparation you need",
+      description:
+        "AI consultation, document drafting, and expert review are connected in one workflow, with pricing organized around the scope you need.",
+      start: {
+        overlayTitle: "Available immediately",
+        overlayDescription:
+          "Sign up to use the AI answer service right away and organize your initial Japan-entry questions.",
+        label: "Start",
+        title: "AI Initial Consultation",
+        price: "Free",
+        description:
+          "Organize initial questions about Japanese incorporation, tax, visas, and labor.",
+        benefits: [
+          "RAG-powered AI answers",
+          "Initial market-entry questions",
+          "Pre-hearing-sheet guidance",
+        ],
+        cta: "Start AI Consultation",
+      },
+      core: {
+        aria: "View hearing sheet and related advisory services",
+        overlayBadge: "Related Advisory Services",
+        overlayTitle: "Services Available for Consultation",
+        label: "Core",
+        title: "Hearing Sheet & Practical Setup",
+        price: "Quoted by Project",
+        description:
+          "Enter basic company information to prepare incorporation consultation materials and a draft of the articles. Confirm any follow-up work with an expert.",
+        benefits: [
+          "Incorporation & registration / Tax & audit",
+          "HR & labor / Visas, permits & subsidies",
+          "Banking & real estate / Due diligence / Reorganization & M&A",
+        ],
+        cta: "Complete Hearing Sheet",
+        services: [
+          {
+            title: "Incorporation & Registration",
+            description:
+              "Formation consulting, articles certification, company seal, registration",
+          },
+          {
+            title: "Tax, Accounting & Audit",
+            description:
+              "Tax filings, tax audit support, statutory and PKG audits",
+          },
+          {
+            title: "HR & Labor",
+            description:
+              "Social and labor insurance enrollment and related filings",
+          },
+          {
+            title: "Visas, Permits & Subsidies",
+            description:
+              "Residence status, business permits, subsidy applications",
+          },
+          {
+            title: "Banking & Real Estate",
+            description:
+              "Corporate account setup and introductions to banks and real-estate firms",
+          },
+          {
+            title: "Due Diligence, Reorganization & M&A",
+            description:
+              "Contract, tax, and market-risk analysis with investment support",
+          },
+        ],
+      },
+      expert: {
+        aria: "View indicative expert consultation fees",
+        overlayBadge: "Pricing Details",
+        estimates: [
+          {
+            title: "Company Incorporation",
+            price: "From approx. ¥450,000",
+            description:
+              "Includes taxes and judicial scrivener fees. Final cost varies by conditions.",
+          },
+          {
+            title: "Formation Support",
+            price: "From ¥200,000",
+            description:
+              "May include Korean-language and bank-account support. Tax-office filings depend on contract scope.",
+          },
+          {
+            title: "Visa Application Support",
+            price: "Quoted after consultation",
+            description:
+              "Depends on the residence-status category and application complexity.",
+          },
+          {
+            title: "Accounting & Tax Advisory",
+            price: "From ¥70,000/month",
+            description:
+              "Based on bookkeeping, closing, tax-filing scope, and operating scale.",
+          },
+          {
+            title: "HR & Labor",
+            price: "From ¥120,000",
+            description:
+              "Quoted by scope, including social insurance, payroll, and work rules.",
+          },
+        ],
+        estimateNote: "Final pricing is provided after consultation.",
+        label: "Expert",
+        title: "Book an Expert Consultation",
+        price: "Quote Based on Scope",
+        description:
+          "Book a consultation with accounting, tax, and legal experts based on information organized by AI.",
+        benefits: [
+          "Matched with a relevant expert",
+          "Document-review scope agreed in advance",
+          "Guidance on follow-up services",
+        ],
+        cta: "Book Consultation",
+      },
+      note:
+        "Actual fees may vary based on the entity type, consultation details, document-review scope, and expert field.",
+    },
+    method: {
+      title: "A clear path into the Japanese market",
+      description:
+        "M&K Office turns fragmented Japan-entry preparation into a step-by-step workflow: organizing company information, drafting documents, and defining the final direction through expert review.",
+      cta: "Complete the Hearing Sheet",
+      steps: [
+        {
+          number: "01",
+          title: "Consultation & Planning",
+          position: "down",
+          items: [
+            "Initial consultation and market-entry strategy",
+            "Entity selection (KK / GK)",
+            "Capital and business-purpose planning",
+          ],
+        },
+        {
+          number: "02",
+          title: "Company Incorporation",
+          position: "up",
+          items: [
+            "Drafting and certification of articles",
+            "Capital contribution",
+            "Registration filing and company seal",
+          ],
+        },
+        {
+          number: "03",
+          title: "Tax & Accounting Advisory",
+          position: "down",
+          items: [
+            "Tax and accounting advice",
+            "Bookkeeping and closing",
+            "Regular financial reports",
+          ],
+        },
+        {
+          number: "04",
+          title: "Labor & Social Insurance",
+          position: "up",
+          items: [
+            "Social insurance enrollment",
+            "Payroll system setup",
+            "Year-end adjustment and labor advice",
+          ],
+        },
+      ],
+    },
+    experts: {
+      title: "Experts who know business in Japan",
+      description:
+        "M&K Office connects AI-organized consultation materials with professionals experienced in practical business operations in Japan.",
+      careerLabel: "Career Highlights",
+      specialtyLabel: "Areas of Expertise",
+      people: [
+        {
+          initial: "K",
+          name: "Myung-gu Kim",
+          role: "Certified Public Accountant · Tax Accountant",
+          careers: [
+            "Passed the CPA examination in 2008",
+            "Arata Audit Corporation, now PwC Japan LLC (2008–2014)",
+            "Registered as a CPA in 2014",
+            "Founded Kim CPA Office in 2014",
+            "Registered as a tax accountant in 2015",
+            "Founded Kim CPA & Tax Accountant Office in 2015",
+          ],
+          specialties: [
+            "Japanese & International Tax",
+            "Financial Audit",
+            "Internal-Control Implementation",
+            "Reorganization & M&A",
+            "Business Planning & Turnaround",
+            "IPO Support",
+            "Accounting & Finance Support",
+          ],
+        },
+        {
+          initial: "G",
+          name: "Mitsuaki Kanemura",
+          role: "Judicial Scrivener · Administrative Scrivener",
+          careers: [
+            "Graduated from Osaka University of Health and Sport Sciences in 2011",
+            "Joined a judicial scrivener office connecting Korea and Japan in 2016",
+            "Passed the judicial scrivener examination in 2023",
+            "Opened Hikari Judicial Scrivener Office in 2024",
+            "Passed the administrative scrivener examination in 2024",
+            "Opened Hikari Administrative Scrivener Office in 2025",
+          ],
+          specialties: [
+            "Company Formation",
+            "Visa Acquisition",
+            "Permits & Licenses",
+            "Subsidy Applications",
+            "Real Estate Transactions",
+            "Reorganization & M&A",
+          ],
+        },
+      ],
+    },
+    standards: {
+      title: "Principles that turn Japan entry into action",
+      description:
+        "M&K Office brings document preparation, multilingual support, consultation, and execution workflows together to make Japan-entry planning clearer.",
+      badge: "M&K Standard",
+      items: [
+        {
+          title: "Structured Core Documents",
+          body:
+            "We structure incorporation and consultation data so your team can respond quickly to Japan-entry requirements.",
+          details: [
+            "Articles-drafting workflow",
+            "Structured business purposes and basic information",
+          ],
+        },
+        {
+          title: "Global Communication",
+          body:
+            "A multilingual business flow supports Korean, English, and Japanese users without interruption.",
+          details: [
+            "KO / EN / JA switching",
+            "Connection to local professionals",
+          ],
+        },
+        {
+          title: "Pre-consultation Strategy",
+          body:
+            "Prepare questions and materials before meeting an expert to use consultation time more effectively.",
+          details: [
+            "Questions organized in advance",
+            "Pre-check of scope and materials",
+          ],
+        },
+        {
+          title: "Digital Workflow",
+          body:
+            "AI questions, hearing sheets, articles drafts, and bookings are connected in one preparation flow.",
+          details: [
+            "AI consultation linked to document drafting",
+            "Booking and submitted-material management",
+          ],
+        },
+      ],
+    },
+    contact: {
+      title: "Location & Contact",
+      locationLabel: "Office",
+      address: "8-1 Kamiyamacho, Kita Ward, Osaka, Japan",
+      locationDescription:
+        "Our Osaka office supports Japan-entry consultations and connections to local professionals.",
+      onlineLabel: "Online Inquiry",
+      onlineLink: "Book a Consultation or Send an Inquiry",
+      onlineDescription:
+        "Tell us your consultation field and preferred schedule, and we will follow up.",
+      mapTitle: "Google Map for M&K Osaka Office",
+      mapLink: "View on Google Maps",
+    },
+    footer: {
+      copyright: "© 2026 M&K Office. All rights reserved.",
+      ai: "AI Consultation",
+      reservation: "Book Consultation",
+      hearing: "Hearing Sheet",
+      support: "Customer Support",
+    },
+  },
+  ja: {
+    brandName: "M&K事務所",
+    brandHomeAria: "M&K事務所ホーム",
+    menuOpen: "メニューを開く",
+    trustAria: "M&K事務所について",
+    logoutDialog: {
+      title: "ログアウトしますか？",
+      message: "作成中のヒアリングシート下書きはアカウントごとに保存されます。",
+      confirmLabel: "ログアウト",
+    },
+    pricing: {
+      eyebrow: "サービス・料金",
+      title: "必要な準備段階から始めましょう",
+      description:
+        "AI相談、文書草案、専門家レビューを一つの流れで提供し、必要な準備範囲に応じて料金を分かりやすく整理しています。",
+      start: {
+        overlayTitle: "すぐに相談可能",
+        overlayDescription:
+          "会員登録後すぐにAI回答サービスを利用し、日本進出に関する基礎的な質問を整理できます。",
+        label: "スタート",
+        title: "AI基礎相談",
+        price: "無料",
+        description:
+          "日本法人設立、税務、ビザ、労務に関する基礎的な質問を整理します。",
+        benefits: [
+          "RAGベースのAI回答",
+          "進出に関する基礎質問の整理",
+          "ヒアリングシート作成前のガイド",
+        ],
+        cta: "AI相談を始める",
+      },
+      core: {
+        aria: "ヒアリングシート作成と関連相談業務を見る",
+        overlayBadge: "相談関連業務",
+        overlayTitle: "相談可能な業務",
+        label: "コア",
+        title: "ヒアリングシート・実務準備",
+        price: "案件ごとにご案内",
+        description:
+          "会社の基本情報を入力し、法人設立相談資料と定款草案を準備します。必要な後続業務は専門家相談で確認します。",
+        benefits: [
+          "法人設立・登記 / 税務・会計監査",
+          "人事・労務 / ビザ・許認可・補助金",
+          "口座・不動産 / デューデリジェンス / 組織再編・M&A",
+        ],
+        cta: "ヒアリングシートを作成",
+        services: [
+          {
+            title: "法人設立・登記",
+            description: "設立コンサルティング、定款認証、印鑑作成、法人登記",
+          },
+          {
+            title: "税務・会計監査",
+            description: "各種税務申告、税務調査対応、会社法・PKG監査",
+          },
+          {
+            title: "人事・労務",
+            description: "社会保険・労働保険加入および関連届出",
+          },
+          {
+            title: "ビザ・許認可・補助金",
+            description: "在留資格、事業別許認可、補助金申請",
+          },
+          {
+            title: "口座・不動産",
+            description: "法人口座開設、銀行・不動産会社の紹介",
+          },
+          {
+            title: "デューデリジェンス・組織再編・M&A",
+            description: "契約・税務・市場リスク分析および投資支援",
+          },
+        ],
+      },
+      expert: {
+        aria: "専門家相談の参考料金を見る",
+        overlayBadge: "料金詳細",
+        estimates: [
+          {
+            title: "法人設立",
+            price: "約45万円～",
+            description:
+              "税金および司法書士の設立報酬を含みます。条件により変動します。",
+          },
+          {
+            title: "設立関連業務",
+            price: "20万円～",
+            description:
+              "韓国語対応、口座開設支援など。税務署提出書類は契約範囲により含まれます。",
+          },
+          {
+            title: "ビザ申請・取得支援",
+            price: "相談後にご案内",
+            description: "在留資格の種類と申請難易度により異なります。",
+          },
+          {
+            title: "会計・税務顧問",
+            price: "月額7万円～",
+            description:
+              "記帳、決算、税務申告の範囲と事業規模に応じて算定します。",
+          },
+          {
+            title: "人事・労務",
+            price: "12万円～",
+            description:
+              "社会保険、給与計算、就業規則など業務範囲に応じて算定します。",
+          },
+        ],
+        estimateNote: "正確な料金はご相談後にご提示します。",
+        label: "専門家",
+        title: "専門家相談予約",
+        price: "相談範囲別のお見積り",
+        description:
+          "AIで整理した内容をもとに、会計・税務・法務の専門家との相談日程を予約します。",
+        benefits: [
+          "分野別の専門家をご紹介",
+          "文書レビュー範囲の事前確認",
+          "相談後の後続業務をご案内",
+        ],
+        cta: "相談を予約",
+      },
+      note:
+        "実際の料金は、設立形態、相談内容、文書レビュー範囲、専門分野により異なる場合があります。",
+    },
+    method: {
+      title: "日本市場へつながる準備の流れ",
+      description:
+        "M&K事務所は、分散しがちな日本進出準備を段階別のワークフローに変えます。企業情報を整理し、文書草案を作成し、専門家レビューで最終方針を具体化します。",
+      cta: "ヒアリングシートを作成",
+      steps: [
+        {
+          number: "01",
+          title: "相談・事前準備",
+          position: "down",
+          items: [
+            "初回相談・進出戦略の協議",
+            "法人形態の決定（KK / GK）",
+            "資本金・事業目的の設定",
+          ],
+        },
+        {
+          number: "02",
+          title: "法人設立手続",
+          position: "up",
+          items: ["定款作成・認証", "資本金払込", "登記申請・印鑑登録"],
+        },
+        {
+          number: "03",
+          title: "税務・会計顧問",
+          position: "down",
+          items: ["税務・会計相談", "記帳代行・決算", "定期財務レポート"],
+        },
+        {
+          number: "04",
+          title: "労務・社会保険",
+          position: "up",
+          items: [
+            "社会保険加入手続",
+            "給与計算体制の構築",
+            "年末調整・労務相談",
+          ],
+        },
+      ],
+    },
+    experts: {
+      title: "日本ビジネスの実務に精通した専門家",
+      description:
+        "M&K事務所は、AIが整理した相談資料をもとに、日本現地での実務経験を持つ専門家との相談につなげます。",
+      careerLabel: "主な経歴",
+      specialtyLabel: "専門分野",
+      people: [
+        {
+          initial: "K",
+          name: "金 明求",
+          role: "公認会計士・税理士",
+          careers: [
+            "2008年 公認会計士試験合格",
+            "2008年～2014年 あらた監査法人（現 PwC Japan有限責任監査法人）",
+            "2014年 公認会計士登録",
+            "2014年 金公認会計士事務所設立",
+            "2015年 税理士登録",
+            "2015年 金公認会計士・税理士事務所設立",
+          ],
+          specialties: [
+            "日本・国際税務",
+            "会計監査",
+            "内部統制構築支援",
+            "組織再編・M&A",
+            "経営計画策定・事業再生",
+            "株式公開（IPO）支援",
+            "会計・財務支援",
+          ],
+        },
+        {
+          initial: "G",
+          name: "金村 光明",
+          role: "司法書士・行政書士",
+          careers: [
+            "2011年 大阪体育大学健康福祉学部卒業",
+            "2016年 韓日をつなぐ司法書士事務所勤務",
+            "2023年 司法書士試験合格",
+            "2024年 ひかり司法書士事務所開業",
+            "2024年 行政書士試験合格",
+            "2025年 ひかり行政書士事務所開業",
+          ],
+          specialties: [
+            "会社設立",
+            "ビザ取得",
+            "各種許認可",
+            "補助金申請",
+            "不動産売買",
+            "組織再編・M&A",
+          ],
+        },
+      ],
+    },
+    standards: {
+      title: "日本進出を実行へ変える基準",
+      description:
+        "M&K事務所は、文書準備、多言語対応、相談連携、実行ワークフローを一つにまとめ、日本進出準備をより明確にします。",
+      badge: "M&K基準",
+      items: [
+        {
+          title: "主要文書の構造化",
+          body:
+            "法人設立・相談用の企業情報を体系的に構造化し、日本進出準備に必要な要件へ迅速に対応します。",
+          details: ["定款草案作成フロー", "事業目的・基本情報の構造化"],
+        },
+        {
+          title: "グローバルコミュニケーション",
+          body:
+            "韓国語・英語・日本語の利用者を考慮し、多言語のビジネスフローを途切れなく支援します。",
+          details: ["KO / EN / JA切替", "現地専門家への相談連携"],
+        },
+        {
+          title: "事前戦略の最適化",
+          body:
+            "専門家に会う前に必要な質問と資料を準備し、相談時間をより有効に活用します。",
+          details: ["相談前の質問整理", "業務範囲・資料の事前確認"],
+        },
+        {
+          title: "デジタルワークフロー",
+          body:
+            "AI相談、ヒアリングシート、定款草案、相談予約をつなぎ、準備過程を一つの流れにします。",
+          details: ["AI相談と文書作成の連携", "予約・提出資料の管理"],
+        },
+      ],
+    },
+    contact: {
+      title: "アクセス・お問い合わせ",
+      locationLabel: "所在地",
+      address: "日本国大阪府大阪市北区神山町8-1",
+      locationDescription:
+        "大阪事務所で日本進出相談と現地専門家への連携を支援します。",
+      onlineLabel: "オンラインお問い合わせ",
+      onlineLink: "相談予約・お問い合わせ",
+      onlineDescription:
+        "相談分野とご希望の日程をお知らせいただければ、確認後にご案内します。",
+      mapTitle: "M&K大阪事務所 Googleマップ",
+      mapLink: "Googleマップで見る",
+    },
+    footer: {
+      copyright: "© 2026 M&K事務所. All rights reserved.",
+      ai: "AI相談",
+      reservation: "相談予約",
+      hearing: "ヒアリングシート",
+      support: "カスタマーサポート",
+    },
+  },
+};
+
 export default function HomeVisilyFrame({ isLoggedIn }) {
   // 메인 페이지 전용 UI 상태입니다.
   // query: 히어로 검색창 입력값, processProgress: 준비 흐름 섹션의 스크롤 진행도입니다.
@@ -179,6 +992,7 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
   const isAdmin = role === "admin";
   const language = getCurrentLanguage();
   const copy = HOME_COPY[language] || HOME_COPY.ko;
+  const sections = HOME_SECTIONS[language] || HOME_SECTIONS.ko;
 
   const handleNavClick = (sectionId) => {
     setActiveNav(sectionId);
@@ -305,9 +1119,9 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
   // 모바일 메뉴가 열려 있을 수 있으므로 함께 닫습니다.
   const handleLogout = async () => {
     const confirmed = await confirmAction({
-      title: "로그아웃할까요?",
-      message: "작성 중인 히어링 시트 초안은 회원별로 유지됩니다.",
-      confirmLabel: "로그아웃",
+      title: sections.logoutDialog.title,
+      message: sections.logoutDialog.message,
+      confirmLabel: sections.logoutDialog.confirmLabel,
     });
     if (!confirmed) return;
 
@@ -315,47 +1129,6 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
     setIsMobileMenuOpen(false);
     navigate("/");
   };
-
-  // 전문가 섹션에 표시되는 임시/정적 데이터입니다.
-  // 실제 백엔드나 CMS와 연결한다면 이 배열 대신 API 응답을 매핑하면 됩니다.
-  const experts = [
-    {
-      initial: "K",
-      name: "김명구 회계사",
-      role: "공인회계사 · 세무사",
-      careers: [
-        "2008년 공인회계사 시험 합격",
-        "2008년~2014년 아라타 감사법인 (현 PwC Japan 유한책임감사법인)",
-        "2014년 공인회계사 등록",
-        "2014년 김공인회계사사무소 설립",
-        "2015년 세무사 등록",
-        "2015년 김공인회계사·세무사사무소 설립",
-      ],
-      specialties: [
-        "일본 · 국제 세무",
-        "회계 감사",
-        "내부통제 구축 지원",
-        "조직 재편 · M&A",
-        "경영계획 수립 · 사업 재생",
-        "주식 공개(IPO) 지원",
-        "회계 · 재무 지원",
-      ],
-    },
-    {
-      initial: "G",
-      name: "카네무라 미츠아키",
-      role: "사법서사 · 행정서사",
-      careers: [
-        "2011년 오사카 체육대학 건강복지학부 졸업",
-        "2016년 한일을 연결하는 사법서사 사무소 근무",
-        "2023년 사법서사 시험 합격",
-        "2024년 히카리 사법서사 사무소 개업",
-        "2024년 행정서사 시험 합격",
-        "2025년 히카리 행정서사 사무소 개업",
-      ],
-      specialties: ["회사 설립", "비자 취득", "상속", "부동산 매매", "M&A"],
-    },
-  ];
 
   // 운영 방식 카드의 자동 전환 효과입니다.
   // 사용자가 카드에 hover/focus하면 isStandardPaused로 전환을 멈춥니다.
@@ -365,13 +1138,15 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
     }
 
     const intervalId = window.setInterval(() => {
-      setActiveStandardIndex((prev) => (prev + 1) % STANDARD_ITEMS.length);
+      setActiveStandardIndex(
+        (prev) => (prev + 1) % sections.standards.items.length
+      );
     }, 5600);
 
     return () => {
       window.clearInterval(intervalId);
     };
-  }, [isStandardPaused]);
+  }, [isStandardPaused, sections.standards.items.length]);
 
   // 준비 흐름 섹션의 스크롤 연동 효과입니다.
   // 섹션 전체가 아니라 원형 단계들이 들어있는 workflow 영역을 기준으로 진행도를 계산합니다.
@@ -420,10 +1195,16 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
       <header
         className={`visily-nav ${isSearchDocked ? "is-search-docked" : ""}`}
       >
-        <Link to="/" className="visily-brand" aria-label="WVA home">
-          <span className="visily-brand-mark">◎</span>
+        <Link
+          to="/"
+          className="visily-brand"
+          aria-label={sections.brandHomeAria}
+        >
+          <span className="visily-brand-logo" aria-hidden="true">
+            <img src={mkOfficeLogo} alt="" />
+          </span>
           <span>
-            <strong>WVA AI Consulting</strong>
+            <strong>{sections.brandName}</strong>
             <small>{copy.brandSub}</small>
           </span>
         </Link>
@@ -523,7 +1304,7 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
             className={`visily-menu-toggle ${
               isMobileMenuOpen ? "is-open" : ""
             }`}
-            aria-label="메뉴 열기"
+            aria-label={sections.menuOpen}
             aria-expanded={isMobileMenuOpen}
             onClick={() => setIsMobileMenuOpen((prev) => !prev)}
           >
@@ -655,11 +1436,14 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
             <button type="submit">{copy.aiConsult}</button>
           </form>
 
-          <div className="visily-trust-row" aria-label="Trust indicators">
-            <span>K</span>
-            <span>T</span>
-            <span>L</span>
-            <p>{copy.trustText}</p>
+          <div className="visily-trust-row" aria-label={sections.trustAria}>
+            <span className="visily-trust-logo" aria-hidden="true">
+              <img src={mkOfficeLogo} alt="" />
+            </span>
+            <p>
+              <strong>{sections.brandName}</strong>
+              {copy.trustText}
+            </p>
           </div>
         </div>
       </section>
@@ -667,134 +1451,113 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
       {/* Services & Pricing: 핵심 서비스와 가격 안내를 하나의 카드 그룹으로 묶은 영역입니다. */}
       <section id="services" className="visily-pricing-section">
         <div className="visily-pricing-head">
-          <span>Services & Pricing</span>
-          <h2>필요한 준비 단계만 선택해서 시작합니다</h2>
-          <p>
-            AI 상담, 문서 초안, 전문가 검토를 하나의 흐름으로 제공하되
-            비용은 사용자가 필요한 준비 범위에 맞춰 이해할 수 있도록 정리했습니다.
-          </p>
+          <span>{sections.pricing.eyebrow}</span>
+          <h2>{sections.pricing.title}</h2>
+          <p>{sections.pricing.description}</p>
         </div>
 
         <div className="visily-pricing-grid">
           <article className="visily-pricing-card">
             <div className="visily-price-overlay">
-              <h3>즉시 상담 가능</h3>
-              <p>
-                회원가입 후 바로 AI 답변 서비스를 이용하고, 일본 진출 기초
-                질문을 먼저 정리할 수 있습니다.
-              </p>
+              <h3>{sections.pricing.start.overlayTitle}</h3>
+              <p>{sections.pricing.start.overlayDescription}</p>
             </div>
 
             <div className="visily-price-content">
-              <div className="visily-price-label">Start</div>
-              <h3>AI 기초 상담</h3>
-              <strong>무료</strong>
-              <p>
-                일본 법인 설립, 세무, 비자, 노무 관련 기초 질문을 먼저 정리합니다.
-              </p>
+              <div className="visily-price-label">
+                {sections.pricing.start.label}
+              </div>
+              <h3>{sections.pricing.start.title}</h3>
+              <strong>{sections.pricing.start.price}</strong>
+              <p>{sections.pricing.start.description}</p>
               <ul>
-                <li>RAG 기반 AI 답변</li>
-                <li>기초 진출 질문 정리</li>
-                <li>히어링 시트 작성 전 가이드</li>
+                {sections.pricing.start.benefits.map((benefit) => (
+                  <li key={benefit}>{benefit}</li>
+                ))}
               </ul>
-              <Link to="/chat">AI 상담 시작</Link>
+              <Link to="/chat">{sections.pricing.start.cta}</Link>
             </div>
           </article>
 
-          <article className="visily-pricing-card featured">
-            <div className="visily-price-overlay">
-              <h3>신속한 서류 준비</h3>
-              <p>
-                입력한 회사 정보를 바탕으로 정관 초안과 상담용 기초 자료를
-                빠르게 준비합니다.
-              </p>
+          <article
+            className="visily-pricing-card featured"
+            tabIndex={0}
+            aria-label={sections.pricing.core.aria}
+          >
+            <div className="visily-price-overlay core-services">
+              <span className="visily-estimate-badge">
+                {sections.pricing.core.overlayBadge}
+              </span>
+              <h3>{sections.pricing.core.overlayTitle}</h3>
+
+              <div className="visily-core-service-list">
+                {sections.pricing.core.services.map((service) => (
+                  <div className="visily-core-service-item" key={service.title}>
+                    <strong>{service.title}</strong>
+                    <p>{service.description}</p>
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div className="visily-price-content">
-              <div className="visily-price-label">Core</div>
-              <h3>히어링 시트·정관 초안</h3>
-              <strong>프로젝트별 안내</strong>
-              <p>
-                회사명, 사업 목적, 자본금, 발기인, 이사 정보를 바탕으로
-                상담용 자료와 정관 초안을 준비합니다.
-              </p>
+              <div className="visily-price-label">
+                {sections.pricing.core.label}
+              </div>
+              <h3>{sections.pricing.core.title}</h3>
+              <strong>{sections.pricing.core.price}</strong>
+              <p>{sections.pricing.core.description}</p>
               <ul>
-                <li>히어링 시트 구조화</li>
-                <li>정관 초안 미리보기</li>
-                <li>PDF 저장/인쇄 흐름</li>
+                {sections.pricing.core.benefits.map((benefit) => (
+                  <li key={benefit}>{benefit}</li>
+                ))}
               </ul>
-              <Link to="/hearing-sheet">히어링 시트 작성</Link>
+              <Link to="/hearing-sheet">{sections.pricing.core.cta}</Link>
             </div>
           </article>
 
-          <article className="visily-pricing-card">
+          <article
+            className="visily-pricing-card"
+            tabIndex={0}
+            aria-label={sections.pricing.expert.aria}
+          >
             {/* 전문가 상담 카드는 hover 시 대표 견적표를 보여줍니다. */}
             <div className="visily-price-overlay estimate">
-              <span className="visily-estimate-badge">Pricing Details</span>
+              <span className="visily-estimate-badge">
+                {sections.pricing.expert.overlayBadge}
+              </span>
 
               <div className="visily-estimate-list">
-                {[
-                  [
-                    "법인 설립",
-                    "약 45만 엔 ~",
-                    "세금 및 사법서사 설립 보수 포함. 조건에 따라 변동됩니다.",
-                  ],
-                  [
-                    "설립 관련 업무",
-                    "20만 엔 ~",
-                    "한국어 지원, 계좌개설 지원 등. 세무서 제출 서류는 계약 범위에 따라 포함됩니다.",
-                  ],
-                  [
-                    "비자 발행",
-                    "상담 후 안내",
-                    "체류자격 종류와 신청 난이도에 따라 달라집니다.",
-                  ],
-                  [
-                    "회계 · 세무 고문",
-                    "월 7만 엔 ~",
-                    "기장, 결산, 세무 신고 범위와 운영 규모에 따라 산정됩니다.",
-                  ],
-                  [
-                    "인사, 노무",
-                    "12만 엔 ~",
-                    "사회보험, 급여 계산, 취업규칙 등 범위별 산정.",
-                  ],
-                ].map(([title, price, desc]) => (
-                  <div className="visily-estimate-item" key={title}>
-                    <span>{title}</span>
-                    <strong>{price}</strong>
-                    <p>{desc}</p>
+                {sections.pricing.expert.estimates.map((estimate) => (
+                  <div className="visily-estimate-item" key={estimate.title}>
+                    <span>{estimate.title}</span>
+                    <strong>{estimate.price}</strong>
+                    <p>{estimate.description}</p>
                   </div>
                 ))}
               </div>
 
-              <small>
-                정확한 가격은 상담 후 제시드립니다.
-              </small>
+              <small>{sections.pricing.expert.estimateNote}</small>
             </div>
 
             <div className="visily-price-content">
-              <div className="visily-price-label">Expert</div>
-              <h3>전문가 상담 예약</h3>
-              <strong>상담 범위별 견적</strong>
-              <p>
-                AI로 정리한 내용을 바탕으로 회계·세무·법무 전문가와 실제 상담
-                일정을 예약합니다.
-              </p>
+              <div className="visily-price-label">
+                {sections.pricing.expert.label}
+              </div>
+              <h3>{sections.pricing.expert.title}</h3>
+              <strong>{sections.pricing.expert.price}</strong>
+              <p>{sections.pricing.expert.description}</p>
               <ul>
-                <li>분야별 전문가 연결</li>
-                <li>문서 검토 범위 협의</li>
-                <li>상담 후 후속 업무 안내</li>
+                {sections.pricing.expert.benefits.map((benefit) => (
+                  <li key={benefit}>{benefit}</li>
+                ))}
               </ul>
-              <Link to="/reservation">상담 예약</Link>
+              <Link to="/reservation">{sections.pricing.expert.cta}</Link>
             </div>
           </article>
         </div>
 
-        <p className="visily-pricing-note">
-          실제 비용은 기업의 설립 형태, 상담 내역, 문서 검토 범위, 전문가 상담
-          분야에 따라 달라질 수 있습니다.
-        </p>
+        <p className="visily-pricing-note">{sections.pricing.note}</p>
       </section>
 
       {/* Method: 일본 진출 준비 흐름입니다. 스크롤 위치에 따라 단계 강조와 선 진행도가 바뀝니다. */}
@@ -807,12 +1570,8 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
         style={{ "--process-line-progress": processProgress }}
       >
         <div className="visily-process-head">
-          <h2>일본 시장으로 이어지는 준비 흐름</h2>
-          <p>
-            WVA는 흩어진 일본 진출 준비 과정을 단계별 워크플로우로 바꿉니다.
-            기업 정보를 정리하고, 문서 초안을 만들고, 전문가 검토로 최종 방향을
-            구체화합니다.
-          </p>
+          <h2>{sections.method.title}</h2>
+          <p>{sections.method.description}</p>
         </div>
 
         <div className="visily-zigzag-workflow" ref={processWorkflowRef}>
@@ -822,36 +1581,7 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
             </svg>
           </div>
 
-          {[
-            {
-              number: "01",
-              title: "상담 및 사전 준비",
-              position: "down",
-              items: [
-                "초기 상담 및 진출 전략 협의",
-                "법인 형태 결정 (KK / GK)",
-                "자본금 · 사업 목적 설정",
-              ],
-            },
-            {
-              number: "02",
-              title: "법인 설립 절차",
-              position: "up",
-              items: ["정관 작성 및 인증", "자본금 납입", "등기 신청 · 인감 등록"],
-            },
-            {
-              number: "03",
-              title: "세무 · 회계 고문",
-              position: "down",
-              items: ["세무 · 회계 자문", "기장 대행 및 결산", "정기 재무 리포트"],
-            },
-            {
-              number: "04",
-              title: "노무 · 사회보험",
-              position: "up",
-              items: ["사회보험 가입 절차", "급여 계산 체계 구축", "연말정산 및 노무 자문"],
-            },
-          ].map((step, index) => (
+          {sections.method.steps.map((step, index) => (
             <article
               className={`visily-zigzag-stage ${step.position} ${
                 index <= activeProcessStep ? "is-scroll-active" : ""
@@ -881,7 +1611,7 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
 
         <div className="visily-process-cta">
           <Link to="/hearing-sheet" className="visily-green-btn">
-            히어링 시트 작성하기 <span>›</span>
+            {sections.method.cta} <span>›</span>
           </Link>
         </div>
       </section>
@@ -889,15 +1619,12 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
       {/* Experts: 전문가 소개 영역입니다. 좁은 화면에서는 이력보다 사진과 전문 분야를 강조합니다. */}
       <section id="experts" className="visily-section visily-experts-section">
         <div className="visily-centered-head">
-          <h2>일본 비즈니스 실무를 아는 전문가</h2>
-          <p>
-            WVA는 AI가 정리한 상담 자료를 바탕으로 일본 현지 실무 경험을 가진
-            전문가와의 상담으로 이어질 수 있도록 돕습니다.
-          </p>
+          <h2>{sections.experts.title}</h2>
+          <p>{sections.experts.description}</p>
         </div>
 
         <div className="visily-expert-grid">
-          {experts.map((expert) => (
+          {sections.experts.people.map((expert) => (
             <article className="visily-expert-card" key={expert.name}>
               <div className="visily-expert-avatar" aria-hidden="true">
                 {expert.initial}
@@ -909,8 +1636,8 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
                 </div>
 
                 <div className="visily-expert-detail-grid">
-                  <div>
-                    <h4>주요 경력</h4>
+                  <div className="visily-expert-career-block">
+                    <h4>{sections.experts.careerLabel}</h4>
                     <ul>
                       {expert.careers.map((career) => (
                         <li key={career}>{career}</li>
@@ -918,7 +1645,7 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
                     </ul>
                   </div>
                   <div>
-                    <h4>전문 분야</h4>
+                    <h4>{sections.experts.specialtyLabel}</h4>
                     <div className="visily-expert-tags">
                       {expert.specialties.map((specialty) => (
                         <span key={specialty}>{specialty}</span>
@@ -932,18 +1659,15 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
         </div>
       </section>
 
-      {/* Standards: WVA의 운영 방식/강점 카드입니다. 자동 순환과 hover pause가 적용되어 있습니다. */}
+      {/* Standards: M&K 사무소의 운영 방식/강점 카드입니다. 자동 순환과 hover pause가 적용되어 있습니다. */}
       <section id="standards" className="visily-section visily-standards">
         <div className="visily-centered-head">
-          <h2>일본 진출을 실행으로 바꾸는 기준</h2>
-          <p>
-            WVA는 문서 준비, 다국어 지원, 상담 연결, 실행 워크플로우를
-            하나로 묶어 일본 진출 준비를 더 명확하게 만듭니다.
-          </p>
+          <h2>{sections.standards.title}</h2>
+          <p>{sections.standards.description}</p>
         </div>
 
         <div className="visily-metric-grid">
-          {STANDARD_ITEMS.map((item, index) => (
+          {sections.standards.items.map((item, index) => (
             <article
               className={`visily-metric-card ${
                 activeStandardIndex === index ? "active" : ""
@@ -962,7 +1686,7 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
               onMouseLeave={() => setIsStandardPaused(false)}
             >
               <div className="visily-metric-top">
-                <small>WVA 기준</small>
+                <small>{sections.standards.badge}</small>
                 <span className="visily-metric-number">
                   {String(index + 1).padStart(2, "0")}
                 </span>
@@ -982,35 +1706,30 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
 
         <div className="visily-contact-panel">
           <div className="visily-contact-copy">
-            <h3>Strategy & Contact</h3>
+            <h3>{sections.contact.title}</h3>
 
             <div className="visily-contact-detail">
-              <span>Location</span>
+              <span>{sections.contact.locationLabel}</span>
               <strong>
                 〒530-0026
                 <br />
-                일본 오사카부 오사카시 기타구 가미야마초 8-1
+                {sections.contact.address}
               </strong>
-              <p>
-                일본 오사카 사무소에서 일본 진출 상담과 현지 전문가 연계를
-                지원합니다.
-              </p>
+              <p>{sections.contact.locationDescription}</p>
             </div>
 
             <div className="visily-contact-detail">
-              <span>Contact</span>
+              <span>{sections.contact.onlineLabel}</span>
               <strong>
-                <a href="mailto:contact@wva-consulting.com">
-                  contact@wva-consulting.com
-                </a>
+                <Link to="/reservation">{sections.contact.onlineLink}</Link>
               </strong>
-              <p>상담 예약, 자료 제출, 서비스 문의를 이메일로 남겨주세요.</p>
+              <p>{sections.contact.onlineDescription}</p>
             </div>
           </div>
 
           <div className="visily-map-placeholder">
             <iframe
-              title="WVA 오사카 사무소 Google 지도"
+              title={sections.contact.mapTitle}
               src="https://www.google.com/maps?q=8-1%20Kamiyamacho%2C%20Kita%20Ward%2C%20Osaka%2C%20530-0026&output=embed"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
@@ -1021,7 +1740,7 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
               target="_blank"
               rel="noreferrer"
             >
-              Google 지도에서 보기 ↗
+              {sections.contact.mapLink} ↗
             </a>
           </div>
         </div>
@@ -1030,14 +1749,17 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
       {/* Footer: 하단 고정 정보 영역입니다. */}
       <footer className="visily-footer">
         <Link to="/" className="visily-footer-brand">
-          ◎ WVA AI Consulting
+          <span className="visily-footer-logo" aria-hidden="true">
+            <img src={mkOfficeLogo} alt="" />
+          </span>
+          <strong>{sections.brandName}</strong>
         </Link>
-        <span>© 2026 WVA Group. All rights reserved.</span>
+        <span>{sections.footer.copyright}</span>
         <nav>
-          <Link to="/chat">AI 상담</Link>
-          <Link to="/reservation">상담 예약</Link>
-          <Link to="/hearing-sheet">히어링 시트</Link>
-          <Link to="/login">고객 지원</Link>
+          <Link to="/chat">{sections.footer.ai}</Link>
+          <Link to="/reservation">{sections.footer.reservation}</Link>
+          <Link to="/hearing-sheet">{sections.footer.hearing}</Link>
+          <Link to="/login">{sections.footer.support}</Link>
         </nav>
       </footer>
     </div>

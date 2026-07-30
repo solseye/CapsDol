@@ -7,12 +7,16 @@ import {
   getSafeReturnPath,
   saveSession,
 } from "../utils/authSession";
+import { getPageCopy } from "../i18n/pageCopy";
+import { getCurrentLanguage } from "../i18n/translations";
 
 const GOOGLE_CLIENT_ID =
   process.env.REACT_APP_GOOGLE_CLIENT_ID ||
   "1008976808306-khvao892b8n9rv6lmk89k9qoba9i03m6.apps.googleusercontent.com";
 
 export default function Signup() {
+  const authCopy = getPageCopy("auth");
+  const copy = getPageCopy("signup");
   const navigate = useNavigate();
   const location = useLocation();
   const googleButtonRef = useRef(null);
@@ -42,7 +46,7 @@ export default function Signup() {
   const handleGoogleCredentialResponse = useCallback(
     async (response) => {
       if (!response?.credential) {
-        setError("구글 인증 정보를 받지 못했습니다. 다시 시도해 주세요.");
+        setError(copy.googleCredentialError);
         return;
       }
 
@@ -54,12 +58,12 @@ export default function Signup() {
 
         if (!data.success || !data.accessToken) {
           throw new Error(
-            data.error || data.msg || "구글 계정 생성에 실패했습니다."
+            data.error || data.msg || copy.googleError
           );
         }
 
         saveSession(data, {
-          username: "Google 사용자",
+          username: authCopy.googleUser,
           role: data.role || "user",
         });
         navigate(getSafeReturnPath(location.state, data.role), {
@@ -69,16 +73,18 @@ export default function Signup() {
       } catch (err) {
         console.error("구글 회원가입 에러:", err);
         setError(
-          err.message || "구글 계정으로 회원가입하지 못했습니다."
+          err.message || copy.googleError
         );
       } finally {
         setGoogleLoading(false);
       }
     },
-    [location.state, navigate]
+    [authCopy.googleUser, copy.googleCredentialError, copy.googleError, location.state, navigate]
   );
 
   useEffect(() => {
+    const googleLocale = getCurrentLanguage();
+    const googleScriptSrc = `https://accounts.google.com/gsi/client?hl=${googleLocale}`;
     const initializeGoogleSignup = () => {
       if (!window.google || !googleButtonRef.current) return;
 
@@ -95,12 +101,11 @@ export default function Signup() {
         width: 320,
         text: "signup_with",
         logo_alignment: "left",
+        locale: getCurrentLanguage(),
       });
     };
 
-    const existingScript = document.querySelector(
-      'script[src="https://accounts.google.com/gsi/client"]'
-    );
+    const existingScript = document.querySelector('script[src^="https://accounts.google.com/gsi/client"]');
 
     if (existingScript) {
       if (window.google) {
@@ -117,7 +122,7 @@ export default function Signup() {
     }
 
     const script = document.createElement("script");
-    script.src = "https://accounts.google.com/gsi/client";
+    script.src = googleScriptSrc;
     script.async = true;
     script.defer = true;
     script.onload = initializeGoogleSignup;
@@ -143,12 +148,12 @@ export default function Signup() {
     e.preventDefault();
 
     if (!form.email.trim() || !form.username.trim() || !form.password.trim()) {
-      setError("이메일, 아이디, 비밀번호를 모두 입력해 주세요.");
+      setError(copy.requiredError);
       return;
     }
 
     if (!acceptedTerms) {
-      setError("서비스 이용을 위한 계정 생성에 동의해 주세요.");
+      setError(copy.consentError);
       return;
     }
 
@@ -188,12 +193,12 @@ export default function Signup() {
         replace: true,
         state: {
           ...location.state,
-          message: "회원가입이 완료되었습니다. 로그인해 주세요.",
+          message: copy.success,
         },
       });
     } catch (err) {
       console.error("회원가입 실패:", err);
-      setError(err.message || "회원가입에 실패했습니다.");
+      setError(err.message || copy.signupError);
     } finally {
       setLoading(false);
     }
@@ -206,53 +211,50 @@ export default function Signup() {
           type="button"
           className="authv-brand"
           onClick={() => navigate("/")}
-          aria-label="WVA 홈으로 이동"
+          aria-label={authCopy.brandHome}
         >
           <span>◎</span>
-          <strong>WVA AI Consulting</strong>
+          <strong>{authCopy.brandName}</strong>
         </button>
 
         <div className="authv-brand-copy">
           <h1>
-            일본 진출 준비를
-            <span>WVA 계정으로 시작하세요</span>
+            {copy.heroTitle}
+            <span>{copy.heroAccent}</span>
           </h1>
-          <p>
-            AI 챗봇 상담, 히어링 시트 작성, 정관 초안 확인, 전문가 상담 예약을
-            하나의 계정으로 이용할 수 있습니다.
-          </p>
+          <p>{copy.heroBody}</p>
 
           <div className="authv-proof-grid">
             <div>
               <span>✓</span>
-              <strong>히어링 시트</strong>
-              <p>기업 정보를 정리하고 정관 초안으로 연결합니다.</p>
+              <strong>{copy.proof1Title}</strong>
+              <p>{copy.proof1Body}</p>
             </div>
             <div>
               <span>✓</span>
-              <strong>예약 관리</strong>
-              <p>전문가 상담 일정을 신청하고 상태를 확인합니다.</p>
+              <strong>{copy.proof2Title}</strong>
+              <p>{copy.proof2Body}</p>
             </div>
           </div>
         </div>
 
-        <p className="authv-trust">일본 법무·세무 상담 준비를 위한 AI 워크플로우</p>
+        <p className="authv-trust">{copy.trust}</p>
       </section>
 
       <section className="authv-form-panel">
         <div className="authv-card">
           <div className="authv-title">
-            <h2>계정 만들기</h2>
-            <p>WVA의 AI 상담과 전문가 연결 기능을 이용할 계정을 생성합니다.</p>
+            <h2>{copy.title}</h2>
+            <p>{copy.intro}</p>
           </div>
 
           <div className="authv-google-box">
             <div ref={googleButtonRef} className="authv-google-button" />
-            {googleLoading && <p>구글 계정 생성 중...</p>}
+            {googleLoading && <p>{copy.googleLoading}</p>}
           </div>
 
           <div className="authv-divider">
-            <span>또는 이메일로 계정 만들기</span>
+            <span>{copy.continueEmail}</span>
           </div>
 
           <div className="authv-tabs">
@@ -260,16 +262,16 @@ export default function Signup() {
               type="button"
               onClick={() => navigate("/login", { state: location.state })}
             >
-              로그인
+              {authCopy.login}
             </button>
             <button type="button" className="active">
-              회원가입
+              {authCopy.signup}
             </button>
           </div>
 
           <form className="authv-form" onSubmit={handleSignup}>
             <div className="authv-field">
-              <label htmlFor="email">업무 이메일</label>
+              <label htmlFor="email">{copy.email}</label>
               <input
                 id="email"
                 type="email"
@@ -282,12 +284,12 @@ export default function Signup() {
             </div>
 
             <div className="authv-field">
-              <label htmlFor="username">아이디</label>
+              <label htmlFor="username">{copy.username}</label>
               <input
                 id="username"
                 type="text"
                 name="username"
-                placeholder="로그인에 사용할 아이디"
+                placeholder={copy.usernamePlaceholder}
                 value={form.username}
                 onChange={handleChange}
                 autoComplete="username"
@@ -295,12 +297,12 @@ export default function Signup() {
             </div>
 
             <div className="authv-field">
-              <label htmlFor="password">비밀번호</label>
+              <label htmlFor="password">{copy.password}</label>
               <input
                 id="password"
                 type="password"
                 name="password"
-                placeholder="비밀번호를 입력하세요"
+                placeholder={copy.passwordPlaceholder}
                 value={form.password}
                 onChange={handleChange}
                 autoComplete="new-password"
@@ -313,30 +315,30 @@ export default function Signup() {
                 checked={acceptedTerms}
                 onChange={(event) => setAcceptedTerms(event.target.checked)}
               />
-              <span>서비스 이용을 위한 계정 생성에 동의합니다</span>
+              <span>{copy.consent}</span>
             </label>
 
             {error && <p className="authv-error">{error}</p>}
 
             <button type="submit" className="authv-submit" disabled={loading}>
-              {loading ? "가입 중..." : "WVA 계정 생성"} <span>→</span>
+              {loading ? copy.signingUp : copy.signupButton} <span>→</span>
             </button>
           </form>
 
           <div className="authv-help">
-            <span>이미 계정이 있으신가요?</span>
+            <span>{copy.haveAccount}</span>
             <button
               type="button"
               onClick={() => navigate("/login", { state: location.state })}
             >
-              로그인하기
+              {copy.login}
             </button>
           </div>
 
           <div className="authv-compliance">
-            <span>문서 기반 상담</span>
-            <span>다국어 지원</span>
-            <span>전문가 연결</span>
+            <span>{copy.compliance1}</span>
+            <span>{copy.compliance2}</span>
+            <span>{copy.compliance3}</span>
           </div>
         </div>
       </section>

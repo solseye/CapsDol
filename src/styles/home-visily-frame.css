@@ -158,14 +158,31 @@
   text-decoration: none;
 }
 
-.visily-brand-mark {
-  width: 28px;
-  height: 28px;
-  display: grid;
-  place-items: center;
-  color: #06233c;
-  font-size: 25px;
-  font-weight: 950;
+.visily-brand-logo,
+.visily-footer-logo,
+.visily-trust-logo {
+  position: relative;
+  flex: 0 0 auto;
+  overflow: hidden;
+  background: transparent;
+}
+
+.visily-brand-logo {
+  width: 74px;
+  height: 34px;
+  border-radius: 3px;
+}
+
+.visily-brand-logo img,
+.visily-footer-logo img,
+.visily-trust-logo img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 150%;
+  max-width: none;
+  height: auto;
+  transform: translate(-50%, -50%);
 }
 
 .visily-brand strong {
@@ -626,28 +643,29 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 0;
+  gap: 16px;
   color: rgba(255, 255, 255, 0.3);
 }
 
-.visily-trust-row span {
-  width: 34px;
-  height: 34px;
-  margin-left: -7px;
-  display: grid;
-  place-items: center;
-  border: 2px solid #dce3e8;
-  border-radius: 50%;
-  color: #06233c;
-  background: #ffffff;
-  font-size: 12px;
-  font-weight: 950;
+.visily-trust-row .visily-trust-logo {
+  width: 88px;
+  height: 38px;
 }
 
 .visily-trust-row p {
-  margin: 0 0 0 18px;
+  display: grid;
+  gap: 3px;
+  margin: 0;
   font-size: 13px;
   font-weight: 800;
+  text-align: left;
+}
+
+.visily-trust-row p strong {
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: 0.06em;
 }
 
 .visily-section,
@@ -958,6 +976,19 @@
   opacity: 1;
 }
 
+.visily-pricing-card:focus-within .visily-price-overlay {
+  opacity: 1;
+}
+
+.visily-pricing-card.featured:focus-within .visily-price-overlay.core-services {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.visily-pricing-card:hover .visily-price-overlay.core-services {
+  pointer-events: auto;
+}
+
 .visily-price-overlay h3 {
   margin: 0 0 14px;
   color: #ffffff !important;
@@ -976,18 +1007,71 @@
   font-weight: 900;
 }
 
+.visily-price-overlay.core-services {
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 22px 30px 16px;
+  text-align: left;
+  transition: opacity 0s;
+}
+
+.visily-pricing-card:hover .visily-price-overlay.core-services,
+.visily-pricing-card:focus-within .visily-price-overlay.core-services {
+  transition: opacity 0.24s ease;
+}
+
+.visily-price-overlay.core-services h3 {
+  margin-bottom: 8px;
+  font-size: 22px;
+}
+
+.visily-price-overlay.core-services .visily-estimate-badge {
+  margin-bottom: 10px;
+}
+
+.visily-core-service-list {
+  display: grid;
+}
+
+.visily-core-service-item {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.11);
+  padding: 7px 0 8px;
+}
+
+.visily-core-service-item:last-child {
+  border-bottom: 0;
+}
+
+.visily-core-service-item strong {
+  display: block;
+  color: #ffffff;
+  font-size: 13.5px;
+  line-height: 1.25;
+  font-weight: 950;
+}
+
+.visily-core-service-item p {
+  max-width: none;
+  margin-top: 3px;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 11.5px;
+  line-height: 1.38;
+  font-weight: 760;
+  text-align: left;
+}
+
 /* Expert estimate overlay
    전문가 상담 카드 hover 시 보이는 대표 견적표입니다. 가격/문구 수정은 JSX의 배열 데이터를 먼저 확인하세요. */
 .visily-price-overlay.estimate {
   align-items: stretch;
   justify-content: flex-start;
-  padding: 22px 30px 16px;
+  padding: 18px 24px 12px;
   text-align: left;
 }
 
 .visily-estimate-badge {
   width: fit-content;
-  margin-bottom: 16px;
+  margin-bottom: 10px;
   border-radius: 999px;
   padding: 6px 12px;
   color: rgba(255, 255, 255, 0.62);
@@ -1051,26 +1135,26 @@
 .visily-estimate-item {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 5px 16px;
+  gap: 4px 12px;
   min-height: 0;
   border: 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 0;
-  padding: 10px 0 12px;
+  padding: 7px 0 8px;
   background: transparent;
   box-shadow: none;
 }
 
 .visily-estimate-item span {
   color: #ffffff;
-  font-size: 15px;
+  font-size: 13px;
   line-height: 1.25;
   font-weight: 950;
 }
 
 .visily-estimate-item strong {
   color: #ffffff;
-  font-size: 15px;
+  font-size: 13px;
   line-height: 1.25;
   font-weight: 950;
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.28);
@@ -1082,8 +1166,8 @@
   min-height: 0;
   margin: 0;
   color: rgba(255, 255, 255, 0.6);
-  font-size: 10.8px;
-  line-height: 1.34;
+  font-size: 10px;
+  line-height: 1.25;
   font-weight: 760;
 }
 
@@ -1099,10 +1183,73 @@
   padding-top: 0;
   color: rgba(255, 255, 255, 0.72);
   text-shadow: none;
-  font-size: 10.5px;
+  font-size: 9.5px;
   line-height: 1.4;
   font-weight: 950;
   text-align: right;
+}
+
+html[lang="en"] .visily-price-overlay.core-services {
+  padding: 18px 24px 12px;
+}
+
+html[lang="en"] .visily-price-overlay.core-services h3 {
+  margin-bottom: 5px;
+  font-size: 19px;
+}
+
+html[lang="en"]
+  .visily-price-overlay.core-services
+  .visily-estimate-badge {
+  margin-bottom: 6px;
+  padding: 5px 10px;
+  font-size: 8.5px;
+}
+
+html[lang="en"] .visily-core-service-item {
+  padding: 4px 0 5px;
+}
+
+html[lang="en"] .visily-core-service-item strong {
+  font-size: 12px;
+}
+
+html[lang="en"] .visily-core-service-item p {
+  margin-top: 2px;
+  font-size: 10px;
+  line-height: 1.25;
+}
+
+@media (max-width: 640px) {
+  html[lang="en"] .visily-price-overlay.estimate {
+    padding: 14px 18px 10px;
+  }
+
+  html[lang="en"] .visily-price-overlay.estimate .visily-estimate-badge {
+    margin-bottom: 6px;
+    padding: 4px 9px;
+    font-size: 8px;
+  }
+
+  html[lang="en"] .visily-estimate-item {
+    gap: 3px 9px;
+    padding: 5px 0 6px;
+  }
+
+  html[lang="en"] .visily-estimate-item span,
+  html[lang="en"] .visily-estimate-item strong {
+    font-size: 12px;
+  }
+
+  html[lang="en"] .visily-estimate-item p {
+    font-size: 9.2px;
+    line-height: 1.18;
+  }
+
+  html[lang="en"] .visily-price-overlay.estimate > small {
+    margin-bottom: 4px;
+    font-size: 8.5px;
+  }
 }
 
 .visily-price-back .visily-price-label {
@@ -1268,7 +1415,7 @@
 
 .visily-pricing-note {
   max-width: 760px;
-  margin: 28px auto 0;
+  margin: 34px auto 0;
   color: #697482;
   text-align: center;
   font-size: 13px;
@@ -2011,7 +2158,7 @@
 }
 
 /* Standards
-   WVA 운영 방식 카드입니다. active 클래스는 React에서 자동 순환/hover 상태로 제어합니다. */
+   M&K 사무소 운영 방식 카드입니다. active 클래스는 React에서 자동 순환/hover 상태로 제어합니다. */
 .visily-metric-card {
   position: relative;
   min-height: 268px;
@@ -2278,6 +2425,19 @@
   gap: 34px;
 }
 
+.visily-footer-logo {
+  width: 58px;
+  height: 26px;
+  border-radius: 2px;
+}
+
+.visily-footer-brand strong {
+  color: #061f35;
+  font-size: 14px;
+  font-weight: 950;
+  white-space: nowrap;
+}
+
 /* Responsive header step 1: 여백과 버튼 크기를 먼저 줄여 중간 화면 깨짐을 방지합니다. */
 @media (max-width: 1380px) {
   .visily-nav {
@@ -2436,10 +2596,9 @@
     font-size: 11px;
   }
 
-  .visily-brand-mark {
-    width: 24px;
-    height: 24px;
-    font-size: 21px;
+  .visily-brand-logo {
+    width: 58px;
+    height: 27px;
   }
 
   .visily-brand strong {
@@ -2586,7 +2745,16 @@
     display: block;
   }
 
-  .visily-expert-detail-grid > div:first-child {
+  .visily-expert-career-block {
+    margin-bottom: 24px;
+    text-align: left;
+  }
+
+  .visily-expert-career-block h4 {
+    text-align: center;
+  }
+
+  .visily-expert-career-block li:nth-child(n + 3) {
     display: none;
   }
 
@@ -2655,15 +2823,88 @@
     width: 100%;
   }
 
+  .visily-pricing-grid article {
+    min-height: 440px;
+    padding: 22px 18px;
+  }
+
+  .visily-pricing-grid article.featured,
+  .visily-pricing-grid article:nth-child(3) {
+    min-height: 500px;
+  }
+
+  .visily-price-content {
+    min-height: 396px;
+  }
+
+  .visily-pricing-grid article.featured .visily-price-content,
+  .visily-pricing-grid article:nth-child(3) .visily-price-content {
+    min-height: 456px;
+  }
+
+  .visily-price-content > p {
+    min-height: 0;
+    margin: 14px 0 16px;
+  }
+
+  .visily-pricing-grid ul {
+    gap: 9px;
+    margin-bottom: 18px;
+  }
+
   .visily-zigzag-workflow {
     grid-template-columns: 1fr;
-    justify-items: center;
-    gap: 22px;
+    justify-items: stretch;
+    gap: 12px;
   }
 
   .visily-zigzag-node {
-    width: min(72vw, 230px);
-    height: min(72vw, 230px);
+    width: 100%;
+    height: 112px;
+    min-height: 112px;
+    border-radius: 14px;
+    padding: 16px 20px;
+  }
+
+  .visily-zigzag-node::after {
+    border-radius: 14px;
+  }
+
+  .visily-zigzag-default {
+    grid-template-columns: 64px minmax(0, 1fr);
+    align-content: center;
+    justify-items: stretch;
+    gap: 10px;
+    padding: 16px 22px;
+  }
+
+  .visily-zigzag-default span {
+    position: static;
+    color: rgba(6, 35, 60, 0.13);
+    font-size: 38px;
+    text-align: left;
+    transform: none;
+  }
+
+  .visily-zigzag-default h3 {
+    max-width: none;
+    align-self: center;
+    text-align: left;
+  }
+
+  .visily-zigzag-hover {
+    gap: 6px;
+    padding: 14px 22px;
+    text-align: left;
+  }
+
+  .visily-zigzag-hover ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px 12px;
+  }
+
+  .visily-zigzag-hover li {
+    font-size: 9.5px;
   }
 
   .visily-expert-card {
@@ -2671,7 +2912,7 @@
   }
 
   .visily-expert-avatar {
-    min-height: 220px;
+    min-height: 160px;
     font-size: 58px;
   }
 
@@ -2687,10 +2928,46 @@
     display: grid;
   }
 
+  .visily-contact-panel {
+    gap: 28px;
+    margin-top: 34px;
+    padding: 32px 24px;
+  }
+
+  .visily-contact-copy h3 {
+    margin-bottom: 24px;
+    font-size: 26px;
+  }
+
+  .visily-contact-detail + .visily-contact-detail {
+    margin-top: 24px;
+  }
+
+  .visily-contact-detail strong {
+    font-size: 18px;
+  }
+
+  .visily-map-placeholder,
+  .visily-map-placeholder iframe {
+    min-height: 220px;
+  }
+
   .visily-cta div,
   .visily-footer nav {
     display: grid;
     width: 100%;
+  }
+
+  .visily-footer {
+    min-height: 0;
+    gap: 16px;
+    padding: 24px 20px;
+  }
+
+  .visily-footer nav {
+    grid-template-columns: repeat(2, max-content);
+    justify-content: start;
+    gap: 14px 28px;
   }
 }
 

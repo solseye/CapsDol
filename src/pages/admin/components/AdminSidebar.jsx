@@ -1,5 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import {
+  getCurrentLanguage,
+  setCurrentLanguage,
+} from "../../../i18n/translations";
 import "./adminSidebar.css";
 
 const menuItems = [
@@ -26,9 +30,7 @@ export default function AdminSidebar({ onNavigate }) {
   const navigate = useNavigate();
   const [isLangOpen, setIsLangOpen] = useState(false);
   const langMenuRef = useRef(null);
-  const [selectedLang, setSelectedLang] = useState(
-    () => localStorage.getItem("adminLang") || "KR",
-  );
+  const [selectedLang, setSelectedLang] = useState(getCurrentLanguage);
 
   useEffect(() => {
     // 언어 메뉴 바깥 클릭을 감지해 팝오버를 닫습니다.
@@ -54,8 +56,9 @@ export default function AdminSidebar({ onNavigate }) {
   // 선택한 관리자 언어를 로컬 스토리지에 저장합니다.
   const handleSelectLang = (lang) => {
     setSelectedLang(lang);
-    localStorage.setItem("adminLang", lang);
+    setCurrentLanguage(lang);
     setIsLangOpen(false);
+    window.location.reload();
   };
 
   return (
@@ -63,7 +66,7 @@ export default function AdminSidebar({ onNavigate }) {
       <div className="adm-brand">
         <span>◎</span>
         <div>
-          <strong>WVA AI Consulting</strong>
+          <strong>M&amp;K 사무소</strong>
           <small>Japan Entry OS</small>
         </div>
       </div>
@@ -101,7 +104,7 @@ export default function AdminSidebar({ onNavigate }) {
             </svg>
           </div>
           <div className="adm-profile-info">
-            <normal>Admin</normal>
+            <strong>Admin</strong>
           </div>
         </div>
 
@@ -111,19 +114,27 @@ export default function AdminSidebar({ onNavigate }) {
             <div className="adm-lang-popover">
               <button
                 type="button"
-                className={`adm-lang-option ${selectedLang === "KR" ? "active" : ""}`}
-                onClick={() => handleSelectLang("KR")}
+                className={`adm-lang-option ${selectedLang === "ko" ? "active" : ""}`}
+                onClick={() => handleSelectLang("ko")}
               >
                 <span className="lang-flag">🇰🇷</span>
                 <span>한국어</span>
               </button>
               <button
                 type="button"
-                className={`adm-lang-option ${selectedLang === "JP" ? "active" : ""}`}
-                onClick={() => handleSelectLang("JP")}
+                className={`adm-lang-option ${selectedLang === "ja" ? "active" : ""}`}
+                onClick={() => handleSelectLang("ja")}
               >
                 <span className="lang-flag">🇯🇵</span>
                 <span>日本語</span>
+              </button>
+              <button
+                type="button"
+                className={`adm-lang-option ${selectedLang === "en" ? "active" : ""}`}
+                onClick={() => handleSelectLang("en")}
+              >
+                <span className="lang-flag">🇺🇸</span>
+                <span>English</span>
               </button>
             </div>
           )}
@@ -147,7 +158,9 @@ export default function AdminSidebar({ onNavigate }) {
               <line x1="2" y1="12" x2="22" y2="12"></line>
               <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
             </svg>
-            <span>언어 설정 ({selectedLang})</span>
+            <span>
+              언어 설정 ({selectedLang === "ko" ? "KO" : selectedLang === "ja" ? "JP" : "EN"})
+            </span>
             <span className={`adm-caret ${isLangOpen ? "open" : ""}`}>▶</span>
           </button>
         </div>

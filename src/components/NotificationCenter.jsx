@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { notificationEvents } from "../utils/notifications";
+import { getCurrentLanguage, translate } from "../i18n/translations";
 import "../styles/notifications.css";
 
 export default function NotificationCenter() {
+  const language = getCurrentLanguage();
   const [toasts, setToasts] = useState([]);
   const [confirmation, setConfirmation] = useState(null);
   const confirmButtonRef = useRef(null);
@@ -55,7 +57,7 @@ export default function NotificationCenter() {
             <p>{toast.message}</p>
             <button
               type="button"
-              aria-label="알림 닫기"
+              aria-label={translate(language, "common.closeNotification")}
               onClick={() =>
                 setToasts((current) => current.filter((item) => item.id !== toast.id))
               }
