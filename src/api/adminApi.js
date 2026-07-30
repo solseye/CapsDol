@@ -61,23 +61,38 @@ export async function uploadRagFile({
 }
 
 
-export async function getRagFiles({ bucket = "chat", folder = "normal" }) {
+export async function getRagFiles({
+  bucket = "chat",
+  folder = "normal",
+  limit = 100,
+  offset = 0,
+} = {}) {
   const params = new URLSearchParams({
     bucket,
     folder,
+    limit: String(limit),
+    offset: String(offset),
   });
 
-  const res = await fetchWithAuth(`/chat/rag/files?${params.toString()}`, {
-    method: "GET",
-  });
+  const res = await fetchWithAuth(
+    `/chat/rag/files?${params.toString()}`,
+    {
+      method: "GET",
+    }
+  );
 
   const data = await parseJsonResponse(res);
 
   if (!res.ok || data.success === false) {
-    throw new Error(data.error || "파일 목록 조회에 실패했습니다.");
+    throw new Error(
+      data.error || "파일 목록 조회에 실패했습니다."
+    );
   }
 
-  return data;
+  return {
+    ...data,
+    files: Array.isArray(data.files) ? data.files : [],
+  };
 }
 
 export async function getRagFileSignedUrl({ path, expiresIn = 600 }) {

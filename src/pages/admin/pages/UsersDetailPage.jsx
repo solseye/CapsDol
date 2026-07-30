@@ -9,6 +9,7 @@ import {
 import { Link, useLocation, useParams } from "react-router-dom";
 
 import { getAdminUsers } from "../../../api/adminApi";
+import { getUserChatHistory } from "../../../api/chatApi";
 import {
   deleteClientFile,
   getClientFiles,
@@ -147,6 +148,12 @@ export default function UsersDetailPage() {
   const [chatMessage, setChatMessage] = useState("");
   const [isChatSending, setIsChatSending] = useState(false);
   const reservationChatListRef = useRef(null);
+  const [chatHistories, setChatHistories] = useState([]);
+  const [isChatHistoryLoading, setIsChatHistoryLoading] =
+    useState(true);
+  const [chatHistoryError, setChatHistoryError] = useState("");
+  const [openChatHistoryId, setOpenChatHistoryId] =
+    useState(null);
 
   const [previewLoadingPath, setPreviewLoadingPath] = useState(null);
   const [downloadLoadingPath, setDownloadLoadingPath] = useState(null);
@@ -285,11 +292,53 @@ export default function UsersDetailPage() {
     }
   }, [uuid]);
 
+  const fetchUserChatHistory = useCallback(async () => {
+    if (!uuid) {
+      setChatHistories([]);
+      setChatHistoryError("사용자 UUID가 없습니다.");
+      setIsChatHistoryLoading(false);
+      return;
+    }
+
+    try {
+      setIsChatHistoryLoading(true);
+      setChatHistoryError("");
+
+      const data = await getUserChatHistory({
+        uuid,
+        limit: 20,
+        offset: 0,
+      });
+
+      setChatHistories(
+        Array.isArray(data.histories)
+          ? data.histories
+          : []
+      );
+
+      setOpenChatHistoryId(null);
+    } catch (err) {
+      setChatHistories([]);
+      setChatHistoryError(
+        err.message ||
+          "사용자 챗봇 대화 기록을 불러오지 못했습니다."
+      );
+    } finally {
+      setIsChatHistoryLoading(false);
+    }
+  }, [uuid]);
+
   useEffect(() => {
     fetchSelectedUser();
     fetchUserReservations();
     fetchUserFiles();
-  }, [fetchSelectedUser, fetchUserReservations, fetchUserFiles]);
+    fetchUserChatHistory();
+  }, [
+    fetchSelectedUser,
+    fetchUserReservations,
+    fetchUserFiles,
+    fetchUserChatHistory,
+  ]);
 
   useEffect(() => {
     if (!uuid || !selectedReservation) {
@@ -332,10 +381,12 @@ export default function UsersDetailPage() {
 
   const handleRefresh = async () => {
     setSuccess("");
+
     await Promise.all([
       fetchSelectedUser(),
       fetchUserReservations(),
       fetchUserFiles(),
+      fetchUserChatHistory(),
     ]);
   };
 
@@ -929,6 +980,172 @@ export default function UsersDetailPage() {
                 })}
               </tbody>
             </table>
+          </div>
+        )}
+      </section>
+
+      <section className="adm-card admin-chat-history-card">
+        <div className="admin-chat-history-header">
+          <div>
+            <p className="admin-chat-history-eyebrow">
+              CHAT HISTORY
+            </p>
+
+            <h2 className="file-list-title">
+              챗봇 대화 내역
+            </h2>
+
+            <p className="file-count">
+              총 {chatHistories.length}건의 최근 대화 기록
+            </p>
+          </div>
+
+          <button
+            type="button"
+            className="adm-btn ghost"
+            onClick={fetchUserChatHistory}
+            disabled={isChatHistoryLoading || !uuid}
+          >
+            {isChatHistoryLoading ? "조회 중..." : "새로고침"}
+          </button>
+        </div>
+
+        {isChatHistoryLoading ? (
+          <div className="admin-chat-history-empty">
+            <div
+              className="admin-chat-history-empty-icon"
+              aria-hidden="true"
+            >
+              AI
+            </div>
+
+            <strong>챗봇 대화 기록을 불러오는 중입니다.</strong>
+
+            <span>잠시만 기다려 주세요.</span>
+          </div>
+        ) : chatHistoryError ? (
+          <div className="admin-chat-history-empty">
+            <div
+              className="admin-chat-history-empty-icon is-error"
+              aria-hidden="true"
+            >
+              !
+            </div>
+
+            <strong>대화 기록을 불러오지 못했습니다.</strong>
+
+            <span>{chatHistoryError}</span>
+          </div>
+        ) : chatHistories.length === 0 ? (
+          <div className="admin-chat-history-empty">
+            <div
+              className="admin-chat-history-empty-icon"
+              aria-hidden="true"
+            >
+              AI
+            </div>
+
+            <strong>저장된 챗봇 대화가 없습니다.</strong>
+
+            <span>
+              이 사용자가 챗봇을 이용하면 질문과 답변이
+              이곳에 표시됩니다.
+            </span>
+          </div>
+        ) : (
+          <div className="admin-chat-history-list">
+            {chatHistories.map((history) => {
+              const historyId = String(history.id);
+              const isOpen =
+                openChatHistoryId === historyId;
+
+              return (
+                <article
+                  className={`admin-chat-history-item ${
+                    isOpen ? "is-open" : ""
+                  }`}
+                  key={historyId}
+                >
+                  <button
+                    type="button"
+                    className="admin-chat-history-question"
+                    onClick={() =>
+                      setOpenChatHistoryId(
+                        isOpen ? null : historyId
+                      )
+                    }
+                    aria-expanded={isOpen}
+                  >
+                    <span
+                      className="admin-chat-history-item-icon"
+                      aria-hidden="true"
+                    >
+                      AI
+                    </span>
+
+                    <span className="admin-chat-history-summary">
+                      <strong>
+                        {history.question ||
+                          "질문 내용이 없습니다."}
+                      </strong>
+
+                      <time dateTime={history.created_at}>
+                        {formatDateTime(history.created_at)}
+                      </time>
+                    </span>
+
+                    <span
+                      className="admin-chat-history-toggle"
+                      aria-hidden="true"
+                    >
+                      +
+                    </span>
+                  </button>
+
+                  <div className="admin-chat-history-answer">
+                    <div>
+                      <section>
+                        <span>QUESTION</span>
+
+                        <p>
+                          {history.question ||
+                            "질문 내용이 없습니다."}
+                        </p>
+                      </section>
+
+                      <section>
+                        <span>ANSWER</span>
+
+                        <p>
+                          {history.answer ||
+                            "저장된 답변이 없습니다."}
+                        </p>
+                      </section>
+
+                      {(history.model ||
+                        history.usage?.total_tokens != null) && (
+                        <footer className="admin-chat-history-meta">
+                          {history.model && (
+                            <span>
+                              모델: {history.model}
+                            </span>
+                          )}
+
+                          {history.usage?.total_tokens != null && (
+                            <span>
+                              토큰:{" "}
+                              {Number(
+                                history.usage.total_tokens
+                              ).toLocaleString("ko-KR")}
+                            </span>
+                          )}
+                        </footer>
+                      )}
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
           </div>
         )}
       </section>

@@ -19,6 +19,16 @@ import {
 } from "../utils/pdfManagementUtils";
 import "./PdfManagementPage.css";
 
+function getRagStoragePath(file) {
+  return (
+    file?.storagePath ||
+    file?.path ||
+    (file?.folder && file?.name
+      ? `${file.folder}/${file.name}`
+      : "")
+  );
+}
+
 // RAG 문서 업로드, 상태 변경, 인덱싱을 한 화면에서 관리합니다.
 export default function PdfManagementPage() {
   // 업로드, 목록, 인덱싱, 페이지네이션 상태를 화면 단위로 묶어 관리합니다.
@@ -60,8 +70,14 @@ export default function PdfManagementPage() {
 
   // 단일 폴더의 서버 파일 목록을 가져옵니다.
   const fetchFilesByFolder = useCallback(async (folder) => {
-    const data = await getRagFiles({ bucket: "chat", folder });
-    return data.files || [];
+    const data = await getRagFiles({
+      bucket: "chat",
+      folder,
+      limit: 100,
+      offset: 0,
+    });
+
+    return Array.isArray(data.files) ? data.files : [];
   }, []);
 
   // 모든 문서 카테고리를 순회해 목록 탭 데이터를 채웁니다.
@@ -135,7 +151,10 @@ export default function PdfManagementPage() {
   // 파일 메타데이터를 유지한 채 사용 상태만 바꿉니다.
   const handleChangeStatus = async (file, nextStatus) => {
     const currentStatus =
-      file.ragMetadata?.file_status || file.status || "active";
+      file.fileStatus ||
+      file.ragMetadata?.file_status ||
+      file.status ||
+      "active";
     if (currentStatus === nextStatus) return;
 
     if (
@@ -148,7 +167,7 @@ export default function PdfManagementPage() {
     try {
       await updateRagFileStatus({
         bucket: "chat",
-        path: file.path || `${file.folder}/${file.name}`,
+        path: getRagStoragePath(file),
         fileStatus: nextStatus,
         sourceName: file.ragMetadata?.source_name || "",
         sourceUrl: file.ragMetadata?.source_url || "",
@@ -190,7 +209,7 @@ export default function PdfManagementPage() {
   const handlePreview = async (file) => {
     try {
       const data = await getRagFileSignedUrl({
-        path: file.path || `${file.folder}/${file.name}`,
+        path: getRagStoragePath(file),
         expiresIn: 600,
       });
       window.open(data.signedUrl || data, "_blank");
@@ -203,7 +222,7 @@ export default function PdfManagementPage() {
   const handleDownload = async (file) => {
     try {
       const data = await getRagFileSignedUrl({
-        path: file.path || `${file.folder}/${file.name}`,
+        path: getRagStoragePath(file),
         expiresIn: 600,
       });
       const response = await fetch(data.signedUrl || data);
@@ -211,7 +230,7 @@ export default function PdfManagementPage() {
       const blobUrl = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = blobUrl;
-      link.download = String(file.name || "").replace(/^\d+-/, "");
+      link.download = file.name || "download";
       link.click();
       window.URL.revokeObjectURL(blobUrl);
     } catch (err) {
@@ -228,7 +247,7 @@ export default function PdfManagementPage() {
     )
       return;
     try {
-      await deleteRagFile(file.path || `${file.folder}/${file.name}`);
+      await deleteRagFile(getRagStoragePath(file));
       fetchAllFolders();
     } catch (err) {
       alert("파일 삭제에 실패했습니다.");
@@ -437,9 +456,10 @@ export default function PdfManagementPage() {
                 <tr>
                   <th style={{ width: "100px" }}>카테고리</th>
                   <th>파일명</th>
-                  <th style={{ width: "120px" }}>업로드 날짜</th>
+                  <th style={{ width: "120px" }}>인덱싱 날짜</th>
                   <th style={{ width: "100px" }}>파일 크기</th>
                   <th style={{ width: "100px" }}>파일 형식</th>
+                  <th style={{ width: "100px" }}>청크 개수</th>
                   <th style={{ width: "140px" }}>상태</th>
                   <th style={{ width: "110px" }}>관리</th>
                 </tr>
@@ -447,20 +467,23 @@ export default function PdfManagementPage() {
               <tbody>
                 {isLoading ? (
                   <tr>
-                    <td colSpan="7" className="table-empty">
+                    <td colSpan="8" className="table-empty">
                       데이터를 불러오는 중입니다...
                     </td>
                   </tr>
                 ) : currentItems.length === 0 ? (
                   <tr>
-                    <td colSpan="7" className="table-empty">
+                    <td colSpan="8" className="table-empty">
                       등록된 파일이 없습니다.
                     </td>
                   </tr>
                 ) : (
                   currentItems.map((file, index) => {
                     const currentStatus =
-                      file.ragMetadata?.file_status || file.status || "active";
+                      file.fileStatus ||
+                      file.ragMetadata?.file_status ||
+                      file.status ||
+                      "active";
                     const currentStatusLabel =
                       STATUS_OPTIONS.find((s) => s.value === currentStatus)
                         ?.label || "사용중";
@@ -483,9 +506,10 @@ export default function PdfManagementPage() {
                         
                         <td className="col-center">
                           {formatDateShort(
-                            file.createdAt ||
+                            file.indexedAt ||
+                              file.createdAt ||
                               file.created_at ||
-                              file.ragMetadata?.created_at,
+                              file.ragMetadata?.created_at
                           )}
                         </td>
 
@@ -498,6 +522,12 @@ export default function PdfManagementPage() {
                         <td className="col-center">
                           <span className="file-format-badge">
                             {getFileExtension(file.name)}
+                          </span>
+                        </td>
+
+                        <td className="col-center">
+                          <span className="file-format-badge">
+                            {Number(file.chunkCount || 0).toLocaleString("ko-KR")}
                           </span>
                         </td>
 

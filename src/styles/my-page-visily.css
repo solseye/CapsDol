@@ -526,3 +526,263 @@
     justify-content: flex-start;
   }
 }
+
+/* ===========================
+   CHAT HISTORY
+=========================== */
+
+.my-page-chat-history {
+  margin-top: 12px;
+  padding: 20px;
+  border: 1px solid #d7e0e8;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(10, 34, 57, 0.05);
+}
+
+.my-page-chat-history-header {
+  display: flex;
+  gap: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #dfe6ec;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.my-page-chat-history-header p {
+  margin: 0 0 5px;
+  color: #667588;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.14em;
+}
+
+.my-page-chat-history-header h2 {
+  margin: 6px 0 8px;
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+.my-page-chat-history-header span {
+  color: #647181;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.my-page-chat-history-button {
+  display: inline-flex;
+  flex-shrink: 0;
+  min-height: 38px;
+  padding: 0 18px;
+  border: 1px solid #0a2a45;
+  background: #0a2a45;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
+}
+
+.my-page-chat-history-button:hover {
+  background: #123c5e;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.my-page-chat-history-empty {
+  display: flex;
+  min-height: 220px;
+  padding: 28px;
+  text-align: center;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.my-page-chat-history-empty-icon {
+  display: grid;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 18px;
+  background: #edf3f7;
+  color: #0a2a45;
+  font-size: 18px;
+  font-weight: 800;
+  place-items: center;
+}
+
+.my-page-chat-history-empty strong {
+  margin-bottom: 8px;
+  color: #0a2239;
+  font-size: 18px;
+}
+
+.my-page-chat-history-empty span {
+  max-width: 430px;
+  color: #667588;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.my-page-chat-history-list {
+  display: grid;
+}
+
+.my-page-chat-history-item {
+  border-bottom: 1px solid #dfe6ec;
+}
+
+.my-page-chat-history-question {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 42px minmax(0, 1fr) 24px;
+  gap: 14px;
+  min-height: 78px;
+  padding: 14px 4px;
+  border: 0;
+  background: transparent;
+  color: #0a2239;
+  font: inherit;
+  text-align: left;
+  align-items: center;
+  cursor: pointer;
+}
+
+.my-page-chat-history-question:hover {
+  background: #f7f9fb;
+}
+
+.my-page-chat-history-item-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  background: #edf3f7;
+  color: #0a2a45;
+  font-size: 10px;
+  font-weight: 850;
+  place-items: center;
+}
+
+.my-page-chat-history-summary {
+  display: flex;
+  min-width: 0;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.my-page-chat-history-summary strong {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 1.45;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.my-page-chat-history-summary time {
+  flex-shrink: 0;
+  color: #748190;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.my-page-chat-history-toggle {
+  font-size: 20px;
+  font-weight: 500;
+  text-align: center;
+  transition: transform 160ms ease;
+}
+
+.my-page-chat-history-item.is-open
+  .my-page-chat-history-toggle {
+  transform: rotate(45deg);
+}
+
+.my-page-chat-history-answer {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 180ms ease;
+}
+
+.my-page-chat-history-answer > div {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.my-page-chat-history-item.is-open
+  .my-page-chat-history-answer {
+  grid-template-rows: 1fr;
+}
+
+.my-page-chat-history-answer section {
+  margin: 0 60px 14px;
+  padding: 14px 16px;
+  border-left: 3px solid #0a2a45;
+  background: #f3f7fa;
+}
+
+.my-page-chat-history-answer section:first-child {
+  margin-top: 12px;
+  border-left-color: #8091a2;
+  background: #f7f9fb;
+}
+
+.my-page-chat-history-answer section > span {
+  color: #667588;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+}
+
+.my-page-chat-history-answer section > p {
+  margin: 6px 0 0;
+  color: #405566;
+  font-size: 13px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+@media (max-width: 680px) {
+  .my-page-chat-history {
+    padding: 16px;
+  }
+
+  .my-page-chat-history-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .my-page-chat-history-button {
+    width: 100%;
+  }
+
+  .my-page-chat-history-question {
+    grid-template-columns: 36px minmax(0, 1fr) 20px;
+    gap: 10px;
+  }
+
+  .my-page-chat-history-item-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .my-page-chat-history-summary {
+    gap: 4px;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .my-page-chat-history-summary strong {
+    max-width: 100%;
+  }
+
+  .my-page-chat-history-answer section {
+    margin: 0 0 12px;
+  }
+}

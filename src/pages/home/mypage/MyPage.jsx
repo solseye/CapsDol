@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Header from "../../../components/Header";
 import { getMyReservations } from "../../../api/reservationApi";
 import { getClientFiles } from "../../../api/clientFileApi";
+import { getChatHistory } from "../../../api/chatApi";
 import { parseReservationNote } from "../../../utils/reservationNoteUtils";
 import { loadWorkflowEvents } from "../../../utils/workflowProgress";
 import "../../../App.css";
@@ -103,6 +104,25 @@ function getFieldLabel(field) {
   return labels[field] || field || "상담 분야 확인 중";
 }
 
+function formatChatHistoryDate(dateValue) {
+  if (!dateValue) return "날짜 확인 필요";
+
+  const date = new Date(dateValue);
+
+  if (Number.isNaN(date.getTime())) {
+    return "날짜 확인 필요";
+  }
+
+  return date.toLocaleString("ko-KR", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+}
+
 export default function MyPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(null);
   const [reservations, setReservations] = useState([]);
@@ -111,6 +131,12 @@ export default function MyPage() {
   const [reservationError, setReservationError] = useState("");
   const [selectedReservation, setSelectedReservation] = useState(null);
   const [openFaq, setOpenFaq] = useState("reservation");
+  const [chatHistories, setChatHistories] = useState([]);
+  const [chatHistoryLoading, setChatHistoryLoading] =
+    useState(true);
+  const [chatHistoryError, setChatHistoryError] = useState("");
+  const [openChatHistoryId, setOpenChatHistoryId] =
+    useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -119,40 +145,83 @@ export default function MyPage() {
 
     if (!token) {
       setReservationLoading(false);
-      setReservationError("로그인 후 다음 상담 일정을 확인할 수 있습니다.");
+      setChatHistoryLoading(false);
+
+      setReservationError(
+        "로그인 후 다음 상담 일정을 확인할 수 있습니다."
+      );
+
+      setChatHistoryError(
+        "로그인 후 챗봇 대화 기록을 확인할 수 있습니다."
+      );
+
       return;
     }
 
     const fetchWorkspace = async () => {
       try {
         setReservationLoading(true);
+        setChatHistoryLoading(true);
         setReservationError("");
-        const [reservationResult, fileResult] = await Promise.allSettled([
+        setChatHistoryError("");
+
+        const [
+          reservationResult,
+          fileResult,
+          chatHistoryResult,
+        ] = await Promise.allSettled([
           getMyReservations(),
-          getClientFiles({ bucket: "users", limit: 100, offset: 0 }),
+          getClientFiles({
+            bucket: "users",
+            limit: 100,
+            offset: 0,
+          }),
+          getChatHistory({
+            limit: 5,
+            offset: 0,
+          }),
         ]);
 
         if (reservationResult.status === "fulfilled") {
           setReservations(
-            Array.isArray(reservationResult.value.reservations)
+            Array.isArray(
+              reservationResult.value.reservations
+            )
               ? reservationResult.value.reservations
               : []
           );
         } else {
-          throw reservationResult.reason;
+          setReservationError(
+            reservationResult.reason?.message ||
+              "예약 목록을 불러오지 못했습니다."
+          );
         }
 
         if (fileResult.status === "fulfilled") {
           setClientFiles(
-            Array.isArray(fileResult.value.files) ? fileResult.value.files : []
+            Array.isArray(fileResult.value.files)
+              ? fileResult.value.files
+              : []
           );
         }
-      } catch (error) {
-        setReservationError(
-          error.message || "예약 목록을 불러오지 못했습니다."
-        );
+
+        if (chatHistoryResult.status === "fulfilled") {
+          setChatHistories(
+            Array.isArray(chatHistoryResult.value.histories)
+              ? chatHistoryResult.value.histories
+              : []
+          );
+        } else {
+          setChatHistories([]);
+
+          setChatHistoryError(
+            chatHistoryResult.reason?.message ||
+              "챗봇 대화 기록을 불러오지 못했습니다."
+          );
+        }
       } finally {
         setReservationLoading(false);
+        setChatHistoryLoading(false);
       }
     };
 
@@ -368,6 +437,146 @@ export default function MyPage() {
                 </article>
               ))}
             </div>
+          </section>
+
+          <section className="my-page-chat-history">
+            <header className="my-page-chat-history-header">
+              <div>
+                <p>CHAT HISTORY</p>
+                <h2>챗봇 대화 내역</h2>
+                <span>
+                  최근 챗봇 질문과 답변을 확인할 수 있습니다.
+                </span>
+              </div>
+
+              <Link
+                className="my-page-chat-history-button"
+                to="/chat"
+              >
+                새 상담 시작
+              </Link>
+            </header>
+
+            {chatHistoryLoading ? (
+              <div className="my-page-chat-history-empty">
+                <div
+                  className="my-page-chat-history-empty-icon"
+                  aria-hidden="true"
+                >
+                  AI
+                </div>
+
+                <strong>대화 기록을 확인하고 있습니다.</strong>
+
+                <span>잠시만 기다려 주세요.</span>
+              </div>
+            ) : chatHistoryError ? (
+              <div className="my-page-chat-history-empty">
+                <div
+                  className="my-page-chat-history-empty-icon"
+                  aria-hidden="true"
+                >
+                  !
+                </div>
+
+                <strong>대화 기록을 불러오지 못했습니다.</strong>
+
+                <span>{chatHistoryError}</span>
+              </div>
+            ) : chatHistories.length === 0 ? (
+              <div className="my-page-chat-history-empty">
+                <div
+                  className="my-page-chat-history-empty-icon"
+                  aria-hidden="true"
+                >
+                  AI
+                </div>
+
+                <strong>아직 저장된 대화가 없습니다.</strong>
+
+                <span>
+                  챗봇 상담을 시작하면 이전 대화가 이곳에
+                  표시됩니다.
+                </span>
+              </div>
+            ) : (
+              <div className="my-page-chat-history-list">
+                {chatHistories.map((history) => {
+                  const historyId = String(history.id);
+                  const isOpen =
+                    openChatHistoryId === historyId;
+
+                  return (
+                    <article
+                      className={`my-page-chat-history-item ${
+                        isOpen ? "is-open" : ""
+                      }`}
+                      key={historyId}
+                    >
+                      <button
+                        className="my-page-chat-history-question"
+                        type="button"
+                        onClick={() =>
+                          setOpenChatHistoryId(
+                            isOpen ? null : historyId
+                          )
+                        }
+                        aria-expanded={isOpen}
+                      >
+                        <span
+                          className="my-page-chat-history-item-icon"
+                          aria-hidden="true"
+                        >
+                          AI
+                        </span>
+
+                        <span className="my-page-chat-history-summary">
+                          <strong>
+                            {history.question ||
+                              "질문 내용이 없습니다."}
+                          </strong>
+
+                          <time dateTime={history.created_at}>
+                            {formatChatHistoryDate(
+                              history.created_at
+                            )}
+                          </time>
+                        </span>
+
+                        <span
+                          className="my-page-chat-history-toggle"
+                          aria-hidden="true"
+                        >
+                          +
+                        </span>
+                      </button>
+
+                      <div className="my-page-chat-history-answer">
+                        <div>
+                          <section>
+                            <span>QUESTION</span>
+
+                            <p>
+                              {history.question ||
+                                "질문 내용이 없습니다."}
+                            </p>
+                          </section>
+
+                          <section>
+                            <span>ANSWER</span>
+
+                            <p>
+                              {history.answer ||
+                                "저장된 답변이 없습니다."}
+                            </p>
+                          </section>
+                        </div>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            )}
           </section>
         </div>
       </main>

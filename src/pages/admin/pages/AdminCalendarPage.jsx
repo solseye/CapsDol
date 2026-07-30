@@ -10,7 +10,6 @@ import {
   disallowAdminReservation,
 } from "../../../api/reservationApi";
 import {
-  MONTHS_TO_FETCH,
   addMinutesToTime,
   buildAdminCalendarEvents,
   getDayTimeSlots,
@@ -136,6 +135,16 @@ function getDateFromKey(dateKey) {
   return new Date(year, month - 1, day);
 }
 
+function isDateInLoadedRange(date, range) {
+  if (!range) return false;
+
+  const target = new Date(date);
+  const start = new Date(range.start);
+  const end = new Date(range.end);
+
+  return target >= start && target <= end;
+}
+
 function getBlockRangesFromKeys(slotKeys) {
   const sortedSlots = [...new Set(slotKeys)]
     .map((slotKey) => {
@@ -209,6 +218,7 @@ export default function AdminCalendarPage() {
   const [fieldFilter, setFieldFilter] = useState("회계");
 
   const isMounted = useRef(false);
+  const loadedRangeRef = useRef(null);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -236,18 +246,53 @@ export default function AdminCalendarPage() {
   }, [applyListData]);
 
   // 월 이동이나 새로고침 시 현재 월 주변 범위만 다시 조회합니다.
-  const fetchAdminCalendarByCurrentMonth = useCallback(async () => {
+  const fetchAdminCalendarByCurrentMonth = useCallback(async (force = false) => {
     try {
+      const baseDate = `${currentDate.getFullYear()}-${String(
+        currentDate.getMonth() + 1,
+      ).padStart(2, "0")}-01`;
+
+      const currentMonth = new Date(`${baseDate}T00:00:00`);
+
+      if (
+        !force &&
+        isDateInLoadedRange(currentMonth, loadedRangeRef.current)
+      ) {
+        return;
+      }
+
       setLoading(true);
-      const data = await getAdminReservationListByRange(
-        new Date(
-          currentDate.getFullYear(),
-          currentDate.getMonth(),
-          1,
-        ).toISOString(),
-        MONTHS_TO_FETCH,
-      );
+
+      const data = await getAdminReservationListByRange({
+        baseDate,
+        previousMonthCount: 2,
+        nextMonthCount: 4,
+      });
+
       applyListData(data);
+
+      const base = new Date(`${baseDate}T00:00:00`);
+
+      const start = new Date(
+        base.getFullYear(),
+        base.getMonth() - 2,
+        1,
+      );
+
+      const end = new Date(
+        base.getFullYear(),
+        base.getMonth() + 5,
+        0,
+      );
+
+      loadedRangeRef.current = {
+        start: `${start.getFullYear()}-${String(
+          start.getMonth() + 1,
+        ).padStart(2, "0")}-01`,
+        end: `${end.getFullYear()}-${String(
+          end.getMonth() + 1,
+        ).padStart(2, "0")}-${String(end.getDate()).padStart(2, "0")}`,
+      };
     } catch (err) {
       console.error(err);
       alert("일정을 새로고침하지 못했습니다.");
@@ -474,7 +519,7 @@ export default function AdminCalendarPage() {
         setApprovalDraft(null);
         setApprovalFocus(null);
         setModalOpen(false);
-        await fetchAdminCalendarByCurrentMonth();
+        await fetchAdminCalendarByCurrentMonth(true);
       } catch (err) {
         alert(err.message || "상담 승인 처리에 실패했습니다.");
       } finally {
@@ -535,12 +580,11 @@ export default function AdminCalendarPage() {
       await Promise.all(
         selectedBlockRanges.map((range) =>
           blockAdminReservation({
-            selectedDate: `${range.date}T00:00:00.000Z`,
-            selectedTime: range.startTime,
+            selectedDate: range.date,
             startTime: range.startTime,
             endTime: range.endTime,
             field: fieldFilter,
-            reason: blockReason.trim() || null,
+            reason: blockReason,
           }),
         ),
       );
@@ -549,7 +593,7 @@ export default function AdminCalendarPage() {
       setModalOpen(false);
       setIsBlockMode(false);
       setPendingBlocks([]);
-      await fetchAdminCalendarByCurrentMonth();
+      await fetchAdminCalendarByCurrentMonth(true);
     } catch (err) {
       console.error(err);
       alert(err.message || "예약 차단에 실패했습니다.");
@@ -585,8 +629,7 @@ export default function AdminCalendarPage() {
     if (window.confirm("선택한 차단 일정을 해제하시겠습니까?")) {
       try {
         setLoading(true);
-        const idArray = Array.isArray(ids) ? ids : [ids];
-        await Promise.all(idArray.map((id) => unblockAdminReservation(id)));
+        await unblockAdminReservation(ids);
         setModalOpen(false);
         await fetchAdminCalendarByCurrentMonth();
       } catch (err) {
@@ -617,7 +660,7 @@ export default function AdminCalendarPage() {
           ]);
         }
         setModalOpen(false);
-        await fetchAdminCalendarByCurrentMonth();
+        await fetchAdminCalendarByCurrentMonth(true);
       } catch (err) {
         alert("불허 처리에 실패했습니다.");
       } finally {

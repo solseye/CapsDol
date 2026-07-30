@@ -114,6 +114,16 @@ function getMonthStartIso(date) {
   return `${year}-${month}-01`;
 }
 
+function isDateInLoadedRange(date, range) {
+  if (!range) return false;
+
+  const target = new Date(date);
+  const start = new Date(range.start);
+  const end = new Date(range.end);
+
+  return target >= start && target <= end;
+}
+
 
 function addMinutesToTime(time, minutesToAdd) {
   const [hour, minute] = String(time).split(":").map(Number);
@@ -269,6 +279,7 @@ export default function ReservationPage() {
   });
 
   const [blocks, setBlocks] = useState([]);
+  const loadedRangeRef = useRef(null);
 
   const [submitError, setSubmitError] = useState("");
   const [submitSuccess, setSubmitSuccess] = useState("");
@@ -290,13 +301,37 @@ export default function ReservationPage() {
       try {
         setListError("");
 
+        const currentMonth = new Date(getMonthStartIso(viewDate));
+
+        // 이미 불러온 범위 안이면 API 호출하지 않음
+        if (isDateInLoadedRange(currentMonth, loadedRangeRef.current)) {
+          return;
+        }
+
+        const baseDate = getMonthStartIso(viewDate);
+
         const data = await getReservationListByRange({
-          baseDate: getMonthStartIso(viewDate),
+          baseDate,
           previousMonthCount: 2,
           nextMonthCount: 4,
         });
 
         setBlocks(data.blocks || []);
+
+        const base = new Date(baseDate);
+
+        const start = new Date(base);
+        start.setMonth(start.getMonth() - 2);
+        start.setDate(1);
+
+        const end = new Date(base);
+        end.setMonth(end.getMonth() + 5);
+        end.setDate(0);
+
+        loadedRangeRef.current = {
+          start: start.toISOString().slice(0, 10),
+          end: end.toISOString().slice(0, 10),
+        };
       } catch (err) {
         console.error("예약 일정 조회 실패:", err);
         setListError(

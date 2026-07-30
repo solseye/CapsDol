@@ -789,6 +789,20 @@
   .admin-user-detail-page .file-table {
     min-width: 760px;
   }
+  .admin-user-detail-page .admin-chat-history-header {
+  align-items: stretch;
+  flex-direction: column;
+  }
+
+  .admin-user-detail-page
+    .admin-chat-history-header .adm-btn {
+    width: 100%;
+  }
+
+  .admin-user-detail-page .admin-chat-history-empty {
+    min-height: 180px;
+    padding: 22px 16px;
+  }
 }
 @media (max-width: 420px) {
   .admin-user-detail-page .action-cell {
@@ -797,4 +811,254 @@
   .admin-user-detail-page .icon-btn {
     padding: 7px;
   }
+}
+
+/* ========================================
+   ADMIN USER CHAT HISTORY
+======================================== */
+
+.admin-user-detail-page .admin-chat-history-card {
+  margin-top: 16px;
+}
+
+.admin-user-detail-page .admin-chat-history-header {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.admin-user-detail-page .admin-chat-history-header > div {
+  min-width: 0;
+}
+
+.admin-user-detail-page .admin-chat-history-eyebrow {
+  margin: 0 0 4px;
+  color: #64748b;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.admin-user-detail-page .admin-chat-history-header
+  .file-list-title {
+  margin-bottom: 2px;
+}
+
+.admin-user-detail-page .admin-chat-history-empty {
+  display: flex;
+  min-height: 210px;
+  padding: 28px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f8fafc;
+  text-align: center;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-user-detail-page
+  .admin-chat-history-empty-icon {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 0.9rem;
+  font-weight: 850;
+  place-items: center;
+}
+
+.admin-user-detail-page
+  .admin-chat-history-empty strong {
+  margin-bottom: 7px;
+  color: #111827;
+  font-size: 1rem;
+}
+
+.admin-user-detail-page
+  .admin-chat-history-empty span {
+  max-width: 460px;
+  color: #64748b;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+/* ========================================
+   ADMIN CHAT HISTORY LIST
+======================================== */
+
+.admin-user-detail-page .admin-chat-history-list {
+  display: grid;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.admin-user-detail-page .admin-chat-history-item {
+  border-bottom: 1px solid #e5e7eb;
+  background: #ffffff;
+}
+
+.admin-user-detail-page
+  .admin-chat-history-item:last-child {
+  border-bottom: 0;
+}
+
+.admin-user-detail-page
+  .admin-chat-history-question {
+  display: grid;
+  width: 100%;
+  min-height: 72px;
+  grid-template-columns: 42px minmax(0, 1fr) 28px;
+  gap: 14px;
+  padding: 13px 16px;
+  border: 0;
+  background: #ffffff;
+  color: #111827;
+  font: inherit;
+  text-align: left;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.admin-user-detail-page
+  .admin-chat-history-question:hover {
+  background: #f8fafc;
+}
+
+.admin-user-detail-page
+  .admin-chat-history-item.is-open
+  .admin-chat-history-question {
+  background: #f8fafc;
+}
+
+.admin-user-detail-page
+  .admin-chat-history-item-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  border-radius: 7px;
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 0.7rem;
+  font-weight: 850;
+  place-items: center;
+}
+
+.admin-user-detail-page
+  .admin-chat-history-summary {
+  display: flex;
+  min-width: 0;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.admin-user-detail-page
+  .admin-chat-history-summary strong {
+  min-width: 0;
+  overflow: hidden;
+  color: #111827;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-user-detail-page
+  .admin-chat-history-summary time {
+  flex: 0 0 auto;
+  color: #64748b;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.admin-user-detail-page
+  .admin-chat-history-toggle {
+  color: #475569;
+  font-size: 1.2rem;
+  font-weight: 500;
+  text-align: center;
+  transition: transform 0.16s ease;
+}
+
+.admin-user-detail-page
+  .admin-chat-history-item.is-open
+  .admin-chat-history-toggle {
+  transform: rotate(45deg);
+}
+
+.admin-user-detail-page
+  .admin-chat-history-answer {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.18s ease;
+}
+
+.admin-user-detail-page
+  .admin-chat-history-answer > div {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.admin-user-detail-page
+  .admin-chat-history-item.is-open
+  .admin-chat-history-answer {
+  grid-template-rows: 1fr;
+}
+
+.admin-user-detail-page
+  .admin-chat-history-answer section {
+  margin: 0 58px 12px;
+  padding: 13px 15px;
+  border-left: 3px solid #2563eb;
+  border-radius: 4px;
+  background: #eff6ff;
+}
+
+.admin-user-detail-page
+  .admin-chat-history-answer section:first-child {
+  margin-top: 12px;
+  border-left-color: #94a3b8;
+  background: #f8fafc;
+}
+
+.admin-user-detail-page
+  .admin-chat-history-answer section > span {
+  color: #64748b;
+  font-size: 0.68rem;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+}
+
+.admin-user-detail-page
+  .admin-chat-history-answer section > p {
+  margin: 6px 0 0;
+  color: #334155;
+  font-size: 0.86rem;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.admin-user-detail-page
+  .admin-chat-history-meta {
+  display: flex;
+  gap: 14px;
+  margin: 0 58px 14px;
+  color: #64748b;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.admin-user-detail-page
+  .admin-chat-history-empty-icon.is-error {
+  background: #fef2f2;
+  color: #dc2626;
 }

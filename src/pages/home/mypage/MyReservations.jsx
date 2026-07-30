@@ -89,6 +89,10 @@ function canCancel(status) {
   return status === "pending" || status === "approved";
 }
 
+function canDelete(status) {
+  return status === "cancelled" || status === "rejected";
+}
+
 function isUpcoming(item) {
   const selectedDate = new Date(item.selected_date);
 
@@ -510,18 +514,16 @@ export default function MyReservations() {
                           >
                             {cancelling ? "취소 중..." : "상담 취소"}
                           </button>
-                        ) : (
+                        ) : canDelete(item.status) ? (
                           <button
                             type="button"
                             className="text-danger"
-                            onClick={() =>
-                              handleDeleteReservation(reservationId)
-                            }
+                            onClick={() => handleDeleteReservation(reservationId)}
                             disabled={deleting}
                           >
                             {deleting ? "삭제 중..." : "내역 삭제"}
                           </button>
-                        )}
+                        ) : null}
                       </div>
                     </article>
                   );

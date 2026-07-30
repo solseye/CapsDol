@@ -1,5 +1,19 @@
 import { fetchWithAuth } from "./authFetch";
 
+function getLocalDateKey(dateValue) {
+  const date = new Date(dateValue);
+
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
 async function parseJsonResponse(res) {
   return res.json().catch(() => ({}));
 }
@@ -42,7 +56,7 @@ export async function createReservation({
 
   const data = await parseJsonResponse(res);
 
-  if (!res.ok) {
+  if (!res.ok || data.success === false) {
     throw new Error(data.error || "상담 예약에 실패했습니다.");
   }
 
@@ -75,7 +89,7 @@ export async function cancelReservation({
 
   const data = await parseJsonResponse(res);
 
-  if (!res.ok) {
+  if (!res.ok || data.success === false) {
     throw new Error(data.error || "예약 취소에 실패했습니다.");
   }
 
@@ -124,11 +138,11 @@ export async function getMyReservations() {
 
 export async function getUserReservations({
   uuid,
-  limit = 100,
+  limit = 10,
   offset = 0,
 } = {}) {
-
   const trimmedUuid = uuid?.trim() || "";
+
   const params = new URLSearchParams({
     limit: String(limit),
     offset: String(offset),
@@ -138,33 +152,49 @@ export async function getUserReservations({
     params.append("uuid", trimmedUuid);
   }
 
-  let res = await fetchWithAuth(`/reserv/user/list?${params.toString()}`, {
+  const res = await fetchWithAuth(`/reserv/user/list?${params.toString()}`, {
     method: "GET",
-    headers: {
-    },
+    headers: {},
     credentials: "include",
   });
 
-  let data = await parseJsonResponse(res);
+  const data = await parseJsonResponse(res);
 
-  if (!res.ok && data.error === "Uuid is required" && trimmedUuid) {
-    res = await fetchWithAuth(`/reserv/user/list`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify({
-        uuid: trimmedUuid,
-        limit,
-        offset,
-      }),
-    });
-
-    data = await parseJsonResponse(res);
+  if (!res.ok || data.success === false) {
+    throw new Error(data.error || "사용자 상담 신청 내역 조회에 실패했습니다.");
   }
 
-  if (!res.ok) {
+  return data;
+}
+
+export async function getUserReservationsByPage({
+  uuid,
+  limit = 10,
+  offset = 0,
+} = {}) {
+  const body = {
+    limit,
+    offset,
+  };
+
+  const trimmedUuid = uuid?.trim();
+
+  if (trimmedUuid) {
+    body.uuid = trimmedUuid;
+  }
+
+  const res = await fetchWithAuth(`/reserv/user/list`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(body),
+  });
+
+  const data = await parseJsonResponse(res);
+
+  if (!res.ok || data.success === false) {
     throw new Error(data.error || "사용자 상담 신청 내역 조회에 실패했습니다.");
   }
 
@@ -272,7 +302,7 @@ export async function addReservationChat({
 
   const data = await parseJsonResponse(res);
 
-  if (!res.ok) {
+  if (!res.ok || data.success === false) {
     throw new Error(data.error || "상담 채팅 등록에 실패했습니다.");
   }
 
@@ -327,23 +357,26 @@ export async function getAdminReservationList() {
 
   const data = await parseJsonResponse(res);
 
-  if (!res.ok) {
+  if (!res.ok || data.success === false) {
     throw new Error(data.error || "관리자 예약 조회 실패");
   }
 
   return normalizeAdminListData(data);
 }
 
-export async function getAdminReservationListByRange(
-  requestTime,
-  monthsToFetch
-) {
-
+export async function getAdminReservationListByRange({
+  baseDate,
+  previousMonthCount = 2,
+  nextMonthCount = 4,
+} = {}) {
   const body = {
-    base_date: requestTime.slice(0, 10),
-    previous_month_count: 2,
-    next_month_count: 4,
+    previous_month_count: previousMonthCount,
+    next_month_count: nextMonthCount,
   };
+
+  if (baseDate) {
+    body.base_date = baseDate;
+  }
 
   const res = await fetchWithAuth(`/reserv/admin/list`, {
     method: "POST",
@@ -356,7 +389,7 @@ export async function getAdminReservationListByRange(
 
   const data = await parseJsonResponse(res);
 
-  if (!res.ok) {
+  if (!res.ok || data.success === false) {
     throw new Error(data.error || "관리자 일정 조회 실패");
   }
 
@@ -369,13 +402,28 @@ export async function blockAdminReservation({
   selectedTime,
   startTime,
   endTime,
-  reason,
+  reason = "",
 }) {
-
-  const date = new Date(selectedDate).toISOString().slice(0, 10);
+  const date =
+    typeof selectedDate === "string"
+      ? selectedDate.slice(0, 10)
+      : getLocalDateKey(selectedDate);
 
   const start_time = startTime || selectedTime;
   const end_time = endTime || addMinutes(start_time, 120);
+
+  const block = {
+    field,
+    date,
+    start_time,
+    end_time,
+  };
+
+  const trimmedReason = reason.trim();
+
+  if (trimmedReason) {
+    block.reason = trimmedReason;
+  }
 
   const res = await fetchWithAuth(`/reserv/admin/block`, {
     method: "POST",
@@ -384,21 +432,13 @@ export async function blockAdminReservation({
     },
     credentials: "include",
     body: JSON.stringify({
-      blocks: [
-        {
-          field,
-          date,
-          start_time,
-          end_time,
-          reason,
-        },
-      ],
+      blocks: [block],
     }),
   });
 
   const data = await parseJsonResponse(res);
 
-  if (!res.ok) {
+  if (!res.ok || data.success === false) {
     throw new Error(data.error || "예약 차단 실패");
   }
 
@@ -416,7 +456,8 @@ function addMinutes(time, minutes) {
   return `${String(hour).padStart(2, "0")}:${String(min).padStart(2, "0")}`;
 }
 
-export async function unblockAdminReservation(blockId) {
+export async function unblockAdminReservation(blockIds) {
+  const ids = Array.isArray(blockIds) ? blockIds : [blockIds];
 
   const res = await fetchWithAuth(`/reserv/admin/unblock`, {
     method: "POST",
@@ -425,13 +466,13 @@ export async function unblockAdminReservation(blockId) {
     },
     credentials: "include",
     body: JSON.stringify({
-      blockIds: [blockId],
+      blockIds: ids,
     }),
   });
 
   const data = await parseJsonResponse(res);
 
-  if (!res.ok) {
+  if (!res.ok || data.success === false) {
     throw new Error(data.error || "예약 차단 해제에 실패했습니다.");
   }
 
@@ -444,7 +485,6 @@ export async function allowAdminReservation({
   startTime,
   endTime,
 }) {
-
   const res = await fetchWithAuth(`/reserv/admin/allow`, {
     method: "POST",
     headers: {
@@ -461,7 +501,7 @@ export async function allowAdminReservation({
 
   const data = await parseJsonResponse(res);
 
-  if (!res.ok) {
+  if (!res.ok || data.success === false) {
     throw new Error(data.error || "상담 승인 실패");
   }
 
@@ -469,6 +509,9 @@ export async function allowAdminReservation({
 }
 
 export async function disallowAdminReservation(decisions) {
+  const body = Array.isArray(decisions)
+    ? { decisions }
+    : decisions;
 
   const res = await fetchWithAuth(`/reserv/admin/disallow`, {
     method: "POST",
@@ -476,14 +519,12 @@ export async function disallowAdminReservation(decisions) {
       "Content-Type": "application/json",
     },
     credentials: "include",
-    body: JSON.stringify({
-      decisions,
-    }),
+    body: JSON.stringify(body),
   });
 
   const data = await parseJsonResponse(res);
 
-  if (!res.ok) {
+  if (!res.ok || data.success === false) {
     throw new Error(data.error || "상담 불허 처리 실패");
   }
 
