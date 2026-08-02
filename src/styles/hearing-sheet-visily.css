@@ -163,9 +163,8 @@
 
 .hsv-main {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 410px;
+  grid-template-columns: minmax(0, 1fr);
   align-items: stretch;
-  gap: 24px;
   padding-bottom: 56px;
   scroll-margin-top: 96px;
 }
