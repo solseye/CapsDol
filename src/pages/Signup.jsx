@@ -23,6 +23,7 @@ export default function Signup() {
 
   const [form, setForm] = useState({
     email: "",
+    name: "",
     username: "",
     password: "",
   });
@@ -147,7 +148,12 @@ export default function Signup() {
   const handleSignup = async (e) => {
     e.preventDefault();
 
-    if (!form.email.trim() || !form.username.trim() || !form.password.trim()) {
+    if (
+      !form.email.trim() ||
+      !form.name.trim() ||
+      !form.username.trim() ||
+      !form.password.trim()
+    ) {
       setError(copy.requiredError);
       return;
     }
@@ -164,6 +170,7 @@ export default function Signup() {
       const data = await signupUser(
         form.email.trim(),
         form.username.trim(),
+        form.name.trim(),
         form.password
       );
 
@@ -178,7 +185,7 @@ export default function Signup() {
 
       if (loginData.success && loginData.accessToken) {
         saveSession(loginData, {
-          username: form.username.trim(),
+          username: form.name.trim(),
           email: form.email.trim(),
           role: loginData.role || "user",
         });
@@ -280,6 +287,19 @@ export default function Signup() {
                 value={form.email}
                 onChange={handleChange}
                 autoComplete="email"
+              />
+            </div>
+
+            <div className="authv-field">
+              <label htmlFor="name">{copy.name}</label>
+              <input
+                id="name"
+                type="text"
+                name="name"
+                placeholder={copy.namePlaceholder}
+                value={form.name}
+                onChange={handleChange}
+                autoComplete="name"
               />
             </div>
 

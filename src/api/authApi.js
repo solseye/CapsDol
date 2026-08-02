@@ -71,7 +71,7 @@ export async function loginWithGoogle(idToken) {
   return data;
 }
 
-export async function signupUser(email, username, password) {
+export async function signupUser(email, userId, name, password) {
   const res = await fetch(`${BASE_URL}/signup`, {
     method: "POST",
     headers: {
@@ -79,8 +79,8 @@ export async function signupUser(email, username, password) {
     },
     credentials: "include",
     body: JSON.stringify({
-      uid: username,
-      username,
+      uid: userId,
+      username: name,
       email,
       password,
     }),
