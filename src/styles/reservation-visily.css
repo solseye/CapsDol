@@ -1483,7 +1483,9 @@
 
 .rv-expert-card.selected {
   border-color: #06233c;
-  box-shadow: inset 0 4px 0 #06233c, 0 14px 32px rgba(6, 35, 60, 0.08);
+  box-shadow:
+    inset 0 4px 0 #06233c,
+    0 14px 32px rgba(6, 35, 60, 0.08);
 }
 
 .rv-expert-avatar {
@@ -1935,10 +1937,15 @@
   color: #06233c;
 }
 
-.rv-schedule-date.selected,
 .rv-schedule-date.today {
   background: #06233c;
   color: #ffffff;
+}
+
+.rv-schedule-date.selected {
+  background: transparent !important;
+  color: #17202b !important;
+  box-shadow: inset 0 0 0 2px #17202b !important; /* border로 인해 칸 크기가 틀어지는 것을 막기 위해 안쪽 그림자 사용 */
 }
 
 .rv-schedule-date:disabled {
@@ -2634,7 +2641,9 @@
 
 .rv-stage-card.selected {
   border-color: #06233c;
-  box-shadow: inset 0 4px 0 #06233c, 0 14px 30px rgba(6, 35, 60, 0.08);
+  box-shadow:
+    inset 0 4px 0 #06233c,
+    0 14px 30px rgba(6, 35, 60, 0.08);
 }
 
 .rv-stage-card span {
@@ -2687,7 +2696,9 @@
 
 .rv-consult-type-card.selected {
   border-color: #06233c;
-  box-shadow: inset 0 4px 0 #06233c, 0 12px 26px rgba(6, 35, 60, 0.07);
+  box-shadow:
+    inset 0 4px 0 #06233c,
+    0 12px 26px rgba(6, 35, 60, 0.07);
 }
 
 .rv-consult-type-card span {
@@ -3394,7 +3405,9 @@
 .rv-stage-card.selected {
   border-color: #06233c;
   background: #ffffff;
-  box-shadow: inset 0 4px 0 #06233c, 0 14px 30px rgba(6, 35, 60, 0.08);
+  box-shadow:
+    inset 0 4px 0 #06233c,
+    0 14px 30px rgba(6, 35, 60, 0.08);
 }
 
 .rv-stage-card span {

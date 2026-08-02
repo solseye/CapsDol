@@ -96,7 +96,7 @@ const translations = {
       companyNameEnPlaceholder: "영문 회사명을 입력하세요",
       headOfficeSection: "9. 본점 소재지",
       headOfficeAddress: "본점 소재지",
-      headOfficeAddressPlaceholder: "예: 일본국 도쿄도 신주쿠구 1-1-1",
+      headOfficeAddressPlaceholder: "예: 일본 도쿄도 신주쿠구 1-1-1", //일본국
       purposeSection: "2. 사업 목적",
       addPurpose: "+ 사업 목적 추가",
       removePurpose: "사업 목적 {count} 제거",
@@ -164,10 +164,8 @@ const translations = {
       recommendationTitle: "이런 기업에게 추천드립니다",
       recommendationDesc:
         "일본 진출은 “설립”보다 “운영”이 더 어렵습니다. 설립부터 운영 체계까지 함께 만듭니다.",
-      rec1:
-        "일본에 진출하고자 하지만, 현지 법인 설립 절차가 복잡하게 느껴지는 기업",
-      rec2:
-        "회사 설립, 부동산 중개, 세무, 회계, 노무 등 종합적인 지원이 필요한 경우",
+      rec1: "일본에 진출하고자 하지만, 현지 법인 설립 절차가 복잡하게 느껴지는 기업",
+      rec2: "회사 설립, 부동산 중개, 세무, 회계, 노무 등 종합적인 지원이 필요한 경우",
       rec3: "상담부터 진행까지 한국어로 진행하길 원하는 경우",
       rec4: "일본 비즈니스 환경에 정통한 전문가의 컨설팅이 필요한 경우",
       rec5: "세무 리스크를 줄이고, 안정적인 일본 사업 운영을 원하는 기업",
@@ -273,7 +271,8 @@ const translations = {
       career: "약력 및 경력",
       specialty: "전문분야",
       expert1Career1: "2008년공인회계사 시험 합격",
-      expert1Career2: "2008년~2014년 아라타 감사법인 (현 PwC Japan 유한책임감사법인)",
+      expert1Career2:
+        "2008년~2014년 아라타 감사법인 (현 PwC Japan 유한책임감사법인)",
       expert1Career3: "2014년공인회계사 등록",
       expert1Career4: "2014년김공인회계사사무소 설립",
       expert1Career5: "2015년세무사 등록",
@@ -383,7 +382,8 @@ const translations = {
       fieldError: "Please select a consultation field.",
       timeError: "Please select a consultation time.",
       blockedError: "This time is already reserved or unavailable.",
-      submitSuccess: "Your consultation request has been submitted and is pending approval.",
+      submitSuccess:
+        "Your consultation request has been submitted and is pending approval.",
       submitFallbackSuccess: "Your consultation request has been submitted.",
       submitError: "Failed to submit consultation reservation.",
     },
@@ -468,15 +468,11 @@ const translations = {
       recommendationTitle: "Recommended for These Companies",
       recommendationDesc:
         "Entering Japan is not only about incorporation. Operating successfully is harder. We support both setup and operations.",
-      rec1:
-        "Companies that want to enter Japan but find local incorporation procedures complex",
-      rec2:
-        "Cases requiring comprehensive support such as incorporation, real estate brokerage, tax, accounting, and labor",
+      rec1: "Companies that want to enter Japan but find local incorporation procedures complex",
+      rec2: "Cases requiring comprehensive support such as incorporation, real estate brokerage, tax, accounting, and labor",
       rec3: "Teams that want consultation and execution support in Korean",
-      rec4:
-        "Companies that need consulting from experts familiar with the Japanese business environment",
-      rec5:
-        "Companies that want to reduce tax risks and operate stably in Japan",
+      rec4: "Companies that need consulting from experts familiar with the Japanese business environment",
+      rec5: "Companies that want to reduce tax risks and operate stably in Japan",
       companyKicker: "Company",
       companyTitle: "Company Overview",
       companyServiceTitle: "Services Provided",
@@ -490,7 +486,8 @@ const translations = {
       servicesTitle: "Services",
       serviceIncorporation: "Incorporation",
       serviceIncorporation1: "Incorporation consulting",
-      serviceIncorporation2: "Articles of incorporation drafting and notarization",
+      serviceIncorporation2:
+        "Articles of incorporation drafting and notarization",
       serviceIncorporation3: "Corporate seal preparation",
       serviceVisa: "Visa Support",
       serviceVisa1: "Work visa",
@@ -769,7 +766,8 @@ const translations = {
         "日本進出サービスチャットボット（例：法人設立、ビザ関連など）",
       loginRequired: "ログインが必要なサービスです。",
       search: "検索",
-      heroSubtitle1: "日本進出予定、またはすでに進出している韓国企業を支援します。",
+      heroSubtitle1:
+        "日本進出予定、またはすでに進出している韓国企業を支援します。",
       heroSubtitle2:
         "日本現地法人設立から税務・会計、ビザ取得手続き、その後の事業運営全般まで課題解決を支援します。",
       scrollDown: "Scroll Down",
@@ -857,7 +855,8 @@ const translations = {
       pricingTitle: "料金プラン",
       priceIncorporation: "法人設立",
       priceIncorporationAmount: "約45万円〜",
-      priceIncorporationDesc: "税金および司法書士設立報酬を含む（状況により変動）",
+      priceIncorporationDesc:
+        "税金および司法書士設立報酬を含む（状況により変動）",
       priceSetupSupport: "設立関連業務（韓国語支援/口座開設支援など）",
       priceSetupSupportAmount: "20万円〜",
       priceSetupSupportDesc:
@@ -882,7 +881,8 @@ const translations = {
       career: "略歴および経歴",
       specialty: "専門分野",
       expert1Career1: "2008年 公認会計士試験合格",
-      expert1Career2: "2008年〜2014年 あらた監査法人（現 PwC Japan有限責任監査法人）",
+      expert1Career2:
+        "2008年〜2014年 あらた監査法人（現 PwC Japan有限責任監査法人）",
       expert1Career3: "2014年 公認会計士登録",
       expert1Career4: "2014年 金公認会計士事務所設立",
       expert1Career5: "2015年 税理士登録",
@@ -949,7 +949,7 @@ export function translate(language, key, variables = {}) {
   return Object.entries(variables).reduce(
     (text, [name, replacement]) =>
       text.replaceAll(`{${name}}`, String(replacement)),
-    value
+    value,
   );
 }
 

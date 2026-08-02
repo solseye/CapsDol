@@ -17,17 +17,27 @@ const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const ArticlesPreview = lazy(() => import("./pages/ArticlesPreview"));
 const Reservations = lazy(() => import("./pages/home/ReservationPage"));
 const MyPage = lazy(() => import("./pages/home/mypage/MyPage"));
-const MyPageReservations = lazy(() => import("./pages/home/mypage/MyReservations"));
+const MyPageReservations = lazy(
+  () => import("./pages/home/mypage/MyReservations"),
+);
 const MyFiles = lazy(() => import("./pages/home/mypage/MyFiles"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const AdminLayout = lazy(() => import("./pages/admin/AdminLayout"));
-const AdminCalendarPage = lazy(() => import("./pages/admin/pages/AdminCalendarPage"));
-const AdminChatbotPage = lazy(() => import("./pages/admin/pages/AdminChatbotPage"));
+const AdminCalendarPage = lazy(
+  () => import("./pages/admin/pages/AdminCalendarPage"),
+);
+const AdminChatbotPage = lazy(
+  () => import("./pages/admin/pages/AdminChatbotPage"),
+);
 const PdfUploadPage = lazy(() => import("./pages/admin/pages/PdfUploadPage"));
-const PdfManagementPage = lazy(() => import("./pages/admin/pages/PdfManagementPage"));
+const PdfManagementPage = lazy(
+  () => import("./pages/admin/pages/PdfManagementPage"),
+);
 const UsersPage = lazy(() => import("./pages/admin/pages/UsersPage"));
-const UsersDetailPage = lazy(() => import("./pages/admin/pages/UsersDetailPage"));
+const UsersDetailPage = lazy(
+  () => import("./pages/admin/pages/UsersDetailPage"),
+);
 
 function LoadingScreen() {
   const language = getCurrentLanguage();
@@ -79,25 +89,112 @@ function App() {
           />
           <Route path="/articles-result" element={<ArticlesPreview />} />
 
-          <Route path="/reservation" element={<UserRoute><Reservations /></UserRoute>} />
-          <Route path="/chat" element={<UserRoute><Chat /></UserRoute>} />
-          <Route path="/mypage" element={<UserRoute><MyPage /></UserRoute>} />
-          <Route path="/mypage/reservations" element={<UserRoute><MyPageReservations /></UserRoute>} />
-          <Route path="/mypage/files" element={<UserRoute><MyFiles /></UserRoute>} />
+          <Route
+            path="/reservation"
+            element={
+              <UserRoute>
+                <Reservations />
+              </UserRoute>
+            }
+          />
+          <Route
+            path="/chat"
+            element={
+              <UserRoute>
+                <Chat />
+              </UserRoute>
+            }
+          />
+          <Route
+            path="/mypage"
+            element={
+              <UserRoute>
+                <MyPage />
+              </UserRoute>
+            }
+          />
+          <Route
+            path="/mypage/reservations"
+            element={
+              <UserRoute>
+                <MyPageReservations />
+              </UserRoute>
+            }
+          />
+          <Route
+            path="/mypage/files"
+            element={
+              <UserRoute>
+                <MyFiles />
+              </UserRoute>
+            }
+          />
 
-          <Route path="/myreservations" element={<Navigate to="/mypage/reservations" replace />} />
+          <Route
+            path="/myreservations"
+            element={<Navigate to="/mypage/reservations" replace />}
+          />
           <Route
             path="/mypage/required-documents"
             element={<Navigate to="/mypage/files#required-documents" replace />}
           />
 
-          <Route path="/admin/calendar" element={<AdminRoute><AdminCalendarPage /></AdminRoute>} />
-          <Route path="/admin/pdf-upload" element={<AdminRoute><PdfUploadPage /></AdminRoute>} />
-          <Route path="/admin/pdf-list" element={<AdminRoute><PdfManagementPage /></AdminRoute>} />
-          <Route path="/admin/pdf" element={<AdminRoute><PdfManagementPage /></AdminRoute>} />
-          <Route path="/admin/chatbot" element={<AdminRoute><AdminChatbotPage /></AdminRoute>} />
-          <Route path="/admin/users" element={<AdminRoute><UsersPage /></AdminRoute>} />
-          <Route path="/admin/users/:uuid" element={<AdminRoute><UsersDetailPage /></AdminRoute>} />
+          <Route
+            path="/admin/calendar"
+            element={
+              <AdminRoute>
+                <AdminCalendarPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/pdf-upload"
+            element={
+              <AdminRoute>
+                <PdfUploadPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/pdf-list"
+            element={
+              <AdminRoute>
+                <PdfManagementPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/pdf"
+            element={
+              <AdminRoute>
+                <PdfManagementPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/chatbot"
+            element={
+              <AdminRoute>
+                <AdminChatbotPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/users"
+            element={
+              <AdminRoute>
+                <UsersPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/users/:uuid"
+            element={
+              <AdminRoute>
+                <UsersDetailPage />
+              </AdminRoute>
+            }
+          />
 
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -1,4 +1,4 @@
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useMemo, useState, useEffect, useRef } from "react";
 import "../../App.css";
 import Header from "../../components/Header";
@@ -107,7 +107,6 @@ function getDateKey(dateValue) {
   return `${year}-${month}-${day}`;
 }
 
-
 function getMonthStartIso(date) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -123,7 +122,6 @@ function isDateInLoadedRange(date, range) {
 
   return target >= start && target <= end;
 }
-
 
 function addMinutesToTime(time, minutesToAdd) {
   const [hour, minute] = String(time).split(":").map(Number);
@@ -148,7 +146,7 @@ function getTimeMinutes(timeValue) {
 
 function normalizeSelectedRanges(ranges) {
   const sortedRanges = [...ranges].sort((a, b) =>
-    `${a.date} ${a.startTime}`.localeCompare(`${b.date} ${b.startTime}`)
+    `${a.date} ${a.startTime}`.localeCompare(`${b.date} ${b.startTime}`),
   );
 
   return sortedRanges.reduce((mergedRanges, range) => {
@@ -178,7 +176,7 @@ function isTimeSlotSelected(ranges, date, time) {
     (range) =>
       range.date === date &&
       slotStart >= getTimeMinutes(range.startTime) &&
-      slotStart < getTimeMinutes(range.endTime)
+      slotStart < getTimeMinutes(range.endTime),
   );
 }
 
@@ -227,7 +225,7 @@ function removeTimeSlotFromRanges(ranges, date, time) {
       }
 
       return nextRanges;
-    })
+    }),
   );
 }
 
@@ -245,6 +243,7 @@ function getWeekDates(dateValue) {
 }
 
 export default function ReservationPage() {
+  const navigate = useNavigate();
   const language = getCurrentLanguage();
   const t = (key, variables) => translate(language, key, variables);
   const ui = getReservationUiCopy();
@@ -255,7 +254,7 @@ export default function ReservationPage() {
   const [isAdmin, setIsAdmin] = useState(false);
 
   const [viewDate, setViewDate] = useState(
-    new Date(today.getFullYear(), today.getMonth(), 1)
+    new Date(today.getFullYear(), today.getMonth(), 1),
   );
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -335,7 +334,7 @@ export default function ReservationPage() {
       } catch (err) {
         console.error("예약 일정 조회 실패:", err);
         setListError(
-          err.message || translate(language, "reservation.listLoadError")
+          err.message || translate(language, "reservation.listLoadError"),
         );
       }
     };
@@ -357,7 +356,10 @@ export default function ReservationPage() {
     blocks.forEach((block) => {
       // The current API returns blocked_date/blocked_time. Keep legacy keys as a fallback.
       const blockDate = getDateKey(
-        block.blocked_date || block.unavailable_date || block.selected_date || block.date
+        block.blocked_date ||
+          block.unavailable_date ||
+          block.selected_date ||
+          block.date,
       );
       if (blockDate !== dateKey) return;
 
@@ -369,11 +371,12 @@ export default function ReservationPage() {
         return;
 
       const start = getTimeMinutes(
-        block.blocked_time || block.start_time || block.selected_time
+        block.blocked_time || block.start_time || block.selected_time,
       );
       if (start === null) return;
 
-      const end = getTimeMinutes(block.end_time) ?? start + CONSULTATION_DURATION_MINUTES;
+      const end =
+        getTimeMinutes(block.end_time) ?? start + CONSULTATION_DURATION_MINUTES;
 
       TIME_OPTIONS.forEach((time) => {
         const slotStart = getTimeMinutes(time);
@@ -391,7 +394,7 @@ export default function ReservationPage() {
 
   const scheduleWeekDays = useMemo(
     () => getWeekDates(selectedDate || viewDate),
-    [selectedDate, viewDate]
+    [selectedDate, viewDate],
   );
 
   const moveToMonth = (date) => {
@@ -449,7 +452,7 @@ export default function ReservationPage() {
 
       if (!form.phone.trim()) {
         setSubmitError(t("reservation.phoneError"));
-      return false;
+        return false;
       }
 
       if (!form.email.trim()) {
@@ -459,11 +462,7 @@ export default function ReservationPage() {
     }
 
     if (currentStep === 2 && (!consultType || !selectedExpertId)) {
-      setSubmitError(
-        !consultType
-          ? ui.typeRequired
-          : ui.expertRequired
-      );
+      setSubmitError(!consultType ? ui.typeRequired : ui.expertRequired);
       return;
     }
 
@@ -496,18 +495,18 @@ export default function ReservationPage() {
       return;
     }
 
-      if (!form.CName.trim()) {
-        setSubmitError(t("reservation.companyError"));
+    if (!form.CName.trim()) {
+      setSubmitError(t("reservation.companyError"));
       return false;
     }
 
-      if (!form.kind.trim()) {
-        setSubmitError(t("reservation.kindError"));
+    if (!form.kind.trim()) {
+      setSubmitError(t("reservation.kindError"));
       return false;
     }
 
-      if (!selectedField) {
-        setSubmitError(t("reservation.fieldError"));
+    if (!selectedField) {
+      setSubmitError(t("reservation.fieldError"));
       return false;
     }
 
@@ -516,7 +515,11 @@ export default function ReservationPage() {
       return false;
     }
 
-    if (selectedRanges.some((range) => isPastDate(new Date(`${range.date}T00:00:00`), today))) {
+    if (
+      selectedRanges.some((range) =>
+        isPastDate(new Date(`${range.date}T00:00:00`), today),
+      )
+    ) {
       setSubmitError(ui.pastBooking);
       return false;
     }
@@ -570,7 +573,11 @@ export default function ReservationPage() {
       return;
     }
 
-    if (selectedRanges.some((range) => isPastDate(new Date(`${range.date}T00:00:00`), today))) {
+    if (
+      selectedRanges.some((range) =>
+        isPastDate(new Date(`${range.date}T00:00:00`), today),
+      )
+    ) {
       setSubmitError(ui.pastBooking);
       return;
     }
@@ -578,7 +585,11 @@ export default function ReservationPage() {
     setIsConfirmModalOpen(true);
   };
 
-  const updateTimeRangeSelection = (time, dateValue = selectedDate, shouldSelect) => {
+  const updateTimeRangeSelection = (
+    time,
+    dateValue = selectedDate,
+    shouldSelect,
+  ) => {
     if (!dateValue) {
       setSubmitError(ui.chooseDateError);
       return;
@@ -650,8 +661,9 @@ export default function ReservationPage() {
   const removeTimeRange = (range) => {
     setSelectedRanges((prev) =>
       prev.filter(
-        (item) => !(item.date === range.date && item.startTime === range.startTime)
-      )
+        (item) =>
+          !(item.date === range.date && item.startTime === range.startTime),
+      ),
     );
     setIsSubmitted(false);
   };
@@ -669,7 +681,7 @@ export default function ReservationPage() {
   }
 
   const selectedFieldOption = FIELD_OPTIONS.find(
-    (item) => item.value === selectedField
+    (item) => item.value === selectedField,
   );
   const selectedFieldLabel = selectedFieldOption
     ? t(`reservation.${selectedFieldOption.labelKey}`)
@@ -681,7 +693,8 @@ export default function ReservationPage() {
     expertProfiles.find((expert) => expert.id === selectedExpertId) || null;
 
   const selectedConsultType =
-    ui.consultTypes.find((type) => type.id === consultType) || ui.consultTypes[0];
+    ui.consultTypes.find((type) => type.id === consultType) ||
+    ui.consultTypes[0];
 
   return (
     <>
@@ -689,463 +702,571 @@ export default function ReservationPage() {
 
       <div className="rv-page">
         <aside className="rv-sidebar">
-        <Link to="/" className="rv-logo">
-          <span>◎</span>
-          <strong>{ui.brand}</strong>
-          <small>{ui.os}</small>
-        </Link>
-
-        <nav className="rv-side-nav">
-          <Link to="/">Home</Link>
-          <Link to="/hearing-sheet">Hearing Sheet</Link>
-          <Link to="/articles-result">Articles</Link>
-          <Link to="/reservation" className="active">
-            Consultations
+          <Link to="/" className="rv-logo">
+            <span>◎</span>
+            <strong>{ui.brand}</strong>
+            <small>{ui.os}</small>
           </Link>
-          <Link to="/myreservations">My Reservations</Link>
-          <Link to="/chat">AI Chatbot</Link>
-        </nav>
 
-        <div className="rv-sidebar-bottom">
-          <Link to="/admin/calendar">Admin Dashboard</Link>
-          <span>{ui.os}</span>
-        </div>
+          <nav className="rv-side-nav">
+            <Link to="/">Home</Link>
+            <Link to="/hearing-sheet">Hearing Sheet</Link>
+            <Link to="/articles-result">Articles</Link>
+            <Link to="/reservation" className="active">
+              Consultations
+            </Link>
+            <Link to="/myreservations">My Reservations</Link>
+            <Link to="/chat">AI Chatbot</Link>
+          </nav>
+
+          <div className="rv-sidebar-bottom">
+            <Link to="/admin/calendar">Admin Dashboard</Link>
+            <span>{ui.os}</span>
+          </div>
         </aside>
 
-      <div className="rv-shell">
-        <header className="rv-topbar">
-          <div className="rv-breadcrumb">
-            <Link to="/">Dashboard</Link>
-            <span>›</span>
-            <strong>Consultation Booking</strong>
-          </div>
-
-          <div className="rv-top-actions">
-            <div className="rv-search-box">
-              <span>⌕</span>
-              <input type="text" placeholder={ui.search} />
+        <div className="rv-shell">
+          <header className="rv-topbar">
+            <div className="rv-breadcrumb">
+              <Link to="/">Dashboard</Link>
+              <span>›</span>
+              <strong>Consultation Booking</strong>
             </div>
-            <Link to="/myreservations" className="rv-top-link">
-              {ui.myBookings}
-            </Link>
-            <span className="rv-user-dot">M</span>
-          </div>
-        </header>
 
-        <main className="rv-main">
-          <section className="rv-content">
-            <div className="rv-hero">
-              <div>
-                <p className="rv-hero-eyebrow">{ui.eyebrow}</p>
-                <h1>{ui.title}</h1>
-                <p>{ui.intro}</p>
+            <div className="rv-top-actions">
+              <div className="rv-search-box">
+                <span>⌕</span>
+                <input type="text" placeholder={ui.search} />
               </div>
+              <Link to="/myreservations" className="rv-top-link">
+                {ui.myBookings}
+              </Link>
+              <span className="rv-user-dot">M</span>
             </div>
+          </header>
 
-            <div className="rv-stepper" aria-label={ui.progress}>
-              {ui.steps.map((step, index) => (
-                <div className="rv-step" key={step}>
-                  <span className={currentStep >= index + 1 ? "active" : ""}>{index + 1}</span>
-                  <strong>{step}</strong>
+          <main className="rv-main">
+            <section className="rv-content">
+              <div className="rv-hero">
+                <div>
+                  <p className="rv-hero-eyebrow">{ui.eyebrow}</p>
+                  <h1>{ui.title}</h1>
+                  <p>{ui.intro}</p>
                 </div>
-              ))}
-            </div>
+              </div>
 
-            <section className="rv-approval-flow" aria-label={ui.flowLabel}>
-              {ui.flow.map(([title, description], index) => (
-                <div key={title}>
-                  <span>{String(index + 1).padStart(2, "0")}</span>
-                  <strong>{title}</strong>
-                  <p>{description}</p>
-                </div>
-              ))}
-            </section>
-
-            {currentStep === 1 && (
-              <section className="rv-panel rv-basic-panel rv-step-screen">
-                <div className="rv-panel-head">
-                  <div>
-                    <span>Step 01</span>
-                    <h2>{ui.consultInfo}</h2>
+              <div className="rv-stepper" aria-label={ui.progress}>
+                {ui.steps.map((step, index) => (
+                  <div className="rv-step" key={step}>
+                    <span className={currentStep >= index + 1 ? "active" : ""}>
+                      {index + 1}
+                    </span>
+                    <strong>{step}</strong>
                   </div>
-                </div>
+                ))}
+              </div>
 
-                <div className="rv-basic-stage rv-basic-stage-top">
+              <section className="rv-approval-flow" aria-label={ui.flowLabel}>
+                {ui.flow.map(([title, description], index) => (
+                  <div key={title}>
+                    <span>{String(index + 1).padStart(2, "0")}</span>
+                    <strong>{title}</strong>
+                    <p>{description}</p>
+                  </div>
+                ))}
+              </section>
+
+              {currentStep === 1 && (
+                <section className="rv-panel rv-basic-panel rv-step-screen">
+                  <div className="rv-panel-head">
+                    <div>
+                      <span>Step 01</span>
+                      <h2>{ui.consultInfo}</h2>
+                    </div>
+                  </div>
+
+                  <div className="rv-basic-stage rv-basic-stage-top">
+                    <div className="rv-section-head">
+                      <span>01</span>
+                      <h2>{ui.consultType}</h2>
+                    </div>
+
+                    <div className="rv-consult-type-grid">
+                      {ui.consultTypes.map((type) => (
+                        <button
+                          type="button"
+                          key={type.id}
+                          className={[
+                            "rv-consult-type-card",
+                            consultType === type.id ? "selected" : "",
+                          ].join(" ")}
+                          onClick={() => {
+                            setConsultType(type.id);
+                            setSubmitError("");
+                            setSubmitSuccess("");
+                            setIsSubmitted(false);
+                          }}
+                        >
+                          <span>{type.title}</span>
+                          <strong>{type.subtitle}</strong>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="rv-form-title">
+                    <strong>
+                      <span>02</span>
+                      {ui.applicant}
+                    </strong>
+                  </div>
+
+                  <div className="rv-form rv-basic-form">
+                    <label>
+                      <span>{t("reservation.name")}</span>
+                      <input
+                        type="text"
+                        name="name"
+                        value={form.name}
+                        onChange={handleChange}
+                        placeholder={t("reservation.name")}
+                      />
+                    </label>
+
+                    <label>
+                      <span>{t("reservation.company")}</span>
+                      <input
+                        type="text"
+                        name="CName"
+                        value={form.CName}
+                        onChange={handleChange}
+                        placeholder={t("reservation.company")}
+                      />
+                    </label>
+
+                    <label>
+                      <span>{t("reservation.phone")}</span>
+                      <input
+                        type="text"
+                        name="phone"
+                        value={form.phone}
+                        onChange={handleChange}
+                        placeholder="010-0000-0000"
+                      />
+                    </label>
+
+                    <label>
+                      <span>{t("reservation.email")}</span>
+                      <input
+                        type="email"
+                        name="email"
+                        value={form.email}
+                        onChange={handleChange}
+                        placeholder="name@company.com"
+                      />
+                    </label>
+
+                    <label>
+                      <span>{t("reservation.job")}</span>
+                      <input
+                        type="text"
+                        name="kind"
+                        value={form.kind}
+                        onChange={handleChange}
+                        placeholder={t("reservation.job")}
+                      />
+                    </label>
+                  </div>
+
+                  <div className="rv-step-actions">
+                    <button
+                      type="button"
+                      className="rv-step-next"
+                      onClick={handleNextStep}
+                    >
+                      {ui.next}
+                      <span>→</span>
+                    </button>
+                  </div>
+                </section>
+              )}
+
+              {currentStep === 2 && (
+                <section className="rv-expert-section rv-step-screen">
                   <div className="rv-section-head">
-                    <span>01</span>
-                    <h2>{ui.consultType}</h2>
+                    <span>Step 02</span>
+                    <h2>{ui.expertSelect}</h2>
                   </div>
 
-                  <div className="rv-consult-type-grid">
-                    {ui.consultTypes.map((type) => (
+                  <div className="rv-expert-list compact">
+                    {expertProfiles.map((expert) => (
                       <button
                         type="button"
-                        key={type.id}
+                        key={expert.id}
                         className={[
-                          "rv-consult-type-card",
-                          consultType === type.id ? "selected" : "",
+                          "rv-expert-card",
+                          selectedExpertId === expert.id ? "selected" : "",
                         ].join(" ")}
                         onClick={() => {
-                          setConsultType(type.id);
+                          setSelectedExpertId(expert.id);
+                          setSelectedField(expert.field);
+                          setSelectedRanges([]);
                           setSubmitError("");
                           setSubmitSuccess("");
                           setIsSubmitted(false);
                         }}
                       >
-                        <span>{type.title}</span>
-                        <strong>{type.subtitle}</strong>
+                        <span className="rv-expert-avatar">
+                          {expert.avatar}
+                        </span>
+
+                        <span className="rv-expert-copy">
+                          <strong>{expert.name}</strong>
+                          <em>{expert.title}</em>
+                          <small>{expert.description}</small>
+                          <span className="rv-expert-tags">
+                            {expert.tags.map((tag) => (
+                              <b key={tag}>{tag}</b>
+                            ))}
+                          </span>
+                        </span>
+
+                        <span className="rv-expert-rating">
+                          {ui.approvalReview}
+                          <small>
+                            {" "}
+                            {ui.average} {expert.rating}
+                          </small>
+                        </span>
                       </button>
                     ))}
                   </div>
-                </div>
 
-                <div className="rv-form-title">
-                  <strong>
-                    <span>02</span>
-                    {ui.applicant}
-                  </strong>
-                </div>
-
-                <div className="rv-form rv-basic-form">
-                  <label>
-                    <span>{t("reservation.name")}</span>
-                    <input
-                      type="text"
-                      name="name"
-                      value={form.name}
-                      onChange={handleChange}
-                      placeholder={t("reservation.name")}
-                    />
-                  </label>
-
-                  <label>
-                    <span>{t("reservation.company")}</span>
-                    <input
-                      type="text"
-                      name="CName"
-                      value={form.CName}
-                      onChange={handleChange}
-                      placeholder={t("reservation.company")}
-                    />
-                  </label>
-
-                  <label>
-                    <span>{t("reservation.phone")}</span>
-                    <input
-                      type="text"
-                      name="phone"
-                      value={form.phone}
-                      onChange={handleChange}
-                      placeholder="010-0000-0000"
-                    />
-                  </label>
-
-                  <label>
-                    <span>{t("reservation.email")}</span>
-                    <input
-                      type="email"
-                      name="email"
-                      value={form.email}
-                      onChange={handleChange}
-                      placeholder="name@company.com"
-                    />
-                  </label>
-
-                  <label>
-                    <span>{t("reservation.job")}</span>
-                    <input
-                      type="text"
-                      name="kind"
-                      value={form.kind}
-                      onChange={handleChange}
-                      placeholder={t("reservation.job")}
-                    />
-                  </label>
-                </div>
-
-                <div className="rv-step-actions">
-                  <button type="button" className="rv-step-next" onClick={handleNextStep}>
-                    {ui.next}
-                    <span>→</span>
-                  </button>
-                </div>
-              </section>
-            )}
-
-            {currentStep === 2 && (
-            <section className="rv-expert-section rv-step-screen">
-              <div className="rv-section-head">
-                <span>Step 02</span>
-                <h2>{ui.expertSelect}</h2>
-              </div>
-
-              <div className="rv-expert-list compact">
-                {expertProfiles.map((expert) => (
-                  <button
-                    type="button"
-                    key={expert.id}
-                    className={[
-                      "rv-expert-card",
-                      selectedExpertId === expert.id ? "selected" : "",
-                    ].join(" ")}
-                    onClick={() => {
-                      setSelectedExpertId(expert.id);
-                      setSelectedField(expert.field);
-                      setSelectedRanges([]);
-                      setSubmitError("");
-                      setSubmitSuccess("");
-                      setIsSubmitted(false);
-                    }}
-                  >
-                    <span className="rv-expert-avatar">{expert.avatar}</span>
-
-                    <span className="rv-expert-copy">
-                      <strong>{expert.name}</strong>
-                      <em>{expert.title}</em>
-                      <small>{expert.description}</small>
-                      <span className="rv-expert-tags">
-                        {expert.tags.map((tag) => (
-                          <b key={tag}>{tag}</b>
-                        ))}
-                      </span>
-                    </span>
-
-                    <span className="rv-expert-rating">
-                      {ui.approvalReview}
-                      <small> {ui.average} {expert.rating}</small>
-                    </span>
-                  </button>
-                ))}
-              </div>
-
-              <div className="rv-step-actions">
-                <button type="button" className="rv-step-prev" onClick={handlePrevStep}>
-                  {ui.previous}
-                </button>
-                <button type="button" className="rv-step-next" onClick={handleNextStep}>
-                  {ui.next}
-                  <span>→</span>
-                </button>
-              </div>
-            </section>
-            )}
-
-            {currentStep === 3 && (
-              <>
-                <section className="rv-schedule-intro">
-                  <span>STEP 03</span>
-                  <h2>{ui.scheduleTitle}</h2>
-                  <p>{ui.scheduleIntro}</p>
-                </section>
-
-                <div className="rv-schedule-layout">
-                <section className="rv-schedule-card rv-schedule-month">
-                  <div className="rv-schedule-month-title">
-                    <strong>{formatTranslatedMonth(language, viewDate)}</strong>
-                    <span>{ui.chooseDate}</span>
-                  </div>
-                  <div className="rv-schedule-month-nav">
-                    <button type="button" onClick={handlePrevMonth} aria-label={t("reservation.previousMonth")}>‹</button>
-                    <button type="button" onClick={handleNextMonth} aria-label={t("reservation.nextMonth")}>›</button>
-                  </div>
-                  <div className="rv-schedule-calendar">
-                    {WEEK_DAYS.slice(1).concat(WEEK_DAYS[0]).map((day) => (
-                      <span key={day}>{t(`reservation.${day}`)}</span>
-                    ))}
-                    {calendarDays.map((date, index) => {
-                      if (!date) return <span key={`empty-${index}`} className="rv-schedule-date empty" />;
-                      const isPast = isPastDate(date, today);
-                      const isToday = isSameDate(date, today);
-                      const isDisabled = isPast && !isToday;
-                      return (
-                        <button
-                          key={date.toISOString()}
-                          type="button"
-                          disabled={isDisabled}
-                          className={[
-                            "rv-schedule-date",
-                            isSameDate(date, selectedDate) ? "selected" : "",
-                            selectedRanges.some((range) => range.date === getDateKey(date)) ? "has-suggestion" : "",
-                            isToday ? "today" : "",
-                          ].join(" ")}
-                          onClick={() => handleDateClick(date)}
-                        >
-                          {date.getDate()}
-                        </button>
-                      );
-                    })}
-                  </div>
-                  <div className="rv-schedule-month-actions">
-                    <button type="button" className="rv-step-prev" onClick={handlePrevStep}>
+                  <div className="rv-step-actions">
+                    <button
+                      type="button"
+                      className="rv-step-prev"
+                      onClick={handlePrevStep}
+                    >
                       {ui.previous}
+                    </button>
+                    <button
+                      type="button"
+                      className="rv-step-next"
+                      onClick={handleNextStep}
+                    >
+                      {ui.next}
+                      <span>→</span>
                     </button>
                   </div>
                 </section>
+              )}
 
-                <section className="rv-schedule-card rv-schedule-week">
-                  <div className="rv-schedule-week-head">
-                      <div>
-                        <div className="rv-schedule-eyebrow">STEP 03</div>
-                        <h2>{ui.proposeTime}</h2>
-                        <p className="rv-schedule-recommendation">
-                          {ui.durationGuide}
-                        </p>
-                        <p className="rv-schedule-drag-guide">
-                          {ui.dragGuide}
-                        </p>
-                    </div>
-                    <span className="rv-timezone">GMT+9</span>
-                  </div>
-                  <div className="rv-schedule-grid-scroll">
-                    <div className="rv-schedule-week-grid">
-                      <span className="rv-schedule-grid-corner" />
-                      {scheduleWeekDays.map((day) => {
-                        const isPast = isPastDate(day, today);
+              {currentStep === 3 && (
+                <>
+                  <section className="rv-schedule-intro">
+                    <span>STEP 03</span>
+                    <h2>{ui.scheduleTitle}</h2>
+                    <p>{ui.scheduleIntro}</p>
+                  </section>
 
-                        return (
-                          <button
-                            key={day.toISOString()}
-                            type="button"
-                            disabled={isPast}
-                            className={isSameDate(day, selectedDate) ? "selected-day" : ""}
-                            onClick={() => handleDateClick(day)}
-                          >
-                            <small>{t(`reservation.${WEEK_DAYS[day.getDay()]}`)}</small>
-                            <strong>{day.getDate()}</strong>
-                          </button>
-                        );
-                      })}
-                      {TIME_OPTIONS.map((time) => (
-                        <div className="rv-schedule-grid-row" key={time}>
-                          <span className="rv-schedule-grid-time">{time}</span>
-                          {scheduleWeekDays.map((day) => {
-                            const dateKey = getDateKey(day);
-                            const blocked = getBlockedTimesForDate(day).has(time);
-                            const selected = isTimeSlotSelected(selectedRanges, dateKey, time);
-                            const rangeStart = selectedRanges.find(
-                              (range) => range.date === dateKey && range.startTime === time
+                  <div className="rv-schedule-layout">
+                    <section className="rv-schedule-card rv-schedule-month">
+                      <div className="rv-schedule-month-title">
+                        <strong>
+                          {formatTranslatedMonth(language, viewDate)}
+                        </strong>
+                        <span>{ui.chooseDate}</span>
+                      </div>
+                      <div className="rv-schedule-month-nav">
+                        <button
+                          type="button"
+                          onClick={handlePrevMonth}
+                          aria-label={t("reservation.previousMonth")}
+                        >
+                          ‹
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleNextMonth}
+                          aria-label={t("reservation.nextMonth")}
+                        >
+                          ›
+                        </button>
+                      </div>
+                      <div className="rv-schedule-calendar">
+                        {WEEK_DAYS.slice(1)
+                          .concat(WEEK_DAYS[0])
+                          .map((day) => (
+                            <span key={day}>{t(`reservation.${day}`)}</span>
+                          ))}
+                        {calendarDays.map((date, index) => {
+                          if (!date)
+                            return (
+                              <span
+                                key={`empty-${index}`}
+                                className="rv-schedule-date empty"
+                              />
                             );
-                            const disabled = (isPastDate(day, today) && !isSameDate(day, today)) || blocked;
+                          const isPast = isPastDate(date, today);
+                          const isToday = isSameDate(date, today);
+                          const isDisabled = isPast && !isToday;
+                          return (
+                            <button
+                              key={date.toISOString()}
+                              type="button"
+                              disabled={isDisabled}
+                              className={[
+                                "rv-schedule-date",
+                                isSameDate(date, selectedDate)
+                                  ? "selected"
+                                  : "",
+                                selectedRanges.some(
+                                  (range) => range.date === getDateKey(date),
+                                )
+                                  ? "has-suggestion"
+                                  : "",
+                                isToday ? "today" : "",
+                              ].join(" ")}
+                              onClick={() => handleDateClick(date)}
+                            >
+                              {date.getDate()}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      <div className="rv-schedule-month-actions">
+                        <button
+                          type="button"
+                          className="rv-step-prev"
+                          onClick={handlePrevStep}
+                        >
+                          {ui.previous}
+                        </button>
+                      </div>
+                    </section>
+
+                    <section className="rv-schedule-card rv-schedule-week">
+                      <div className="rv-schedule-week-head">
+                        <div>
+                          <div className="rv-schedule-eyebrow">STEP 03</div>
+                          <h2>{ui.proposeTime}</h2>
+                          <p className="rv-schedule-recommendation">
+                            {ui.durationGuide}
+                          </p>
+                          <p className="rv-schedule-drag-guide">
+                            {ui.dragGuide}
+                          </p>
+                        </div>
+                        <span className="rv-timezone">GMT+9</span>
+                      </div>
+                      <div className="rv-schedule-grid-scroll">
+                        <div className="rv-schedule-week-grid">
+                          <span className="rv-schedule-grid-corner" />
+                          {scheduleWeekDays.map((day) => {
+                            const isPast = isPastDate(day, today);
+
                             return (
                               <button
-                                key={`${dateKey}-${time}`}
+                                key={day.toISOString()}
                                 type="button"
-                                disabled={disabled}
-                                className={[
-                                  "rv-schedule-slot",
-                                  selected ? "selected" : "",
-                                  blocked ? "blocked" : "",
-                                ].join(" ")}
-                                onPointerDown={(event) => handleTimeSlotPointerDown(event, time, day, selected)}
-                                onPointerEnter={(event) => handleTimeSlotPointerEnter(event, time, day)}
-                                onKeyDown={(event) => handleTimeSlotKeyDown(event, time, day, selected)}
-                                aria-label={`${dateKey} ${time} ${selected ? ui.removeSlot : ui.addSlot}`}
-                                aria-pressed={selected}
+                                disabled={isPast}
+                                className={
+                                  isSameDate(day, selectedDate)
+                                    ? "selected-day"
+                                    : ""
+                                }
+                                onClick={() => handleDateClick(day)}
                               >
-                                {blocked ? (
-                                  <span className="rv-schedule-blocked-label">{ui.blocked}</span>
-                                ) : (
-                                  rangeStart && <span>{rangeStart.startTime} - {rangeStart.endTime}</span>
-                                )}
+                                <small>
+                                  {t(`reservation.${WEEK_DAYS[day.getDay()]}`)}
+                                </small>
+                                <strong>{day.getDate()}</strong>
                               </button>
                             );
                           })}
+                          {TIME_OPTIONS.map((time) => (
+                            <div className="rv-schedule-grid-row" key={time}>
+                              <span className="rv-schedule-grid-time">
+                                {time}
+                              </span>
+                              {scheduleWeekDays.map((day) => {
+                                const dateKey = getDateKey(day);
+                                const blocked =
+                                  getBlockedTimesForDate(day).has(time);
+                                const selected = isTimeSlotSelected(
+                                  selectedRanges,
+                                  dateKey,
+                                  time,
+                                );
+                                const rangeStart = selectedRanges.find(
+                                  (range) =>
+                                    range.date === dateKey &&
+                                    range.startTime === time,
+                                );
+                                const disabled =
+                                  (isPastDate(day, today) &&
+                                    !isSameDate(day, today)) ||
+                                  blocked;
+                                return (
+                                  <button
+                                    key={`${dateKey}-${time}`}
+                                    type="button"
+                                    disabled={disabled}
+                                    className={[
+                                      "rv-schedule-slot",
+                                      selected ? "selected" : "",
+                                      blocked ? "blocked" : "",
+                                    ].join(" ")}
+                                    onPointerDown={(event) =>
+                                      handleTimeSlotPointerDown(
+                                        event,
+                                        time,
+                                        day,
+                                        selected,
+                                      )
+                                    }
+                                    onPointerEnter={(event) =>
+                                      handleTimeSlotPointerEnter(
+                                        event,
+                                        time,
+                                        day,
+                                      )
+                                    }
+                                    onKeyDown={(event) =>
+                                      handleTimeSlotKeyDown(
+                                        event,
+                                        time,
+                                        day,
+                                        selected,
+                                      )
+                                    }
+                                    aria-label={`${dateKey} ${time} ${selected ? ui.removeSlot : ui.addSlot}`}
+                                    aria-pressed={selected}
+                                  >
+                                    {blocked ? (
+                                      <span className="rv-schedule-blocked-label">
+                                        {ui.blocked}
+                                      </span>
+                                    ) : (
+                                      rangeStart && (
+                                        <span>
+                                          {rangeStart.startTime} -{" "}
+                                          {rangeStart.endTime}
+                                        </span>
+                                      )
+                                    )}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          ))}
                         </div>
-                      ))}
+                      </div>
+                    </section>
+
+                    <aside
+                      className="rv-schedule-card rv-schedule-summary"
+                      aria-live="polite"
+                    >
+                      <div className="rv-schedule-summary-head">
+                        <div className="rv-schedule-eyebrow">SELECTED</div>
+                        <h2>{ui.proposed}</h2>
+                      </div>
+                      {selectedRanges.length === 0 ? (
+                        <p className="rv-schedule-empty">{ui.emptySchedule}</p>
+                      ) : (
+                        <ul className="rv-schedule-range-list">
+                          {selectedRanges.map((range) => {
+                            const date = new Date(`${range.date}T00:00:00`);
+                            return (
+                              <li key={`${range.date}-${range.startTime}`}>
+                                <strong>
+                                  {new Intl.DateTimeFormat(
+                                    language === "en"
+                                      ? "en-US"
+                                      : language === "ja"
+                                        ? "ja-JP"
+                                        : "ko-KR",
+                                    {
+                                      year: "numeric",
+                                      month: "long",
+                                      day: "numeric",
+                                      weekday: "short",
+                                    },
+                                  ).format(date)}
+                                </strong>
+                                <span>
+                                  {range.startTime} - {range.endTime}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => removeTimeRange(range)}
+                                  aria-label={`${range.date} ${range.startTime} ${ui.removeSlot}`}
+                                >
+                                  ×
+                                </button>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      )}
+                      <button
+                        type="button"
+                        className="rv-schedule-next"
+                        onClick={handleNextStep}
+                      >
+                        {ui.moveNext} <span>→</span>
+                      </button>
+                    </aside>
+                  </div>
+                </>
+              )}
+
+              {currentStep === 4 && (
+                <section className="rv-panel rv-review-panel rv-step-screen">
+                  <div className="rv-panel-head">
+                    <div>
+                      <span>Step 04</span>
+                      <h2>{ui.reviewTitle}</h2>
                     </div>
                   </div>
+
+                  <label className="rv-additional-request">
+                    <span>{ui.additional}</span>
+                    <textarea
+                      value={additionalRequest}
+                      onChange={(e) => {
+                        setAdditionalRequest(e.target.value);
+                        setSubmitError("");
+                        setSubmitSuccess("");
+                        setIsSubmitted(false);
+                      }}
+                      rows="4"
+                      placeholder={ui.additionalPlaceholder}
+                    />
+                  </label>
+
+                  <div className="rv-step-actions">
+                    <button
+                      type="button"
+                      className="rv-step-prev"
+                      onClick={handlePrevStep}
+                    >
+                      {ui.previous}
+                    </button>
+                    <button
+                      type="button"
+                      className="rv-step-next"
+                      onClick={openSubmitConfirmation}
+                    >
+                      {ui.reviewCta}
+                      <span>→</span>
+                    </button>
+                  </div>
                 </section>
-
-                <aside className="rv-schedule-card rv-schedule-summary" aria-live="polite">
-                  <div className="rv-schedule-summary-head">
-                    <div className="rv-schedule-eyebrow">SELECTED</div>
-                    <h2>{ui.proposed}</h2>
-                  </div>
-                  {selectedRanges.length === 0 ? (
-                    <p className="rv-schedule-empty">{ui.emptySchedule}</p>
-                  ) : (
-                    <ul className="rv-schedule-range-list">
-                      {selectedRanges.map((range) => {
-                        const date = new Date(`${range.date}T00:00:00`);
-                        return (
-                          <li key={`${range.date}-${range.startTime}`}>
-                            <strong>
-                              {new Intl.DateTimeFormat(
-                                language === "en"
-                                  ? "en-US"
-                                  : language === "ja"
-                                    ? "ja-JP"
-                                    : "ko-KR",
-                                {
-                                  year: "numeric",
-                                  month: "long",
-                                  day: "numeric",
-                                  weekday: "short",
-                                }
-                              ).format(date)}
-                            </strong>
-                            <span>{range.startTime} - {range.endTime}</span>
-                            <button
-                              type="button"
-                              onClick={() => removeTimeRange(range)}
-                              aria-label={`${range.date} ${range.startTime} ${ui.removeSlot}`}
-                            >
-                              ×
-                            </button>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  )}
-                  <button type="button" className="rv-schedule-next" onClick={handleNextStep}>
-                    {ui.moveNext} <span>→</span>
-                  </button>
-                </aside>
-
-                </div>
-              </>
-            )}
-
-            {currentStep === 4 && (
-              <section className="rv-panel rv-review-panel rv-step-screen">
-                <div className="rv-panel-head">
-                  <div>
-                    <span>Step 04</span>
-                    <h2>{ui.reviewTitle}</h2>
-                  </div>
-                </div>
-
-                <label className="rv-additional-request">
-                  <span>{ui.additional}</span>
-                  <textarea
-                    value={additionalRequest}
-                    onChange={(e) => {
-                      setAdditionalRequest(e.target.value);
-                      setSubmitError("");
-                      setSubmitSuccess("");
-                      setIsSubmitted(false);
-                    }}
-                    rows="4"
-                    placeholder={ui.additionalPlaceholder}
-                  />
-                </label>
-
-                <div className="rv-step-actions">
-                  <button type="button" className="rv-step-prev" onClick={handlePrevStep}>
-                    {ui.previous}
-                  </button>
-                  <button
-                    type="button"
-                    className="rv-step-next"
-                    onClick={openSubmitConfirmation}
-                  >
-                    {ui.reviewCta}
-                    <span>→</span>
-                  </button>
-                </div>
-              </section>
-            )}
-          </section>
+              )}
+            </section>
           </main>
         </div>
       </div>
@@ -1159,7 +1280,11 @@ export default function ReservationPage() {
       )}
 
       {isConfirmModalOpen && (
-        <div className="rv-confirm-backdrop" role="presentation" onMouseDown={() => !isSubmitting && setIsConfirmModalOpen(false)}>
+        <div
+          className="rv-confirm-backdrop"
+          role="presentation"
+          onMouseDown={() => !isSubmitting && setIsConfirmModalOpen(false)}
+        >
           <section
             className="rv-confirm-modal"
             role="dialog"
@@ -1182,22 +1307,55 @@ export default function ReservationPage() {
               </button>
             </div>
             <dl className="rv-confirm-list">
-              <div><dt>{ui.field}</dt><dd>{selectedFieldLabel}</dd></div>
-              <div><dt>{ui.type}</dt><dd>{selectedConsultType.title}</dd></div>
-              <div><dt>{ui.expert}</dt><dd>{selectedExpert?.name || "-"}</dd></div>
-              <div><dt>{ui.applicantName}</dt><dd>{form.name || "-"}</dd></div>
-              <div className="rv-confirm-ranges"><dt>{ui.proposedSchedule}</dt><dd>{selectedRanges.map((range) => `${range.date} ${range.startTime}-${range.endTime}`).join(", ")}</dd></div>
-              <div className="rv-confirm-note"><dt>{ui.additional}</dt><dd>{additionalRequest.trim() || ui.none}</dd></div>
+              <div>
+                <dt>{ui.field}</dt>
+                <dd>{selectedFieldLabel}</dd>
+              </div>
+              <div>
+                <dt>{ui.type}</dt>
+                <dd>{selectedConsultType.title}</dd>
+              </div>
+              <div>
+                <dt>{ui.expert}</dt>
+                <dd>{selectedExpert?.name || "-"}</dd>
+              </div>
+              <div>
+                <dt>{ui.applicantName}</dt>
+                <dd>{form.name || "-"}</dd>
+              </div>
+              <div className="rv-confirm-ranges">
+                <dt>{ui.proposedSchedule}</dt>
+                <dd>
+                  {selectedRanges
+                    .map(
+                      (range) =>
+                        `${range.date} ${range.startTime}-${range.endTime}`,
+                    )
+                    .join(", ")}
+                </dd>
+              </div>
+              <div className="rv-confirm-note">
+                <dt>{ui.additional}</dt>
+                <dd>{additionalRequest.trim() || ui.none}</dd>
+              </div>
             </dl>
             <p>{ui.modalNotice}</p>
             <div className="rv-confirm-actions">
-              <button type="button" className="rv-step-prev" onClick={() => setIsConfirmModalOpen(false)} disabled={isSubmitting}>{ui.edit}</button>
+              <button
+                type="button"
+                className="rv-step-prev"
+                onClick={() => setIsConfirmModalOpen(false)}
+                disabled={isSubmitting}
+              >
+                {ui.edit}
+              </button>
               <button
                 type="button"
                 className="rv-step-next"
                 onClick={async () => {
                   const isSuccess = await handleSubmit();
                   if (isSuccess) setIsConfirmModalOpen(false);
+                  navigate("/mypage");
                 }}
                 disabled={isSubmitting}
               >

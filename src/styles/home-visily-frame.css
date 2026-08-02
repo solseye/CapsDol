@@ -530,7 +530,12 @@
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(3, 24, 43, 0.78) 0%, rgba(6, 35, 60, 0.66) 58%, rgba(6, 35, 60, 0.92) 100%),
+    linear-gradient(
+      180deg,
+      rgba(3, 24, 43, 0.78) 0%,
+      rgba(6, 35, 60, 0.66) 58%,
+      rgba(6, 35, 60, 0.92) 100%
+    ),
     radial-gradient(circle at center, rgba(21, 92, 63, 0.32), transparent 52%);
 }
 
@@ -770,8 +775,18 @@
 
 .visily-service-card.ai::before {
   background:
-    linear-gradient(120deg, transparent 0 56%, rgba(16, 185, 129, 0.1) 56% 57%, transparent 57%),
-    linear-gradient(35deg, transparent 0 62%, rgba(6, 35, 60, 0.08) 62% 63%, transparent 63%);
+    linear-gradient(
+      120deg,
+      transparent 0 56%,
+      rgba(16, 185, 129, 0.1) 56% 57%,
+      transparent 57%
+    ),
+    linear-gradient(
+      35deg,
+      transparent 0 62%,
+      rgba(6, 35, 60, 0.08) 62% 63%,
+      transparent 63%
+    );
 }
 
 .visily-service-card.ai::after {
@@ -787,7 +802,12 @@
 
 .visily-service-card.doc::before {
   background:
-    linear-gradient(135deg, transparent 0 52%, rgba(16, 185, 129, 0.08) 52% 53%, transparent 53%),
+    linear-gradient(
+      135deg,
+      transparent 0 52%,
+      rgba(16, 185, 129, 0.08) 52% 53%,
+      transparent 53%
+    ),
     linear-gradient(180deg, rgba(237, 243, 244, 0.65), transparent 58%);
 }
 
@@ -807,8 +827,18 @@
 
 .visily-service-card.pro::before {
   background:
-    linear-gradient(145deg, transparent 0 48%, rgba(16, 185, 129, 0.09) 48% 49%, transparent 49%),
-    linear-gradient(25deg, transparent 0 68%, rgba(6, 35, 60, 0.07) 68% 69%, transparent 69%);
+    linear-gradient(
+      145deg,
+      transparent 0 48%,
+      rgba(16, 185, 129, 0.09) 48% 49%,
+      transparent 49%
+    ),
+    linear-gradient(
+      25deg,
+      transparent 0 68%,
+      rgba(6, 35, 60, 0.07) 68% 69%,
+      transparent 69%
+    );
 }
 
 .visily-service-card.pro::after {
@@ -1198,9 +1228,7 @@ html[lang="en"] .visily-price-overlay.core-services h3 {
   font-size: 19px;
 }
 
-html[lang="en"]
-  .visily-price-overlay.core-services
-  .visily-estimate-badge {
+html[lang="en"] .visily-price-overlay.core-services .visily-estimate-badge {
   margin-bottom: 6px;
   padding: 5px 10px;
   font-size: 8.5px;
@@ -1543,7 +1571,10 @@ html[lang="en"] .visily-core-service-item p {
   border-radius: 12px;
   background: #ffffff;
   box-shadow: 0 14px 32px rgba(16, 29, 43, 0.04);
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
 }
 
 .visily-process-card:hover {
@@ -1577,7 +1608,9 @@ html[lang="en"] .visily-core-service-item p {
   background: #e9f2ee;
   font-size: 11px;
   font-weight: 950;
-  transition: background 0.25s ease, color 0.25s ease;
+  transition:
+    background 0.25s ease,
+    color 0.25s ease;
 }
 
 .visily-process-card:hover .visily-process-top strong {
@@ -1862,8 +1895,7 @@ html[lang="en"] .visily-core-service-item p {
   border-radius: 14px;
   padding: 34px;
   background:
-    linear-gradient(135deg, rgba(16, 185, 129, 0.08), transparent 42%),
-    #ffffff;
+    linear-gradient(135deg, rgba(16, 185, 129, 0.08), transparent 42%), #ffffff;
   box-shadow: 0 18px 36px rgba(16, 29, 43, 0.05);
 }
 
@@ -2376,7 +2408,11 @@ html[lang="en"] .visily-core-service-item p {
   border-radius: 4px;
   color: #ffffff;
   background:
-    radial-gradient(circle at top left, rgba(25, 91, 63, 0.46), transparent 42%),
+    radial-gradient(
+      circle at top left,
+      rgba(25, 91, 63, 0.46),
+      transparent 42%
+    ),
     #06233c;
   text-align: center;
   box-shadow: 0 18px 38px rgba(10, 25, 40, 0.18);

@@ -49,13 +49,8 @@ function getFileTypeLabel(fileType, originalName) {
   const fileName = String(originalName || "");
   const lastDotIndex = fileName.lastIndexOf(".");
 
-  if (
-    lastDotIndex >= 0 &&
-    lastDotIndex < fileName.length - 1
-  ) {
-    return fileName
-      .slice(lastDotIndex + 1)
-      .toUpperCase();
+  if (lastDotIndex >= 0 && lastDotIndex < fileName.length - 1) {
+    return fileName.slice(lastDotIndex + 1).toUpperCase();
   }
 
   if (fileType === "application/pdf") {
@@ -66,10 +61,7 @@ function getFileTypeLabel(fileType, originalName) {
     return "DOCX";
   }
 
-  if (
-    fileType?.includes("spreadsheet") ||
-    fileType?.includes("excel")
-  ) {
+  if (fileType?.includes("spreadsheet") || fileType?.includes("excel")) {
     return "XLSX";
   }
 
@@ -95,8 +87,7 @@ export default function MyFiles() {
   const [fileName, setFileName] = useState("");
   const [description, setDescription] = useState("");
 
-  const [isFileListLoading, setIsFileListLoading] =
-    useState(true);
+  const [isFileListLoading, setIsFileListLoading] = useState(true);
 
   const [isUploading, setIsUploading] = useState(false);
 
@@ -104,16 +95,12 @@ export default function MyFiles() {
   const [uploadError, setUploadError] = useState("");
   const [uploadMessage, setUploadMessage] = useState("");
 
-  const [deleteLoadingPath, setDeleteLoadingPath] =
-    useState(null);
+  const [deleteLoadingPath, setDeleteLoadingPath] = useState(null);
 
-  const [previewLoadingPath, setPreviewLoadingPath] =
-    useState(null);
+  const [previewLoadingPath, setPreviewLoadingPath] = useState(null);
 
-  const [downloadLoadingPath, setDownloadLoadingPath] =
-    useState(null);
-  const [requiredDocumentType, setRequiredDocumentType] =
-    useState("");
+  const [downloadLoadingPath, setDownloadLoadingPath] = useState(null);
+  const [requiredDocumentType, setRequiredDocumentType] = useState("");
   const [, setRequiredDocumentsChecklist] = useState(null);
 
   const fetchClientFiles = async () => {
@@ -127,18 +114,12 @@ export default function MyFiles() {
         offset: 0,
       });
 
-      const files = Array.isArray(data.files)
-        ? data.files
-        : [];
+      const files = Array.isArray(data.files) ? data.files : [];
 
       const sortedFiles = [...files].sort((a, b) => {
-        const dateA = new Date(
-          a.uploadedAt || a.updatedAt || 0
-        ).getTime();
+        const dateA = new Date(a.uploadedAt || a.updatedAt || 0).getTime();
 
-        const dateB = new Date(
-          b.uploadedAt || b.updatedAt || 0
-        ).getTime();
+        const dateB = new Date(b.uploadedAt || b.updatedAt || 0).getTime();
 
         return dateB - dateA;
       });
@@ -146,9 +127,7 @@ export default function MyFiles() {
       setClientFiles(sortedFiles);
       return sortedFiles;
     } catch (err) {
-      setFileError(
-        err.message || "파일 목록을 불러오지 못했습니다."
-      );
+      setFileError(err.message || "파일 목록을 불러오지 못했습니다.");
       return [];
     } finally {
       setIsFileListLoading(false);
@@ -161,9 +140,7 @@ export default function MyFiles() {
     setIsLoggedIn(!!token);
 
     if (token) {
-      setRequiredDocumentsChecklist(
-        ensureRequiredDocumentsChecklist()
-      );
+      setRequiredDocumentsChecklist(ensureRequiredDocumentsChecklist());
       fetchClientFiles();
     } else {
       setIsFileListLoading(false);
@@ -217,15 +194,13 @@ export default function MyFiles() {
                         selectedFile?.name ||
                         fileName.trim(),
                       linkedFilePath:
-                        uploadedFile?.storagePath ||
-                        uploadedFile?.path ||
-                        "",
+                        uploadedFile?.storagePath || uploadedFile?.path || "",
                       updatedAt: new Date().toISOString(),
                     }
-                  : item
+                  : item,
               ),
             }
-          : group
+          : group,
       ),
     }));
   };
@@ -242,9 +217,7 @@ export default function MyFiles() {
       const lastDotIndex = file.name.lastIndexOf(".");
 
       const nameWithoutExtension =
-        lastDotIndex > 0
-          ? file.name.slice(0, lastDotIndex)
-          : file.name;
+        lastDotIndex > 0 ? file.name.slice(0, lastDotIndex) : file.name;
 
       setFileName(nameWithoutExtension);
     }
@@ -298,25 +271,20 @@ export default function MyFiles() {
           refreshedFiles.find(
             (file) =>
               file.fileName === fileName.trim() ||
-              file.originalName === selectedFile.name
+              file.originalName === selectedFile.name,
           );
 
-        markRequiredDocumentUploaded(
-          requiredDocumentType,
-          uploadedFile
-        );
+        markRequiredDocumentUploaded(requiredDocumentType, uploadedFile);
         resetUploadForm();
       }
     } catch (err) {
-      setUploadError(
-        err.message || "파일 업로드에 실패했습니다."
-      );
+      setUploadError(err.message || "파일 업로드에 실패했습니다.");
     } finally {
       setIsUploading(false);
     }
   };
 
-    const handleDeleteFile = async (file) => {
+  const handleDeleteFile = async (file) => {
     const path = file.storagePath || file.path;
 
     if (!path) {
@@ -344,10 +312,7 @@ export default function MyFiles() {
 
       if (data.success) {
         setClientFiles((prev) =>
-          prev.filter(
-            (item) =>
-              (item.storagePath || item.path) !== path
-          )
+          prev.filter((item) => (item.storagePath || item.path) !== path),
         );
 
         updateRequiredDocuments((current) => ({
@@ -358,23 +323,18 @@ export default function MyFiles() {
               item.linkedFilePath === path
                 ? {
                     ...item,
-                    status:
-                      item.status === "uploaded"
-                        ? "ready"
-                        : item.status,
+                    status: item.status === "uploaded" ? "ready" : item.status,
                     linkedFileName: "",
                     linkedFilePath: "",
                     updatedAt: new Date().toISOString(),
                   }
-                : item
+                : item,
             ),
           })),
         }));
       }
     } catch (err) {
-      setFileError(
-        err.message || "파일 삭제에 실패했습니다."
-      );
+      setFileError(err.message || "파일 삭제에 실패했습니다.");
     } finally {
       setDeleteLoadingPath(null);
     }
@@ -393,9 +353,7 @@ export default function MyFiles() {
     const previewWindow = window.open("", "_blank");
 
     if (!previewWindow) {
-      setFileError(
-        "팝업이 차단되었습니다. 브라우저에서 팝업을 허용해 주세요."
-      );
+      setFileError("팝업이 차단되었습니다. 브라우저에서 팝업을 허용해 주세요.");
       return;
     }
 
@@ -434,9 +392,7 @@ export default function MyFiles() {
     } catch (err) {
       previewWindow.close();
 
-      setFileError(
-        err.message || "파일 미리보기에 실패했습니다."
-      );
+      setFileError(err.message || "파일 미리보기에 실패했습니다.");
     } finally {
       setPreviewLoadingPath(null);
     }
@@ -478,10 +434,7 @@ export default function MyFiles() {
 
       link.href = blobUrl;
       link.download =
-        data.downloadName ||
-        file.originalName ||
-        file.fileName ||
-        "download";
+        data.downloadName || file.originalName || file.fileName || "download";
 
       document.body.appendChild(link);
       link.click();
@@ -489,9 +442,7 @@ export default function MyFiles() {
 
       window.URL.revokeObjectURL(blobUrl);
     } catch (err) {
-      setFileError(
-        err.message || "파일 다운로드에 실패했습니다."
-      );
+      setFileError(err.message || "파일 다운로드에 실패했습니다.");
     } finally {
       setDownloadLoadingPath(null);
     }
@@ -499,7 +450,7 @@ export default function MyFiles() {
 
   const recentFileCount = clientFiles.filter((file) => {
     const uploadedAt = new Date(
-      file.uploadedAt || file.updatedAt || 0
+      file.uploadedAt || file.updatedAt || 0,
     ).getTime();
 
     return (
@@ -514,9 +465,9 @@ export default function MyFiles() {
         group.items.map((item) => ({
           value: `${group.id}:${item.id}`,
           label: `${group.title} · ${item.label}`,
-        }))
+        })),
       ),
-    []
+    [],
   );
 
   return (
@@ -530,16 +481,12 @@ export default function MyFiles() {
               <p>MY FILES</p>
               <h1>내 파일 관리</h1>
               <span>
-                일본 진출과 전문가 상담에 필요한 자료를
-                제출하고 관리합니다.
+                일본 진출과 전문가 상담에 필요한 자료를 제출하고 관리합니다.
               </span>
             </div>
           </section>
 
-          <section
-            className="my-files-stats"
-            aria-label="파일 현황"
-          >
+          <section className="my-files-stats" aria-label="파일 현황">
             <article>
               <span>업로드한 문서</span>
               <strong>{clientFiles.length}</strong>
@@ -566,6 +513,18 @@ export default function MyFiles() {
                   <h2>파일 업로드</h2>
                 </div>
               </header>
+              <div className="my-files-upload-layout">
+                {selectedFile && (
+                  <button
+                    type="button"
+                    className="my-files-clear"
+                    onClick={handleClearSelectedFile}
+                    disabled={isUploading}
+                  >
+                    선택 취소
+                  </button>
+                )}
+              </div>
 
               <div className="my-files-upload-layout">
                 <div className="my-files-file-picker">
@@ -584,15 +543,15 @@ export default function MyFiles() {
                     <strong>
                       {selectedFile
                         ? selectedFile.name
-                        : "상담에 필요한 파일을 이곳에 올려주세요"}
+                        : "상담에 필요한 파일을 이곳에 업로드해주세요"}
                     </strong>
                     <small>
                       {selectedFile
                         ? formatFileSize(selectedFile.size)
-                        : "영역을 누르거나 파일을 끌어 놓을 수 있습니다."}
+                        : "영역을 눌러 파일을 업로드 하세요."}
                     </small>
                   </label>
-
+                  {/*
                   {selectedFile && (
                     <button
                       type="button"
@@ -603,6 +562,7 @@ export default function MyFiles() {
                       선택 취소
                     </button>
                   )}
+                    */}
                 </div>
 
                 <div className="my-files-upload-details">
@@ -618,17 +578,14 @@ export default function MyFiles() {
                       >
                         <option value="">일반 제출 문서</option>
                         {requiredDocumentOptions.map((document) => (
-                          <option
-                            key={document.value}
-                            value={document.value}
-                          >
+                          <option key={document.value} value={document.value}>
                             {document.label}
                           </option>
                         ))}
                       </select>
                       <small>
-                        필수 서류 종류를 선택하면 업로드 완료 후
-                        준비 현황에 자동 반영됩니다.
+                        필수 서류 종류를 선택하면 업로드 완료 후 준비 현황에
+                        자동 반영됩니다.
                       </small>
                     </label>
 
@@ -637,9 +594,7 @@ export default function MyFiles() {
                       <input
                         type="text"
                         value={fileName}
-                        onChange={(event) =>
-                          setFileName(event.target.value)
-                        }
+                        onChange={(event) => setFileName(event.target.value)}
                         placeholder="사용자에게 표시할 파일 명칭"
                         disabled={isUploading}
                         maxLength={200}
@@ -651,9 +606,7 @@ export default function MyFiles() {
                       <input
                         type="text"
                         value={description}
-                        onChange={(event) =>
-                          setDescription(event.target.value)
-                        }
+                        onChange={(event) => setDescription(event.target.value)}
                         placeholder="예: 일본 법인 설립용 사업계획서"
                         disabled={isUploading}
                         maxLength={160}
@@ -661,9 +614,7 @@ export default function MyFiles() {
                     </label>
                   </div>
 
-                  {uploadError && (
-                    <p className="login-error">{uploadError}</p>
-                  )}
+                  {uploadError && <p className="login-error">{uploadError}</p>}
                   {uploadMessage && (
                     <p className="login-success">{uploadMessage}</p>
                   )}
@@ -702,9 +653,7 @@ export default function MyFiles() {
               </button>
             </header>
 
-            {fileError && (
-              <p className="login-error">{fileError}</p>
-            )}
+            {fileError && <p className="login-error">{fileError}</p>}
 
             {isFileListLoading ? (
               <div className="my-files-empty">
@@ -718,11 +667,8 @@ export default function MyFiles() {
               <div className="my-files-list">
                 {clientFiles.map((file) => {
                   const displayName =
-                    file.fileName ||
-                    file.originalName ||
-                    "이름 없는 파일";
-                  const originalName =
-                    file.originalName || "-";
+                    file.fileName || file.originalName || "이름 없는 파일";
+                  const originalName = file.originalName || "-";
                   const filePath = getFilePath(file);
 
                   return (
@@ -731,22 +677,15 @@ export default function MyFiles() {
                       className="my-files-item"
                     >
                       <span className="my-files-type">
-                        {getFileTypeLabel(
-                          file.fileType,
-                          originalName
-                        )}
+                        {getFileTypeLabel(file.fileType, originalName)}
                       </span>
                       <div>
                         <strong>{displayName}</strong>
                         <span>
                           {formatFileSize(file.size)} ·{" "}
-                          {formatDateTime(
-                            file.uploadedAt || file.updatedAt
-                          )}
+                          {formatDateTime(file.uploadedAt || file.updatedAt)}
                         </span>
-                        {file.description && (
-                          <small>{file.description}</small>
-                        )}
+                        {file.description && <small>{file.description}</small>}
                       </div>
                       <div className="my-files-actions">
                         <button

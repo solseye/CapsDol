@@ -27,7 +27,7 @@ const PAGE_COPY = {
       findPassword: "비밀번호 찾기",
       publicDevice: "공용 기기에서는 이용 후 반드시 로그아웃해 주세요.",
       loggingIn: "로그인 중...",
-      loginButton: "M&K에 로그인",
+      loginButton: "로그인", //M&K에 로그인
       findId: "아이디 찾기",
       needHelp: "도움이 필요하신가요?",
       expertInfo: "전문가 안내",
@@ -70,7 +70,8 @@ const PAGE_COPY = {
       consentError: "서비스 이용을 위한 계정 생성에 동의해 주세요.",
       success: "회원가입이 완료되었습니다. 로그인해 주세요.",
       signupError: "회원가입에 실패했습니다.",
-      googleCredentialError: "구글 인증 정보를 받지 못했습니다. 다시 시도해 주세요.",
+      googleCredentialError:
+        "구글 인증 정보를 받지 못했습니다. 다시 시도해 주세요.",
       googleError: "구글 계정으로 회원가입하지 못했습니다.",
     },
     chat: {
@@ -83,14 +84,16 @@ const PAGE_COPY = {
       resetMessage: "대화를 초기화했습니다. 새 질문을 입력해 주세요.",
       kicker: "AI 상담 지원",
       title: "일본 진출 상담 챗봇",
-      intro: "법인 설립, 세무, 회계, 비자, 노무 관련 질문을 먼저 정리해 보세요.",
+      intro:
+        "법인 설립, 세무, 회계, 비자, 노무 관련 질문을 먼저 정리해 보세요.",
       reset: "대화 초기화",
       conversation: "상담 대화 내용",
       generating: "답변 생성 중...",
       inputLabel: "질문 입력",
       placeholder: "일본 법인 설립, 세무, 비자, 정관 작성에 대해 질문하세요...",
       send: "전송",
-      notice: "AI 답변은 참고용이며, 최종 법률·세무 판단은 전문가와 확인해 주세요.",
+      notice:
+        "AI 답변은 참고용이며, 최종 법률·세무 판단은 전문가와 확인해 주세요.",
       faqTitle: "자주 하는 질문",
       questions: [
         "일본에 거주하지 않아도 법인을 설립할 수 있어?",
@@ -102,7 +105,8 @@ const PAGE_COPY = {
       hearingBody: "법인 설립과 상담에 필요한 기본 정보를 정리합니다.",
       hearingCta: "히어링 시트 작성하기",
       consultTitle: "전문가 상담 예약",
-      consultBody: "AI로 정리한 내용을 바탕으로 담당 전문가와 상담 일정을 조율합니다.",
+      consultBody:
+        "AI로 정리한 내용을 바탕으로 담당 전문가와 상담 일정을 조율합니다.",
       consultCta: "상담 예약하기",
       policyTitle: "답변 기준 안내",
       policyBody:
@@ -158,7 +162,8 @@ const PAGE_COPY = {
       proof2Body: "Request expert consultations and track their status.",
       trust: "An AI workflow for Japanese legal and tax consultation",
       title: "Create an account",
-      intro: "Create an account to use M&K AI consultation and expert matching.",
+      intro:
+        "Create an account to use M&K AI consultation and expert matching.",
       googleLoading: "Creating account with Google...",
       continueEmail: "Or create an account with email",
       email: "Work Email",
@@ -178,27 +183,32 @@ const PAGE_COPY = {
       consentError: "Agree to account creation to use the service.",
       success: "Your account has been created. Please log in.",
       signupError: "Account creation failed.",
-      googleCredentialError: "Google authentication was not received. Try again.",
+      googleCredentialError:
+        "Google authentication was not received. Try again.",
       googleError: "Could not create an account with Google.",
     },
     chat: {
       system:
         "You are M&K Office's consultation assistant. Reply clearly and practically in English. Do not invent laws, precedents, or facts.",
-      greeting: "Hello. I am the M&K consultation assistant. Enter your question.",
+      greeting:
+        "Hello. I am the M&K consultation assistant. Enter your question.",
       answerFallback: "A response could not be generated.",
       error: "The chatbot could not generate a response.",
       apology: "Sorry, a response cannot be generated right now.",
       resetMessage: "The conversation has been reset. Enter a new question.",
       kicker: "AI Consultation Support",
       title: "Japan Entry Consultation Chat",
-      intro: "Organize questions about incorporation, tax, accounting, visas, and labor.",
+      intro:
+        "Organize questions about incorporation, tax, accounting, visas, and labor.",
       reset: "Reset Conversation",
       conversation: "Consultation conversation",
       generating: "Generating response...",
       inputLabel: "Question input",
-      placeholder: "Ask about incorporation, tax, visas, or articles of incorporation...",
+      placeholder:
+        "Ask about incorporation, tax, visas, or articles of incorporation...",
       send: "Send",
-      notice: "AI answers are for reference. Confirm final legal and tax decisions with an expert.",
+      notice:
+        "AI answers are for reference. Confirm final legal and tax decisions with an expert.",
       faqTitle: "Frequently Asked Questions",
       questions: [
         "Can I establish a Japanese company without living in Japan?",
@@ -207,10 +217,12 @@ const PAGE_COPY = {
       ],
       next: "Next Steps",
       hearingTitle: "Complete Hearing Sheet",
-      hearingBody: "Organize the basic information needed for incorporation and consultation.",
+      hearingBody:
+        "Organize the basic information needed for incorporation and consultation.",
       hearingCta: "Complete Hearing Sheet",
       consultTitle: "Book Expert Consultation",
-      consultBody: "Arrange a consultation with an expert using information organized by AI.",
+      consultBody:
+        "Arrange a consultation with an expert using information organized by AI.",
       consultCta: "Book Consultation",
       policyTitle: "Answer Policy",
       policyBody:
@@ -286,7 +298,8 @@ const PAGE_COPY = {
       consentError: "アカウント作成に同意してください。",
       success: "会員登録が完了しました。ログインしてください。",
       signupError: "会員登録に失敗しました。",
-      googleCredentialError: "Google認証情報を取得できませんでした。再度お試しください。",
+      googleCredentialError:
+        "Google認証情報を取得できませんでした。再度お試しください。",
       googleError: "Googleアカウントで登録できませんでした。",
     },
     chat: {
@@ -304,9 +317,11 @@ const PAGE_COPY = {
       conversation: "相談内容",
       generating: "回答生成中...",
       inputLabel: "質問入力",
-      placeholder: "日本法人設立、税務、ビザ、定款作成について質問してください...",
+      placeholder:
+        "日本法人設立、税務、ビザ、定款作成について質問してください...",
       send: "送信",
-      notice: "AI回答は参考情報です。最終的な法務・税務判断は専門家にご確認ください。",
+      notice:
+        "AI回答は参考情報です。最終的な法務・税務判断は専門家にご確認ください。",
       faqTitle: "よくある質問",
       questions: [
         "日本に居住していなくても法人を設立できますか？",
@@ -318,7 +333,8 @@ const PAGE_COPY = {
       hearingBody: "法人設立と相談に必要な基本情報を整理します。",
       hearingCta: "ヒアリングシートを作成",
       consultTitle: "専門家相談予約",
-      consultBody: "AIで整理した内容をもとに担当専門家との相談日程を調整します。",
+      consultBody:
+        "AIで整理した内容をもとに担当専門家との相談日程を調整します。",
       consultCta: "相談を予約",
       policyTitle: "回答基準",
       policyBody:

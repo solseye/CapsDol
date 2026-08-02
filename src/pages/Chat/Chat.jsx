@@ -63,7 +63,6 @@ export default function Chat() {
           sources: data.sources || [],
         },
       ]);
-
     } catch (err) {
       setError(err.message || copy.error);
       setMessages((prev) => [
@@ -134,80 +133,84 @@ export default function Chat() {
           <div className="ai-chat-workspace">
             <div className="ai-chat-column">
               <section className="ai-chat-panel" aria-label={copy.conversation}>
+                <div className="ai-chat-body" ref={chatBodyRef}>
+                  {messages.map((message, index) => (
+                    <div key={index} className={`ai-msg-row ${message.type}`}>
+                      <div className="ai-bubble">
+                        <div className="ai-bubble-text">{message.text}</div>
+                      </div>
+                    </div>
+                  ))}
 
-            <div className="ai-chat-body" ref={chatBodyRef}>
-              {messages.map((message, index) => (
-                <div key={index} className={`ai-msg-row ${message.type}`}>
-                  <div className="ai-bubble">
-                    <div className="ai-bubble-text">{message.text}</div>
-                  </div>
+                  {loading && (
+                    <div className="ai-msg-row bot">
+                      <div className="ai-bubble ai-typing">
+                        {copy.generating}
+                      </div>
+                    </div>
+                  )}
                 </div>
-              ))}
 
-              {loading && (
-                <div className="ai-msg-row bot">
-                  <div className="ai-bubble ai-typing">
-                    {copy.generating}
-                  </div>
-                </div>
-              )}
-            </div>
+                <section
+                  className="ai-composer-panel"
+                  aria-label={copy.inputLabel}
+                >
+                  {error && <p className="ai-chat-error">{error}</p>}
 
-            <section className="ai-composer-panel" aria-label={copy.inputLabel}>
-              {error && <p className="ai-chat-error">{error}</p>}
+                  <form className="ai-chat-input" onSubmit={handleSubmit}>
+                    <input
+                      value={input}
+                      onChange={(event) => setInput(event.target.value)}
+                      placeholder={copy.placeholder}
+                      disabled={loading}
+                    />
 
-              <form className="ai-chat-input" onSubmit={handleSubmit}>
-                <input
-                  value={input}
-                  onChange={(event) => setInput(event.target.value)}
-                  placeholder={copy.placeholder}
-                  disabled={loading}
-                />
-
-                <button type="submit" disabled={loading || !input.trim()}>
-                  {loading ? copy.generating : copy.send} <span>→</span>
-                </button>
-              </form>
-              <p className="ai-input-notice">
-                {copy.notice}
-              </p>
-            </section>
+                    <button type="submit" disabled={loading || !input.trim()}>
+                      {loading ? copy.generating : copy.send} <span>→</span>
+                    </button>
+                  </form>
+                  <p className="ai-input-notice">{copy.notice}</p>
+                </section>
               </section>
             </div>
 
             <aside className="ai-context-panel">
-            <div className="ai-context-card">
-              <h3>{copy.faqTitle}</h3>
-              {copy.questions.map((question) => (
-                <button
-                  type="button"
-                  key={question}
-                  onClick={() => sendMessage(question)}
-                  disabled={loading}
-                >
-                  {question}
-                </button>
-              ))}
-            </div>
+              <div className="ai-context-card">
+                <h3>{copy.faqTitle}</h3>
+                {copy.questions.map((question) => (
+                  <button
+                    type="button"
+                    key={question}
+                    onClick={() => sendMessage(question)}
+                    disabled={loading}
+                  >
+                    {question}
+                  </button>
+                ))}
+              </div>
 
-            <div className="ai-next-steps">
-              <h3>{copy.next}</h3>
-              <article className="ai-next-step-card">
-                <h4>{copy.hearingTitle}</h4>
-                <p>{copy.hearingBody}</p>
-                <Link to="/hearing-sheet">{copy.hearingCta} <span>→</span></Link>
-              </article>
-              <article className="ai-next-step-card">
-                <h4>{copy.consultTitle}</h4>
-                <p>{copy.consultBody}</p>
-                <Link to="/reservation">{copy.consultCta} <span>→</span></Link>
-              </article>
-            </div>
+              <div className="ai-next-steps">
+                <h3>{copy.next}</h3>
+                <article className="ai-next-step-card">
+                  <h4>{copy.hearingTitle}</h4>
+                  <p>{copy.hearingBody}</p>
+                  <Link to="/hearing-sheet">
+                    {copy.hearingCta} <span>→</span>
+                  </Link>
+                </article>
+                <article className="ai-next-step-card">
+                  <h4>{copy.consultTitle}</h4>
+                  <p>{copy.consultBody}</p>
+                  <Link to="/reservation">
+                    {copy.consultCta} <span>→</span>
+                  </Link>
+                </article>
+              </div>
 
-            <details className="ai-answer-policy">
-              <summary>{copy.policyTitle}</summary>
-              <p>{copy.policyBody}</p>
-            </details>
+              <details className="ai-answer-policy">
+                <summary>{copy.policyTitle}</summary>
+                <p>{copy.policyBody}</p>
+              </details>
             </aside>
           </div>
         </main>

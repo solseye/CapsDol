@@ -3,10 +3,7 @@ import "../styles/auth-visily.css";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { loginUser, loginWithGoogle } from "../api/authApi";
-import {
-  getSafeReturnPath,
-  saveSession,
-} from "../utils/authSession";
+import { getSafeReturnPath, saveSession } from "../utils/authSession";
 import { getPageCopy } from "../i18n/pageCopy";
 import { getCurrentLanguage } from "../i18n/translations";
 
@@ -69,7 +66,7 @@ export default function Login() {
         setGoogleLoading(false);
       }
     },
-    [copy.googleError, copy.googleUser, location.state, navigate]
+    [copy.googleError, copy.googleUser, location.state, navigate],
   );
 
   useEffect(() => {
@@ -96,7 +93,9 @@ export default function Login() {
       });
     };
 
-    const existingScript = document.querySelector('script[src^="https://accounts.google.com/gsi/client"]');
+    const existingScript = document.querySelector(
+      'script[src^="https://accounts.google.com/gsi/client"]',
+    );
 
     if (existingScript) {
       initializeGoogleLogin();
@@ -226,7 +225,12 @@ export default function Login() {
 
           <form className="authv-form" onSubmit={handleLogin}>
             <div className="authv-field">
-              <label htmlFor="username">{copy.username}</label>
+              <div className="authv-label-row">
+                <label htmlFor="password">{copy.username}</label>
+                <button type="button" onClick={() => navigate("/lostpw")}>
+                  {copy.findId}
+                </button>
+              </div>
               <input
                 id="username"
                 type="text"
@@ -266,14 +270,16 @@ export default function Login() {
             {error && <p className="authv-error">{error}</p>}
 
             <button type="submit" className="authv-submit" disabled={loading}>
-              {loading ? copy.loggingIn : copy.loginButton} <span>→</span>
+              {loading ? copy.loggingIn : copy.loginButton} {/*<span>→</span>*/}
             </button>
           </form>
 
           <div className="authv-help">
+            {/*
             <button type="button" onClick={() => navigate("/lostid")}>
               {copy.findId}
             </button>
+            */}
             <span>{copy.needHelp}</span>
             <button type="button" onClick={() => navigate("/#experts")}>
               {copy.expertInfo}

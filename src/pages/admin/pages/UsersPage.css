@@ -108,7 +108,9 @@
   font-size: 13px;
   outline: none;
   padding: 0 12px 0 38px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 .usr-search-input:focus {
   border-color: #2563eb;
@@ -131,7 +133,9 @@
   font-size: 13px;
   font-weight: 700;
   padding: 0 14px;
-  transition: background-color 0.2s ease, opacity 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    opacity 0.2s ease;
 }
 .usr-refresh-btn:hover:not(:disabled) {
   background: #1d4ed8;
@@ -272,7 +276,10 @@
   font-size: 13px;
   font-weight: 700;
   padding: 0 8px;
-  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
 }
 .usr-page-btn:hover:not(:disabled) {
   background: #f1f5f9;
@@ -302,6 +309,21 @@
   }
   .usr-table {
     min-width: 780px;
+  }
+}
+@media (max-width: 768px) {
+  .usr-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .usr-table {
+    min-width: 500px;
+  }
+
+  .usr-table td {
+    word-break: break-all;
   }
 }
 @media (max-width: 520px) {

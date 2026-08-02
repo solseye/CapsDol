@@ -1063,7 +1063,10 @@ html[data-lang="ja"] .lang-option:last-child {
   font-size: 20px;
   line-height: 1;
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .hs-remove-button:hover,
@@ -1253,7 +1256,9 @@ html[data-lang="ja"] .lang-option:last-child {
   opacity: 0;
   pointer-events: none;
   transform: translateY(-4px);
-  transition: opacity 160ms ease, transform 160ms ease;
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
 }
 
 .site-header .nav-dropdown-menu.is-open {

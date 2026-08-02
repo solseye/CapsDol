@@ -1,4 +1,10 @@
-import React, { useState, useRef, useEffect, useMemo, useCallback } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useMemo,
+  useCallback,
+} from "react";
 import "./adminCalendarPage.css";
 import {
   getAdminReservationList,
@@ -37,7 +43,9 @@ const FIELD_FILTERS = [
 ];
 
 function timeToMinutes(time) {
-  const [hour, minute] = String(time || "00:00").split(":").map(Number);
+  const [hour, minute] = String(time || "00:00")
+    .split(":")
+    .map(Number);
   return hour * 60 + minute;
 }
 
@@ -246,60 +254,56 @@ export default function AdminCalendarPage() {
   }, [applyListData]);
 
   // 월 이동이나 새로고침 시 현재 월 주변 범위만 다시 조회합니다.
-  const fetchAdminCalendarByCurrentMonth = useCallback(async (force = false) => {
-    try {
-      const baseDate = `${currentDate.getFullYear()}-${String(
-        currentDate.getMonth() + 1,
-      ).padStart(2, "0")}-01`;
+  const fetchAdminCalendarByCurrentMonth = useCallback(
+    async (force = false) => {
+      try {
+        const baseDate = `${currentDate.getFullYear()}-${String(
+          currentDate.getMonth() + 1,
+        ).padStart(2, "0")}-01`;
 
-      const currentMonth = new Date(`${baseDate}T00:00:00`);
+        const currentMonth = new Date(`${baseDate}T00:00:00`);
 
-      if (
-        !force &&
-        isDateInLoadedRange(currentMonth, loadedRangeRef.current)
-      ) {
-        return;
+        if (
+          !force &&
+          isDateInLoadedRange(currentMonth, loadedRangeRef.current)
+        ) {
+          return;
+        }
+
+        setLoading(true);
+
+        const data = await getAdminReservationListByRange({
+          baseDate,
+          previousMonthCount: 2,
+          nextMonthCount: 4,
+        });
+
+        applyListData(data);
+
+        const base = new Date(`${baseDate}T00:00:00`);
+
+        const start = new Date(base.getFullYear(), base.getMonth() - 2, 1);
+
+        const end = new Date(base.getFullYear(), base.getMonth() + 5, 0);
+
+        loadedRangeRef.current = {
+          start: `${start.getFullYear()}-${String(
+            start.getMonth() + 1,
+          ).padStart(2, "0")}-01`,
+          end: `${end.getFullYear()}-${String(end.getMonth() + 1).padStart(
+            2,
+            "0",
+          )}-${String(end.getDate()).padStart(2, "0")}`,
+        };
+      } catch (err) {
+        console.error(err);
+        alert("일정을 새로고침하지 못했습니다.");
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(true);
-
-      const data = await getAdminReservationListByRange({
-        baseDate,
-        previousMonthCount: 2,
-        nextMonthCount: 4,
-      });
-
-      applyListData(data);
-
-      const base = new Date(`${baseDate}T00:00:00`);
-
-      const start = new Date(
-        base.getFullYear(),
-        base.getMonth() - 2,
-        1,
-      );
-
-      const end = new Date(
-        base.getFullYear(),
-        base.getMonth() + 5,
-        0,
-      );
-
-      loadedRangeRef.current = {
-        start: `${start.getFullYear()}-${String(
-          start.getMonth() + 1,
-        ).padStart(2, "0")}-01`,
-        end: `${end.getFullYear()}-${String(
-          end.getMonth() + 1,
-        ).padStart(2, "0")}-${String(end.getDate()).padStart(2, "0")}`,
-      };
-    } catch (err) {
-      console.error(err);
-      alert("일정을 새로고침하지 못했습니다.");
-    } finally {
-      setLoading(false);
-    }
-  }, [applyListData, currentDate]);
+    },
+    [applyListData, currentDate],
+  );
 
   useEffect(() => {
     if (!isMounted.current) {
@@ -530,7 +534,12 @@ export default function AdminCalendarPage() {
     clearDragSelection();
     setSuppressNextClick(true);
     window.setTimeout(() => setSuppressNextClick(false), 0);
-  }, [clearDragSelection, dragSelection, fetchAdminCalendarByCurrentMonth, times]);
+  }, [
+    clearDragSelection,
+    dragSelection,
+    fetchAdminCalendarByCurrentMonth,
+    times,
+  ]);
 
   useEffect(() => {
     const handleWindowMouseUp = () => finishDragSelection();
@@ -691,7 +700,8 @@ export default function AdminCalendarPage() {
         const previous = userMap.get(key);
         const color = getReservationColor(key);
         const event = events.find(
-          (item) => item.targetId === (reservation.reservation_id || reservation.id),
+          (item) =>
+            item.targetId === (reservation.reservation_id || reservation.id),
         );
 
         userMap.set(key, {
@@ -733,7 +743,8 @@ export default function AdminCalendarPage() {
             range,
             event: events.find(
               (item) =>
-                item.targetId === (reservation.reservation_id || reservation.id),
+                item.targetId ===
+                (reservation.reservation_id || reservation.id),
             ),
           });
         });
@@ -1033,7 +1044,11 @@ export default function AdminCalendarPage() {
                       const isApprovalRangeable =
                         dragSelection?.mode === "approve" &&
                         dragSelection.date === dateStr &&
-                        canApproveSlot(dragSelection.reservation, dateStr, time);
+                        canApproveSlot(
+                          dragSelection.reservation,
+                          dateStr,
+                          time,
+                        );
                       const isApprovalFocusAllowed =
                         approvalFocus &&
                         canApproveSlot(
@@ -1080,10 +1095,20 @@ export default function AdminCalendarPage() {
                                   isPast,
                                   slotEvents,
                                 )
-                              : startBlockDrag(dateStr, time, isPast, slotEvents)
+                              : startBlockDrag(
+                                  dateStr,
+                                  time,
+                                  isPast,
+                                  slotEvents,
+                                )
                           }
                           onMouseEnter={() =>
-                            updateDragSelection(dateStr, time, isPast, slotEvents)
+                            updateDragSelection(
+                              dateStr,
+                              time,
+                              isPast,
+                              slotEvents,
+                            )
                           }
                           onClick={() =>
                             handleSlotClick(dateStr, time, slotEvents, isPast)
@@ -1202,11 +1227,11 @@ export default function AdminCalendarPage() {
               <>
                 <h3 className="modal-title">
                   {selectedSlot.modalTitle ||
-                  (selectedSlot.allEvents.length > 1
-                    ? "해당 시간 일정 목록"
-                    : selectedSlot.allEvents[0].type === "block"
-                      ? "차단 일정 상세"
-                      : "예약 상세 정보")}
+                    (selectedSlot.allEvents.length > 1
+                      ? "해당 시간 일정 목록"
+                      : selectedSlot.allEvents[0].type === "block"
+                        ? "차단 일정 상세"
+                        : "예약 상세 정보")}
                 </h3>
                 <div className="modal-content-scroll">
                   {selectedSlot.allEvents.map((evt, idx) => (
@@ -1230,6 +1255,16 @@ export default function AdminCalendarPage() {
                       <p>
                         <strong>내용:</strong> {evt.title}
                       </p>
+                      {evt.type !== "block" && (
+                        <p>
+                          <strong>이메일:</strong>{" "}
+                          {evt.email ||
+                            evt.user_email ||
+                            evt.user?.email ||
+                            evt.applicant_email ||
+                            "-"}
+                        </p>
+                      )}
                       {evt.reason && (
                         <p>
                           <strong>사유:</strong> {evt.reason}

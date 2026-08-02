@@ -73,7 +73,6 @@ section .reservation-time,
 
 .logo,
 .rec-num,
-.flow-num,
 .faq-badge,
 .hearing-icon {
   animation: floatSoft 5s ease-in-out infinite;

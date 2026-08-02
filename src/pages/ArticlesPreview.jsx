@@ -33,7 +33,9 @@ function ReviewRow({ label, value }) {
 
 function ReviewSection({ number, title, children, wide = false }) {
   return (
-    <section className={`articles-review-section${wide ? " articles-review-section--wide" : ""}`}>
+    <section
+      className={`articles-review-section${wide ? " articles-review-section--wide" : ""}`}
+    >
       <div className="articles-review-section-heading">
         <span aria-hidden="true">{number}</span>
         <h2>{title}</h2>
@@ -48,7 +50,8 @@ function DateRange({ title, value }) {
     <div className="articles-review-date-range">
       <p>{title}</p>
       <strong>
-        {displayValue(value?.start)} <span aria-hidden="true">-</span> {displayValue(value?.end)}
+        {displayValue(value?.start)} <span aria-hidden="true">-</span>{" "}
+        {displayValue(value?.end)}
       </strong>
     </div>
   );
@@ -69,8 +72,7 @@ export default function ArticlesPreview() {
   const location = useLocation();
   const navigate = useNavigate();
   const [fallbackDraft] = useState(loadHearingSheetDraft);
-  const source =
-    location.state?.articlesData?.source || fallbackDraft?.source;
+  const source = location.state?.articlesData?.source || fallbackDraft?.source;
   const isLoggedIn = Boolean(localStorage.getItem("accessToken"));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
@@ -89,7 +91,7 @@ export default function ArticlesPreview() {
       const actions = submitActionsRef.current;
       setShowScrollGuide(
         Boolean(actions) &&
-          actions.getBoundingClientRect().top > window.innerHeight - 90
+          actions.getBoundingClientRect().top > window.innerHeight - 90,
       );
     };
 
@@ -108,7 +110,9 @@ export default function ArticlesPreview() {
     if (!source || isSubmitting || submittedResult) return;
 
     if (!isLoggedIn) {
-      setSubmitError("전송하려면 로그인이 필요합니다. 작성 내용은 브라우저에 안전하게 보관됩니다.");
+      setSubmitError(
+        "전송하려면 로그인이 필요합니다. 작성 내용은 브라우저에 안전하게 보관됩니다.",
+      );
       navigate("/login", {
         state: { from: "/articles-result" },
       });
@@ -126,7 +130,7 @@ export default function ArticlesPreview() {
     } catch (error) {
       console.error("히어링 시트 전송 실패:", error);
       setSubmitError(
-        error.message || "히어링 시트 전송 중 오류가 발생했습니다."
+        error.message || "히어링 시트 전송 중 오류가 발생했습니다.",
       );
     } finally {
       setIsSubmitting(false);
@@ -141,7 +145,9 @@ export default function ArticlesPreview() {
           <div className="articles-review-container">
             <p className="articles-review-eyebrow">입력 내용 확인</p>
             <h1>확인할 히어링 시트가 없습니다.</h1>
-            <p>히어링 시트를 작성한 뒤 입력한 내용을 다시 확인할 수 있습니다.</p>
+            <p>
+              히어링 시트를 작성한 뒤 입력한 내용을 다시 확인할 수 있습니다.
+            </p>
             <Link className="articles-review-primary-link" to="/hearing-sheet">
               히어링 시트 작성하기
             </Link>
@@ -155,10 +161,10 @@ export default function ArticlesPreview() {
     .map((item) => (typeof item === "string" ? item : item?.content))
     .filter(hasValue);
   const shareholders = collectionValues(source.Founder).filter((item) =>
-    [item?.name, item?.address, item?.investmentAmount].some(hasValue)
+    [item?.name, item?.address, item?.investmentAmount].some(hasValue),
   );
   const directors = collectionValues(source.Director).filter((item) =>
-    [item?.name, item?.address, item?.romanizedName].some(hasValue)
+    [item?.name, item?.address, item?.romanizedName].some(hasValue),
   );
   const completedCount = [
     source.companyName,
@@ -194,7 +200,9 @@ export default function ArticlesPreview() {
                 히어링 시트로 돌아가 변경할 수 있습니다.
               </p>
             </div>
-            <p className="articles-review-count">입력 항목 {completedCount}개</p>
+            <p className="articles-review-count">
+              입력 항목 {completedCount}개
+            </p>
           </div>
 
           <div className="articles-review-grid">
@@ -202,7 +210,10 @@ export default function ArticlesPreview() {
               <dl>
                 <ReviewRow label="상호" value={source.companyName} />
                 <ReviewRow label="영문 상호" value={source.companyNameEn} />
-                <ReviewRow label="본점 소재지" value={source.headOfficeAddress} />
+                <ReviewRow
+                  label="본점 소재지"
+                  value={source.headOfficeAddress}
+                />
               </dl>
             </ReviewSection>
 
@@ -219,17 +230,32 @@ export default function ArticlesPreview() {
                   <strong>미입력</strong>
                 )}
               </div>
-              <DateRange title="최초 사업연도" value={source.firstBusinessYear} />
+              <DateRange
+                title="최초 사업연도"
+                value={source.firstBusinessYear}
+              />
               <DateRange title="매년 사업연도" value={source.businessYear} />
             </ReviewSection>
 
             <ReviewSection number="03" title="금융·자본 정보">
               <dl>
                 <ReviewRow label="자본금" value={source.capital} />
-                <ReviewRow label="납입 은행" value={source.capitalPaymentBank?.bankName} />
-                <ReviewRow label="지점명" value={source.capitalPaymentBank?.branchName} />
-                <ReviewRow label="발행가능주식총수" value={source.totalSharesAuthorized} />
-                <ReviewRow label="설립 시 발행주식수" value={source.initialIssuedShares} />
+                <ReviewRow
+                  label="납입 은행"
+                  value={source.capitalPaymentBank?.bankName}
+                />
+                <ReviewRow
+                  label="지점명"
+                  value={source.capitalPaymentBank?.branchName}
+                />
+                <ReviewRow
+                  label="발행가능주식총수"
+                  value={source.totalSharesAuthorized}
+                />
+                <ReviewRow
+                  label="설립 시 발행주식수"
+                  value={source.initialIssuedShares}
+                />
               </dl>
             </ReviewSection>
 
@@ -237,41 +263,60 @@ export default function ArticlesPreview() {
               {shareholders.length > 0 ? (
                 <div className="articles-review-people-list">
                   {shareholders.map((participant, index) => (
-                    <article key={`${participant.name}-${index}`} className="articles-review-person">
+                    <article
+                      key={`${participant.name}-${index}`}
+                      className="articles-review-person"
+                    >
                       <h3>{participantTitle(participant, index)}</h3>
                       <dl>
                         <ReviewRow label="이름" value={participant.name} />
                         <ReviewRow label="주소" value={participant.address} />
-                        <ReviewRow label="출자금액" value={participant.investmentAmount} />
+                        <ReviewRow
+                          label="출자금액"
+                          value={participant.investmentAmount}
+                        />
                       </dl>
                     </article>
                   ))}
                 </div>
               ) : (
-                <p className="articles-review-empty-value">입력한 주주 정보가 없습니다.</p>
+                <p className="articles-review-empty-value">
+                  입력한 주주 정보가 없습니다.
+                </p>
               )}
             </ReviewSection>
 
             <ReviewSection number="05" title="임원 정보" wide>
               <div className="articles-review-executive-summary">
-                <ReviewRow label="대표이사" value={source.representativeDirector} />
+                <ReviewRow
+                  label="대표이사"
+                  value={source.representativeDirector}
+                />
                 <ReviewRow label="이사 임기" value={source.directorTerm} />
               </div>
               {directors.length > 0 ? (
                 <div className="articles-review-director-grid">
                   {directors.map((director, index) => (
-                    <article key={`${director.name}-${index}`} className="articles-review-person">
+                    <article
+                      key={`${director.name}-${index}`}
+                      className="articles-review-person"
+                    >
                       <h3>이사 {index + 1}</h3>
                       <dl>
                         <ReviewRow label="이름" value={director.name} />
-                        <ReviewRow label="로마자 성명" value={director.romanizedName} />
+                        <ReviewRow
+                          label="로마자 성명"
+                          value={director.romanizedName}
+                        />
                         <ReviewRow label="주소" value={director.address} />
                       </dl>
                     </article>
                   ))}
                 </div>
               ) : (
-                <p className="articles-review-empty-value">입력한 이사 정보가 없습니다.</p>
+                <p className="articles-review-empty-value">
+                  입력한 이사 정보가 없습니다.
+                </p>
               )}
             </ReviewSection>
           </div>
@@ -315,7 +360,7 @@ export default function ArticlesPreview() {
                 </span>
               </label>
               <p className="articles-required-documents-next">
-                아래로 내려가 <strong>전송하기</strong>를 눌러 완료해 주세요.
+                <strong>전송하기</strong>를 눌러 완료해 주세요.
                 <span aria-hidden="true">↓</span>
               </p>
             </section>
@@ -333,8 +378,8 @@ export default function ArticlesPreview() {
                 <p className="articles-review-eyebrow">전송 완료</p>
                 <h2>히어링 시트가 정상적으로 전송되었습니다.</h2>
                 <p>
-                  입력한 내용을 바탕으로 정관 초안이 생성되었습니다. 이어서 상담을
-                  예약하거나 홈으로 이동할 수 있습니다.
+                  입력한 내용을 바탕으로 정관 초안이 생성되었습니다. 이어서
+                  상담을 예약하거나 홈으로 이동할 수 있습니다.
                 </p>
               </div>
               <div className="articles-review-complete-actions">
@@ -347,14 +392,20 @@ export default function ArticlesPreview() {
                 >
                   내 파일 관리
                 </Link>
-                <Link className="articles-review-primary-link" to="/reservation">
+                <Link
+                  className="articles-review-primary-link"
+                  to="/reservation"
+                >
                   예약하기
                 </Link>
               </div>
             </section>
           ) : (
             <div className="articles-review-actions" ref={submitActionsRef}>
-              <Link className="articles-review-secondary-link" to="/hearing-sheet">
+              <Link
+                className="articles-review-secondary-link"
+                to="/hearing-sheet"
+              >
                 입력 내용 수정
               </Link>
               <button

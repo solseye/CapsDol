@@ -25,38 +25,46 @@ export default function HearingSheet() {
   const [storedDraft] = useState(loadHearingSheetDraft);
   const initialSource = storedDraft?.source || {};
 
-  const [companyName, setCompanyName] = useState(initialSource.companyName || "");
-  const [companyNameEn, setCompanyNameEn] = useState(initialSource.companyNameEn || "");
-  const [headOfficeAddress, setHeadOfficeAddress] = useState(initialSource.headOfficeAddress || "");
+  const [companyName, setCompanyName] = useState(
+    initialSource.companyName || "",
+  );
+  const [companyNameEn, setCompanyNameEn] = useState(
+    initialSource.companyNameEn || "",
+  );
+  const [headOfficeAddress, setHeadOfficeAddress] = useState(
+    initialSource.headOfficeAddress || "",
+  );
   const [capital, setCapital] = useState(initialSource.capital || "");
   const [totalSharesAuthorized, setTotalSharesAuthorized] = useState(
-    initialSource.totalSharesAuthorized || ""
+    initialSource.totalSharesAuthorized || "",
   );
   const [initialIssuedShares, setInitialIssuedShares] = useState(
-    initialSource.initialIssuedShares || ""
+    initialSource.initialIssuedShares || "",
   );
   const [bankName, setBankName] = useState(
-    initialSource.capitalPaymentBank?.bankName || ""
+    initialSource.capitalPaymentBank?.bankName || "",
   );
   const [branchName, setBranchName] = useState(
-    initialSource.capitalPaymentBank?.branchName || ""
+    initialSource.capitalPaymentBank?.branchName || "",
   );
   const [businessYearStart, setBusinessYearStart] = useState(
-    initialSource.businessYear?.start || ""
+    initialSource.businessYear?.start || "",
   );
   const [businessYearEnd, setBusinessYearEnd] = useState(
-    initialSource.businessYear?.end || ""
+    initialSource.businessYear?.end || "",
   );
   const [firstBusinessYearStart, setFirstBusinessYearStart] = useState(
-    initialSource.firstBusinessYear?.start || ""
+    initialSource.firstBusinessYear?.start || "",
   );
   const [firstBusinessYearEnd, setFirstBusinessYearEnd] = useState(
-    initialSource.firstBusinessYear?.end || ""
+    initialSource.firstBusinessYear?.end || "",
   );
   const [representativeDirector, setRepresentativeDirector] = useState(
-    initialSource.representativeDirector || ""
+    initialSource.representativeDirector || "",
   );
-  const [directorTerm, setDirectorTerm] = useState(initialSource.directorTerm || "");
+  const [directorTerm, setDirectorTerm] = useState(
+    initialSource.directorTerm || "",
+  );
   const [currentStep, setCurrentStep] = useState(storedDraft?.currentStep || 0);
   const [fieldErrors, setFieldErrors] = useState({});
   const [validationIssues, setValidationIssues] = useState([]);
@@ -64,10 +72,12 @@ export default function HearingSheet() {
   const isLoggedIn = Boolean(localStorage.getItem("accessToken"));
 
   const [purposes, setPurposes] = useState(() =>
-    collectionToArray(initialSource.Purpose, [{ content: "" }])
+    collectionToArray(initialSource.Purpose, [{ content: "" }]),
   );
 
   const [submitError, setSubmitError] = useState("");
+  // 👇 이 스위치(상태 변수)를 새로 추가합니다.
+  const [isValidationActive, setIsValidationActive] = useState(false);
 
   const [founders, setFounders] = useState(() =>
     collectionToArray(initialSource.Founder, [
@@ -78,7 +88,7 @@ export default function HearingSheet() {
         isFounder: false,
         isInvestor: false,
       },
-    ])
+    ]),
   );
 
   const [directors, setDirectors] = useState(() =>
@@ -88,7 +98,7 @@ export default function HearingSheet() {
         name: "",
         romanizedName: "",
       },
-    ])
+    ]),
   );
 
   const addPurpose = () => {
@@ -100,7 +110,7 @@ export default function HearingSheet() {
   // 추가한 사업 목적을 제출 전에 개별적으로 제거할 수 있도록 한다.
   const removePurpose = (indexToRemove) => {
     setPurposes((currentPurposes) =>
-      currentPurposes.filter((_, index) => index !== indexToRemove)
+      currentPurposes.filter((_, index) => index !== indexToRemove),
     );
   };
 
@@ -122,7 +132,7 @@ export default function HearingSheet() {
   // 추가한 발기인 입력 묶음을 제출 전에 개별적으로 제거할 수 있도록 한다.
   const removeFounder = (indexToRemove) => {
     setFounders((currentFounders) =>
-      currentFounders.filter((_, index) => index !== indexToRemove)
+      currentFounders.filter((_, index) => index !== indexToRemove),
     );
   };
 
@@ -137,12 +147,13 @@ export default function HearingSheet() {
       },
     ]);
     focusField(`directors.${nextIndex}.name`);
+    setIsValidationActive(true);
   };
 
   // 추가한 이사 입력 묶음을 제출 전에 개별적으로 제거할 수 있도록 한다.
   const removeDirector = (indexToRemove) => {
     setDirectors((currentDirectors) =>
-      currentDirectors.filter((_, index) => index !== indexToRemove)
+      currentDirectors.filter((_, index) => index !== indexToRemove),
     );
   };
 
@@ -221,7 +232,7 @@ export default function HearingSheet() {
       purposes,
       representativeDirector,
       totalSharesAuthorized,
-    ]
+    ],
   );
 
   const formatList = (items, formatter) => {
@@ -231,7 +242,7 @@ export default function HearingSheet() {
   const buildArticlesContent = (data) => {
     const purposeText = formatList(
       Object.values(data.Purpose),
-      (purpose, index) => `  ${index + 1}. ${purpose.content || "미입력"}`
+      (purpose, index) => `  ${index + 1}. ${purpose.content || "미입력"}`,
     );
 
     const founderText = formatList(
@@ -239,7 +250,7 @@ export default function HearingSheet() {
       (founder, index) =>
         `  ${index + 1}. 주소: ${founder.address || "미입력"} / 성명: ${
           founder.name || "미입력"
-        } / 출자금액: ${founder.investmentAmount || "미입력"}`
+        } / 출자금액: ${founder.investmentAmount || "미입력"}`,
     );
 
     const directorText = formatList(
@@ -247,7 +258,7 @@ export default function HearingSheet() {
       (director, index) =>
         `  ${index + 1}. 주소: ${director.address || "미입력"} / 성명: ${
           director.name || "미입력"
-        } / 로마자 성명: ${director.romanizedName || "미입력"}`
+        } / 로마자 성명: ${director.romanizedName || "미입력"}`,
     );
 
     return `정관 초안
@@ -319,12 +330,14 @@ ${directorText}
       }`,
     }));
 
-    const directorsList = Object.values(data.Director).map((director, index) => ({
-      label: `이사 ${index + 1}`,
-      value: `${director.name || "미입력"} (${director.romanizedName || "미입력"}) / ${
-        director.address || "미입력"
-      }`,
-    }));
+    const directorsList = Object.values(data.Director).map(
+      (director, index) => ({
+        label: `이사 ${index + 1}`,
+        value: `${director.name || "미입력"} (${director.romanizedName || "미입력"}) / ${
+          director.address || "미입력"
+        }`,
+      }),
+    );
 
     return [
       {
@@ -349,8 +362,14 @@ ${directorText}
         title: "제4조 (자본금 납입 은행)",
         body: "자본금 납입 은행은 다음과 같이 정한다.",
         highlights: [
-          { label: "은행명", value: data.capitalPaymentBank.bankName || "미입력" },
-          { label: "지점명", value: data.capitalPaymentBank.branchName || "미입력" },
+          {
+            label: "은행명",
+            value: data.capitalPaymentBank.bankName || "미입력",
+          },
+          {
+            label: "지점명",
+            value: data.capitalPaymentBank.branchName || "미입력",
+          },
         ],
       },
       {
@@ -495,59 +514,85 @@ ${directorText}
 
     addMissing(!companyName.trim(), "상호", 0, "companyName");
     addMissing(!companyNameEn.trim(), "영문 상호", 0, "companyNameEn");
-    addMissing(!headOfficeAddress.trim(), "본점 소재지", 0, "headOfficeAddress");
+    addMissing(
+      !headOfficeAddress.trim(),
+      "본점 소재지",
+      0,
+      "headOfficeAddress",
+    );
 
     purposes.forEach((purpose, index) => {
       addMissing(
         !purpose.content.trim(),
         `사업 목적 ${index + 1}`,
         1,
-        `purposes.${index}.content`
+        `purposes.${index}.content`,
       );
     });
-    addMissing(
-      !firstBusinessYearStart.trim(),
-      "최초 사업연도 시작일",
-      1,
-      "firstBusinessYearStart"
-    );
-    addMissing(!firstBusinessYearEnd.trim(), "최초 사업연도 종료일", 1, "firstBusinessYearEnd");
-    addMissing(!businessYearStart.trim(), "사업연도 시작일", 1, "businessYearStart");
-    addMissing(!businessYearEnd.trim(), "사업연도 종료일", 1, "businessYearEnd");
 
     addMissing(!bankName.trim(), "은행명", 2, "bankName");
     addMissing(!branchName.trim(), "지점명", 2, "branchName");
     addMissing(!capital.trim(), "자본금", 2, "capital");
-    addMissing(!totalSharesAuthorized.trim(), "발행가능주식총수", 2, "totalSharesAuthorized");
-    addMissing(!initialIssuedShares.trim(), "설립 시 발행주식수", 2, "initialIssuedShares");
+    addMissing(
+      !totalSharesAuthorized.trim(),
+      "발행가능주식총수",
+      2,
+      "totalSharesAuthorized",
+    );
+    addMissing(
+      !initialIssuedShares.trim(),
+      "설립 시 발행주식수",
+      2,
+      "initialIssuedShares",
+    );
 
     founders.forEach((founder, index) => {
       const founderTitle = getFounderCardTitle(founder, index).title;
-      addMissing(!founder.address.trim(), `${founderTitle} 주소`, 3, `founders.${index}.address`);
-      addMissing(!founder.name.trim(), `${founderTitle} 이름`, 3, `founders.${index}.name`);
+      addMissing(
+        !founder.address.trim(),
+        `${founderTitle} 주소`,
+        3,
+        `founders.${index}.address`,
+      );
+      addMissing(
+        !founder.name.trim(),
+        `${founderTitle} 이름`,
+        3,
+        `founders.${index}.name`,
+      );
       addMissing(
         !founder.investmentAmount.trim(),
         `${founderTitle} 출자금액`,
         3,
-        `founders.${index}.investmentAmount`
+        `founders.${index}.investmentAmount`,
       );
       addMissing(
         !founder.isFounder && !founder.isInvestor,
         `${founderTitle} 역할`,
         3,
-        `founders.${index}.role`
+        `founders.${index}.role`,
       );
     });
 
     directors.forEach((director, index) => {
       const title = index === 0 ? "대표이사" : `이사 ${index + 1}`;
-      addMissing(!director.address.trim(), `${title} 주소`, 4, `directors.${index}.address`);
-      addMissing(!director.name.trim(), `${title} 이름`, 4, `directors.${index}.name`);
+      addMissing(
+        !director.address.trim(),
+        `${title} 주소`,
+        4,
+        `directors.${index}.address`,
+      );
+      addMissing(
+        !director.name.trim(),
+        `${title} 이름`,
+        4,
+        `directors.${index}.name`,
+      );
       addMissing(
         !director.romanizedName.trim(),
         `${title} 로마자 성명`,
         4,
-        `directors.${index}.romanizedName`
+        `directors.${index}.romanizedName`,
       );
     });
 
@@ -559,7 +604,7 @@ ${directorText}
   const getValidationErrors = (step = null) => {
     const errors = {};
     const missingFields = getMissingRequiredFields().filter(
-      (field) => step === null || field.step === step
+      (field) => step === null || field.step === step,
     );
 
     missingFields.forEach((field) => {
@@ -582,11 +627,14 @@ ${directorText}
   const getValidationIssues = (step = null) => {
     const errors = getValidationErrors(step);
     const missingFields = getMissingRequiredFields().filter(
-      (field) => step === null || field.step === step
+      (field) => step === null || field.step === step,
     );
     const issues = missingFields.filter((field) => errors[field.key]);
 
-    if (errors.initialIssuedShares && !issues.some((issue) => issue.key === "initialIssuedShares")) {
+    if (
+      errors.initialIssuedShares &&
+      !issues.some((issue) => issue.key === "initialIssuedShares")
+    ) {
       issues.push({
         label: "설립 시 발행주식수",
         step: 2,
@@ -611,6 +659,7 @@ ${directorText}
     const { errors, issues: invalidFields } = getValidationIssues();
 
     if (invalidFields.length > 0) {
+      setIsValidationActive(true);
       setFieldErrors(errors);
       setValidationIssues(invalidFields);
       setSubmitError("입력하지 않았거나 확인이 필요한 항목이 있습니다.");
@@ -646,10 +695,47 @@ ${directorText}
   }));
 
   const safeCurrentStep = Math.min(currentStep, steps.length - 1);
+  // 실시간 에러 감시 로직
+  useEffect(() => {
+    if (isValidationActive) {
+      const isFinalStep = safeCurrentStep === steps.length - 1;
+      const { errors, issues } = getValidationIssues(
+        isFinalStep ? null : safeCurrentStep,
+      );
+
+      setFieldErrors(errors);
+      setValidationIssues(isFinalStep ? issues : []);
+
+      if (issues.length > 0) {
+        setSubmitError("입력하지 않았거나 확인이 필요한 항목이 있습니다.");
+      } else {
+        setSubmitError("");
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    companyName,
+    companyNameEn,
+    headOfficeAddress,
+    capital,
+    totalSharesAuthorized,
+    initialIssuedShares,
+    bankName,
+    branchName,
+    representativeDirector,
+    directorTerm,
+    purposes,
+    founders,
+    directors,
+    safeCurrentStep,
+    isValidationActive,
+  ]);
   const currentStepData = steps[safeCurrentStep] || steps[steps.length - 1];
   const isFinalInputStep = currentStepData.id === "officers";
   const progress = Math.round(((safeCurrentStep + 1) / steps.length) * 100);
-  const filledPurposes = purposes.filter((purpose) => purpose.content.trim()).length;
+  const filledPurposes = purposes.filter((purpose) =>
+    purpose.content.trim(),
+  ).length;
   const filledFounders = founders.filter(
     (founder) =>
       founder.name.trim() ||
@@ -672,10 +758,6 @@ ${directorText}
       initialIssuedShares,
       bankName,
       branchName,
-      businessYearStart,
-      businessYearEnd,
-      firstBusinessYearStart,
-      firstBusinessYearEnd,
       representativeDirector,
       directorTerm,
     ].filter((value) => value.trim()).length +
@@ -688,9 +770,11 @@ ${directorText}
   };
 
   const goNextStep = () => {
-    const { errors, issues: invalidFields } = getValidationIssues(safeCurrentStep);
+    const { errors, issues: invalidFields } =
+      getValidationIssues(safeCurrentStep);
 
     if (invalidFields.length > 0) {
+      setIsValidationActive(true);
       setFieldErrors((current) => ({ ...current, ...errors }));
       setValidationIssues([]);
       setSubmitError(ui.currentRequired);
@@ -698,6 +782,7 @@ ${directorText}
       return;
     }
 
+    setIsValidationActive(false);
     setSubmitError("");
     setValidationIssues([]);
     setCurrentStep((step) => Math.min(step + 1, steps.length - 1));
@@ -706,6 +791,7 @@ ${directorText}
   const goToStep = (stepIndex) => {
     setSubmitError("");
     setValidationIssues([]);
+    setIsValidationActive(false);
     setCurrentStep(stepIndex);
   };
 
@@ -791,7 +877,10 @@ ${directorText}
         <section className="hsv-form-card">
           <div className="hsv-card-head">
             <div>
-              <h2><span className="hsv-section-number">01</span>{ui.sectionCompany}</h2>
+              <h2>
+                <span className="hsv-section-number">01</span>
+                {ui.sectionCompany}
+              </h2>
             </div>
           </div>
 
@@ -830,9 +919,16 @@ ${directorText}
         <section className="hsv-form-card">
           <div className="hsv-card-head">
             <div>
-              <h2><span className="hsv-section-number">02</span>{ui.sectionBusiness}</h2>
+              <h2>
+                <span className="hsv-section-number">02</span>
+                {ui.sectionBusiness}
+              </h2>
             </div>
-            <button type="button" className="hsv-small-btn" onClick={addPurpose}>
+            <button
+              type="button"
+              className="hsv-small-btn"
+              onClick={addPurpose}
+            >
               + 추가
             </button>
           </div>
@@ -864,54 +960,6 @@ ${directorText}
               </div>
             ))}
           </div>
-
-          <div className="hsv-subsection-head">
-            <h3>{ui.fiscalYear}</h3>
-          </div>
-          <div className="hsv-fiscal-year-grid">
-            <section className="hsv-fiscal-year-block" aria-labelledby="first-fiscal-year-title">
-              <h3 id="first-fiscal-year-title">{ui.firstFiscal}</h3>
-              <div className="hsv-grid2">
-                {renderTextInput({
-                  fieldKey: "firstBusinessYearStart",
-                  label: ui.start,
-                  value: firstBusinessYearStart,
-                  onChange: updateFirstBusinessYearStart,
-                  placeholder: t("hearing.firstBusinessYearStartPlaceholder"),
-                  type: "date",
-                })}
-                {renderTextInput({
-                  fieldKey: "firstBusinessYearEnd",
-                  label: ui.end,
-                  value: firstBusinessYearEnd,
-                  onChange: setFirstBusinessYearEnd,
-                  placeholder: t("hearing.firstBusinessYearEndPlaceholder"),
-                  type: "date",
-                })}
-              </div>
-            </section>
-            <section className="hsv-fiscal-year-block" aria-labelledby="annual-fiscal-year-title">
-              <h3 id="annual-fiscal-year-title">{ui.annualFiscal}</h3>
-              <div className="hsv-grid2">
-                {renderTextInput({
-                  fieldKey: "businessYearStart",
-                  label: ui.start,
-                  value: businessYearStart,
-                  onChange: updateBusinessYearStart,
-                  placeholder: t("hearing.businessYearStartPlaceholder"),
-                  type: "date",
-                })}
-                {renderTextInput({
-                  fieldKey: "businessYearEnd",
-                  label: ui.end,
-                  value: businessYearEnd,
-                  onChange: setBusinessYearEnd,
-                  placeholder: t("hearing.businessYearEndPlaceholder"),
-                  type: "date",
-                })}
-              </div>
-            </section>
-          </div>
         </section>
       );
     }
@@ -921,7 +969,10 @@ ${directorText}
         <section className="hsv-form-card">
           <div className="hsv-card-head">
             <div>
-              <h2><span className="hsv-section-number">03</span>{ui.sectionFinance}</h2>
+              <h2>
+                <span className="hsv-section-number">03</span>
+                {ui.sectionFinance}
+              </h2>
             </div>
           </div>
 
@@ -976,9 +1027,16 @@ ${directorText}
         <section className="hsv-form-card">
           <div className="hsv-card-head">
             <div>
-              <h2><span className="hsv-section-number">04</span>{ui.sectionShareholders}</h2>
+              <h2>
+                <span className="hsv-section-number">04</span>
+                {ui.sectionShareholders}
+              </h2>
             </div>
-            <button type="button" className="hsv-small-btn" onClick={addFounder}>
+            <button
+              type="button"
+              className="hsv-small-btn"
+              onClick={addFounder}
+            >
               + 추가
             </button>
           </div>
@@ -988,90 +1046,106 @@ ${directorText}
               const founderTitle = getFounderCardTitle(founder, index);
 
               return (
-              <div className="hsv-repeat-card" key={index}>
+                <div className="hsv-repeat-card" key={index}>
                   <div className="hsv-repeat-head">
                     <div className="hsv-repeat-title">
                       <strong>{founderTitle.title}</strong>
-                      {founderTitle.roleTag && <span>{founderTitle.roleTag}</span>}
+                      {founderTitle.roleTag && (
+                        <span>{founderTitle.roleTag}</span>
+                      )}
                     </div>
-                  {founders.length > 1 && (
-                    <button
-                      type="button"
-                      className="hsv-icon-btn"
-                      aria-label={`발기인 ${index + 1} 삭제`}
-                      onClick={() => removeFounder(index)}
-                    >
-                      &minus;
-                    </button>
-                  )}
-                </div>
-                <div className="hsv-grid2">
-                  <div className="hsv-role-field">
-                    <div className="hsv-role-label">
-                      <span>
-                        역할
-                        <span className="hsv-required-star" aria-hidden="true">
-                          *
-                        </span>
-                      </span>
-                      <small>{ui.multiple}</small>
-                    </div>
-                    <div
-                      className="hsv-role-options"
-                      aria-describedby={
-                        fieldErrors[`founders.${index}.role`]
-                          ? `${toFieldId(`founders.${index}.role`)}-error`
-                          : undefined
-                      }
-                    >
-                      <label className={founder.isFounder ? "is-active" : ""}>
-                        <input
-                          type="checkbox"
-                          checked={Boolean(founder.isFounder)}
-                          onChange={(event) =>
-                            updateFounder(index, "isFounder", event.target.checked)
-                          }
-                        />
-                        <span>{ui.founder}</span>
-                      </label>
-                      <label className={founder.isInvestor ? "is-active" : ""}>
-                        <input
-                          type="checkbox"
-                          checked={Boolean(founder.isInvestor)}
-                          onChange={(event) =>
-                            updateFounder(index, "isInvestor", event.target.checked)
-                          }
-                        />
-                        <span>{ui.investor}</span>
-                      </label>
-                    </div>
-                    {renderFieldError(`founders.${index}.role`)}
+                    {founders.length > 1 && (
+                      <button
+                        type="button"
+                        className="hsv-icon-btn"
+                        aria-label={`발기인 ${index + 1} 삭제`}
+                        onClick={() => removeFounder(index)}
+                      >
+                        &minus;
+                      </button>
+                    )}
                   </div>
+                  <div className="hsv-grid2">
+                    <div className="hsv-role-field">
+                      <div className="hsv-role-label">
+                        <span>
+                          역할
+                          <span
+                            className="hsv-required-star"
+                            aria-hidden="true"
+                          >
+                            *
+                          </span>
+                        </span>
+                        <small>{ui.multiple}</small>
+                      </div>
+                      <div
+                        className="hsv-role-options"
+                        aria-describedby={
+                          fieldErrors[`founders.${index}.role`]
+                            ? `${toFieldId(`founders.${index}.role`)}-error`
+                            : undefined
+                        }
+                      >
+                        <label className={founder.isFounder ? "is-active" : ""}>
+                          <input
+                            type="checkbox"
+                            checked={Boolean(founder.isFounder)}
+                            onChange={(event) =>
+                              updateFounder(
+                                index,
+                                "isFounder",
+                                event.target.checked,
+                              )
+                            }
+                          />
+                          <span>{ui.founder}</span>
+                        </label>
+                        <label
+                          className={founder.isInvestor ? "is-active" : ""}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={Boolean(founder.isInvestor)}
+                            onChange={(event) =>
+                              updateFounder(
+                                index,
+                                "isInvestor",
+                                event.target.checked,
+                              )
+                            }
+                          />
+                          <span>{ui.investor}</span>
+                        </label>
+                      </div>
+                      {renderFieldError(`founders.${index}.role`)}
+                    </div>
 
-                  {renderTextInput({
-                    fieldKey: `founders.${index}.address`,
-                    label: t("hearing.address"),
-                    value: founder.address,
-                    onChange: (value) => updateFounder(index, "address", value),
-                    placeholder: t("hearing.addressPlaceholder"),
-                  })}
-                  {renderTextInput({
-                    fieldKey: `founders.${index}.name`,
-                    label: ui.name,
-                    value: founder.name,
-                    onChange: (value) => updateFounder(index, "name", value),
-                    placeholder: t("hearing.namePlaceholder"),
-                  })}
-                  {renderTextInput({
-                    fieldKey: `founders.${index}.investmentAmount`,
-                    label: ui.investment,
-                    value: founder.investmentAmount,
-                    onChange: (value) =>
-                      updateFounder(index, "investmentAmount", value),
-                    placeholder: t("hearing.investmentPlaceholder"),
-                  })}
+                    {renderTextInput({
+                      fieldKey: `founders.${index}.address`,
+                      label: t("hearing.address"),
+                      value: founder.address,
+                      onChange: (value) =>
+                        updateFounder(index, "address", value),
+                      placeholder: t("hearing.addressPlaceholder"),
+                    })}
+                    {renderTextInput({
+                      fieldKey: `founders.${index}.name`,
+                      label: ui.name,
+                      value: founder.name,
+                      onChange: (value) => updateFounder(index, "name", value),
+                      placeholder: t("hearing.namePlaceholder"),
+                    })}
+                    {renderTextInput({
+                      fieldKey: `founders.${index}.investmentAmount`,
+                      label: ui.investment,
+                      value: founder.investmentAmount,
+                      onChange: (value) =>
+                        updateFounder(index, "investmentAmount", value),
+                      placeholder: t("hearing.investmentPlaceholder"),
+                    })}
+                  </div>
                 </div>
-              </div>
               );
             })}
           </div>
@@ -1083,7 +1157,10 @@ ${directorText}
       <section className="hsv-form-card">
         <div className="hsv-card-head">
           <div>
-            <h2><span className="hsv-section-number">05</span>{ui.sectionOfficers}</h2>
+            <h2>
+              <span className="hsv-section-number">05</span>
+              {ui.sectionOfficers}
+            </h2>
           </div>
         </div>
 
@@ -1160,14 +1237,16 @@ ${directorText}
                       fieldKey: `directors.${directorIndex}.name`,
                       label: ui.name,
                       value: director.name,
-                      onChange: (value) => updateDirector(directorIndex, "name", value),
+                      onChange: (value) =>
+                        updateDirector(directorIndex, "name", value),
                       placeholder: t("hearing.namePlaceholder"),
                     })}
                     {renderTextInput({
                       fieldKey: `directors.${directorIndex}.address`,
                       label: t("hearing.address"),
                       value: director.address,
-                      onChange: (value) => updateDirector(directorIndex, "address", value),
+                      onChange: (value) =>
+                        updateDirector(directorIndex, "address", value),
                       placeholder: t("hearing.addressPlaceholder"),
                     })}
                     {renderTextInput({
@@ -1184,7 +1263,6 @@ ${directorText}
             })}
           </div>
         )}
-
       </section>
     );
   };
@@ -1234,7 +1312,9 @@ ${directorText}
                       key={step.title}
                       className={`hsv-stepper-item ${state}`}
                       title={step.desc}
-                      aria-current={index === safeCurrentStep ? "step" : undefined}
+                      aria-current={
+                        index === safeCurrentStep ? "step" : undefined
+                      }
                       onClick={() => goToStep(index)}
                     >
                       <i>{String(index + 1).padStart(2, "0")}</i>
@@ -1261,7 +1341,10 @@ ${directorText}
                     <ul>
                       {validationIssues.map((issue) => (
                         <li key={issue.key}>
-                          <button type="button" onClick={() => goToValidationIssue(issue)}>
+                          <button
+                            type="button"
+                            onClick={() => goToValidationIssue(issue)}
+                          >
                             {steps[issue.step].title}: {issue.label}
                           </button>
                         </li>
@@ -1296,7 +1379,6 @@ ${directorText}
                 )}
               </div>
             </form>
-
           </section>
 
           <aside className={`hsv-summary ${isSummaryOpen ? "is-open" : ""}`}>
@@ -1308,7 +1390,10 @@ ${directorText}
               onClick={() => setIsSummaryOpen((open) => !open)}
             >
               <span>{ui.summaryToggle}</span>
-              <strong>{completedFieldCount}{ui.entered} · {progress}%</strong>
+              <strong>
+                {completedFieldCount}
+                {ui.entered} · {progress}%
+              </strong>
             </button>
 
             <div className="hsv-summary-head">
@@ -1317,105 +1402,96 @@ ${directorText}
             </div>
 
             <div className="hsv-summary-body" id="hsv-summary-body">
-            <div className="hsv-summary-section">
-              <h3>{ui.basic}</h3>
-              <dl>
-                <div>
-                  <dt>{ui.companyName}</dt>
-                  <dd>{summaryValue(companyName)}</dd>
-                </div>
-                <div>
-                  <dt>{ui.companyNameEn}</dt>
-                  <dd>{summaryValue(companyNameEn)}</dd>
-                </div>
-                <div>
-                  <dt>{ui.address}</dt>
-                  <dd>{summaryValue(headOfficeAddress)}</dd>
-                </div>
-              </dl>
-            </div>
+              <div className="hsv-summary-section">
+                <h3>{ui.basic}</h3>
+                <dl>
+                  <div>
+                    <dt>{ui.companyName}</dt>
+                    <dd>{summaryValue(companyName)}</dd>
+                  </div>
+                  <div>
+                    <dt>{ui.companyNameEn}</dt>
+                    <dd>{summaryValue(companyNameEn)}</dd>
+                  </div>
+                  <div>
+                    <dt>{ui.address}</dt>
+                    <dd>{summaryValue(headOfficeAddress)}</dd>
+                  </div>
+                </dl>
+              </div>
 
-            <div className="hsv-summary-section">
-              <h3>{ui.finance}</h3>
-              <dl>
-                <div>
-                  <dt>{ui.capital}</dt>
-                  <dd>{summaryValue(capital)}</dd>
-                </div>
-                <div>
-                  <dt>{ui.bank}</dt>
-                  <dd>{bankName || branchName ? `${bankName} ${branchName}` : "-"}</dd>
-                </div>
-                <div>
-                  <dt>{ui.authorized}</dt>
-                  <dd>{summaryValue(totalSharesAuthorized)}</dd>
-                </div>
-                <div>
-                  <dt>{ui.issued}</dt>
-                  <dd>{summaryValue(initialIssuedShares)}</dd>
-                </div>
-              </dl>
-            </div>
+              <div className="hsv-summary-section">
+                <h3>{ui.finance}</h3>
+                <dl>
+                  <div>
+                    <dt>{ui.capital}</dt>
+                    <dd>{summaryValue(capital)}</dd>
+                  </div>
+                  <div>
+                    <dt>{ui.bank}</dt>
+                    <dd>
+                      {bankName || branchName
+                        ? `${bankName} ${branchName}`
+                        : "-"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>{ui.authorized}</dt>
+                    <dd>{summaryValue(totalSharesAuthorized)}</dd>
+                  </div>
+                  <div>
+                    <dt>{ui.issued}</dt>
+                    <dd>{summaryValue(initialIssuedShares)}</dd>
+                  </div>
+                </dl>
+              </div>
 
-            <div className="hsv-summary-section">
-              <h3>{ui.members}</h3>
-              <dl>
-                <div>
-                  <dt>{ui.purposes}</dt>
-                  <dd>{filledPurposes}{ui.itemCount}</dd>
-                </div>
-                <div>
-                  <dt>{ui.shareholders}</dt>
-                  <dd>{filledFounders}{ui.personCount}</dd>
-                </div>
-                <div>
-                  <dt>{ui.directors}</dt>
-                  <dd>{filledDirectors}{ui.personCount}</dd>
-                </div>
-                <div>
-                  <dt>{ui.representative}</dt>
-                  <dd>{summaryValue(representativeDirector)}</dd>
-                </div>
-                <div>
-                  <dt>{ui.term}</dt>
-                  <dd>{summaryValue(directorTerm)}</dd>
-                </div>
-              </dl>
-            </div>
+              <div className="hsv-summary-section">
+                <h3>{ui.members}</h3>
+                <dl>
+                  <div>
+                    <dt>{ui.purposes}</dt>
+                    <dd>
+                      {filledPurposes}
+                      {ui.itemCount}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>{ui.shareholders}</dt>
+                    <dd>
+                      {filledFounders}
+                      {ui.personCount}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>{ui.directors}</dt>
+                    <dd>
+                      {filledDirectors}
+                      {ui.personCount}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>{ui.representative}</dt>
+                    <dd>{summaryValue(representativeDirector)}</dd>
+                  </div>
+                  <div>
+                    <dt>{ui.term}</dt>
+                    <dd>{summaryValue(directorTerm)}</dd>
+                  </div>
+                </dl>
+              </div>
 
-            <div className="hsv-summary-section">
-              <h3>{ui.businessYear}</h3>
-              <dl>
-                <div>
-                  <dt>{ui.firstYear}</dt>
-                  <dd>
-                    {firstBusinessYearStart || firstBusinessYearEnd
-                      ? `${firstBusinessYearStart || "-"} ~ ${
-                          firstBusinessYearEnd || "-"
-                        }`
-                      : "-"}
-                  </dd>
-                </div>
-                <div>
-                  <dt>{ui.annualYear}</dt>
-                  <dd>
-                    {businessYearStart || businessYearEnd
-                      ? `${businessYearStart || "-"} ~ ${businessYearEnd || "-"}`
-                      : "-"}
-                  </dd>
-                </div>
-              </dl>
-            </div>
-
-            <div className="hsv-summary-quick-actions" aria-label={ui.quickActions}>
-              <Link to="/reservation" className="hsv-summary-quick-action">
-                {ui.book}
-              </Link>
-              <Link to="/chat" className="hsv-summary-quick-action">
-                {ui.chat}
-              </Link>
-            </div>
-
+              <div
+                className="hsv-summary-quick-actions"
+                aria-label={ui.quickActions}
+              >
+                <Link to="/reservation" className="hsv-summary-quick-action">
+                  {ui.book}
+                </Link>
+                <Link to="/chat" className="hsv-summary-quick-action">
+                  {ui.chat}
+                </Link>
+              </div>
             </div>
           </aside>
         </main>
