@@ -1256,14 +1256,11 @@ export default function AdminCalendarPage() {
                         <strong>내용:</strong> {evt.title}
                       </p>
                       {evt.type !== "block" && (
-                        <p>
-                          <strong>이메일:</strong>{" "}
-                          {evt.email ||
-                            evt.user_email ||
-                            evt.user?.email ||
-                            evt.applicant_email ||
-                            "-"}
-                        </p>
+                        <>
+                          <p>
+                            <strong>이메일:</strong> {evt.originalData.email}
+                          </p>
+                        </>
                       )}
                       {evt.reason && (
                         <p>

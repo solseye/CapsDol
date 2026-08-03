@@ -24,9 +24,7 @@ function formatDate(dateString) {
 
   if (Number.isNaN(date.getTime())) return "-";
 
-  return `${date.getFullYear()}년 ${
-    date.getMonth() + 1
-  }월 ${date.getDate()}일`;
+  return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
 }
 
 function formatDateTime(dateString) {
@@ -169,7 +167,7 @@ export default function MyReservations() {
 
   const selectedNote = useMemo(
     () => parseReservationNote(selectedReservation?.note),
-    [selectedReservation]
+    [selectedReservation],
   );
 
   useEffect(() => {
@@ -215,11 +213,11 @@ export default function MyReservations() {
         current.map((reservation) =>
           String(reservation.reservation_id) === String(reservationId)
             ? { ...reservation, note: nextNote }
-            : reservation
-        )
+            : reservation,
+        ),
       );
       setSelectedReservation((current) =>
-        current ? { ...current, note: nextNote } : current
+        current ? { ...current, note: nextNote } : current,
       );
       setChatMessage("");
       setSuccess("메시지가 등록되었습니다.");
@@ -242,7 +240,7 @@ export default function MyReservations() {
 
     const cancelReason = window.prompt(
       "취소 사유를 입력해 주세요. 선택 사항입니다.",
-      ""
+      "",
     );
 
     if (cancelReason === null) return;
@@ -279,7 +277,8 @@ export default function MyReservations() {
   const handleDeleteReservation = async (reservationId) => {
     const ok = await confirmAction({
       title: "상담 내역을 삭제할까요?",
-      message: "상담 메시지를 포함한 내역이 목록에서 제거되며 복구할 수 없습니다.",
+      message:
+        "상담 메시지를 포함한 내역이 목록에서 제거되며 복구할 수 없습니다.",
       confirmLabel: "내역 삭제",
       tone: "danger",
     });
@@ -314,11 +313,9 @@ export default function MyReservations() {
 
         if (dateB !== dateA) return dateB - dateA;
 
-        return String(b.selected_time).localeCompare(
-          String(a.selected_time)
-        );
+        return String(b.selected_time).localeCompare(String(a.selected_time));
       }),
-    [reservations]
+    [reservations],
   );
 
   const filteredReservations = useMemo(() => {
@@ -342,13 +339,13 @@ export default function MyReservations() {
   }, [periodFilter, searchTerm, sortedReservations, statusFilter]);
 
   const approvedCount = reservations.filter(
-    (item) => item.status === "approved"
+    (item) => item.status === "approved",
   ).length;
   const pendingCount = reservations.filter(
-    (item) => item.status === "pending"
+    (item) => item.status === "pending",
   ).length;
   const upcomingCount = reservations.filter(
-    (item) => isUpcoming(item) && canCancel(item.status)
+    (item) => isUpcoming(item) && canCancel(item.status),
   ).length;
 
   return (
@@ -363,9 +360,7 @@ export default function MyReservations() {
               <h1>내 상담 내역</h1>
               <Link to="/mypage">마이페이지로</Link>
             </div>
-            <span>
-              신청한 상담의 일정과 승인 상태를 확인하고 관리합니다.
-            </span>
+            <span>신청한 상담의 일정과 승인 상태를 확인하고 관리합니다.</span>
           </header>
 
           <section
@@ -453,9 +448,7 @@ export default function MyReservations() {
                     ? "아직 신청한 상담이 없습니다."
                     : "조건에 맞는 상담이 없습니다."}
                 </strong>
-                <span>
-                  검색 조건을 바꾸거나 새로운 상담을 예약해 주세요.
-                </span>
+                <span>검색 조건을 바꾸거나 새로운 상담을 예약해 주세요.</span>
               </div>
             ) : (
               <div className="my-reservations-list">
@@ -479,7 +472,9 @@ export default function MyReservations() {
                       <div className="my-reservation-info">
                         <div>
                           <h3>{getFieldLabel(item.field)} 상담</h3>
-                          <span className={`status ${item.status || "pending"}`}>
+                          <span
+                            className={`status ${item.status || "pending"}`}
+                          >
                             {getStatusLabel(item.status)}
                           </span>
                         </div>
@@ -518,7 +513,9 @@ export default function MyReservations() {
                           <button
                             type="button"
                             className="text-danger"
-                            onClick={() => handleDeleteReservation(reservationId)}
+                            onClick={() =>
+                              handleDeleteReservation(reservationId)
+                            }
                             disabled={deleting}
                           >
                             {deleting ? "삭제 중..." : "내역 삭제"}
@@ -572,8 +569,12 @@ export default function MyReservations() {
               <div>
                 <dt>상담 일시</dt>
                 <dd>
-                  {formatDate(selectedReservation.selected_date)}{" "}
-                  {formatTime(selectedReservation.selected_time)}
+                  {formatDate(selectedReservation.available_ranges[0].date)}{" "}
+                  {formatTime(
+                    selectedReservation.available_ranges[0].start_time,
+                  )}{" "}
+                  ~{" "}
+                  {formatTime(selectedReservation.available_ranges[0].end_time)}
                 </dd>
               </div>
               <div>
@@ -586,7 +587,7 @@ export default function MyReservations() {
               </div>
               <div>
                 <dt>승인 일시</dt>
-                <dd>{formatDateTime(selectedReservation.approved_at)}</dd>
+                <dd>{formatDateTime(selectedReservation.decided_at)}</dd>
               </div>
               <div>
                 <dt>상담 번호</dt>
@@ -629,9 +630,7 @@ export default function MyReservations() {
                     <article
                       className={`my-reservation-chat-message ${
                         message.role || ""
-                      } ${
-                        message.role === "admin" ? "is-other" : "is-own"
-                      }`}
+                      } ${message.role === "admin" ? "is-other" : "is-own"}`}
                       key={`${message.created_at || index}-${index}`}
                     >
                       <strong>

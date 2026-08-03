@@ -249,17 +249,19 @@
 .authv-tabs button {
   min-height: 46px;
   border: 0;
-  color: #4e5966;
-  background: transparent;
   font-size: 14px;
   font-weight: 950;
   cursor: pointer;
-}
 
-.authv-tabs button.active {
   color: #1c2632;
   background: #ffffff;
   box-shadow: 0 2px 8px rgba(21, 32, 44, 0.08);
+}
+
+.authv-tabs button.active {
+  color: #4e5966;
+  background: transparent;
+  box-shadow: none;
 }
 
 .authv-form {
