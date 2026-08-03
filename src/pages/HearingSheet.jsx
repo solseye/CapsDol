@@ -736,6 +736,7 @@ ${directorText}
   const filledPurposes = purposes.filter((purpose) =>
     purpose.content.trim(),
   ).length;
+
   const filledFounders = founders.filter(
     (founder) =>
       founder.name.trim() ||
@@ -1392,7 +1393,7 @@ ${directorText}
               <span>{ui.summaryToggle}</span>
               <strong>
                 {completedFieldCount}
-                {ui.entered} · {progress}%
+                {ui.entered} · {progress - 20}%
               </strong>
             </button>
 

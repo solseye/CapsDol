@@ -411,8 +411,7 @@
 }
 
 @media (max-width: 640px) {
-  .authv-proof-grid,
-  .authv-tabs {
+  .authv-proof-grid {
     grid-template-columns: 1fr;
   }
 

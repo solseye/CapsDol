@@ -113,8 +113,16 @@
   padding: 24px;
   overflow-y: auto;
   background:
-    radial-gradient(circle at top right, rgba(51, 160, 95, 0.08), transparent 24%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(255, 255, 255, 0.44));
+    radial-gradient(
+      circle at top right,
+      rgba(51, 160, 95, 0.08),
+      transparent 24%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.74),
+      rgba(255, 255, 255, 0.44)
+    );
 }
 
 .msg-row {
@@ -268,7 +276,9 @@
   color: #ffffff;
   font-weight: 900;
   cursor: pointer;
-  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+  transition:
+    transform 0.3s var(--ease),
+    box-shadow 0.3s var(--ease);
 }
 
 .chat-input button:hover:not(:disabled) {
@@ -527,7 +537,11 @@
   border-bottom: 1px solid #e4e9ee;
   background:
     linear-gradient(135deg, rgba(6, 35, 60, 0.96), rgba(24, 77, 56, 0.9)),
-    repeating-linear-gradient(45deg, transparent 0 14px, rgba(255, 255, 255, 0.05) 14px 15px);
+    repeating-linear-gradient(
+      45deg,
+      transparent 0 14px,
+      rgba(255, 255, 255, 0.05) 14px 15px
+    );
   color: #fff;
 }
 
@@ -1072,7 +1086,9 @@
   margin-top: 8px;
   padding: 11px 12px;
   line-height: 1.45;
-  transition: border-color 160ms ease, background-color 160ms ease;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease;
 }
 
 .ai-context-card button:hover:not(:disabled) {
@@ -1182,6 +1198,7 @@
     min-height: 40px;
     padding: 0 10px;
     font-size: 12px;
+    word-break: keep-all;
   }
 
   .ai-chat-body {

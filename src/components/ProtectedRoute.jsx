@@ -10,13 +10,20 @@ export default function ProtectedRoute({ children, role }) {
       <Navigate
         to="/login"
         replace
-        state={{ from: `${location.pathname}${location.search}${location.hash}` }}
+        state={{
+          from: `${location.pathname}${location.search}${location.hash}`,
+        }}
       />
     );
   }
 
   if (role && session.role !== role) {
-    return <Navigate to={session.role === "admin" ? "/admin/calendar" : "/mypage"} replace />;
+    return (
+      <Navigate
+        to={session.role === "admin" ? "/admin/calendar" : "/mypage"}
+        replace
+      />
+    );
   }
 
   return children;

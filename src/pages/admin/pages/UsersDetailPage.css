@@ -161,14 +161,20 @@
 }
 .admin-user-detail-page .reservation-item.summary {
   display: grid;
-  grid-template-columns: 54px minmax(180px, 1.3fr) minmax(110px, 0.75fr) minmax(180px, 1fr);
+  grid-template-columns: 54px minmax(180px, 1.3fr) minmax(110px, 0.75fr) minmax(
+      180px,
+      1fr
+    );
   gap: 16px;
   align-items: center;
   width: 100%;
   min-height: 58px;
   text-align: left;
   cursor: pointer;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
 }
 .admin-user-detail-page .reservation-item.summary:hover,
 .admin-user-detail-page .reservation-item.summary.is-selected {
@@ -707,103 +713,167 @@
   border: 1px solid #e5e7eb;
   border-radius: 6px;
 }
+/* =======================================================
+   📱 모바일 화면 반응형 설정 (760px 이하)
+   ======================================================= */
 @media (max-width: 760px) {
+  /* 1. 전역 강제 축소 및 줄바꿈 (화면 깨짐 완벽 방지) */
+  .admin-user-detail-page * {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    word-break: break-all !important;
+    overflow-wrap: break-word !important;
+    white-space: normal !important;
+  }
+
+  .admin-user-detail-page {
+    padding: 10px !important;
+    overflow-x: hidden !important;
+  }
+
+  /* 2. 헤더 및 타이틀 */
   .admin-user-detail-page .page-header,
   .admin-user-detail-page .file-list-header {
     align-items: stretch;
     flex-direction: column;
     padding-inline: 0;
   }
+
   .admin-user-detail-page .page-title {
     font-size: 1.25rem;
     line-height: 1.4;
   }
+
+  /* 3. 공통 박스(카드) 및 행 레이아웃 */
+  .admin-user-detail-page .adm-card,
+  .admin-user-detail-page section {
+    width: 100% !important;
+    padding: 10px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .admin-user-detail-page .info-row {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+  }
+
+  /* 4. 버튼 및 액션 영역 가로 꽉 채우기 */
   .admin-user-detail-page .page-header .adm-btn-back,
   .admin-user-detail-page .adm-btn.ghost,
-  .admin-user-detail-page .adm-btn.primary {
+  .admin-user-detail-page .adm-btn.primary,
+  .admin-user-detail-page .admin-chat-history-header .adm-btn {
     width: 100%;
   }
+
+  .admin-user-detail-page .reservation-chat-form .adm-btn.primary {
+    width: auto; /* 채팅 전송 버튼은 100%가 되지 않도록 예외 처리 */
+  }
+
   .admin-user-detail-page .file-header-actions {
     width: 100%;
     justify-content: stretch;
   }
-  .admin-user-detail-page .reservation-item-header {
-    flex-direction: column;
-  }
-  .admin-user-detail-page .reservation-list.compact,
-  .admin-user-detail-page .reservation-detail-grid {
-    grid-template-columns: 1fr;
-  }
-  .admin-user-detail-page .reservation-item.summary {
-    grid-template-columns: 1fr;
-    gap: 5px;
-  }
-  .admin-user-detail-page .reservation-slot-grid {
-    grid-template-columns: repeat(3, minmax(72px, 1fr));
-  }
-  .admin-user-detail-page .reservation-chat-form {
-    grid-template-columns: minmax(0, 1fr) auto;
-  }
-  .admin-user-detail-page .reservation-chat-list {
-    height: 200px;
-    min-height: 200px;
-    max-height: 200px;
-  }
-  .admin-user-detail-page .reservation-chat-form .adm-btn.primary {
-    width: auto;
-  }
-  .admin-user-detail-page .reservation-modal-overlay {
-    align-items: stretch;
-    padding: 8px;
-  }
-  .admin-user-detail-page .reservation-modal {
-    width: 100%;
-    height: auto;
-    max-height: calc(100vh - 16px);
-  }
-  .admin-user-detail-page .reservation-modal-header {
-    padding: 14px 10px 9px !important;
-  }
-  .admin-user-detail-page .reservation-modal-grid {
-    grid-template-columns: 1fr;
-    align-items: start;
-    padding: 12px;
-  }
-  .admin-user-detail-page .reservation-modal-side {
-    overflow: visible;
-  }
-  .admin-user-detail-page .reservation-chat-list {
-    max-height: 280px;
-  }
-  .admin-user-detail-page .adm-card {
-    padding: 16px;
-  }
-  .admin-user-detail-page .info-row {
-    display: grid;
-    gap: 4px;
-  }
+
+  /* 5. 테이블 영역 (강제 축소 및 스크롤 허용) */
   .admin-user-detail-page .table-wrapper {
-    margin-inline: -16px;
-    padding-inline: 16px;
-  }
-  .admin-user-detail-page .file-table {
-    min-width: 760px;
-  }
-  .admin-user-detail-page .admin-chat-history-header {
-  align-items: stretch;
-  flex-direction: column;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    overflow-x: auto !important;
   }
 
-  .admin-user-detail-page
-    .admin-chat-history-header .adm-btn {
+  .admin-user-detail-page .file-table {
+    min-width: 100% !important;
+    font-size: 0.75rem !important;
+  }
+
+  .admin-user-detail-page th,
+  .admin-user-detail-page td {
+    padding: 6px 4px !important;
+  }
+
+  /* 6. 챗봇 대화 내역 */
+  .admin-user-detail-page .admin-chat-history-header {
+    align-items: flex-start; /* 원래 left였으나 유효한 CSS인 flex-start로 수정 */
+    flex-direction: column;
+  }
+
+  .admin-user-detail-page .admin-chat-history-header > div:first-child {
+    text-align: left !important;
     width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .admin-user-detail-page .admin-chat-history-answer section {
+    margin: 6px 0 !important;
+    width: 100% !important;
   }
 
   .admin-user-detail-page .admin-chat-history-empty {
     min-height: 180px;
     padding: 22px 16px;
   }
+
+  /* 7. 예약 목록 및 모달창 레이아웃 */
+  .admin-user-detail-page .reservation-item-header {
+    flex-direction: column;
+  }
+
+  .admin-user-detail-page .reservation-list.compact,
+  .admin-user-detail-page .reservation-detail-grid,
+  .admin-user-detail-page .reservation-item.summary,
+  .admin-user-detail-page .reservation-modal-grid {
+    grid-template-columns: 1fr; /* 그리드를 1열로 변환 */
+  }
+
+  .admin-user-detail-page .reservation-item.summary {
+    gap: 5px;
+  }
+
+  .admin-user-detail-page .reservation-slot-grid {
+    grid-template-columns: repeat(3, minmax(72px, 1fr));
+  }
+
+  .admin-user-detail-page .reservation-chat-form {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .admin-user-detail-page .reservation-chat-list {
+    height: 200px;
+    min-height: 200px;
+    max-height: 280px; /* 중복 선언되어 있던 부분 하나로 통합 */
+  }
+
+  .admin-user-detail-page .reservation-modal-overlay {
+    align-items: stretch;
+    padding: 8px;
+  }
+
+  .admin-user-detail-page .reservation-modal {
+    width: 100%;
+    height: auto;
+    max-height: calc(100vh - 16px);
+  }
+
+  .admin-user-detail-page .reservation-modal-header {
+    padding: 14px 10px 9px !important;
+  }
+
+  .admin-user-detail-page .reservation-modal-grid {
+    align-items: start;
+    padding: 12px;
+  }
+
+  .admin-user-detail-page .reservation-modal-side {
+    overflow: visible;
+  }
 }
+
+/* =======================================================
+   📱 소형 모바일 화면 반응형 설정 (420px 이하)
+   ======================================================= */
 @media (max-width: 420px) {
   .admin-user-detail-page .action-cell {
     gap: 4px;
@@ -841,8 +911,7 @@
   letter-spacing: 0.14em;
 }
 
-.admin-user-detail-page .admin-chat-history-header
-  .file-list-title {
+.admin-user-detail-page .admin-chat-history-header .file-list-title {
   margin-bottom: 2px;
 }
 
@@ -859,8 +928,7 @@
   justify-content: center;
 }
 
-.admin-user-detail-page
-  .admin-chat-history-empty-icon {
+.admin-user-detail-page .admin-chat-history-empty-icon {
   display: grid;
   width: 58px;
   height: 58px;
@@ -873,15 +941,13 @@
   place-items: center;
 }
 
-.admin-user-detail-page
-  .admin-chat-history-empty strong {
+.admin-user-detail-page .admin-chat-history-empty strong {
   margin-bottom: 7px;
   color: #111827;
   font-size: 1rem;
 }
 
-.admin-user-detail-page
-  .admin-chat-history-empty span {
+.admin-user-detail-page .admin-chat-history-empty span {
   max-width: 460px;
   color: #64748b;
   font-size: 0.85rem;
@@ -904,13 +970,11 @@
   background: #ffffff;
 }
 
-.admin-user-detail-page
-  .admin-chat-history-item:last-child {
+.admin-user-detail-page .admin-chat-history-item:last-child {
   border-bottom: 0;
 }
 
-.admin-user-detail-page
-  .admin-chat-history-question {
+.admin-user-detail-page .admin-chat-history-question {
   display: grid;
   width: 100%;
   min-height: 72px;
@@ -927,8 +991,7 @@
   transition: background-color 0.15s ease;
 }
 
-.admin-user-detail-page
-  .admin-chat-history-question:hover {
+.admin-user-detail-page .admin-chat-history-question:hover {
   background: #f8fafc;
 }
 
@@ -938,8 +1001,7 @@
   background: #f8fafc;
 }
 
-.admin-user-detail-page
-  .admin-chat-history-item-icon {
+.admin-user-detail-page .admin-chat-history-item-icon {
   display: grid;
   width: 42px;
   height: 42px;
@@ -951,8 +1013,7 @@
   place-items: center;
 }
 
-.admin-user-detail-page
-  .admin-chat-history-summary {
+.admin-user-detail-page .admin-chat-history-summary {
   display: flex;
   min-width: 0;
   gap: 16px;
@@ -960,8 +1021,7 @@
   justify-content: space-between;
 }
 
-.admin-user-detail-page
-  .admin-chat-history-summary strong {
+.admin-user-detail-page .admin-chat-history-summary strong {
   min-width: 0;
   overflow: hidden;
   color: #111827;
@@ -971,16 +1031,14 @@
   white-space: nowrap;
 }
 
-.admin-user-detail-page
-  .admin-chat-history-summary time {
+.admin-user-detail-page .admin-chat-history-summary time {
   flex: 0 0 auto;
   color: #64748b;
   font-size: 0.76rem;
   font-weight: 700;
 }
 
-.admin-user-detail-page
-  .admin-chat-history-toggle {
+.admin-user-detail-page .admin-chat-history-toggle {
   color: #475569;
   font-size: 1.2rem;
   font-weight: 500;
@@ -994,15 +1052,13 @@
   transform: rotate(45deg);
 }
 
-.admin-user-detail-page
-  .admin-chat-history-answer {
+.admin-user-detail-page .admin-chat-history-answer {
   display: grid;
   grid-template-rows: 0fr;
   transition: grid-template-rows 0.18s ease;
 }
 
-.admin-user-detail-page
-  .admin-chat-history-answer > div {
+.admin-user-detail-page .admin-chat-history-answer > div {
   min-height: 0;
   overflow: hidden;
 }
@@ -1013,8 +1069,7 @@
   grid-template-rows: 1fr;
 }
 
-.admin-user-detail-page
-  .admin-chat-history-answer section {
+.admin-user-detail-page .admin-chat-history-answer section {
   margin: 0 58px 12px;
   padding: 13px 15px;
   border-left: 3px solid #2563eb;
@@ -1022,23 +1077,20 @@
   background: #eff6ff;
 }
 
-.admin-user-detail-page
-  .admin-chat-history-answer section:first-child {
+.admin-user-detail-page .admin-chat-history-answer section:first-child {
   margin-top: 12px;
   border-left-color: #94a3b8;
   background: #f8fafc;
 }
 
-.admin-user-detail-page
-  .admin-chat-history-answer section > span {
+.admin-user-detail-page .admin-chat-history-answer section > span {
   color: #64748b;
   font-size: 0.68rem;
   font-weight: 850;
   letter-spacing: 0.12em;
 }
 
-.admin-user-detail-page
-  .admin-chat-history-answer section > p {
+.admin-user-detail-page .admin-chat-history-answer section > p {
   margin: 6px 0 0;
   color: #334155;
   font-size: 0.86rem;
@@ -1047,8 +1099,7 @@
   overflow-wrap: anywhere;
 }
 
-.admin-user-detail-page
-  .admin-chat-history-meta {
+.admin-user-detail-page .admin-chat-history-meta {
   display: flex;
   gap: 14px;
   margin: 0 58px 14px;
@@ -1057,8 +1108,7 @@
   font-weight: 700;
 }
 
-.admin-user-detail-page
-  .admin-chat-history-empty-icon.is-error {
+.admin-user-detail-page .admin-chat-history-empty-icon.is-error {
   background: #fef2f2;
   color: #dc2626;
 }
