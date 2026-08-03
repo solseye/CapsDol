@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
 import Header from "../components/Header";
@@ -68,7 +67,6 @@ export default function HearingSheet() {
   const [currentStep, setCurrentStep] = useState(storedDraft?.currentStep || 0);
   const [fieldErrors, setFieldErrors] = useState({});
   const [validationIssues, setValidationIssues] = useState([]);
-  const [isSummaryOpen, setIsSummaryOpen] = useState(false);
   const isLoggedIn = Boolean(localStorage.getItem("accessToken"));
 
   const [purposes, setPurposes] = useState(() =>
@@ -733,37 +731,6 @@ ${directorText}
   const currentStepData = steps[safeCurrentStep] || steps[steps.length - 1];
   const isFinalInputStep = currentStepData.id === "officers";
   const progress = Math.round(((safeCurrentStep + 1) / steps.length) * 100);
-  const filledPurposes = purposes.filter((purpose) =>
-    purpose.content.trim(),
-  ).length;
-  const filledFounders = founders.filter(
-    (founder) =>
-      founder.name.trim() ||
-      founder.address.trim() ||
-      founder.investmentAmount.trim(),
-  ).length;
-  const filledDirectors = directors.filter(
-    (director) =>
-      director.name.trim() ||
-      director.address.trim() ||
-      director.romanizedName.trim(),
-  ).length;
-  const completedFieldCount =
-    [
-      companyName,
-      companyNameEn,
-      headOfficeAddress,
-      capital,
-      totalSharesAuthorized,
-      initialIssuedShares,
-      bankName,
-      branchName,
-      representativeDirector,
-      directorTerm,
-    ].filter((value) => value.trim()).length +
-    filledPurposes +
-    filledFounders +
-    filledDirectors;
 
   const goPrevStep = () => {
     setCurrentStep((step) => Math.max(step - 1, 0));
@@ -800,7 +767,6 @@ ${directorText}
     window.setTimeout(() => focusField(issue.key), 60);
   };
 
-  const summaryValue = (value) => value || "-";
   const renderTextInput = ({
     fieldKey,
     label,
@@ -1381,119 +1347,6 @@ ${directorText}
             </form>
           </section>
 
-          <aside className={`hsv-summary ${isSummaryOpen ? "is-open" : ""}`}>
-            <button
-              type="button"
-              className="hsv-summary-toggle"
-              aria-expanded={isSummaryOpen}
-              aria-controls="hsv-summary-body"
-              onClick={() => setIsSummaryOpen((open) => !open)}
-            >
-              <span>{ui.summaryToggle}</span>
-              <strong>
-                {completedFieldCount}
-                {ui.entered} · {progress}%
-              </strong>
-            </button>
-
-            <div className="hsv-summary-head">
-              <h2>{ui.summaryTitle}</h2>
-              <span>{ui.draft}</span>
-            </div>
-
-            <div className="hsv-summary-body" id="hsv-summary-body">
-              <div className="hsv-summary-section">
-                <h3>{ui.basic}</h3>
-                <dl>
-                  <div>
-                    <dt>{ui.companyName}</dt>
-                    <dd>{summaryValue(companyName)}</dd>
-                  </div>
-                  <div>
-                    <dt>{ui.companyNameEn}</dt>
-                    <dd>{summaryValue(companyNameEn)}</dd>
-                  </div>
-                  <div>
-                    <dt>{ui.address}</dt>
-                    <dd>{summaryValue(headOfficeAddress)}</dd>
-                  </div>
-                </dl>
-              </div>
-
-              <div className="hsv-summary-section">
-                <h3>{ui.finance}</h3>
-                <dl>
-                  <div>
-                    <dt>{ui.capital}</dt>
-                    <dd>{summaryValue(capital)}</dd>
-                  </div>
-                  <div>
-                    <dt>{ui.bank}</dt>
-                    <dd>
-                      {bankName || branchName
-                        ? `${bankName} ${branchName}`
-                        : "-"}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>{ui.authorized}</dt>
-                    <dd>{summaryValue(totalSharesAuthorized)}</dd>
-                  </div>
-                  <div>
-                    <dt>{ui.issued}</dt>
-                    <dd>{summaryValue(initialIssuedShares)}</dd>
-                  </div>
-                </dl>
-              </div>
-
-              <div className="hsv-summary-section">
-                <h3>{ui.members}</h3>
-                <dl>
-                  <div>
-                    <dt>{ui.purposes}</dt>
-                    <dd>
-                      {filledPurposes}
-                      {ui.itemCount}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>{ui.shareholders}</dt>
-                    <dd>
-                      {filledFounders}
-                      {ui.personCount}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>{ui.directors}</dt>
-                    <dd>
-                      {filledDirectors}
-                      {ui.personCount}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>{ui.representative}</dt>
-                    <dd>{summaryValue(representativeDirector)}</dd>
-                  </div>
-                  <div>
-                    <dt>{ui.term}</dt>
-                    <dd>{summaryValue(directorTerm)}</dd>
-                  </div>
-                </dl>
-              </div>
-
-              <div
-                className="hsv-summary-quick-actions"
-                aria-label={ui.quickActions}
-              >
-                <Link to="/reservation" className="hsv-summary-quick-action">
-                  {ui.book}
-                </Link>
-                <Link to="/chat" className="hsv-summary-quick-action">
-                  {ui.chat}
-                </Link>
-              </div>
-            </div>
-          </aside>
         </main>
       </div>
     </div>
