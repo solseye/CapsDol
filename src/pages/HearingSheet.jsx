@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
-import Header from "../components/Header";
 import { getCurrentLanguage, translate } from "../i18n/translations";
 import { getHearingUiCopy } from "../i18n/hearingUi";
 import {
@@ -47,18 +45,6 @@ export default function HearingSheet() {
   const [branchName, setBranchName] = useState(
     initialSource.capitalPaymentBank?.branchName || "",
   );
-  const [businessYearStart, setBusinessYearStart] = useState(
-    initialSource.businessYear?.start || "",
-  );
-  const [businessYearEnd, setBusinessYearEnd] = useState(
-    initialSource.businessYear?.end || "",
-  );
-  const [firstBusinessYearStart, setFirstBusinessYearStart] = useState(
-    initialSource.firstBusinessYear?.start || "",
-  );
-  const [firstBusinessYearEnd, setFirstBusinessYearEnd] = useState(
-    initialSource.firstBusinessYear?.end || "",
-  );
   const [representativeDirector, setRepresentativeDirector] = useState(
     initialSource.representativeDirector || "",
   );
@@ -68,9 +54,6 @@ export default function HearingSheet() {
   const [currentStep, setCurrentStep] = useState(storedDraft?.currentStep || 0);
   const [fieldErrors, setFieldErrors] = useState({});
   const [validationIssues, setValidationIssues] = useState([]);
-  const [isSummaryOpen, setIsSummaryOpen] = useState(false);
-  const isLoggedIn = Boolean(localStorage.getItem("accessToken"));
-
   const [purposes, setPurposes] = useState(() =>
     collectionToArray(initialSource.Purpose, [{ content: "" }]),
   );
@@ -203,29 +186,17 @@ export default function HearingSheet() {
       directorTerm,
       headOfficeAddress,
       totalSharesAuthorized,
-      businessYear: {
-        start: businessYearStart,
-        end: businessYearEnd,
-      },
       initialIssuedShares,
-      firstBusinessYear: {
-        start: firstBusinessYearStart,
-        end: firstBusinessYearEnd,
-      },
       description: "히어링 시트 기반 정관",
     }),
     [
       bankName,
       branchName,
-      businessYearEnd,
-      businessYearStart,
       capital,
       companyName,
       companyNameEn,
       directorTerm,
       directors,
-      firstBusinessYearEnd,
-      firstBusinessYearStart,
       founders,
       headOfficeAddress,
       initialIssuedShares,
@@ -299,20 +270,10 @@ ${directorText}
       data.totalSharesAuthorized || "미입력"
     }로 한다.
 
-제11조 (사업 연도)
-본 회사의 사업 연도는 매년 ${
-      data.businessYear.start || "미입력"
-    }부터 ${data.businessYear.end || "미입력"}까지로 한다.
-
-제12조 (설립 시 발행 주식 수)
+제11조 (설립 시 발행 주식 수)
 본 회사의 설립 시 발행하는 주식의 총수는 ${
       data.initialIssuedShares || "미입력"
     }로 한다.
-
-제13조 (최초 사업 연도)
-본 회사의 최초 사업 연도는 ${
-      data.firstBusinessYear.start || "미입력"
-    }부터 ${data.firstBusinessYear.end || "미입력"}까지로 한다.
 
 ※ 본 문서는 히어링 시트 입력값을 바탕으로 생성된 확인용 정관 초안입니다.`;
   };
@@ -412,29 +373,13 @@ ${directorText}
         ],
       },
       {
-        title: "제11조 (사업 연도)",
-        body: "본 회사의 사업 연도는 다음과 같이 정한다.",
-        highlights: [
-          { label: "시작일", value: data.businessYear.start || "미입력" },
-          { label: "종료일", value: data.businessYear.end || "미입력" },
-        ],
-      },
-      {
-        title: "제12조 (설립 시 발행 주식 수)",
+        title: "제11조 (설립 시 발행 주식 수)",
         body: "본 회사의 설립 시 발행하는 주식의 총수는 다음과 같이 정한다.",
         highlights: [
           {
             label: "초기 발행 주식 총 수",
             value: data.initialIssuedShares || "미입력",
           },
-        ],
-      },
-      {
-        title: "제13조 (최초 사업 연도)",
-        body: "본 회사의 최초 사업 연도는 다음과 같이 정한다.",
-        highlights: [
-          { label: "시작일", value: data.firstBusinessYear.start || "미입력" },
-          { label: "종료일", value: data.firstBusinessYear.end || "미입력" },
         ],
       },
     ];
@@ -468,28 +413,6 @@ ${directorText}
     window.setTimeout(() => {
       document.getElementById(toFieldId(fieldKey))?.focus();
     }, 60);
-  };
-
-  const focusDateField = (fieldKey) => {
-    window.setTimeout(() => {
-      const nextField = document.getElementById(toFieldId(fieldKey));
-      nextField?.focus();
-      try {
-        nextField?.showPicker?.();
-      } catch {
-        // 일부 브라우저는 사용자 입력 직후가 아니면 date picker 자동 열기를 막습니다.
-      }
-    }, 60);
-  };
-
-  const updateBusinessYearStart = (value) => {
-    setBusinessYearStart(value);
-    focusDateField("businessYearEnd");
-  };
-
-  const updateFirstBusinessYearStart = (value) => {
-    setFirstBusinessYearStart(value);
-    focusDateField("firstBusinessYearEnd");
   };
 
   const getDescribedBy = (fieldKey, helperId) => {
@@ -733,38 +656,6 @@ ${directorText}
   const currentStepData = steps[safeCurrentStep] || steps[steps.length - 1];
   const isFinalInputStep = currentStepData.id === "officers";
   const progress = Math.round(((safeCurrentStep + 1) / steps.length) * 100);
-  const filledPurposes = purposes.filter((purpose) =>
-    purpose.content.trim(),
-  ).length;
-
-  const filledFounders = founders.filter(
-    (founder) =>
-      founder.name.trim() ||
-      founder.address.trim() ||
-      founder.investmentAmount.trim(),
-  ).length;
-  const filledDirectors = directors.filter(
-    (director) =>
-      director.name.trim() ||
-      director.address.trim() ||
-      director.romanizedName.trim(),
-  ).length;
-  const completedFieldCount =
-    [
-      companyName,
-      companyNameEn,
-      headOfficeAddress,
-      capital,
-      totalSharesAuthorized,
-      initialIssuedShares,
-      bankName,
-      branchName,
-      representativeDirector,
-      directorTerm,
-    ].filter((value) => value.trim()).length +
-    filledPurposes +
-    filledFounders +
-    filledDirectors;
 
   const goPrevStep = () => {
     setCurrentStep((step) => Math.max(step - 1, 0));
@@ -801,7 +692,6 @@ ${directorText}
     window.setTimeout(() => focusField(issue.key), 60);
   };
 
-  const summaryValue = (value) => value || "-";
   const renderTextInput = ({
     fieldKey,
     label,
@@ -1270,8 +1160,6 @@ ${directorText}
 
   return (
     <div className="hsv-page">
-      <Header isLoggedIn={isLoggedIn} />
-
       <div className="hsv-shell">
         <main className="hsv-main">
           <section className="hsv-content">
@@ -1381,120 +1269,6 @@ ${directorText}
               </div>
             </form>
           </section>
-
-          <aside className={`hsv-summary ${isSummaryOpen ? "is-open" : ""}`}>
-            <button
-              type="button"
-              className="hsv-summary-toggle"
-              aria-expanded={isSummaryOpen}
-              aria-controls="hsv-summary-body"
-              onClick={() => setIsSummaryOpen((open) => !open)}
-            >
-              <span>{ui.summaryToggle}</span>
-              <strong>
-                {completedFieldCount}
-                {ui.entered} · {progress - 20}%
-              </strong>
-            </button>
-
-            <div className="hsv-summary-head">
-              <h2>{ui.summaryTitle}</h2>
-              <span>{ui.draft}</span>
-            </div>
-
-            <div className="hsv-summary-body" id="hsv-summary-body">
-              <div className="hsv-summary-section">
-                <h3>{ui.basic}</h3>
-                <dl>
-                  <div>
-                    <dt>{ui.companyName}</dt>
-                    <dd>{summaryValue(companyName)}</dd>
-                  </div>
-                  <div>
-                    <dt>{ui.companyNameEn}</dt>
-                    <dd>{summaryValue(companyNameEn)}</dd>
-                  </div>
-                  <div>
-                    <dt>{ui.address}</dt>
-                    <dd>{summaryValue(headOfficeAddress)}</dd>
-                  </div>
-                </dl>
-              </div>
-
-              <div className="hsv-summary-section">
-                <h3>{ui.finance}</h3>
-                <dl>
-                  <div>
-                    <dt>{ui.capital}</dt>
-                    <dd>{summaryValue(capital)}</dd>
-                  </div>
-                  <div>
-                    <dt>{ui.bank}</dt>
-                    <dd>
-                      {bankName || branchName
-                        ? `${bankName} ${branchName}`
-                        : "-"}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>{ui.authorized}</dt>
-                    <dd>{summaryValue(totalSharesAuthorized)}</dd>
-                  </div>
-                  <div>
-                    <dt>{ui.issued}</dt>
-                    <dd>{summaryValue(initialIssuedShares)}</dd>
-                  </div>
-                </dl>
-              </div>
-
-              <div className="hsv-summary-section">
-                <h3>{ui.members}</h3>
-                <dl>
-                  <div>
-                    <dt>{ui.purposes}</dt>
-                    <dd>
-                      {filledPurposes}
-                      {ui.itemCount}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>{ui.shareholders}</dt>
-                    <dd>
-                      {filledFounders}
-                      {ui.personCount}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>{ui.directors}</dt>
-                    <dd>
-                      {filledDirectors}
-                      {ui.personCount}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>{ui.representative}</dt>
-                    <dd>{summaryValue(representativeDirector)}</dd>
-                  </div>
-                  <div>
-                    <dt>{ui.term}</dt>
-                    <dd>{summaryValue(directorTerm)}</dd>
-                  </div>
-                </dl>
-              </div>
-
-              <div
-                className="hsv-summary-quick-actions"
-                aria-label={ui.quickActions}
-              >
-                <Link to="/reservation" className="hsv-summary-quick-action">
-                  {ui.book}
-                </Link>
-                <Link to="/chat" className="hsv-summary-quick-action">
-                  {ui.chat}
-                </Link>
-              </div>
-            </div>
-          </aside>
         </main>
       </div>
     </div>

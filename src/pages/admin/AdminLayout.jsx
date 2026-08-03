@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import BrandLogo from "../../components/BrandLogo";
 import AdminSidebar from "./components/AdminSidebar";
 import "./admin.css";
 
@@ -44,13 +45,12 @@ export default function AdminLayout({ children }) {
   return (
     <div className={`adm-shell ${isSidebarOpen ? "sidebar-open" : ""}`}>
       <header className="adm-mobile-header">
-        <div className="adm-mobile-brand">
-          <span>M</span>
-          <div>
-            <strong>M&amp;K 사무소</strong>
-            <small>Admin Console</small>
-          </div>
-        </div>
+        <BrandLogo
+          className="adm-mobile-brand"
+          markClassName="adm-mobile-brand-mark"
+          copyClassName="adm-mobile-brand-copy"
+          subtitle="Admin Console"
+        />
       </header>
 
       <button

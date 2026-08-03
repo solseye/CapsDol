@@ -23,6 +23,7 @@ import {
   getWeekDays,
   getWeekInfo,
 } from "../utils/calendarUtils";
+import { getCurrentLanguage } from "../../../i18n/translations";
 
 const SLOT_MINUTES = 30;
 const RESERVATION_COLORS = [
@@ -41,6 +42,66 @@ const FIELD_FILTERS = [
   { value: "회계", label: "회계" },
   { value: "법무", label: "법무" },
 ];
+const BLOCK_REASON_OPTIONS = [
+  {
+    value: "내부 회의",
+    label: { ko: "내부 회의", en: "Internal meeting", ja: "社内会議" },
+  },
+  {
+    value: "휴무",
+    label: { ko: "휴무", en: "Office closed", ja: "休業" },
+  },
+  {
+    value: "외부 일정",
+    label: { ko: "외부 일정", en: "Off-site schedule", ja: "外出予定" },
+  },
+  {
+    value: "상담 준비 시간",
+    label: {
+      ko: "상담 준비 시간",
+      en: "Consultation preparation",
+      ja: "相談準備時間",
+    },
+  },
+];
+const BLOCK_MODAL_COPY = {
+  ko: {
+    modalTitle: "일정 차단",
+    selectedRange: "선택 범위",
+    reasonLegend: "차단 사유를 선택해 주세요",
+    multiHint: "여러 사유를 함께 선택할 수 있습니다.",
+    cancel: "취소",
+    submit: "범위 차단",
+    reasonRequired: "차단 사유를 하나 이상 선택해 주세요.",
+    rangeRequired: "차단할 시간 범위를 먼저 선택해 주세요.",
+    success: "선택한 시간 범위를 차단했습니다.",
+    failure: "예약 차단에 실패했습니다.",
+  },
+  en: {
+    modalTitle: "Block schedule",
+    selectedRange: "Selected range",
+    reasonLegend: "Select a reason for blocking",
+    multiHint: "You can select more than one reason.",
+    cancel: "Cancel",
+    submit: "Block range",
+    reasonRequired: "Select at least one reason.",
+    rangeRequired: "Select a time range to block first.",
+    success: "The selected time range has been blocked.",
+    failure: "Failed to block the schedule.",
+  },
+  ja: {
+    modalTitle: "予定をブロック",
+    selectedRange: "選択範囲",
+    reasonLegend: "ブロック理由を選択してください",
+    multiHint: "複数の理由を選択できます。",
+    cancel: "キャンセル",
+    submit: "範囲をブロック",
+    reasonRequired: "ブロック理由を1つ以上選択してください。",
+    rangeRequired: "先にブロックする時間範囲を選択してください。",
+    success: "選択した時間範囲をブロックしました。",
+    failure: "予定のブロックに失敗しました。",
+  },
+};
 
 function timeToMinutes(time) {
   const [hour, minute] = String(time || "00:00")
@@ -204,6 +265,8 @@ function isSlotInsideBlockRanges(ranges, date, time) {
 
 // 예약/차단 데이터를 주간 캘린더 UI로 조작하는 관리자 화면입니다.
 export default function AdminCalendarPage() {
+  const language = getCurrentLanguage();
+  const blockCopy = BLOCK_MODAL_COPY[language] || BLOCK_MODAL_COPY.ko;
   // 현재 월, 선택 날짜, 서버 데이터, 모달 상태를 한 페이지에서 함께 관리합니다.
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -222,7 +285,7 @@ export default function AdminCalendarPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState("");
   const [selectedSlot, setSelectedSlot] = useState(null);
-  const [blockReason, setBlockReason] = useState("");
+  const [selectedBlockReasons, setSelectedBlockReasons] = useState([]);
   const [fieldFilter, setFieldFilter] = useState("회계");
 
   const isMounted = useRef(false);
@@ -580,9 +643,12 @@ export default function AdminCalendarPage() {
 
   // 선택된 여러 30분 슬롯을 서버 차단 요청으로 순차 등록합니다.
   const handleCreateBlock = async () => {
-    if (!blockReason.trim()) return alert("차단 사유를 입력해 주세요.");
+    if (selectedBlockReasons.length === 0)
+      return alert(blockCopy.reasonRequired);
     if (selectedBlockRanges.length === 0)
-      return alert("차단할 시간 범위를 먼저 선택해 주세요.");
+      return alert(blockCopy.rangeRequired);
+
+    const blockReason = selectedBlockReasons.join(", ");
 
     try {
       setLoading(true);
@@ -598,14 +664,15 @@ export default function AdminCalendarPage() {
         ),
       );
 
-      alert("선택한 시간 범위를 차단했습니다.");
+      alert(blockCopy.success);
       setModalOpen(false);
       setIsBlockMode(false);
       setPendingBlocks([]);
+      setSelectedBlockReasons([]);
       await fetchAdminCalendarByCurrentMonth(true);
     } catch (err) {
       console.error(err);
-      alert(err.message || "예약 차단에 실패했습니다.");
+      alert(err.message || blockCopy.failure);
     } finally {
       setLoading(false);
     }
@@ -1200,7 +1267,7 @@ export default function AdminCalendarPage() {
                   onClick={() => {
                     if (selectedBlockRanges.length === 0)
                       return alert("차단할 시간대를 먼저 선택해 주세요.");
-                    setBlockReason("");
+                    setSelectedBlockReasons([]);
                     setModalType("create-block");
                     setModalOpen(true);
                   }}
@@ -1362,10 +1429,10 @@ export default function AdminCalendarPage() {
               </>
             ) : (
               <>
-                <h3 className="modal-title">일정 차단</h3>
+                <h3 className="modal-title">{blockCopy.modalTitle}</h3>
                 <div className="modal-content">
                   <div className="block-range-summary">
-                    <strong>선택 범위</strong>
+                    <strong>{blockCopy.selectedRange}</strong>
                     {selectedBlockRanges.map((range) => (
                       <span
                         key={`${range.date}-${range.startTime}-${range.endTime}`}
@@ -1375,28 +1442,56 @@ export default function AdminCalendarPage() {
                       </span>
                     ))}
                   </div>
-                  <label className="modal-label">차단 사유</label>
-                  <textarea
-                    className="modal-textarea"
-                    value={blockReason}
-                    onChange={(e) => setBlockReason(e.target.value)}
-                    placeholder="예: 내부 미팅, 점검, 휴무"
-                  />
+                  <fieldset className="block-reason-fieldset">
+                    <legend className="modal-label">
+                      {blockCopy.reasonLegend}
+                    </legend>
+                    <div className="block-reason-options">
+                      {BLOCK_REASON_OPTIONS.map((reason) => (
+                        <label
+                          className="block-reason-option"
+                          key={reason.value}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={selectedBlockReasons.includes(reason.value)}
+                            onChange={(event) => {
+                              setSelectedBlockReasons((current) =>
+                                event.target.checked
+                                  ? [...current, reason.value]
+                                  : current.filter(
+                                      (item) => item !== reason.value,
+                                    ),
+                              );
+                            }}
+                          />
+                          <span>
+                            {reason.label[language] || reason.label.ko}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                    <p className="modal-hint">
+                      {blockCopy.multiHint}
+                    </p>
+                  </fieldset>
                 </div>
                 <div className="modal-actions">
                   <button
                     className="adm-btn secondary"
                     onClick={() => {
+                      setSelectedBlockReasons([]);
                       setModalOpen(false);
                     }}
                   >
-                    취소
+                    {blockCopy.cancel}
                   </button>
                   <button
                     className="adm-btn danger"
                     onClick={handleCreateBlock}
+                    disabled={selectedBlockReasons.length === 0 || loading}
                   >
-                    범위 차단
+                    {blockCopy.submit}
                   </button>
                 </div>
               </>

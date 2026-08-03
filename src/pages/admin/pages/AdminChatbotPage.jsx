@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { sendQuestion } from "../../../api/chatApi";
+import FormattedChatText from "../../../components/FormattedChatText";
 import "../admin.css";
 import "../../Chat/chat.css";
 
@@ -124,7 +125,13 @@ export default function AdminChatbotPage() {
             {messages.map((message, index) => (
               <div key={index} className={`adm-ai-row ${message.type}`}>
                 <div className="adm-ai-bubble">
-                  <div className="adm-ai-text">{message.text}</div>
+                  <div className="adm-ai-text">
+                    {message.type === "bot" ? (
+                      <FormattedChatText text={message.text} />
+                    ) : (
+                      message.text
+                    )}
+                  </div>
 
                   {message.sources?.length > 0 && (
                     <div className="adm-ai-sources">

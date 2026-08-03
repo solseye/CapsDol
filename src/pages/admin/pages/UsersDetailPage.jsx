@@ -8,6 +8,7 @@ import {
 } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 
+import FormattedChatText from "../../../components/FormattedChatText";
 import { getAdminUsers } from "../../../api/adminApi";
 import { getUserChatHistory } from "../../../api/chatApi";
 import {
@@ -1117,8 +1118,10 @@ export default function UsersDetailPage() {
                         <span>ANSWER</span>
 
                         <p>
-                          {history.answer ||
-                            "저장된 답변이 없습니다."}
+                          <FormattedChatText
+                            text={history.answer}
+                            fallback="저장된 답변이 없습니다."
+                          />
                         </p>
                       </section>
 

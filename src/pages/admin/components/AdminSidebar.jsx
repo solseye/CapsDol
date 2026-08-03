@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import BrandLogo from "../../../components/BrandLogo";
 import {
   getCurrentLanguage,
   setCurrentLanguage,
@@ -63,13 +64,12 @@ export default function AdminSidebar({ onNavigate }) {
 
   return (
     <aside className="adm-sidebar">
-      <div className="adm-brand">
-        <span>◎</span>
-        <div>
-          <strong>M&amp;K 사무소</strong>
-          <small>Japan Entry OS</small>
-        </div>
-      </div>
+      <BrandLogo
+        className="adm-brand"
+        markClassName="adm-brand-mark"
+        copyClassName="adm-brand-copy"
+        subtitle="Japan Entry OS"
+      />
 
       <nav className="adm-menu" aria-label="관리자 메뉴">
         {menuItems.map((item) => (

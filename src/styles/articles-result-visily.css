@@ -177,8 +177,7 @@
   text-align: right;
 }
 
-.articles-review-purpose-list > p,
-.articles-review-date-range p {
+.articles-review-purpose-list > p {
   color: #64748b;
   font-size: 14px;
   font-weight: 700;
@@ -194,25 +193,6 @@
 
 .articles-review-purpose-list li + li {
   margin-top: 4px;
-}
-
-.articles-review-date-range {
-  border-top: 1px solid #edf1f4;
-  padding: 12px 0 0;
-}
-
-.articles-review-date-range + .articles-review-date-range {
-  margin-top: 12px;
-}
-
-.articles-review-date-range strong {
-  color: #102b45;
-  font-size: 15px;
-}
-
-.articles-review-date-range strong span {
-  color: #9aa9b5;
-  margin: 0 6px;
 }
 
 .articles-review-people-list,

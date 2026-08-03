@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, Navigate, useLocation } from "react-router-dom";
 import { sendQuestion } from "../../api/chatApi";
-import Header from "../../components/Header";
+import FormattedChatText from "../../components/FormattedChatText";
 import { getCurrentLanguage, translate } from "../../i18n/translations";
 import { getPageCopy } from "../../i18n/pageCopy";
 import "./chat.css";
@@ -112,7 +112,6 @@ export default function Chat() {
 
   return (
     <>
-      <Header isLoggedIn={isLoggedIn} />
       <div className="ai-page">
         <main className="ai-main">
           <section className="ai-chat-intro">
@@ -137,7 +136,13 @@ export default function Chat() {
                   {messages.map((message, index) => (
                     <div key={index} className={`ai-msg-row ${message.type}`}>
                       <div className="ai-bubble">
-                        <div className="ai-bubble-text">{message.text}</div>
+                        <div className="ai-bubble-text">
+                          {message.type === "bot" ? (
+                            <FormattedChatText text={message.text} />
+                          ) : (
+                            message.text
+                          )}
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -175,36 +180,42 @@ export default function Chat() {
             </div>
 
             <aside className="ai-context-panel">
-              <div className="ai-context-card">
-                <h3>{copy.faqTitle}</h3>
-                {copy.questions.map((question) => (
-                  <button
-                    type="button"
-                    key={question}
-                    onClick={() => sendMessage(question)}
-                    disabled={loading}
-                  >
-                    {question}
-                  </button>
-                ))}
-              </div>
+              <div className="ai-context-card ai-context-hub">
+                <section className="ai-context-section ai-faq-section">
+                  <h3>{copy.faqTitle}</h3>
+                  <div className="ai-faq-list">
+                    {copy.questions.map((question) => (
+                      <button
+                        type="button"
+                        key={question}
+                        onClick={() => sendMessage(question)}
+                        disabled={loading}
+                      >
+                        {question}
+                      </button>
+                    ))}
+                  </div>
+                </section>
 
-              <div className="ai-next-steps">
-                <h3>{copy.next}</h3>
-                <article className="ai-next-step-card">
-                  <h4>{copy.hearingTitle}</h4>
-                  <p>{copy.hearingBody}</p>
-                  <Link to="/hearing-sheet">
-                    {copy.hearingCta} <span>→</span>
-                  </Link>
-                </article>
-                <article className="ai-next-step-card">
-                  <h4>{copy.consultTitle}</h4>
-                  <p>{copy.consultBody}</p>
-                  <Link to="/reservation">
-                    {copy.consultCta} <span>→</span>
-                  </Link>
-                </article>
+                <section className="ai-context-section ai-next-steps">
+                  <h3>{copy.next}</h3>
+                  <div className="ai-next-step-list">
+                    <article className="ai-next-step-card">
+                      <h4>{copy.hearingTitle}</h4>
+                      <p>{copy.hearingBody}</p>
+                      <Link to="/hearing-sheet">
+                        {copy.hearingCta} <span>→</span>
+                      </Link>
+                    </article>
+                    <article className="ai-next-step-card">
+                      <h4>{copy.consultTitle}</h4>
+                      <p>{copy.consultBody}</p>
+                      <Link to="/reservation">
+                        {copy.consultCta} <span>→</span>
+                      </Link>
+                    </article>
+                  </div>
+                </section>
               </div>
 
               <details className="ai-answer-policy">

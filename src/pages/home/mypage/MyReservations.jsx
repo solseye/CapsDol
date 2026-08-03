@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import Header from "../../../components/Header";
 import "../../../App.css";
 import "../../../styles/my-reservations-visily.css";
 import "../../../styles/mypage-transition.css";
@@ -106,7 +105,6 @@ function isUpcoming(item) {
 }
 
 export default function MyReservations() {
-  const [isLoggedIn, setIsLoggedIn] = useState(null);
   const [reservations, setReservations] = useState([]);
   const [localCancelReasons, setLocalCancelReasons] = useState({});
   const [isLoading, setIsLoading] = useState(true);
@@ -139,8 +137,6 @@ export default function MyReservations() {
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-
-    setIsLoggedIn(!!token);
 
     if (token) {
       fetchReservations();
@@ -350,8 +346,6 @@ export default function MyReservations() {
 
   return (
     <>
-      <Header isLoggedIn={isLoggedIn} />
-
       <main className="my-reservations-page mypage-page-enter">
         <div className="my-reservations-shell">
           <header className="my-reservations-heading">

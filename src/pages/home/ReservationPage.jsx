@@ -1,7 +1,7 @@
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
+import BrandLogo from "../../components/BrandLogo";
 import { useMemo, useState, useEffect, useRef } from "react";
 import "../../App.css";
-import Header from "../../components/Header";
 import "../../styles/reservation-visily.css";
 import {
   createReservation,
@@ -243,7 +243,6 @@ function getWeekDates(dateValue) {
 }
 
 export default function ReservationPage() {
-  const navigate = useNavigate();
   const language = getCurrentLanguage();
   const t = (key, variables) => translate(language, key, variables);
   const ui = getReservationUiCopy();
@@ -698,15 +697,15 @@ export default function ReservationPage() {
 
   return (
     <>
-      <Header isLoggedIn={isLoggedIn} />
-
       <div className="rv-page">
         <aside className="rv-sidebar">
-          <Link to="/" className="rv-logo">
-            <span>◎</span>
-            <strong>{ui.brand}</strong>
-            <small>{ui.os}</small>
-          </Link>
+          <BrandLogo
+            className="rv-logo"
+            markClassName="rv-logo-mark"
+            copyClassName="rv-logo-copy"
+            name={ui.brand}
+            subtitle={ui.os}
+          />
 
           <nav className="rv-side-nav">
             <Link to="/">Home</Link>
@@ -1355,7 +1354,8 @@ export default function ReservationPage() {
                 onClick={async () => {
                   const isSuccess = await handleSubmit();
                   if (isSuccess) setIsConfirmModalOpen(false);
-                  navigate("/mypage");
+                  // 기존 동작을 유지하기 위해 예약 후 자동 이동을 비활성화합니다.
+                  // navigate("/mypage");
                 }}
                 disabled={isSubmitting}
               >

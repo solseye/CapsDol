@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { createArticles } from "../api/articleApi";
-import Header from "../components/Header";
 import {
   clearHearingSheetDraft,
   loadHearingSheetDraft,
@@ -42,18 +41,6 @@ function ReviewSection({ number, title, children, wide = false }) {
       </div>
       {children}
     </section>
-  );
-}
-
-function DateRange({ title, value }) {
-  return (
-    <div className="articles-review-date-range">
-      <p>{title}</p>
-      <strong>
-        {displayValue(value?.start)} <span aria-hidden="true">-</span>{" "}
-        {displayValue(value?.end)}
-      </strong>
-    </div>
   );
 }
 
@@ -140,7 +127,6 @@ export default function ArticlesPreview() {
   if (!source) {
     return (
       <>
-        <Header isLoggedIn={isLoggedIn} />
         <main className="articles-review-page articles-review-empty">
           <div className="articles-review-container">
             <p className="articles-review-eyebrow">입력 내용 확인</p>
@@ -175,10 +161,6 @@ export default function ArticlesPreview() {
     source.capitalPaymentBank?.branchName,
     source.totalSharesAuthorized,
     source.initialIssuedShares,
-    source.businessYear?.start,
-    source.businessYear?.end,
-    source.firstBusinessYear?.start,
-    source.firstBusinessYear?.end,
     source.representativeDirector,
     source.directorTerm,
     ...purposes,
@@ -188,7 +170,6 @@ export default function ArticlesPreview() {
 
   return (
     <>
-      <Header isLoggedIn={isLoggedIn} />
       <main className="articles-review-page">
         <div className="articles-review-container">
           <div className="articles-review-hero">
@@ -217,7 +198,7 @@ export default function ArticlesPreview() {
               </dl>
             </ReviewSection>
 
-            <ReviewSection number="02" title="사업·회계 정보">
+            <ReviewSection number="02" title="사업 정보">
               <div className="articles-review-purpose-list">
                 <p>사업 목적</p>
                 {purposes.length > 0 ? (
@@ -230,11 +211,6 @@ export default function ArticlesPreview() {
                   <strong>미입력</strong>
                 )}
               </div>
-              <DateRange
-                title="최초 사업연도"
-                value={source.firstBusinessYear}
-              />
-              <DateRange title="매년 사업연도" value={source.businessYear} />
             </ReviewSection>
 
             <ReviewSection number="03" title="금융·자본 정보">

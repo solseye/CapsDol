@@ -30,21 +30,28 @@
 
 .rv-logo {
   display: grid;
-  grid-template-columns: 38px 1fr;
+  grid-template-columns: 66px 1fr;
   gap: 12px;
   color: #fff;
   text-decoration: none;
 }
 
-.rv-logo span {
-  width: 38px;
+.rv-logo-mark {
+  width: 66px;
   height: 38px;
   display: grid;
   place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  color: #fff;
-  font-size: 24px;
+}
+
+.rv-logo-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.rv-logo-copy {
+  display: grid;
+  align-content: center;
 }
 
 .rv-logo strong {

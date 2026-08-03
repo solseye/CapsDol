@@ -6,6 +6,7 @@ import { loginUser, loginWithGoogle } from "../api/authApi";
 import { getSafeReturnPath, saveSession } from "../utils/authSession";
 import { getPageCopy } from "../i18n/pageCopy";
 import { getCurrentLanguage } from "../i18n/translations";
+import BrandLogo from "../components/BrandLogo";
 
 const GOOGLE_CLIENT_ID =
   process.env.REACT_APP_GOOGLE_CLIENT_ID ||
@@ -161,15 +162,16 @@ export default function Login() {
   return (
     <div className="authv-page">
       <section className="authv-brand-panel">
-        <button
-          type="button"
+        <BrandLogo
+          as="button"
           className="authv-brand"
           onClick={() => navigate("/")}
-          aria-label={copy.brandHome}
-        >
-          <span>◎</span>
-          <strong>{copy.brandName}</strong>
-        </button>
+          ariaLabel={copy.brandHome}
+          markClassName="authv-brand-mark"
+          copyClassName="authv-brand-label"
+          name={copy.brandName}
+          hideSubtitle
+        />
 
         <div className="authv-brand-copy">
           <h1>

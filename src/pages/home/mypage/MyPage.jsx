@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import Header from "../../../components/Header";
+import FormattedChatText from "../../../components/FormattedChatText";
 import { getMyReservations } from "../../../api/reservationApi";
 import { getClientFiles } from "../../../api/clientFileApi";
 import { getChatHistory } from "../../../api/chatApi";
@@ -83,6 +83,7 @@ function formatReservationDate(reservation) {
 function getStatusLabel(status) {
   switch (status) {
     case "approved":
+    case "confirmed":
       return "승인 완료";
     case "rejected":
       return "승인 거절";
@@ -124,7 +125,6 @@ function formatChatHistoryDate(dateValue) {
 }
 
 export default function MyPage() {
-  const [isLoggedIn, setIsLoggedIn] = useState(null);
   const [reservations, setReservations] = useState([]);
   const [clientFiles, setClientFiles] = useState([]);
   const [reservationLoading, setReservationLoading] = useState(true);
@@ -140,8 +140,6 @@ export default function MyPage() {
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-
-    setIsLoggedIn(!!token);
 
     if (!token) {
       setReservationLoading(false);
@@ -233,7 +231,9 @@ export default function MyPage() {
 
     return reservations
       .filter((reservation) =>
-        ["pending", "approved"].includes(reservation.status)
+        ["pending", "approved", "confirmed"].includes(
+          String(reservation.status || "").toLowerCase()
+        )
       )
       .map((reservation) => ({
         ...reservation,
@@ -250,10 +250,41 @@ export default function MyPage() {
       )[0];
   }, [reservations]);
 
+  const confirmedReservation = useMemo(() => {
+    const now = Date.now();
+
+    return reservations
+      .filter((reservation) =>
+        ["approved", "confirmed"].includes(
+          String(reservation.status || "").toLowerCase()
+        )
+      )
+      .map((reservation) => ({
+        ...reservation,
+        parsedDate: getReservationDate(reservation),
+      }))
+      .filter(
+        (reservation) =>
+          reservation.parsedDate &&
+          reservation.parsedDate.getTime() >= now
+      )
+      .sort(
+        (a, b) =>
+          a.parsedDate.getTime() - b.parsedDate.getTime()
+      )[0];
+  }, [reservations]);
+
+  const displayedReservation =
+    confirmedReservation || upcomingReservation;
+
   const checkedSteps = useMemo(() => {
     const events = loadWorkflowEvents();
     const hasPendingReview = reservations.some((item) => item.status === "pending");
-    const hasApprovedMeeting = reservations.some((item) => item.status === "approved");
+    const hasApprovedMeeting = reservations.some((item) =>
+      ["approved", "confirmed"].includes(
+        String(item.status || "").toLowerCase()
+      )
+    );
 
     return {
       strategy: Boolean(events.hearingSubmittedAt),
@@ -272,8 +303,6 @@ export default function MyPage() {
 
   return (
     <>
-      <Header isLoggedIn={isLoggedIn} />
-
       <main className="my-page-dashboard mypage-page-enter">
         <div className="my-page-shell">
           <section className="my-page-heading">
@@ -285,20 +314,40 @@ export default function MyPage() {
             </span>
           </section>
 
-          <section className="my-page-upcoming">
-            <span className="my-page-square-tag">CAL</span>
+          <section
+            className={`my-page-upcoming ${
+              confirmedReservation ? "is-confirmed" : ""
+            }`}
+            role="status"
+            aria-live="polite"
+          >
+            <span className="my-page-square-tag">
+              {confirmedReservation ? "✓" : "CAL"}
+            </span>
             <div className="my-page-upcoming-copy">
-              <p>UPCOMING CONSULTATION</p>
+              <p>
+                {confirmedReservation
+                  ? "SCHEDULE CONFIRMED"
+                  : "UPCOMING CONSULTATION"}
+              </p>
 
               {reservationLoading ? (
                 <>
                   <h2>다음 상담 일정을 확인하고 있습니다.</h2>
                   <span>잠시만 기다려 주세요.</span>
                 </>
+              ) : confirmedReservation ? (
+                <>
+                  <h2>상담 일정이 확정되었습니다.</h2>
+                  <span>
+                    {formatReservationDate(confirmedReservation)} ·{" "}
+                    {getFieldLabel(confirmedReservation.field)} 상담
+                  </span>
+                </>
               ) : upcomingReservation ? (
                 <>
                   <h2>
-                    다음 상담 일정:{" "}
+                    상담 신청을 확인하고 있습니다: {" "}
                     {formatReservationDate(upcomingReservation)}
                   </h2>
                   <span>
@@ -321,14 +370,22 @@ export default function MyPage() {
               <button
                 type="button"
                 onClick={() =>
-                  upcomingReservation &&
-                  setSelectedReservation(upcomingReservation)
+                  displayedReservation &&
+                  setSelectedReservation(displayedReservation)
                 }
-                disabled={!upcomingReservation}
+                disabled={!displayedReservation}
               >
                 상세보기
               </button>
-              <Link to="/reservation">일정 신청</Link>
+              <Link
+                to={
+                  confirmedReservation
+                    ? "/mypage/reservations"
+                    : "/reservation"
+                }
+              >
+                {confirmedReservation ? "상담 내역" : "일정 신청"}
+              </Link>
             </div>
           </section>
 
@@ -566,8 +623,10 @@ export default function MyPage() {
                             <span>ANSWER</span>
 
                             <p>
-                              {history.answer ||
-                                "저장된 답변이 없습니다."}
+                              <FormattedChatText
+                                text={history.answer}
+                                fallback="저장된 답변이 없습니다."
+                              />
                             </p>
                           </section>
                         </div>

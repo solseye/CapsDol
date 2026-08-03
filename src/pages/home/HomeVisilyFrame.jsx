@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import BrandLogo, { BrandMark } from "../../components/BrandLogo";
 import LanguageMenu from "../../components/LanguageMenu";
 import image3 from "../../assets/image3-web.jpg";
-import mkOfficeLogo from "../../assets/mk-office-logo-transparent.png";
 import { getCurrentLanguage } from "../../i18n/translations";
 import { clearSession } from "../../utils/authSession";
 import { confirmAction } from "../../utils/notifications";
@@ -1195,19 +1195,14 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
       <header
         className={`visily-nav ${isSearchDocked ? "is-search-docked" : ""}`}
       >
-        <Link
-          to="/"
+        <BrandLogo
           className="visily-brand"
-          aria-label={sections.brandHomeAria}
-        >
-          <span className="visily-brand-logo" aria-hidden="true">
-            <img src={mkOfficeLogo} alt="" />
-          </span>
-          <span>
-            <strong>{sections.brandName}</strong>
-            <small>{copy.brandSub}</small>
-          </span>
-        </Link>
+          markClassName="visily-brand-logo"
+          copyClassName="visily-brand-copy"
+          name={sections.brandName}
+          subtitle={copy.brandSub}
+          ariaLabel={sections.brandHomeAria}
+        />
 
         <nav className="visily-nav-links" aria-label="Main navigation">
           <a
@@ -1437,9 +1432,7 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
           </form>
 
           <div className="visily-trust-row" aria-label={sections.trustAria}>
-            <span className="visily-trust-logo" aria-hidden="true">
-              <img src={mkOfficeLogo} alt="" />
-            </span>
+            <BrandMark className="visily-trust-logo" />
             <p>
               <strong>{sections.brandName}</strong>
               {copy.trustText}
@@ -1748,12 +1741,13 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
 
       {/* Footer: 하단 고정 정보 영역입니다. */}
       <footer className="visily-footer">
-        <Link to="/" className="visily-footer-brand">
-          <span className="visily-footer-logo" aria-hidden="true">
-            <img src={mkOfficeLogo} alt="" />
-          </span>
-          <strong>{sections.brandName}</strong>
-        </Link>
+        <BrandLogo
+          className="visily-footer-brand"
+          markClassName="visily-footer-logo"
+          copyClassName="visily-footer-copy"
+          name={sections.brandName}
+          hideSubtitle
+        />
         <span>{sections.footer.copyright}</span>
         <nav>
           <Link to="/chat">{sections.footer.ai}</Link>

@@ -38,18 +38,18 @@ body.adm-sidebar-lock {
   gap: 10px;
   min-width: 0;
 }
-.adm-mobile-brand span {
-  width: 30px;
-  height: 30px;
+.adm-mobile-brand-mark {
+  width: 62px;
+  height: 34px;
   display: grid;
   place-items: center;
-  border-radius: 999px;
-  background: #06233c;
-  color: #ffffff;
-  font-size: 14px;
-  font-weight: 950;
 }
-.adm-mobile-brand div {
+.adm-mobile-brand-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.adm-mobile-brand-copy {
   min-width: 0;
   display: grid;
   gap: 2px;
@@ -453,6 +453,12 @@ body.adm-sidebar-lock {
 .adm-ai-bubble.loading {
   color: #657185;
   font-style: italic;
+}
+.adm-ai-text {
+  white-space: pre-wrap;
+}
+.adm-ai-text strong {
+  font-weight: 900;
 }
 .adm-ai-sources {
   display: grid;
