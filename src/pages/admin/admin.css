@@ -454,6 +454,12 @@ body.adm-sidebar-lock {
   color: #657185;
   font-style: italic;
 }
+.adm-ai-text {
+  white-space: pre-wrap;
+}
+.adm-ai-text strong {
+  font-weight: 900;
+}
 .adm-ai-sources {
   display: grid;
   gap: 8px;

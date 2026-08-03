@@ -259,8 +259,8 @@
 }
 
 .authv-tabs button.active {
-  color: #4e5966;
-  background: transparent;
+  color: #28323d;
+  background: #dfe3e8;
   box-shadow: none;
 }
 

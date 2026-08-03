@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import FormattedChatText from "../../../components/FormattedChatText";
 import Header from "../../../components/Header";
 import { getMyReservations } from "../../../api/reservationApi";
 import { getClientFiles } from "../../../api/clientFileApi";
@@ -566,8 +567,10 @@ export default function MyPage() {
                             <span>ANSWER</span>
 
                             <p>
-                              {history.answer ||
-                                "저장된 답변이 없습니다."}
+                              <FormattedChatText
+                                text={history.answer}
+                                fallback="저장된 답변이 없습니다."
+                              />
                             </p>
                           </section>
                         </div>

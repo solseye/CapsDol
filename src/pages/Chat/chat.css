@@ -615,6 +615,10 @@
   white-space: pre-wrap;
 }
 
+.ai-bubble-text strong {
+  font-weight: 900;
+}
+
 .ai-typing {
   color: #5d6673;
   font-style: italic;
