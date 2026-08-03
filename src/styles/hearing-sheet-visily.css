@@ -766,25 +766,6 @@
   border-top: 1px solid #dbe2e7;
 }
 
-.hsv-fiscal-year-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.hsv-fiscal-year-block {
-  padding: 14px;
-  border: 1px solid #dbe2e7;
-  background: #fbfcfd;
-}
-
-.hsv-fiscal-year-block h3 {
-  margin: 0 0 12px;
-  color: #263646;
-  font-size: 15px;
-  font-weight: 850;
-}
-
 .hsv-executive-flow {
   margin: 0 0 12px;
   padding: 10px 12px;
@@ -1063,7 +1044,6 @@
 
   .hsv-top-actions,
   .hsv-grid2,
-  .hsv-fiscal-year-grid,
   .hsv-helper-grid {
     grid-template-columns: 1fr;
   }
@@ -1167,10 +1147,6 @@
   .hsv-form-card {
     min-height: 0;
     padding: 18px 16px;
-  }
-
-  .hsv-fiscal-year-block {
-    padding: 12px;
   }
 
   .hsv-executive-flow {
