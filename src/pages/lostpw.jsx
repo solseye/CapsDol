@@ -3,6 +3,7 @@ import "../styles/auth-visily.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { findPassword } from "../api/authApi";
+import BrandLogo from "../components/BrandLogo";
 
 export default function LostPw() {
   const navigate = useNavigate();
@@ -42,15 +43,15 @@ export default function LostPw() {
   return (
     <div className="authv-page">
       <section className="authv-brand-panel">
-        <button
-          type="button"
+        <BrandLogo
+          as="button"
           className="authv-brand"
           onClick={() => navigate("/")}
-          aria-label="WVA 홈으로 이동"
-        >
-          <span>◎</span>
-          <strong>WVA AI Consulting</strong>
-        </button>
+          ariaLabel="M&K 사무소 홈으로 이동"
+          markClassName="authv-brand-mark"
+          copyClassName="authv-brand-label"
+          hideSubtitle
+        />
 
         <div className="authv-brand-copy">
           <h1>

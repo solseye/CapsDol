@@ -4,6 +4,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import RouteMeta from "./components/RouteMeta";
 import NotificationCenter from "./components/NotificationCenter";
 import LegacyPageLocalization from "./components/LegacyPageLocalization";
+import UserLayout from "./components/UserLayout";
 import { getCurrentLanguage, translate } from "./i18n/translations";
 
 const Home = lazy(() => import("./pages/Home"));
@@ -79,65 +80,68 @@ function App() {
           <Route path="/lostpw" element={<LostPw />} />
           <Route path="/reset-password" element={<ResetPassword />} />
 
-          <Route
-            path="/hearing-sheet"
-            element={
-              <UserRoute>
-                <HearingSheet />
-              </UserRoute>
-            }
-          />
-          <Route path="/articles-result" element={<ArticlesPreview />} />
+          <Route element={<UserLayout />}>
+            <Route
+              path="/hearing-sheet"
+              element={
+                <UserRoute>
+                  <HearingSheet />
+                </UserRoute>
+              }
+            />
+            <Route path="/articles-result" element={<ArticlesPreview />} />
 
-          <Route
-            path="/reservation"
-            element={
-              <UserRoute>
-                <Reservations />
-              </UserRoute>
-            }
-          />
-          <Route
-            path="/chat"
-            element={
-              <UserRoute>
-                <Chat />
-              </UserRoute>
-            }
-          />
-          <Route
-            path="/mypage"
-            element={
-              <UserRoute>
-                <MyPage />
-              </UserRoute>
-            }
-          />
-          <Route
-            path="/mypage/reservations"
-            element={
-              <UserRoute>
-                <MyPageReservations />
-              </UserRoute>
-            }
-          />
-          <Route
-            path="/mypage/files"
-            element={
-              <UserRoute>
-                <MyFiles />
-              </UserRoute>
-            }
-          />
+            <Route
+              path="/reservation"
+              element={
+                <UserRoute>
+                  <Reservations />
+                </UserRoute>
+              }
+            />
+            <Route
+              path="/chat"
+              element={
+                <UserRoute>
+                  <Chat />
+                </UserRoute>
+              }
+            />
+            <Route
+              path="/mypage"
+              element={
+                <UserRoute>
+                  <MyPage />
+                </UserRoute>
+              }
+            />
+            <Route
+              path="/mypage/reservations"
+              element={
+                <UserRoute>
+                  <MyPageReservations />
+                </UserRoute>
+              }
+            />
+            <Route
+              path="/mypage/files"
+              element={
+                <UserRoute>
+                  <MyFiles />
+                </UserRoute>
+              }
+            />
 
-          <Route
-            path="/myreservations"
-            element={<Navigate to="/mypage/reservations" replace />}
-          />
-          <Route
-            path="/mypage/required-documents"
-            element={<Navigate to="/mypage/files#required-documents" replace />}
-          />
+            <Route
+              path="/myreservations"
+              element={<Navigate to="/mypage/reservations" replace />}
+            />
+            <Route
+              path="/mypage/required-documents"
+              element={<Navigate to="/mypage/files#required-documents" replace />}
+            />
+            <Route path="*" element={<NotFound />} />
+          </Route>
 
           <Route
             path="/admin/calendar"
@@ -196,7 +200,6 @@ function App() {
             }
           />
 
-          <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
     </>

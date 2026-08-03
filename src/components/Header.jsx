@@ -8,6 +8,7 @@ import {
 } from "../i18n/translations";
 import { clearSession } from "../utils/authSession";
 import { confirmAction } from "../utils/notifications";
+import BrandLogo from "./BrandLogo";
 
 export default function Header({ isLoggedIn }) {
   const location = useLocation();
@@ -140,13 +141,14 @@ export default function Header({ isLoggedIn }) {
   return (
     <header className="site-header">
       <div className="container nav">
-        <Link to="/" className="brand" onClick={handleLogoClick}>
-          <span className="logo" aria-hidden="true">◎</span>
-          <span className="brand-copy">
-            <strong>{t("common.brandName")}</strong>
-            <small>{t("common.brandSub")}</small>
-          </span>
-        </Link>
+        <BrandLogo
+          className="brand"
+          markClassName="logo"
+          copyClassName="brand-copy"
+          name={t("common.brandName")}
+          subtitle={t("common.brandSub")}
+          onClick={handleLogoClick}
+        />
 
         <div className="nav-right">
           <nav className="main-nav" aria-label={t("common.mainMenu")} ref={dropdownAreaRef}>

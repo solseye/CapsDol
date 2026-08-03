@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { createArticles } from "../api/articleApi";
-import Header from "../components/Header";
 import {
   clearHearingSheetDraft,
   loadHearingSheetDraft,
@@ -128,7 +127,6 @@ export default function ArticlesPreview() {
   if (!source) {
     return (
       <>
-        <Header isLoggedIn={isLoggedIn} />
         <main className="articles-review-page articles-review-empty">
           <div className="articles-review-container">
             <p className="articles-review-eyebrow">입력 내용 확인</p>
@@ -172,7 +170,6 @@ export default function ArticlesPreview() {
 
   return (
     <>
-      <Header isLoggedIn={isLoggedIn} />
       <main className="articles-review-page">
         <div className="articles-review-container">
           <div className="articles-review-hero">

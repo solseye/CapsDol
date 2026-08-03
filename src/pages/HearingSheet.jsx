@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
-import Header from "../components/Header";
 import { getCurrentLanguage, translate } from "../i18n/translations";
 import { getHearingUiCopy } from "../i18n/hearingUi";
 import {
@@ -55,8 +54,6 @@ export default function HearingSheet() {
   const [currentStep, setCurrentStep] = useState(storedDraft?.currentStep || 0);
   const [fieldErrors, setFieldErrors] = useState({});
   const [validationIssues, setValidationIssues] = useState([]);
-  const isLoggedIn = Boolean(localStorage.getItem("accessToken"));
-
   const [purposes, setPurposes] = useState(() =>
     collectionToArray(initialSource.Purpose, [{ content: "" }]),
   );
@@ -1163,8 +1160,6 @@ ${directorText}
 
   return (
     <div className="hsv-page">
-      <Header isLoggedIn={isLoggedIn} />
-
       <div className="hsv-shell">
         <main className="hsv-main">
           <section className="hsv-content">

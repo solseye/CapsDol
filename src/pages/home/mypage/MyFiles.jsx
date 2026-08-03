@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import Header from "../../../components/Header";
 import RequiredDocumentsManager from "./RequiredDocumentsManager";
 import "../../../App.css";
 import "../../admin/admin.css";
@@ -79,7 +78,6 @@ function getFilePath(file) {
 export default function MyFiles() {
   const fileInputRef = useRef(null);
 
-  const [isLoggedIn, setIsLoggedIn] = useState(null);
 
   const [clientFiles, setClientFiles] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -136,8 +134,6 @@ export default function MyFiles() {
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-
-    setIsLoggedIn(!!token);
 
     if (token) {
       setRequiredDocumentsChecklist(ensureRequiredDocumentsChecklist());
@@ -472,8 +468,6 @@ export default function MyFiles() {
 
   return (
     <>
-      <Header isLoggedIn={isLoggedIn} />
-
       <main className="my-files-page mypage-page-enter">
         <div className="my-files-shell">
           <section className="my-files-heading">

@@ -53,6 +53,26 @@
   align-items: center;
 }
 
+.my-page-upcoming.is-confirmed {
+  border-color: #9ebbd2;
+  border-left: 5px solid #0a4d7c;
+  background: linear-gradient(90deg, #eaf4fb 0%, #ffffff 72%);
+  box-shadow: 0 12px 30px rgba(10, 77, 124, 0.12);
+}
+
+.my-page-upcoming.is-confirmed .my-page-square-tag {
+  background: #0a4d7c;
+  font-size: 20px;
+}
+
+.my-page-upcoming.is-confirmed .my-page-upcoming-copy p {
+  color: #0a4d7c;
+}
+
+.my-page-upcoming.is-confirmed .my-page-upcoming-copy h2 {
+  color: #073456;
+}
+
 .my-page-square-tag {
   display: grid;
   width: 52px;

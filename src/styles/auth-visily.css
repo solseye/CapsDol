@@ -71,14 +71,21 @@
   cursor: pointer;
 }
 
-.authv-brand span {
-  width: 34px;
-  height: 34px;
+.authv-brand-mark {
+  width: 78px;
+  height: 40px;
   display: grid;
   place-items: center;
-  border-radius: 50%;
-  color: #e7f2f1;
-  font-size: 30px;
+}
+
+.authv-brand-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.authv-brand-label {
+  display: grid;
 }
 
 .authv-brand strong {

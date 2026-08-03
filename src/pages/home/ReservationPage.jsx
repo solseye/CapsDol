@@ -1,7 +1,7 @@
 import { Link, Navigate } from "react-router-dom";
+import BrandLogo from "../../components/BrandLogo";
 import { useMemo, useState, useEffect, useRef } from "react";
 import "../../App.css";
-import Header from "../../components/Header";
 import "../../styles/reservation-visily.css";
 import {
   createReservation,
@@ -697,15 +697,15 @@ export default function ReservationPage() {
 
   return (
     <>
-      <Header isLoggedIn={isLoggedIn} />
-
       <div className="rv-page">
         <aside className="rv-sidebar">
-          <Link to="/" className="rv-logo">
-            <span>◎</span>
-            <strong>{ui.brand}</strong>
-            <small>{ui.os}</small>
-          </Link>
+          <BrandLogo
+            className="rv-logo"
+            markClassName="rv-logo-mark"
+            copyClassName="rv-logo-copy"
+            name={ui.brand}
+            subtitle={ui.os}
+          />
 
           <nav className="rv-side-nav">
             <Link to="/">Home</Link>
