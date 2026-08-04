@@ -645,8 +645,7 @@ export default function AdminCalendarPage() {
   const handleCreateBlock = async () => {
     if (selectedBlockReasons.length === 0)
       return alert(blockCopy.reasonRequired);
-    if (selectedBlockRanges.length === 0)
-      return alert(blockCopy.rangeRequired);
+    if (selectedBlockRanges.length === 0) return alert(blockCopy.rangeRequired);
 
     const blockReason = selectedBlockReasons.join(", ");
 
@@ -1454,7 +1453,9 @@ export default function AdminCalendarPage() {
                         >
                           <input
                             type="checkbox"
-                            checked={selectedBlockReasons.includes(reason.value)}
+                            checked={selectedBlockReasons.includes(
+                              reason.value,
+                            )}
                             onChange={(event) => {
                               setSelectedBlockReasons((current) =>
                                 event.target.checked
@@ -1471,9 +1472,7 @@ export default function AdminCalendarPage() {
                         </label>
                       ))}
                     </div>
-                    <p className="modal-hint">
-                      {blockCopy.multiHint}
-                    </p>
+                    <p className="modal-hint">{blockCopy.multiHint}</p>
                   </fieldset>
                 </div>
                 <div className="modal-actions">

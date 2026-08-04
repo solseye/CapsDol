@@ -40,7 +40,9 @@ export function addMinutesToTime(timeStr, mins) {
 }
 
 function timeToMinutes(timeValue) {
-  const [hour, minute] = String(timeValue || "00:00").split(":").map(Number);
+  const [hour, minute] = String(timeValue || "00:00")
+    .split(":")
+    .map(Number);
   return hour * 60 + minute;
 }
 
@@ -81,6 +83,9 @@ export function getWeekInfo(dateObj) {
     displayWeek: Math.floor((target.getDate() - 1) / 7) + 1,
   };
 }
+
+// 예약 목록과 차단 목록을 주간 캘린더가 바로 그릴 수 있는 이벤트 배열로 합칩니다.
+// calendarUtils.js
 
 // 예약 목록과 차단 목록을 주간 캘린더가 바로 그릴 수 있는 이벤트 배열로 합칩니다.
 export function buildAdminCalendarEvents({ schedules = [], blocks = [] }) {
@@ -158,29 +163,43 @@ export function buildAdminCalendarEvents({ schedules = [], blocks = [] }) {
       if (["rejected", "cancelled", "canceled"].includes(status)) return;
 
       const resId = res.reservation_id || res.id;
-      const isConfirmed =
-        status === "approved" || status === "confirmed";
+      const isConfirmed = status === "approved" || status === "confirmed";
 
       if (isConfirmed) {
+        // 1. 확정된 진짜 시간 찾기 (백엔드가 준 confirmed_range 우선 활용)
+        const actualStartTime = res.confirmed_range?.start_time
+          ? String(res.confirmed_range.start_time).slice(0, 5)
+          : tKey;
+
+        const actualEndTime = res.confirmed_range?.end_time
+          ? String(res.confirmed_range.end_time).slice(0, 5)
+          : addMinutesToTime(actualStartTime, 30);
+
+        // 2. 진짜 칸 수 계산 (30분 = 1칸)
+        const totalSpan = getSlotSpan(actualStartTime, actualEndTime);
+
+        // 3. 메인 블록 생성
         newEvents.push({
           id: resId,
           targetId: resId,
           type: "reservation",
           title: `[${getFieldLabel(schedule.field)}] ${res.username || "사용자"}`,
           date: dKey,
-          time: tKey,
-          endTime: addMinutesToTime(tKey, 90),
-          slotSpan: 3,
+          time: actualStartTime,
+          endTime: actualEndTime,
+          slotSpan: totalSpan,
           status: status || res.status,
           field: schedule.field,
           isExtension: false,
           originalData: res,
         });
 
-        [30, 60].forEach((offsetMins, idx) => {
-          const slotTime = addMinutesToTime(tKey, offsetMins);
+        // 4. 확장 블록(빈칸 방지용) 추가
+        for (let i = 1; i < totalSpan; i++) {
+          const offsetMins = i * 30;
+          const slotTime = addMinutesToTime(actualStartTime, offsetMins);
           newEvents.push({
-            id: `${resId}_ext_${idx}`,
+            id: `${resId}_ext_${i}`,
             targetId: resId,
             type: "reservation",
             title: "상담 진행",
@@ -193,7 +212,7 @@ export function buildAdminCalendarEvents({ schedules = [], blocks = [] }) {
             isExtension: true,
             originalData: res,
           });
-        });
+        }
       } else {
         newEvents.push({
           id: resId,
