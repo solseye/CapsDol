@@ -560,3 +560,42 @@ export async function modifyReservation({
 
   return data;
 }
+
+export async function syncTimeTreeReservations({
+  startDate,
+  endDate,
+  calendars,
+} = {}) {
+  const requestBody = {};
+
+  if (startDate) {
+    requestBody.start_date = startDate;
+  }
+
+  if (endDate) {
+    requestBody.end_date = endDate;
+  }
+
+  if (Array.isArray(calendars) && calendars.length > 0) {
+    requestBody.calendars = calendars;
+  }
+
+  const res = await fetchWithAuth("/reserv/timetree/sync", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(requestBody),
+  });
+
+  const data = await parseJsonResponse(res);
+
+  if (!res.ok || data.success === false) {
+    throw new Error(
+      data.error || "TimeTree 일정 동기화에 실패했습니다."
+    );
+  }
+
+  return data;
+}

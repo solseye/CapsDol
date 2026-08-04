@@ -14,6 +14,7 @@ import {
   unblockAdminReservation,
   allowAdminReservation,
   disallowAdminReservation,
+  syncTimeTreeReservations,
 } from "../../../api/reservationApi";
 import {
   addMinutesToTime,
@@ -204,14 +205,31 @@ function getDateFromKey(dateKey) {
   return new Date(year, month - 1, day);
 }
 
-function isDateInLoadedRange(date, range) {
-  if (!range) return false;
+function getMonthDateRange(dateValue) {
+  const date = new Date(dateValue);
 
-  const target = new Date(date);
-  const start = new Date(range.start);
-  const end = new Date(range.end);
+  const year = date.getFullYear();
+  const month = date.getMonth();
 
-  return target >= start && target <= end;
+  const start = new Date(year, month, 1);
+  const end = new Date(year, month + 1, 0);
+
+  const formatDate = (targetDate) => {
+    const targetYear = targetDate.getFullYear();
+    const targetMonth = String(
+      targetDate.getMonth() + 1
+    ).padStart(2, "0");
+    const targetDay = String(
+      targetDate.getDate()
+    ).padStart(2, "0");
+
+    return `${targetYear}-${targetMonth}-${targetDay}`;
+  };
+
+  return {
+    startDate: formatDate(start),
+    endDate: formatDate(end),
+  };
 }
 
 function getBlockRangesFromKeys(slotKeys) {
@@ -263,6 +281,14 @@ function isSlotInsideBlockRanges(ranges, date, time) {
   );
 }
 
+function hasTimeTreeSyncChanges(syncResult) {
+  return (
+    Number(syncResult?.createdCount || 0) > 0 ||
+    Number(syncResult?.updatedCount || 0) > 0 ||
+    Number(syncResult?.deletedCount || 0) > 0
+  );
+}
+
 // 예약/차단 데이터를 주간 캘린더 UI로 조작하는 관리자 화면입니다.
 export default function AdminCalendarPage() {
   const language = getCurrentLanguage();
@@ -274,6 +300,7 @@ export default function AdminCalendarPage() {
   const [schedules, setSchedules] = useState([]);
   const [blocks, setBlocks] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const [isBlockMode, setIsBlockMode] = useState(false);
   const [pendingBlocks, setPendingBlocks] = useState([]);
@@ -290,6 +317,7 @@ export default function AdminCalendarPage() {
 
   const isMounted = useRef(false);
   const loadedRangeRef = useRef(null);
+  const isTimeTreeSyncingRef = useRef(false);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -302,80 +330,210 @@ export default function AdminCalendarPage() {
     setBlocks(data?.blocks || []);
   }, []);
 
+  const syncCurrentMonthTimeTree = useCallback(async () => {
+    if (isTimeTreeSyncingRef.current) {
+      return null;
+    }
+
+    const { startDate, endDate } =
+      getMonthDateRange(currentDate);
+
+    try {
+      isTimeTreeSyncingRef.current = true;
+
+      return await syncTimeTreeReservations({
+        startDate,
+        endDate,
+      });
+    } finally {
+      isTimeTreeSyncingRef.current = false;
+    }
+  }, [currentDate]);
+
   // 최초 진입 시 관리자 예약/차단 전체 목록을 가져옵니다.
   const fetchAdminCalendar = useCallback(async () => {
     try {
       setLoading(true);
+
+      await syncCurrentMonthTimeTree();
+
       const data = await getAdminReservationList();
+
       applyListData(data);
     } catch (err) {
       console.error(err);
-      alert(err.message || "관리자 예약 일정을 불러오지 못했습니다.");
+
+      alert(
+        err.message ||
+          "관리자 예약 일정을 불러오지 못했습니다."
+      );
     } finally {
       setLoading(false);
     }
-  }, [applyListData]);
+  }, [applyListData, syncCurrentMonthTimeTree]);
 
   // 월 이동이나 새로고침 시 현재 월 주변 범위만 다시 조회합니다.
   const fetchAdminCalendarByCurrentMonth = useCallback(
-    async (force = false) => {
+    async () => {
       try {
-        const baseDate = `${currentDate.getFullYear()}-${String(
-          currentDate.getMonth() + 1,
-        ).padStart(2, "0")}-01`;
-
-        const currentMonth = new Date(`${baseDate}T00:00:00`);
-
-        if (
-          !force &&
-          isDateInLoadedRange(currentMonth, loadedRangeRef.current)
-        ) {
-          return;
-        }
-
         setLoading(true);
 
-        const data = await getAdminReservationListByRange({
-          baseDate,
-          previousMonthCount: 2,
-          nextMonthCount: 4,
-        });
+        const baseDate = `${currentDate.getFullYear()}-${String(
+          currentDate.getMonth() + 1
+        ).padStart(2, "0")}-01`;
+
+        await syncCurrentMonthTimeTree();
+
+        const data =
+          await getAdminReservationListByRange({
+            baseDate,
+            previousMonthCount: 2,
+            nextMonthCount: 4,
+          });
 
         applyListData(data);
 
         const base = new Date(`${baseDate}T00:00:00`);
 
-        const start = new Date(base.getFullYear(), base.getMonth() - 2, 1);
+        const start = new Date(
+          base.getFullYear(),
+          base.getMonth() - 2,
+          1
+        );
 
-        const end = new Date(base.getFullYear(), base.getMonth() + 5, 0);
+        const end = new Date(
+          base.getFullYear(),
+          base.getMonth() + 5,
+          0
+        );
 
         loadedRangeRef.current = {
           start: `${start.getFullYear()}-${String(
-            start.getMonth() + 1,
+            start.getMonth() + 1
           ).padStart(2, "0")}-01`,
-          end: `${end.getFullYear()}-${String(end.getMonth() + 1).padStart(
-            2,
-            "0",
-          )}-${String(end.getDate()).padStart(2, "0")}`,
+
+          end: `${end.getFullYear()}-${String(
+            end.getMonth() + 1
+          ).padStart(2, "0")}-${String(
+            end.getDate()
+          ).padStart(2, "0")}`,
         };
       } catch (err) {
         console.error(err);
-        alert("일정을 새로고침하지 못했습니다.");
+
+        alert(
+          err.message ||
+            "일정을 새로고침하지 못했습니다."
+        );
       } finally {
         setLoading(false);
       }
     },
-    [applyListData, currentDate],
+    [
+      applyListData,
+      currentDate,
+      syncCurrentMonthTimeTree,
+    ]
   );
 
+  const refreshCalendar = useCallback(async () => {
+    try {
+      const syncResult = await syncCurrentMonthTimeTree();
+
+      if (!syncResult) {
+        return;
+      }
+
+      if (!hasTimeTreeSyncChanges(syncResult)) {
+        return;
+      }
+
+      const baseDate = `${currentDate.getFullYear()}-${String(
+        currentDate.getMonth() + 1
+      ).padStart(2, "0")}-01`;
+
+      const data = await getAdminReservationListByRange({
+        baseDate,
+        previousMonthCount: 2,
+        nextMonthCount: 4,
+      });
+
+      applyListData(data);
+    } catch (err) {
+      console.error(
+        "TimeTree 자동 동기화 실패:",
+        err
+      );
+    }
+  }, [
+    applyListData,
+    currentDate,
+    syncCurrentMonthTimeTree,
+  ]);
+
   useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    const role = localStorage.getItem("role");
+
+    setIsAdmin(!!token && role === "admin");
+  }, []);
+
+  useEffect(() => {
+    if (!isAdmin) {
+      return;
+    }
+
     if (!isMounted.current) {
       isMounted.current = true;
       fetchAdminCalendar();
     } else {
       fetchAdminCalendarByCurrentMonth();
     }
-  }, [year, month, fetchAdminCalendar, fetchAdminCalendarByCurrentMonth]);
+  }, [
+    isAdmin,
+    year,
+    month,
+    fetchAdminCalendar,
+    fetchAdminCalendarByCurrentMonth,
+  ]);
+
+  useEffect(() => {
+    if (!isAdmin) {
+      return;
+    }
+
+    const intervalId = window.setInterval(() => {
+      refreshCalendar();
+    }, 60000);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [isAdmin, refreshCalendar]);
+
+  useEffect(() => {
+    if (!isAdmin) {
+      return;
+    }
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        refreshCalendar();
+      }
+    };
+
+    document.addEventListener(
+      "visibilitychange",
+      handleVisibilityChange,
+    );
+
+    return () => {
+      document.removeEventListener(
+        "visibilitychange",
+        handleVisibilityChange,
+      );
+    };
+  }, [isAdmin, refreshCalendar]);
 
   // 서버 데이터를 캘린더 셀에 바로 배치할 이벤트 목록으로 변환합니다.
   const filteredSchedules = useMemo(
@@ -586,7 +744,7 @@ export default function AdminCalendarPage() {
         setApprovalDraft(null);
         setApprovalFocus(null);
         setModalOpen(false);
-        await fetchAdminCalendarByCurrentMonth(true);
+        await fetchAdminCalendarByCurrentMonth();
       } catch (err) {
         alert(err.message || "상담 승인 처리에 실패했습니다.");
       } finally {
@@ -668,7 +826,7 @@ export default function AdminCalendarPage() {
       setIsBlockMode(false);
       setPendingBlocks([]);
       setSelectedBlockReasons([]);
-      await fetchAdminCalendarByCurrentMonth(true);
+      await fetchAdminCalendarByCurrentMonth();
     } catch (err) {
       console.error(err);
       alert(err.message || blockCopy.failure);
@@ -735,7 +893,7 @@ export default function AdminCalendarPage() {
           ]);
         }
         setModalOpen(false);
-        await fetchAdminCalendarByCurrentMonth(true);
+        await fetchAdminCalendarByCurrentMonth();
       } catch (err) {
         alert("불허 처리에 실패했습니다.");
       } finally {

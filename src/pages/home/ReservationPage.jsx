@@ -6,6 +6,7 @@ import "../../styles/reservation-visily.css";
 import {
   createReservation,
   getReservationListByRange,
+  syncTimeTreeReservations,
 } from "../../api/reservationApi";
 import {
   formatTranslatedMonth,
@@ -121,6 +122,33 @@ function isDateInLoadedRange(date, range) {
   const end = new Date(range.end);
 
   return target >= start && target <= end;
+}
+
+function getMonthDateRange(dateValue) {
+  const date = new Date(dateValue);
+
+  const year = date.getFullYear();
+  const month = date.getMonth();
+
+  const start = new Date(year, month, 1);
+  const end = new Date(year, month + 1, 0);
+
+  const formatDate = (targetDate) => {
+    const targetYear = targetDate.getFullYear();
+    const targetMonth = String(
+      targetDate.getMonth() + 1
+    ).padStart(2, "0");
+    const targetDay = String(
+      targetDate.getDate()
+    ).padStart(2, "0");
+
+    return `${targetYear}-${targetMonth}-${targetDay}`;
+  };
+
+  return {
+    startDate: formatDate(start),
+    endDate: formatDate(end),
+  };
 }
 
 function addMinutesToTime(time, minutesToAdd) {
@@ -299,13 +327,37 @@ export default function ReservationPage() {
       try {
         setListError("");
 
-        const currentMonth = new Date(getMonthStartIso(viewDate));
+        const { startDate, endDate } =
+          getMonthDateRange(viewDate);
 
-        // 이미 불러온 범위 안이면 API 호출하지 않음
-        if (isDateInLoadedRange(currentMonth, loadedRangeRef.current)) {
+        // 1. 현재 보고 있는 달의 TimeTree 일정을 먼저 동기화
+        const syncResult = await syncTimeTreeReservations({
+          startDate,
+          endDate,
+        });
+
+        const hasTimeTreeChanges =
+          Number(syncResult.createdCount || 0) > 0 ||
+          Number(syncResult.updatedCount || 0) > 0 ||
+          Number(syncResult.deletedCount || 0) > 0;
+
+        const currentMonth = new Date(
+          `${getMonthStartIso(viewDate)}T00:00:00`,
+        );
+
+        // 2. 기존 7개월 범위 안이고,
+        // TimeTree에서 변경된 내용도 없으면 목록 API 생략
+        if (
+          !hasTimeTreeChanges &&
+          isDateInLoadedRange(
+            currentMonth,
+            loadedRangeRef.current,
+          )
+        ) {
           return;
         }
 
+        // 3. TimeTree 변경이 있거나 로드 범위 밖이면 목록 재조회
         const baseDate = getMonthStartIso(viewDate);
 
         const data = await getReservationListByRange({
@@ -314,26 +366,44 @@ export default function ReservationPage() {
           nextMonthCount: 4,
         });
 
-        setBlocks(data.blocks || []);
+        setBlocks(
+          Array.isArray(data.blocks) ? data.blocks : [],
+        );
 
-        const base = new Date(baseDate);
+        const base = new Date(`${baseDate}T00:00:00`);
 
-        const start = new Date(base);
-        start.setMonth(start.getMonth() - 2);
-        start.setDate(1);
+        const start = new Date(
+          base.getFullYear(),
+          base.getMonth() - 2,
+          1,
+        );
 
-        const end = new Date(base);
-        end.setMonth(end.getMonth() + 5);
-        end.setDate(0);
+        const end = new Date(
+          base.getFullYear(),
+          base.getMonth() + 5,
+          0,
+        );
 
         loadedRangeRef.current = {
-          start: start.toISOString().slice(0, 10),
-          end: end.toISOString().slice(0, 10),
+          start: `${start.getFullYear()}-${String(
+            start.getMonth() + 1,
+          ).padStart(2, "0")}-01`,
+
+          end: `${end.getFullYear()}-${String(
+            end.getMonth() + 1,
+          ).padStart(2, "0")}-${String(
+            end.getDate(),
+          ).padStart(2, "0")}`,
         };
       } catch (err) {
         console.error("예약 일정 조회 실패:", err);
+
         setListError(
-          err.message || translate(language, "reservation.listLoadError"),
+          err.message ||
+            translate(
+              language,
+              "reservation.listLoadError",
+            ),
         );
       }
     };
