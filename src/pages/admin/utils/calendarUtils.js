@@ -52,6 +52,51 @@ function getSlotSpan(startTime, endTime) {
   return Math.max(1, Math.ceil((end - start) / 30));
 }
 
+const ADMIN_CALENDAR_START_TIME = "09:00";
+const ADMIN_CALENDAR_END_TIME = "18:00";
+
+function minutesToTime(totalMinutes) {
+  const hour = Math.floor(totalMinutes / 60);
+  const minute = totalMinutes % 60;
+
+  return `${String(hour).padStart(2, "0")}:${String(
+    minute
+  ).padStart(2, "0")}`;
+}
+
+function clampBlockToAdminCalendar(
+  startTime,
+  endTime
+) {
+  const calendarStart = timeToMinutes(
+    ADMIN_CALENDAR_START_TIME
+  );
+  const calendarEnd = timeToMinutes(
+    ADMIN_CALENDAR_END_TIME
+  );
+
+  const blockStart = timeToMinutes(startTime);
+  const blockEnd = timeToMinutes(endTime);
+
+  const visibleStart = Math.max(
+    blockStart,
+    calendarStart
+  );
+  const visibleEnd = Math.min(
+    blockEnd,
+    calendarEnd
+  );
+
+  if (visibleEnd <= visibleStart) {
+    return null;
+  }
+
+  return {
+    startTime: minutesToTime(visibleStart),
+    endTime: minutesToTime(visibleEnd),
+  };
+}
+
 // 예약 분야 코드를 관리자 화면 라벨로 바꿉니다.
 export function getFieldLabel(field) {
   switch (field) {
@@ -93,23 +138,60 @@ export function buildAdminCalendarEvents({ schedules = [], blocks = [] }) {
 
   // 연속된 차단 슬롯은 첫 슬롯에 병합 정보를 쌓아 한 덩어리처럼 보여줍니다.
   const parsedBlocks = blocks
-    .map((b) => ({
+  .map((b) => {
+    const rawStartTime = String(
+      b.blocked_time || b.start_time || ""
+    ).slice(0, 5);
+
+    const rawEndTime = String(
+      b.end_time || ""
+    ).slice(0, 5);
+
+    if (!rawStartTime) {
+      return null;
+    }
+
+    const fallbackEndTime = addMinutesToTime(
+      rawStartTime,
+      30
+    );
+
+    const visibleRange = clampBlockToAdminCalendar(
+      rawStartTime,
+      rawEndTime || fallbackEndTime
+    );
+
+    // 관리자 캘린더 표시 시간과 전혀 겹치지 않는 블록
+    if (!visibleRange) {
+      return null;
+    }
+
+    return {
       id: b.id || b.block_id,
       targetId: b.id || b.block_id,
       type: "block",
       title: "일정 차단",
-      date: getDateKey(b.blocked_date),
-      time: String(b.blocked_time || "").slice(0, 5),
-      endTime: String(b.end_time || "").slice(0, 5),
+      date: getDateKey(
+        b.blocked_date ||
+          b.available_date ||
+          b.date
+      ),
+      time: visibleRange.startTime,
+      endTime: visibleRange.endTime,
       reason: b.reason || "관리자 차단",
       field: b.field,
       originalData: b,
-    }))
-    .filter((b) => b.date && b.time)
-    .sort((a, b) => {
-      if (a.date !== b.date) return a.date.localeCompare(b.date);
-      return a.time.localeCompare(b.time);
-    });
+    };
+  })
+  .filter(Boolean)
+  .filter((b) => b.date && b.time)
+  .sort((a, b) => {
+    if (a.date !== b.date) {
+      return a.date.localeCompare(b.date);
+    }
+
+    return a.time.localeCompare(b.time);
+  });
 
   let lastBaseBlock = null;
 

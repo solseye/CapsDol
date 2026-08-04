@@ -1306,7 +1306,7 @@ export default function AdminCalendarPage() {
                           dateStr,
                           addMinutesToTime(time, SLOT_MINUTES),
                         );
-
+                        
                       return (
                         <div
                           key={`${dateStr}-${time}`}
@@ -1346,19 +1346,34 @@ export default function AdminCalendarPage() {
                               }}
                             />
                           )}
+                          
                           {displayEvent && (
                             <div
-                              className={`event-card ${displayEvent.type === "block" ? "block" : displayEvent.status} ${isPast ? "past-event" : ""}`}
+                              className={`event-card ${
+                                displayEvent.type === "block"
+                                  ? "block"
+                                  : displayEvent.status
+                              } ${isPast ? "past-event" : ""}`}
                               style={{
                                 "--event-user-color":
                                   displayEvent.status === "pending"
                                     ? getReservationColor(
                                         getReservationKey(
-                                          displayEvent.originalData,
-                                        ),
+                                          displayEvent.originalData
+                                        )
                                       )
                                     : undefined,
-                                height: `calc(${displayEvent.slotSpan * 100}% - 2px)`,
+
+                                top:
+                                  displayEvent.type === "block"
+                                    ? "0"
+                                    : "1px",
+
+                                height:
+                                  displayEvent.type === "block"
+                                    ? `calc(${displayEvent.slotSpan} * var(--calendar-slot-height))`
+                                    : `calc(${displayEvent.slotSpan} * var(--calendar-slot-height) - 2px)`,
+
                                 zIndex: 10 + displayEvent.slotSpan,
                               }}
                               onMouseDown={(mouseEvent) =>
