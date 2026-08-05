@@ -359,7 +359,6 @@ const HOME_SECTIONS = {
           name: "김충황",
           role: "사법서사·행정서사",
           careers: [
-            "2011년 오사카 체육대학 건강복지학부 졸업",
             "2016년 한일을 연결하는 사법서사 사무소 근무",
             "2023년 사법서사 시험 합격",
             "2024년 히카리 사법서사 사무소 개업",
@@ -617,7 +616,6 @@ const HOME_SECTIONS = {
           name: "Mitsuaki Kanemura",
           role: "Judicial Scrivener · Administrative Scrivener",
           careers: [
-            "Graduated from Osaka University of Health and Sport Sciences in 2011",
             "Joined a judicial scrivener office connecting Korea and Japan in 2016",
             "Passed the judicial scrivener examination in 2023",
             "Opened Hikari Judicial Scrivener Office in 2024",
@@ -872,7 +870,7 @@ const HOME_SECTIONS = {
       people: [
         {
           initial: "K",
-          name: "金 明求",
+          name: "金明究",
           role: "公認会計士・税理士",
           careers: [
             "2008年 公認会計士試験合格",
@@ -894,10 +892,9 @@ const HOME_SECTIONS = {
         },
         {
           initial: "G",
-          name: "金村 光明",
+          name: "金充晃",
           role: "司法書士・行政書士",
           careers: [
-            "2011年 大阪体育大学健康福祉学部卒業",
             "2016年 韓日をつなぐ司法書士事務所勤務",
             "2023年 司法書士試験合格",
             "2024年 ひかり司法書士事務所開業",

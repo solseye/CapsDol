@@ -35,7 +35,6 @@ export default function SupportInfo() {
       name: t("home.expert2Name"),
       role: t("home.expert2Role"),
       careers: [
-        t("home.expert2Career1"),
         t("home.expert2Career2"),
         t("home.expert2Career3"),
         t("home.expert2Career4"),

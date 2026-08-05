@@ -305,7 +305,7 @@ const COPY = {
       {
         field: "accounting",
         id: "kim",
-        name: "金 明求",
+        name: "金明究",
         title: "日本税務・会計専門家",
         description:
           "日本法人設立後の会計、税務申告、資金繰りの確認を支援します。",
@@ -316,7 +316,7 @@ const COPY = {
       {
         field: "law",
         id: "kanemura",
-        name: "金村 光明",
+        name: "金充晃",
         title: "司法書士・行政書士",
         description:
           "会社設立、ビザ取得、定款・登記などの法務手続を担当します。",
