@@ -46,10 +46,77 @@ function timeToMinutes(timeValue) {
   return hour * 60 + minute;
 }
 
+function normalizeTime(timeValue) {
+  const match = String(timeValue || "").match(/^(\d{1,2}):(\d{2})/);
+
+  if (!match) return "";
+
+  const hour = Number(match[1]);
+  const minute = Number(match[2]);
+
+  if (
+    !Number.isInteger(hour) ||
+    !Number.isInteger(minute) ||
+    hour < 0 ||
+    hour > 23 ||
+    minute < 0 ||
+    minute > 59
+  ) {
+    return "";
+  }
+
+  return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+}
+
 function getSlotSpan(startTime, endTime) {
   const start = timeToMinutes(startTime);
   const end = timeToMinutes(endTime);
   return Math.max(1, Math.ceil((end - start) / 30));
+}
+
+function getConfirmedReservationRange(reservation, fallbackDate, fallbackTime) {
+  const range =
+    reservation.confirmed_range ||
+    reservation.approved_range ||
+    reservation.selected_range ||
+    reservation.confirmed_ranges?.[0] ||
+    reservation.approved_ranges?.[0] ||
+    {};
+
+  const date = getDateKey(
+    range.date ||
+      range.selected_date ||
+      reservation.confirmed_date ||
+      reservation.approved_date ||
+      reservation.selected_date ||
+      fallbackDate,
+  );
+
+  const startTime = normalizeTime(
+    range.start_time ||
+      range.startTime ||
+      reservation.confirmed_start_time ||
+      reservation.approved_start_time ||
+      reservation.start_time ||
+      reservation.selected_time ||
+      fallbackTime,
+  );
+
+  const requestedEndTime = normalizeTime(
+    range.end_time ||
+      range.endTime ||
+      reservation.confirmed_end_time ||
+      reservation.approved_end_time ||
+      reservation.end_time,
+  );
+
+  const endTime =
+    requestedEndTime &&
+    timeToMinutes(requestedEndTime) > timeToMinutes(startTime)
+      ? requestedEndTime
+      : addMinutesToTime(startTime, 30);
+
+  return { date, startTime, endTime };
 }
 
 const ADMIN_CALENDAR_START_TIME = "09:00";
@@ -135,6 +202,7 @@ export function getWeekInfo(dateObj) {
 // 예약 목록과 차단 목록을 주간 캘린더가 바로 그릴 수 있는 이벤트 배열로 합칩니다.
 export function buildAdminCalendarEvents({ schedules = [], blocks = [] }) {
   const newEvents = [];
+  const renderedConfirmedReservations = new Set();
 
   // 연속된 차단 슬롯은 첫 슬롯에 병합 정보를 쌓아 한 덩어리처럼 보여줍니다.
   const parsedBlocks = blocks
@@ -248,14 +316,30 @@ export function buildAdminCalendarEvents({ schedules = [], blocks = [] }) {
       const isConfirmed = status === "approved" || status === "confirmed";
 
       if (isConfirmed) {
-        // 1. 확정된 진짜 시간 찾기 (백엔드가 준 confirmed_range 우선 활용)
-        const actualStartTime = res.confirmed_range?.start_time
-          ? String(res.confirmed_range.start_time).slice(0, 5)
-          : tKey;
+        const confirmedReservationKey =
+          resId === undefined || resId === null ? "" : String(resId);
 
-        const actualEndTime = res.confirmed_range?.end_time
-          ? String(res.confirmed_range.end_time).slice(0, 5)
-          : addMinutesToTime(actualStartTime, 30);
+        if (
+          confirmedReservationKey &&
+          renderedConfirmedReservations.has(confirmedReservationKey)
+        ) {
+          return;
+        }
+
+        const confirmedRange = getConfirmedReservationRange(
+          res,
+          dKey,
+          tKey,
+        );
+
+        if (!confirmedRange.date || !confirmedRange.startTime) return;
+
+        if (confirmedReservationKey) {
+          renderedConfirmedReservations.add(confirmedReservationKey);
+        }
+
+        const actualStartTime = confirmedRange.startTime;
+        const actualEndTime = confirmedRange.endTime;
 
         // 2. 진짜 칸 수 계산 (30분 = 1칸)
         const totalSpan = getSlotSpan(actualStartTime, actualEndTime);
@@ -266,7 +350,7 @@ export function buildAdminCalendarEvents({ schedules = [], blocks = [] }) {
           targetId: resId,
           type: "reservation",
           title: `[${getFieldLabel(schedule.field)}] ${res.username || "사용자"}`,
-          date: dKey,
+          date: confirmedRange.date,
           time: actualStartTime,
           endTime: actualEndTime,
           slotSpan: totalSpan,
@@ -285,7 +369,7 @@ export function buildAdminCalendarEvents({ schedules = [], blocks = [] }) {
             targetId: resId,
             type: "reservation",
             title: "상담 진행",
-            date: dKey,
+            date: confirmedRange.date,
             time: slotTime,
             endTime: addMinutesToTime(slotTime, 30),
             slotSpan: 1,
