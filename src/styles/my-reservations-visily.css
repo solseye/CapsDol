@@ -356,8 +356,7 @@
   background: #fff;
   border: 1px solid #cbd5dd;
   box-shadow: 0 24px 70px rgba(4, 20, 33, 0.22);
-  animation: my-reservation-modal-in 240ms cubic-bezier(0.22, 1, 0.36, 1)
-    both;
+  animation: my-reservation-modal-in 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .my-reservation-modal-head {

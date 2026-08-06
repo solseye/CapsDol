@@ -4,7 +4,6 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import RouteMeta from "./components/RouteMeta";
 import NotificationCenter from "./components/NotificationCenter";
 import LegacyPageLocalization from "./components/LegacyPageLocalization";
-import BlockAdminRoute from "./components/BlockAdminRoute";
 import UserLayout from "./components/UserLayout";
 import { getCurrentLanguage, translate } from "./i18n/translations";
 
@@ -74,46 +73,12 @@ function App() {
       <LegacyPageLocalization />
       <Suspense fallback={<LoadingScreen />}>
         <Routes>
-          <Route
-            path="/"
-            element={
-              <BlockAdminRoute>
-                <Home />
-              </BlockAdminRoute>
-            }
-          />
-          <Route
-            path="/signup"
-            element={
-              <BlockAdminRoute>
-                <Signup />
-              </BlockAdminRoute>
-            }
-          />
-          <Route
-            path="/lostid"
-            element={
-              <BlockAdminRoute>
-                <LostId />
-              </BlockAdminRoute>
-            }
-          />
-          <Route
-            path="/lostpw"
-            element={
-              <BlockAdminRoute>
-                <LostPw />
-              </BlockAdminRoute>
-            }
-          />
-          <Route
-            path="/reset-password"
-            element={
-              <BlockAdminRoute>
-                <ResetPassword />
-              </BlockAdminRoute>
-            }
-          />
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/lostid" element={<LostId />} />
+          <Route path="/lostpw" element={<LostPw />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
 
           <Route element={<UserLayout />}>
             <Route

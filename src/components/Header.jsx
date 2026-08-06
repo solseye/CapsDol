@@ -23,6 +23,20 @@ export default function Header({ isLoggedIn }) {
   const isReservationSection = location.pathname === "/reservation";
   const isHearingSection = location.pathname === "/hearing-sheet";
   const showLanguageMenu = true;
+  const timeoutRef = useRef(null);
+
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    setOpenDropdown("mypage");
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setOpenDropdown(null);
+    }, 500);
+  };
 
   const mainNavItems = isUserWorkspace
     ? [{ to: "/reservation", label: t("common.navReservation") }]
@@ -153,13 +167,16 @@ export default function Header({ isLoggedIn }) {
             <ul>
               {isUserWorkspace ? (
                 <>
-                  <li className="nav-dropdown">
+                  <li
+                    className="nav-dropdown"
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                  >
                     <button
                       type="button"
                       className={`nav-dropdown-trigger ${location.pathname.startsWith("/mypage") ? "active" : ""}`}
                       aria-expanded={openDropdown === "mypage"}
                       aria-haspopup="menu"
-                      onClick={() => toggleDropdown("mypage")}
                     >
                       {t("common.navMyPage")} <span aria-hidden="true">⌄</span>
                     </button>
@@ -167,13 +184,6 @@ export default function Header({ isLoggedIn }) {
                       className={`nav-dropdown-menu ${openDropdown === "mypage" ? "is-open" : ""}`}
                       role="menu"
                     >
-                      <Link
-                        to="/mypage"
-                        role="menuitem"
-                        onClick={() => setOpenDropdown(null)}
-                      >
-                        {t("common.myPageHome")}
-                      </Link>
                       <Link
                         to="/mypage/reservations"
                         role="menuitem"
@@ -188,10 +198,10 @@ export default function Header({ isLoggedIn }) {
                       >
                         {t("common.myFiles")}
                       </Link>
-
                       <Link
                         to="/reservation"
                         className={isReservationSection ? "active" : ""}
+                        onClick={() => setOpenDropdown(null)}
                       >
                         {t("common.navReservation")}
                       </Link>

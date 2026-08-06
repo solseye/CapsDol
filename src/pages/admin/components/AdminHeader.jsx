@@ -27,6 +27,10 @@ export default function AdminHeader() {
           <input placeholder="Search documents or reservations..." />
         </div>
 
+        <Link to="/" className="adm-btn ghost adm-link-btn">
+          홈으로
+        </Link>
+
         <button type="button" className="adm-btn ghost" onClick={handleLogout}>
           로그아웃
         </button>

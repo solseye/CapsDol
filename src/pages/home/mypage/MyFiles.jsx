@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import RequiredDocumentsManager from "./RequiredDocumentsManager";
 import "../../../App.css";
 import "../../admin/admin.css";
@@ -77,7 +78,6 @@ function getFilePath(file) {
 
 export default function MyFiles() {
   const fileInputRef = useRef(null);
-
 
   const [clientFiles, setClientFiles] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -470,15 +470,16 @@ export default function MyFiles() {
     <>
       <main className="my-files-page mypage-page-enter">
         <div className="my-files-shell">
-          <section className="my-files-heading">
+          <header className="my-files-heading">
+            <p>MY FILES</p>
             <div>
-              <p>MY FILES</p>
               <h1>내 파일 관리</h1>
-              <span>
-                일본 진출과 전문가 상담에 필요한 자료를 제출하고 관리합니다.
-              </span>
+              <Link to="/mypage">마이페이지로</Link>
             </div>
-          </section>
+            <span>
+              일본 진출과 전문가 상담에 필요한 자료를 제출하고 관리합니다.
+            </span>{" "}
+          </header>
 
           <section className="my-files-stats" aria-label="파일 현황">
             <article>
