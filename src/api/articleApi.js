@@ -1,4 +1,4 @@
-const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+import { fetchWithAuth } from "./authFetch";
 
 async function parseJsonResponse(res) {
   try {
@@ -9,19 +9,11 @@ async function parseJsonResponse(res) {
 }
 
 export async function createArticles(payload) {
-  const token = localStorage.getItem("accessToken");
-
-  if (!token) {
-    throw new Error("로그인이 필요합니다.");
-  }
-
-  const res = await fetch(`${BASE_URL}/conv/articles`, {
+  const res = await fetchWithAuth("/conv/articles", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
-    credentials: "include",
     body: JSON.stringify(payload),
   });
 

@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import BrandLogo from "../../../components/BrandLogo";
 import {
   getCurrentLanguage,
   setCurrentLanguage,
 } from "../../../i18n/translations";
+import { logoutAndGoHome } from "../../../utils/logout";
 import "./adminSidebar.css";
 
 const menuItems = [
@@ -28,7 +29,6 @@ const menuItems = [
 
 // 관리자 주요 메뉴, 언어 선택, 로그아웃을 한 곳에서 제공합니다.
 export default function AdminSidebar({ onNavigate }) {
-  const navigate = useNavigate();
   const [isLangOpen, setIsLangOpen] = useState(false);
   const langMenuRef = useRef(null);
   const [selectedLang, setSelectedLang] = useState(getCurrentLanguage);
@@ -44,14 +44,11 @@ export default function AdminSidebar({ onNavigate }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // 로컬 인증 정보를 삭제하고 사용자 홈으로 돌아갑니다.
-  const handleLogout = () => {
-    if (window.confirm("로그아웃 하시겠습니까?")) {
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("user");
-      localStorage.removeItem("role");
-      navigate("/");
-    }
+  // 서버/로컬 세션을 함께 정리하고 메인 페이지로 돌아갑니다.
+  const handleLogout = async () => {
+    if (!window.confirm("로그아웃 하시겠습니까?")) return;
+
+    await logoutAndGoHome();
   };
 
   // 선택한 관리자 언어를 로컬 스토리지에 저장합니다.

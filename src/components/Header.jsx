@@ -1,9 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
-import { logoutUser } from "../api/authApi";
 import LanguageMenu from "./LanguageMenu";
 import { getCurrentLanguage, translate } from "../i18n/translations";
-import { clearSession } from "../utils/authSession";
+import { logoutAndGoHome } from "../utils/logout";
 import { confirmAction } from "../utils/notifications";
 import BrandLogo from "./BrandLogo";
 
@@ -135,15 +134,7 @@ export default function Header({ isLoggedIn }) {
 
     if (!confirmed) return;
 
-    try {
-      await logoutUser();
-      clearSession();
-      window.location.href = "/";
-    } catch (err) {
-      console.error("로그아웃 실패:", err);
-      clearSession();
-      window.location.href = "/";
-    }
+    await logoutAndGoHome();
   };
 
   return (

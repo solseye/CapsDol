@@ -44,6 +44,7 @@ export default function BrandLogo({
     );
   }
 
+  // 관리자 화면처럼 로고로 홈에 갈 수 없어야 하는 곳에서 사용합니다.
   if (as === "static") {
     return <div className={className}>{content}</div>;
   }

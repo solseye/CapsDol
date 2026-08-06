@@ -1,6 +1,8 @@
 import { lazy, Suspense, useEffect } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
+import BlockAdminRoute from "./components/BlockAdminRoute";
+import SessionWatcher from "./components/SessionWatcher";
 import RouteMeta from "./components/RouteMeta";
 import NotificationCenter from "./components/NotificationCenter";
 import LegacyPageLocalization from "./components/LegacyPageLocalization";
@@ -56,7 +58,11 @@ function UserRoute({ children }) {
 }
 
 function AdminRoute({ children }) {
-  return <AdminLayout>{children}</AdminLayout>;
+  return (
+    <ProtectedRoute role="admin">
+      <AdminLayout>{children}</AdminLayout>
+    </ProtectedRoute>
+  );
 }
 
 function App() {
@@ -69,18 +75,60 @@ function App() {
   return (
     <>
       <RouteMeta />
+      <SessionWatcher />
       <NotificationCenter />
       <LegacyPageLocalization />
       <Suspense fallback={<LoadingScreen />}>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route
+            path="/"
+            element={
+              <BlockAdminRoute>
+                <Home />
+              </BlockAdminRoute>
+            }
+          />
           <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/lostid" element={<LostId />} />
-          <Route path="/lostpw" element={<LostPw />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route
+            path="/signup"
+            element={
+              <BlockAdminRoute>
+                <Signup />
+              </BlockAdminRoute>
+            }
+          />
+          <Route
+            path="/lostid"
+            element={
+              <BlockAdminRoute>
+                <LostId />
+              </BlockAdminRoute>
+            }
+          />
+          <Route
+            path="/lostpw"
+            element={
+              <BlockAdminRoute>
+                <LostPw />
+              </BlockAdminRoute>
+            }
+          />
+          <Route
+            path="/reset-password"
+            element={
+              <BlockAdminRoute>
+                <ResetPassword />
+              </BlockAdminRoute>
+            }
+          />
 
-          <Route element={<UserLayout />}>
+          <Route
+            element={
+              <BlockAdminRoute>
+                <UserLayout />
+              </BlockAdminRoute>
+            }
+          >
             <Route
               path="/hearing-sheet"
               element={

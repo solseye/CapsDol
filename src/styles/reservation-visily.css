@@ -2081,7 +2081,7 @@
 }
 
 .rv-schedule-slot:hover:not(:disabled) {
-  background: #edf4fb;
+  background: #06233c;
 }
 
 .rv-schedule-slot.selected {
@@ -4429,4 +4429,45 @@
 /* 버튼이 가로로 동일한 비율을 가지도록 설정 */
 .rv-redirect-actions .btn {
   flex: 1;
+}
+
+/* 버튼 공통 스타일 (가로 동일 비율 배치 등) */
+.rv-redirect-button {
+  flex: 1;
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+/* 아니오 버튼 (취소/서브 스타일) */
+.rv-redirect-cancel {
+  border: 1px solid #d5dce4;
+  background-color: #ffffff;
+  color: #4e5966;
+}
+
+.rv-redirect-cancel:hover {
+  background-color: #f8fafc;
+  border-color: #9ca3af;
+}
+
+/* 예 버튼 (어두운 파란색 딥 블루 스타일) */
+.rv-redirect-confirm {
+  border: 1px solid #1e3a8a;
+  background-color: #1e3a8a;
+  color: #ffffff;
+}
+
+.rv-redirect-confirm:hover {
+  background-color: #172554;
+  border-color: #172554;
 }

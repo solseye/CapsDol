@@ -3,7 +3,12 @@ import "../styles/auth-visily.css";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { loginUser, loginWithGoogle } from "../api/authApi";
-import { getSafeReturnPath, saveSession } from "../utils/authSession";
+import {
+  clearSession,
+  getSafeReturnPath,
+  isTokenExpired,
+  saveSession,
+} from "../utils/authSession";
 import { getPageCopy } from "../i18n/pageCopy";
 import { getCurrentLanguage } from "../i18n/translations";
 import BrandLogo from "../components/BrandLogo";
@@ -29,13 +34,20 @@ export default function Login() {
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-    if (token) {
-      const role = localStorage.getItem("role");
-      navigate(getSafeReturnPath(location.state, role), {
-        replace: true,
-        state: location.state?.routeState,
-      });
+    if (!token) return;
+
+    // 만료된 토큰이 남아 있으면 정리만 하고 로그인 화면에 머무릅니다.
+    // 그대로 되돌려보내면 보호 라우트와 서로 튕기는 무한 이동이 생깁니다.
+    if (isTokenExpired(token)) {
+      clearSession();
+      return;
     }
+
+    const role = localStorage.getItem("role");
+    navigate(getSafeReturnPath(location.state, role), {
+      replace: true,
+      state: location.state?.routeState,
+    });
   }, [location.state, navigate]);
 
   const handleGoogleCredentialResponse = useCallback(
