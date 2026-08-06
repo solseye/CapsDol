@@ -10,7 +10,7 @@ import { Link, useLocation, useParams } from "react-router-dom";
 
 import FormattedChatText from "../../../components/FormattedChatText";
 import { getAdminUsers } from "../../../api/adminApi";
-import { getUserChatHistory } from "../../../api/chatApi";
+import { getChatHistoryByPost } from "../../../api/chatApi";
 import {
   deleteClientFile,
   getClientFiles,
@@ -305,7 +305,7 @@ export default function UsersDetailPage() {
       setIsChatHistoryLoading(true);
       setChatHistoryError("");
 
-      const data = await getUserChatHistory({
+      const data = await getChatHistoryByPost({
         uuid,
         limit: 20,
         offset: 0,

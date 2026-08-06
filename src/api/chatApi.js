@@ -40,16 +40,23 @@ export async function sendQuestion({
 }
 
 export async function getChatHistory({
+  uuid,
   limit = 20,
   offset = 0,
 } = {}) {
-  const query = new URLSearchParams({
+  const params = new URLSearchParams({
     limit: String(limit),
     offset: String(offset),
   });
 
+  const trimmedUuid = String(uuid || "").trim();
+
+  if (trimmedUuid) {
+    params.set("uuid", trimmedUuid);
+  }
+
   const res = await fetchWithAuth(
-    `/chat/history?${query.toString()}`,
+    `/chat/history?${params.toString()}`,
     {
       method: "GET",
       credentials: "include",
@@ -64,34 +71,69 @@ export async function getChatHistory({
     );
   }
 
-  return data;
+  return {
+    ...data,
+    histories: Array.isArray(data.histories)
+      ? data.histories
+      : [],
+  };
 }
 
 export async function getUserChatHistory({
   uuid,
   limit = 20,
   offset = 0,
-}) {
+} = {}) {
+  const trimmedUuid = String(uuid || "").trim();
+
+  if (!trimmedUuid) {
+    throw new Error("사용자 UUID가 필요합니다.");
+  }
+
+  return getChatHistory({
+    uuid: trimmedUuid,
+    limit,
+    offset,
+  });
+}
+
+export async function getChatHistoryByPost({
+  uuid,
+  limit = 20,
+  offset = 0,
+} = {}) {
+  const requestBody = {
+    limit,
+    offset,
+  };
+
+  const trimmedUuid = String(uuid || "").trim();
+
+  if (trimmedUuid) {
+    requestBody.uuid = trimmedUuid;
+  }
+
   const res = await fetchWithAuth("/chat/history", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     credentials: "include",
-    body: JSON.stringify({
-      uuid,
-      limit,
-      offset,
-    }),
+    body: JSON.stringify(requestBody),
   });
 
   const data = await parseJsonResponse(res);
 
   if (!res.ok || data.success === false) {
     throw new Error(
-      data.error || "사용자 챗봇 대화 기록을 불러오지 못했습니다."
+      data.error || "챗봇 대화 기록을 불러오지 못했습니다."
     );
   }
 
-  return data;
+  return {
+    ...data,
+    histories: Array.isArray(data.histories)
+      ? data.histories
+      : [],
+  };
 }

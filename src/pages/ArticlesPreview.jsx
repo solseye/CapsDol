@@ -352,12 +352,35 @@ export default function ArticlesPreview() {
             <section className="articles-review-complete" aria-live="polite">
               <div>
                 <p className="articles-review-eyebrow">전송 완료</p>
-                <h2>히어링 시트가 정상적으로 전송되었습니다.</h2>
+
+                <h2>
+                  정관과 히어링 시트 파일이 정상적으로 생성되었습니다.
+                </h2>
+
                 <p>
-                  입력한 내용을 바탕으로 정관 초안이 생성되었습니다. 이어서
-                  상담을 예약하거나 홈으로 이동할 수 있습니다.
+                  입력한 내용을 바탕으로 정관 초안과 히어링 시트 원본이
+                  각각 TXT 파일로 저장되었습니다.
                 </p>
+
+                <div className="articles-review-created-files">
+                  <div>
+                    <span>정관 파일</span>
+                    <strong>
+                      {submittedResult.file?.fileName ||
+                        `${source.companyName}_정관`}
+                    </strong>
+                  </div>
+
+                  <div>
+                    <span>히어링 시트 파일</span>
+                    <strong>
+                      {submittedResult.inputFile?.fileName ||
+                        `${source.companyName}_히어링시트`}
+                    </strong>
+                  </div>
+                </div>
               </div>
+              
               <div className="articles-review-complete-actions">
                 <Link className="articles-review-secondary-link" to="/">
                   홈으로 가기

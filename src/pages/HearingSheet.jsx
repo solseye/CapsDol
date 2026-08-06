@@ -187,7 +187,6 @@ export default function HearingSheet() {
       headOfficeAddress,
       totalSharesAuthorized,
       initialIssuedShares,
-      description: "히어링 시트 기반 정관",
     }),
     [
       bankName,
