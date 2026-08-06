@@ -110,9 +110,6 @@ export default function Header({ isLoggedIn }) {
     };
   }, []);
 
-  const toggleDropdown = (menuName) => {
-    setOpenDropdown((current) => (current === menuName ? null : menuName));
-  };
 
   const mobileNavItems = isUserWorkspace
     ? [
