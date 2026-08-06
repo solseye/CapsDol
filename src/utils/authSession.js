@@ -60,3 +60,11 @@ export function getSafeReturnPath(locationState, role = "user") {
 
   return "/mypage";
 }
+
+export const ADMIN_HOME = "/admin/calendar";
+export const USER_HOME = "/mypage";
+
+export function isAdminSession() {
+  const { token, role } = getSession();
+  return Boolean(token) && role === "admin";
+}
