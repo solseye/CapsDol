@@ -439,10 +439,15 @@ export default function ReservationPage() {
     return blocked;
   };
 
-  const scheduleWeekDays = useMemo(
-    () => getWeekDates(selectedDate || viewDate),
-    [selectedDate, viewDate],
-  );
+  const scheduleWeekDays = useMemo(() => {
+    if (selectedDate) return getWeekDates(selectedDate);
+
+    const isCurrentMonth =
+      viewDate.getFullYear() === today.getFullYear() &&
+      viewDate.getMonth() === today.getMonth();
+
+    return getWeekDates(isCurrentMonth ? today : viewDate);
+  }, [selectedDate, viewDate, today]);
 
   const moveToMonth = (date) => {
     const nextMonth = new Date(date.getFullYear(), date.getMonth(), 1);
