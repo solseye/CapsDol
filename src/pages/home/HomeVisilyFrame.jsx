@@ -72,7 +72,8 @@ const HOME_COPY = {
     searchPlaceholder:
       "Ask about Japanese incorporation, tax, visas, or articles drafting...",
     aiConsult: "Ask AI",
-    trustText: "Document and consultation workflow for companies entering Japan",
+    trustText:
+      "Document and consultation workflow for companies entering Japan",
     servicesTitle: "Core Services",
     servicesDesc:
       "From initial questions to hearing sheets, draft articles of incorporation, and expert review, M&K Office organizes Japan-entry preparation into one workflow.",
@@ -254,8 +255,7 @@ const HOME_SECTIONS = {
           {
             title: "비자 신청·취득 지원",
             price: "상담 후 안내",
-            description:
-              "체류자격 종류와 신청 난이도에 따라 달라집니다.",
+            description: "체류자격 종류와 신청 난이도에 따라 달라집니다.",
           },
           {
             title: "회계·세무 고문",
@@ -282,8 +282,7 @@ const HOME_SECTIONS = {
         ],
         cta: "상담 예약",
       },
-      note:
-        "실제 비용은 기업의 설립 형태, 상담 내역, 문서 검토 범위, 전문가 상담 분야에 따라 달라질 수 있습니다.",
+      note: "실제 비용은 기업의 설립 형태, 상담 내역, 문서 검토 범위, 전문가 상담 분야에 따라 달라질 수 있습니다.",
     },
     method: {
       title: "일본 시장으로 이어지는 준비 흐름",
@@ -532,8 +531,7 @@ const HOME_SECTIONS = {
         ],
         cta: "Book Consultation",
       },
-      note:
-        "Actual fees may vary based on the entity type, consultation details, document-review scope, and expert field.",
+      note: "Actual fees may vary based on the entity type, consultation details, document-review scope, and expert field.",
     },
     method: {
       title: "A clear path into the Japanese market",
@@ -643,8 +641,7 @@ const HOME_SECTIONS = {
       items: [
         {
           title: "Structured Core Documents",
-          body:
-            "We structure incorporation and consultation data so your team can respond quickly to Japan-entry requirements.",
+          body: "We structure incorporation and consultation data so your team can respond quickly to Japan-entry requirements.",
           details: [
             "Articles-drafting workflow",
             "Structured business purposes and basic information",
@@ -652,8 +649,7 @@ const HOME_SECTIONS = {
         },
         {
           title: "Global Communication",
-          body:
-            "A multilingual business flow supports Korean, English, and Japanese users without interruption.",
+          body: "A multilingual business flow supports Korean, English, and Japanese users without interruption.",
           details: [
             "KO / EN / JA switching",
             "Connection to local professionals",
@@ -661,8 +657,7 @@ const HOME_SECTIONS = {
         },
         {
           title: "Pre-consultation Strategy",
-          body:
-            "Prepare questions and materials before meeting an expert to use consultation time more effectively.",
+          body: "Prepare questions and materials before meeting an expert to use consultation time more effectively.",
           details: [
             "Questions organized in advance",
             "Pre-check of scope and materials",
@@ -670,8 +665,7 @@ const HOME_SECTIONS = {
         },
         {
           title: "Digital Workflow",
-          body:
-            "AI questions, hearing sheets, articles drafts, and bookings are connected in one preparation flow.",
+          body: "AI questions, hearing sheets, articles drafts, and bookings are connected in one preparation flow.",
           details: [
             "AI consultation linked to document drafting",
             "Booking and submitted-material management",
@@ -820,8 +814,7 @@ const HOME_SECTIONS = {
         ],
         cta: "相談を予約",
       },
-      note:
-        "実際の料金は、設立形態、相談内容、文書レビュー範囲、専門分野により異なる場合があります。",
+      note: "実際の料金は、設立形態、相談内容、文書レビュー範囲、専門分野により異なる場合があります。",
     },
     method: {
       title: "日本市場へつながる準備の流れ",
@@ -923,26 +916,22 @@ const HOME_SECTIONS = {
       items: [
         {
           title: "主要文書の構造化",
-          body:
-            "法人設立・相談用の企業情報を体系的に構造化し、日本進出準備に必要な要件へ迅速に対応します。",
+          body: "法人設立・相談用の企業情報を体系的に構造化し、日本進出準備に必要な要件へ迅速に対応します。",
           details: ["定款草案作成フロー", "事業目的・基本情報の構造化"],
         },
         {
           title: "グローバルコミュニケーション",
-          body:
-            "韓国語・英語・日本語の利用者を考慮し、多言語のビジネスフローを途切れなく支援します。",
+          body: "韓国語・英語・日本語の利用者を考慮し、多言語のビジネスフローを途切れなく支援します。",
           details: ["KO / EN / JA切替", "現地専門家への相談連携"],
         },
         {
           title: "事前戦略の最適化",
-          body:
-            "専門家に会う前に必要な質問と資料を準備し、相談時間をより有効に活用します。",
+          body: "専門家に会う前に必要な質問と資料を準備し、相談時間をより有効に活用します。",
           details: ["相談前の質問整理", "業務範囲・資料の事前確認"],
         },
         {
           title: "デジタルワークフロー",
-          body:
-            "AI相談、ヒアリングシート、定款草案、相談予約をつなぎ、準備過程を一つの流れにします。",
+          body: "AI相談、ヒアリングシート、定款草案、相談予約をつなぎ、準備過程を一つの流れにします。",
           details: ["AI相談と文書作成の連携", "予約・提出資料の管理"],
         },
       ],
@@ -980,7 +969,7 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchDocked, setIsSearchDocked] = useState(false);
   const [activeNav, setActiveNav] = useState(() =>
-    window.location.hash.replace("#", "")
+    window.location.hash.replace("#", ""),
   );
   const processSectionRef = useRef(null);
   const processWorkflowRef = useRef(null);
@@ -1012,7 +1001,7 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
       const shouldDock = search.getBoundingClientRect().top <= headerHeight;
 
       setIsSearchDocked((current) =>
-        current === shouldDock ? current : shouldDock
+        current === shouldDock ? current : shouldDock,
       );
       animationFrameId = null;
     };
@@ -1072,7 +1061,7 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
       setActiveNav((currentSection) =>
         currentSection === nextActiveSection
           ? currentSection
-          : nextActiveSection
+          : nextActiveSection,
       );
       animationFrameId = null;
     };
@@ -1083,7 +1072,9 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
     };
 
     requestNavigationUpdate();
-    window.addEventListener("scroll", requestNavigationUpdate, { passive: true });
+    window.addEventListener("scroll", requestNavigationUpdate, {
+      passive: true,
+    });
     window.addEventListener("resize", requestNavigationUpdate);
 
     return () => {
@@ -1139,7 +1130,7 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
 
     const intervalId = window.setInterval(() => {
       setActiveStandardIndex(
-        (prev) => (prev + 1) % sections.standards.items.length
+        (prev) => (prev + 1) % sections.standards.items.length,
       );
     }, 5600);
 
@@ -1160,7 +1151,8 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
 
     const updateProcessProgress = () => {
       const rect = workflow.getBoundingClientRect();
-      const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+      const viewportHeight =
+        window.innerHeight || document.documentElement.clientHeight;
       const startPoint = viewportHeight * 0.72;
       const endPoint = viewportHeight * 0.32;
       const progress = (startPoint - rect.top) / (startPoint - endPoint);
@@ -1187,7 +1179,8 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
 
   // processProgress를 4단계 인덱스로 변환합니다.
   // -1이면 아직 아무 단계도 강조하지 않는 상태입니다.
-  const activeProcessStep = processProgress <= 0 ? -1 : Math.min(3, Math.floor(processProgress * 4));
+  const activeProcessStep =
+    processProgress <= 0 ? -1 : Math.min(3, Math.floor(processProgress * 4));
 
   return (
     <div className="visily-home">
@@ -1310,92 +1303,78 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
 
         {/* 모바일 메뉴 패널입니다. 중앙 메뉴와 로그인/예약 버튼을 한 곳에 모았습니다. */}
         <div
-          className={`visily-mobile-menu ${
-            isMobileMenuOpen ? "is-open" : ""
-          }`}
+          className={`visily-mobile-menu ${isMobileMenuOpen ? "is-open" : ""}`}
         >
           <nav aria-label="Mobile navigation">
-            <a
-              href="#services"
-              onClick={() => handleNavClick("services")}
-            >
+            <a href="#services" onClick={() => handleNavClick("services")}>
               {copy.navServices}
             </a>
-            <a
-              href="#method"
-              onClick={() => handleNavClick("method")}
-            >
+            <a href="#method" onClick={() => handleNavClick("method")}>
               {copy.navMethod}
             </a>
-            <a
-              href="#experts"
-              onClick={() => handleNavClick("experts")}
-            >
+            <a href="#experts" onClick={() => handleNavClick("experts")}>
               {copy.navExperts}
             </a>
-            <a
-              href="#standards"
-              onClick={() => handleNavClick("standards")}
-            >
+            <a href="#standards" onClick={() => handleNavClick("standards")}>
               {copy.navStandards}
             </a>
           </nav>
 
           <div className="visily-mobile-actions">
-          {isLoggedIn ? (
-            <>
-              {isAdmin ? (
+            {isLoggedIn ? (
+              <>
+                {isAdmin ? (
+                  <Link
+                    to="/admin/calendar"
+                    className="visily-ghost-btn"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    {copy.adminPage}
+                  </Link>
+                ) : (
+                  <>
+                    <Link
+                      to="/mypage"
+                      className="visily-ghost-btn"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {copy.myPage}
+                    </Link>
+                    <Link
+                      to="/reservation"
+                      className="visily-ghost-btn"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {copy.reservation}
+                    </Link>
+                  </>
+                )}
+                <button
+                  type="button"
+                  className="visily-dark-btn"
+                  onClick={handleLogout}
+                >
+                  {copy.logout}
+                </button>
+              </>
+            ) : (
+              <>
                 <Link
-                  to="/admin/calendar"
+                  to="/login"
                   className="visily-ghost-btn"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  {copy.adminPage}
+                  {copy.login}
                 </Link>
-              ) : (
-                <>
-                  <Link
-                    to="/mypage"
-                    className="visily-ghost-btn"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    {copy.myPage}
-                  </Link>
-                  <Link
-                    to="/reservation"
-                    className="visily-ghost-btn"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    {copy.reservation}
-                  </Link>
-                </>
-              )}
-              <button
-                type="button"
-                className="visily-dark-btn"
-                onClick={handleLogout}
-              >
-                {copy.logout}
-              </button>
-            </>
-          ) : (
-            <>
-              <Link
-                to="/login"
-                className="visily-ghost-btn"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {copy.login}
-              </Link>
-              <Link
-                to="/signup"
-                className="visily-dark-btn"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {copy.signup}
-              </Link>
-            </>
-          )}
+                <Link
+                  to="/signup"
+                  className="visily-dark-btn"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {copy.signup}
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </header>
