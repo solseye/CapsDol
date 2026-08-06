@@ -44,6 +44,10 @@ export default function BrandLogo({
     );
   }
 
+  if (as === "static") {
+    return <div className={className}>{content}</div>;
+  }
+
   return (
     <Link
       to={to}

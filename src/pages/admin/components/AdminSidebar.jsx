@@ -65,6 +65,7 @@ export default function AdminSidebar({ onNavigate }) {
   return (
     <aside className="adm-sidebar">
       <BrandLogo
+        as="static"
         className="adm-brand"
         markClassName="adm-brand-mark"
         copyClassName="adm-brand-copy"

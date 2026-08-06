@@ -46,7 +46,6 @@ export default function AdminLayout({ children }) {
     <div className={`adm-shell ${isSidebarOpen ? "sidebar-open" : ""}`}>
       <header className="adm-mobile-header">
         <BrandLogo
-          to="/admin/calendar"
           className="adm-mobile-brand"
           markClassName="adm-mobile-brand-mark"
           copyClassName="adm-mobile-brand-copy"
