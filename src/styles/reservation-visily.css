@@ -4383,7 +4383,9 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  padding: 20px;
+  background: rgba(6, 35, 60, 0.58);
+  backdrop-filter: blur(3px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -4391,83 +4393,107 @@
 }
 
 .rv-redirect-modal {
-  background-color: #ffffff;
+  position: relative;
+  width: min(420px, 100%);
   padding: 32px;
-  border-radius: 12px;
+  border: 1px solid #d7e0e8;
+  border-top: 5px solid #06233c;
+  border-radius: 10px;
+  background: #ffffff;
   text-align: center;
-  max-width: 400px;
-  width: 90%;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 24px 60px rgba(6, 35, 60, 0.24);
+}
+
+.rv-redirect-kicker {
+  display: block;
+  margin-bottom: 9px;
+  color: #526578;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.14em;
 }
 
 .rv-redirect-modal h3 {
-  margin: 0 0 12px 0;
-  font-size: 1.25rem;
-  color: #1c2632;
+  margin: 0 0 12px;
+  color: #06233c;
+  font-size: 23px;
+  line-height: 1.3;
 }
 
 .rv-redirect-desc {
-  margin: 0 0 8px 0;
-  color: #4e5966;
-  font-size: 1rem;
+  margin: 0 0 8px;
+  color: #435467;
+  font-size: 15px;
+  line-height: 1.55;
   word-break: keep-all;
 }
 
 .rv-redirect-note {
-  margin: 0 0 24px 0;
-  color: #8b95a1;
-  font-size: 0.85rem;
+  margin: 0 0 24px;
+  color: #7a8795;
+  font-size: 12px;
+  line-height: 1.5;
   word-break: keep-all;
 }
 
 .rv-redirect-actions {
   display: flex;
   gap: 12px;
-  justify-content: center;
 }
 
-/* 버튼이 가로로 동일한 비율을 가지도록 설정 */
-.rv-redirect-actions .btn {
-  flex: 1;
-}
-
-/* 버튼 공통 스타일 (가로 동일 비율 배치 등) */
 .rv-redirect-button {
   flex: 1;
-  min-height: 42px;
-  padding: 0 16px;
+  min-height: 46px;
+  padding: 0 18px;
   border-radius: 6px;
+  font: inherit;
   font-size: 14px;
-  font-weight: 900;
+  font-weight: 850;
   cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   transition:
-    background-color 0.2s ease,
-    border-color 0.2s ease;
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
 }
 
-/* 아니오 버튼 (취소/서브 스타일) */
 .rv-redirect-cancel {
-  border: 1px solid #d5dce4;
-  background-color: #ffffff;
-  color: #4e5966;
+  border: 1px solid #cbd6e0;
+  color: #06233c;
+  background: #ffffff;
 }
 
 .rv-redirect-cancel:hover {
-  background-color: #f8fafc;
-  border-color: #9ca3af;
+  border-color: #94a8ba;
+  background: #f2f6f9;
 }
 
-/* 예 버튼 (어두운 파란색 딥 블루 스타일) */
 .rv-redirect-confirm {
-  border: 1px solid #1e3a8a;
-  background-color: #1e3a8a;
+  border: 1px solid #06233c;
   color: #ffffff;
+  background: #06233c;
 }
 
 .rv-redirect-confirm:hover {
-  background-color: #172554;
-  border-color: #172554;
+  border-color: #0b3556;
+  background: #0b3556;
+}
+
+.rv-redirect-button:hover {
+  transform: translateY(-1px);
+}
+
+.rv-redirect-button:focus-visible {
+  outline: 3px solid rgba(6, 35, 60, 0.2);
+  outline-offset: 2px;
+}
+
+@media (max-width: 520px) {
+  .rv-redirect-modal {
+    padding: 27px 20px 22px;
+  }
+
+  .rv-redirect-actions {
+    flex-direction: column-reverse;
+  }
 }
