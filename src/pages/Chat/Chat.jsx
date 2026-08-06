@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, Navigate, useLocation } from "react-router-dom";
-import { sendQuestion } from "../../api/chatApi";
+import { getChatHistory, sendQuestion } from "../../api/chatApi";
 import FormattedChatText from "../../components/FormattedChatText";
 import { getCurrentLanguage, translate } from "../../i18n/translations";
 import { getPageCopy } from "../../i18n/pageCopy";
@@ -21,8 +21,10 @@ export default function Chat() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [historyReady, setHistoryReady] = useState(false);
 
   const chatBodyRef = useRef(null);
+  const initialQuerySentRef = useRef(false);
   const location = useLocation();
   const initialQuery = location.state?.initialQuery;
 
@@ -36,6 +38,60 @@ export default function Chat() {
       chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
     }
   }, [messages, loading]);
+
+  useEffect(() => {
+    if (!isLoggedIn) return undefined;
+
+    let cancelled = false;
+
+    const loadRecentHistory = async () => {
+      try {
+        const data = await getChatHistory({ limit: 5, offset: 0 });
+        if (cancelled) return;
+
+        const histories = Array.isArray(data.histories)
+          ? data.histories
+          : [];
+        const recentMessages = histories
+          .slice()
+          .reverse()
+          .flatMap((history) => {
+            const restoredMessages = [];
+
+            if (history.question) {
+              restoredMessages.push({
+                type: "user",
+                text: history.question,
+              });
+            }
+
+            if (history.answer) {
+              restoredMessages.push({
+                type: "bot",
+                text: history.answer,
+                sources: Array.isArray(history.sources) ? history.sources : [],
+              });
+            }
+
+            return restoredMessages;
+          });
+
+        if (recentMessages.length > 0) {
+          setMessages(recentMessages);
+        }
+      } catch (historyError) {
+        console.error("최근 챗봇 대화 기록 조회 실패:", historyError);
+      } finally {
+        if (!cancelled) setHistoryReady(true);
+      }
+    };
+
+    loadRecentHistory();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isLoggedIn]);
 
   const sendMessage = async (textToSend) => {
     const message = textToSend.trim();
@@ -79,11 +135,17 @@ export default function Chat() {
   };
 
   useEffect(() => {
-    if (initialQuery && isLoggedIn) {
+    if (
+      initialQuery &&
+      isLoggedIn &&
+      historyReady &&
+      !initialQuerySentRef.current
+    ) {
+      initialQuerySentRef.current = true;
       sendMessage(initialQuery);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialQuery, isLoggedIn]);
+  }, [initialQuery, isLoggedIn, historyReady]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -124,6 +186,7 @@ export default function Chat() {
               type="button"
               className="ai-reset-top"
               onClick={handleReset}
+              disabled={loading || !historyReady}
             >
               {copy.reset}
             </button>
@@ -147,6 +210,14 @@ export default function Chat() {
                     </div>
                   ))}
 
+                  {!historyReady && (
+                    <div className="ai-msg-row bot">
+                      <div className="ai-bubble ai-typing">
+                        {translate(language, "common.loading")}
+                      </div>
+                    </div>
+                  )}
+
                   {loading && (
                     <div className="ai-msg-row bot">
                       <div className="ai-bubble ai-typing">
@@ -167,10 +238,13 @@ export default function Chat() {
                       value={input}
                       onChange={(event) => setInput(event.target.value)}
                       placeholder={copy.placeholder}
-                      disabled={loading}
+                      disabled={loading || !historyReady}
                     />
 
-                    <button type="submit" disabled={loading || !input.trim()}>
+                    <button
+                      type="submit"
+                      disabled={loading || !historyReady || !input.trim()}
+                    >
                       {loading ? copy.generating : copy.send} <span>→</span>
                     </button>
                   </form>

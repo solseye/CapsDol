@@ -352,7 +352,6 @@ export default function MyReservations() {
             <p>CONSULTATION HISTORY</p>
             <div>
               <h1>내 상담 내역</h1>
-              <Link to="/mypage">마이페이지로</Link>
             </div>
             <span>신청한 상담의 일정과 승인 상태를 확인하고 관리합니다.</span>
           </header>

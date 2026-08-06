@@ -31,7 +31,9 @@ export function getAccessToken() {
   return token;
 }
 
-async function refreshAccessToken() {
+// 보호 페이지에서도 리프레시 토큰을 확인할 수 있도록 외부에 공개합니다.
+// 리프레시 토큰이 만료되었거나 유효하지 않으면 세션 만료 이벤트를 발생시킵니다.
+export async function refreshAccessToken() {
   const response = await fetch(`${getApiBaseUrl()}/token`, {
     method: "POST",
     credentials: "include",

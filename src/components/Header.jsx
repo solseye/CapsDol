@@ -11,6 +11,7 @@ export default function Header({ isLoggedIn }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const dropdownAreaRef = useRef(null);
+  const timeoutRef = useRef(null);
 
   const role = localStorage.getItem("role");
   const language = getCurrentLanguage();
@@ -19,23 +20,10 @@ export default function Header({ isLoggedIn }) {
   const isUserWorkspace = isLoggedIn && !isAdmin;
   const isMyPageSection =
     location.pathname.startsWith("/mypage") || location.pathname === "/chat";
+  const isMyPageHome = location.pathname === "/mypage";
   const isReservationSection = location.pathname === "/reservation";
   const isHearingSection = location.pathname === "/hearing-sheet";
   const showLanguageMenu = true;
-  const timeoutRef = useRef(null);
-
-  const handleMouseEnter = () => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-    setOpenDropdown("mypage");
-  };
-
-  const handleMouseLeave = () => {
-    timeoutRef.current = setTimeout(() => {
-      setOpenDropdown(null);
-    }, 500);
-  };
 
   const mainNavItems = isUserWorkspace
     ? [{ to: "/reservation", label: t("common.navReservation") }]
@@ -91,8 +79,17 @@ export default function Header({ isLoggedIn }) {
     setOpenDropdown(null);
   };
 
+  const handleMyPageMouseEnter = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    setOpenDropdown("mypage");
+  };
+
+  const handleMyPageMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => setOpenDropdown(null), 300);
+  };
+
   useEffect(() => {
-    const closeDropdownOnOutsideClick = (event) => {
+    const closeDropdown = (event) => {
       if (!dropdownAreaRef.current?.contains(event.target)) {
         setOpenDropdown(null);
       }
@@ -102,11 +99,13 @@ export default function Header({ isLoggedIn }) {
       if (event.key === "Escape") setOpenDropdown(null);
     };
 
-    document.addEventListener("mousedown", closeDropdownOnOutsideClick);
+    document.addEventListener("mousedown", closeDropdown);
     document.addEventListener("keydown", closeDropdownOnEscape);
+
     return () => {
-      document.removeEventListener("mousedown", closeDropdownOnOutsideClick);
+      document.removeEventListener("mousedown", closeDropdown);
       document.removeEventListener("keydown", closeDropdownOnEscape);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, []);
 
@@ -155,70 +154,68 @@ export default function Header({ isLoggedIn }) {
             <ul>
               {isUserWorkspace ? (
                 <>
-                  <li
-                    className="nav-dropdown"
-                    onMouseEnter={handleMouseEnter}
-                    onMouseLeave={handleMouseLeave}
-                  >
-                    <button
-                      type="button"
-                      className={`nav-dropdown-trigger ${location.pathname.startsWith("/mypage") ? "active" : ""}`}
-                      aria-expanded={openDropdown === "mypage"}
-                      aria-haspopup="menu"
+                  {isMyPageHome ? (
+                    <li
+                      className="nav-dropdown"
+                      onMouseEnter={handleMyPageMouseEnter}
+                      onMouseLeave={handleMyPageMouseLeave}
                     >
-                      {t("common.navMyPage")} <span aria-hidden="true">⌄</span>
-                    </button>
-                    <div
-                      className={`nav-dropdown-menu ${openDropdown === "mypage" ? "is-open" : ""}`}
-                      role="menu"
-                    >
-                      <Link
-                        to="/mypage/reservations"
-                        role="menuitem"
-                        onClick={() => setOpenDropdown(null)}
+                      <button
+                        type="button"
+                        className="nav-dropdown-trigger active"
+                        aria-expanded={openDropdown === "mypage"}
+                        aria-haspopup="menu"
+                        onClick={() =>
+                          setOpenDropdown((current) =>
+                            current === "mypage" ? null : "mypage",
+                          )
+                        }
                       >
-                        {t("common.myConsultations")}
-                      </Link>
-                      <Link
-                        to="/mypage/files"
-                        role="menuitem"
-                        onClick={() => setOpenDropdown(null)}
+                        {t("common.navMyPage")} <span aria-hidden="true">⌄</span>
+                      </button>
+                      <div
+                        className={`nav-dropdown-menu ${
+                          openDropdown === "mypage" ? "is-open" : ""
+                        }`}
+                        role="menu"
                       >
-                        {t("common.myFiles")}
-                      </Link>
+                        <Link
+                          to="/mypage/reservations"
+                          role="menuitem"
+                          onClick={() => setOpenDropdown(null)}
+                        >
+                          {t("common.myConsultations")}
+                        </Link>
+                        <Link
+                          to="/mypage/files"
+                          role="menuitem"
+                          onClick={() => setOpenDropdown(null)}
+                        >
+                          {t("common.myFiles")}
+                        </Link>
+                        <Link
+                          to="/reservation"
+                          role="menuitem"
+                          onClick={() => setOpenDropdown(null)}
+                        >
+                          {t("common.navReservation")}
+                        </Link>
+                      </div>
+                    </li>
+                  ) : (
+                    <li>
                       <Link
-                        to="/reservation"
-                        className={isReservationSection ? "active" : ""}
-                        onClick={() => setOpenDropdown(null)}
+                        to="/mypage"
+                        className={
+                          location.pathname.startsWith("/mypage")
+                            ? "active"
+                            : ""
+                        }
                       >
-                        {t("common.navReservation")}
+                        {t("common.navMyPage")}
                       </Link>
-                    </div>
-                  </li>
-
-                  {/*
-                  <li className="nav-dropdown">
-                    <button
-                      type="button"
-                      className={`nav-dropdown-trigger ${(isHearingSection || location.pathname === "/chat") ? "active" : ""}`}
-                      aria-expanded={openDropdown === "tools"}
-                      aria-haspopup="menu"
-                      onClick={() => toggleDropdown("tools")}
-                    >
-                      {t("common.precheck")} <span aria-hidden="true">⌄</span>
-                    </button>
-                    <div className={`nav-dropdown-menu ${openDropdown === "tools" ? "is-open" : ""}`} role="menu">
-                      <Link to="/hearing-sheet" role="menuitem" onClick={() => setOpenDropdown(null)}>
-                        {t("common.hearingWrite")}
-                      </Link>
-                      <Link to="/chat" role="menuitem" onClick={() => setOpenDropdown(null)}>
-                        {t("common.aiChat")}
-                      </Link>
-                    </div>
-                  </li>
-                   */}
-
-                  {/* ----------------------------------------------------------------- */}
+                    </li>
+                  )}
                   <li>
                     <Link
                       to="/hearing-sheet"
@@ -236,17 +233,6 @@ export default function Header({ isLoggedIn }) {
                       {t("common.aiChat")}
                     </Link>
                   </li>
-                  {/* ----------------------------------------------------------------- */}
-                  {/*
-                  <li>
-                    <Link
-                      to="/reservation"
-                      className={isReservationSection ? "active" : ""}
-                    >
-                      {t("common.navReservation")}
-                    </Link>
-                  </li>
-                   */}
                 </>
               ) : (
                 mainNavItems.map((item) => (

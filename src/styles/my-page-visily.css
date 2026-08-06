@@ -11,8 +11,12 @@
 }
 
 .my-page-heading {
+  display: flex;
+  gap: 24px;
   padding: 4px 0 13px 18px;
   border-left: 4px solid #0a2a45;
+  align-items: flex-start;
+  justify-content: space-between;
 }
 
 .my-page-heading p,
@@ -39,6 +43,223 @@
   color: #5c6979;
   font-size: 14px;
   line-height: 1.5;
+}
+
+.my-page-guide-reopen {
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid #c8d4de;
+  border-radius: 5px;
+  background: #fff;
+  color: #0a2a45;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 850;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.my-page-guide-reopen:hover {
+  border-color: #0a2a45;
+  background: #edf3f7;
+  transform: translateY(-1px);
+}
+
+body.my-page-guide-lock {
+  overflow: hidden;
+}
+
+.my-page-guide-backdrop {
+  position: fixed;
+  z-index: 2200;
+  inset: 0;
+  display: grid;
+  padding: 20px;
+  background: rgba(3, 17, 29, 0.68);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  place-items: center;
+}
+
+.my-page-guide {
+  width: min(660px, 100%);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  border: 1px solid #cdd8e1;
+  border-top: 6px solid #0a2a45;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 32px 90px rgba(2, 16, 28, 0.36);
+}
+
+.my-page-guide-header {
+  display: flex;
+  padding: 25px 28px 18px;
+  border-bottom: 1px solid #e0e7ed;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.my-page-guide-header p {
+  margin: 0 0 6px;
+  color: #607185;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+}
+
+.my-page-guide-header h2 {
+  margin: 0;
+  color: #0a2239;
+  font-size: 25px;
+  line-height: 1.25;
+}
+
+.my-page-guide-header > button {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #d2dce4;
+  border-radius: 5px;
+  background: #fff;
+  color: #0a2239;
+  font-size: 23px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.my-page-guide-progress {
+  display: flex;
+  gap: 8px;
+  padding: 18px 28px 0;
+}
+
+.my-page-guide-progress button {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  border: 1px solid #cbd6df;
+  border-radius: 50%;
+  background: #fff;
+  color: #667588;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 900;
+  cursor: pointer;
+  place-items: center;
+}
+
+.my-page-guide-progress button.is-active {
+  border-color: #0a2a45;
+  background: #0a2a45;
+  color: #fff;
+}
+
+.my-page-guide-content {
+  padding: 22px 28px 26px;
+}
+
+.my-page-guide-content > span {
+  color: #0a4d7c;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.my-page-guide-content h3 {
+  margin: 10px 0 12px;
+  color: #0a2239;
+  font-size: 26px;
+  line-height: 1.3;
+  word-break: keep-all;
+}
+
+.my-page-guide-content > p {
+  margin: 0;
+  color: #526274;
+  font-size: 14px;
+  line-height: 1.75;
+  word-break: keep-all;
+}
+
+.my-page-guide-content ul {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 22px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.my-page-guide-content li {
+  min-height: 48px;
+  display: flex;
+  padding: 10px 12px;
+  border: 1px solid #dce5eb;
+  border-left: 3px solid #0a2a45;
+  background: #f6f9fb;
+  color: #31475b;
+  font-size: 12px;
+  font-weight: 800;
+  align-items: center;
+}
+
+.my-page-guide-footer {
+  display: flex;
+  gap: 18px;
+  padding: 18px 28px 24px;
+  border-top: 1px solid #e0e7ed;
+  background: #f8fafc;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.my-page-guide-footer > div {
+  display: flex;
+  gap: 8px;
+}
+
+.my-page-guide-footer button {
+  min-height: 40px;
+  padding: 0 15px;
+  border-radius: 5px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.my-page-guide-hide {
+  border: 0;
+  padding-left: 0 !important;
+  background: transparent;
+  color: #667588;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.my-page-guide-secondary {
+  border: 1px solid #cbd6df;
+  background: #fff;
+  color: #0a2a45;
+}
+
+.my-page-guide-secondary:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.my-page-guide-primary {
+  border: 1px solid #0a2a45;
+  background: #0a2a45;
+  color: #fff;
+}
+
+.my-page-guide-primary:hover {
+  background: #123c5e;
 }
 
 .my-page-upcoming {
@@ -507,7 +728,66 @@
   }
 
   .my-page-heading {
+    gap: 14px;
     padding-left: 14px;
+    flex-direction: column;
+  }
+
+  .my-page-guide-reopen {
+    min-height: 34px;
+  }
+
+  .my-page-guide-backdrop {
+    padding: 12px;
+    place-items: end center;
+  }
+
+  .my-page-guide {
+    max-height: calc(100vh - 24px);
+    border-radius: 10px 10px 0 0;
+  }
+
+  .my-page-guide-header {
+    padding: 21px 20px 16px;
+  }
+
+  .my-page-guide-header h2 {
+    font-size: 22px;
+  }
+
+  .my-page-guide-progress {
+    padding: 16px 20px 0;
+  }
+
+  .my-page-guide-content {
+    padding: 19px 20px 22px;
+  }
+
+  .my-page-guide-content h3 {
+    font-size: 22px;
+  }
+
+  .my-page-guide-content ul {
+    grid-template-columns: 1fr;
+  }
+
+  .my-page-guide-content li {
+    min-height: 42px;
+  }
+
+  .my-page-guide-footer {
+    padding: 16px 20px 20px;
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+
+  .my-page-guide-footer > div {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+  }
+
+  .my-page-guide-hide {
+    width: fit-content;
   }
 
   .my-page-heading h1 {

@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
 import RequiredDocumentsManager from "./RequiredDocumentsManager";
 import "../../../App.css";
 import "../../admin/admin.css";
@@ -474,7 +473,6 @@ export default function MyFiles() {
             <p>MY FILES</p>
             <div>
               <h1>내 파일 관리</h1>
-              <Link to="/mypage">마이페이지로</Link>
             </div>
             <span>
               일본 진출과 전문가 상담에 필요한 자료를 제출하고 관리합니다.

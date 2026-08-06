@@ -6,6 +6,7 @@ import { getClientFiles } from "../../../api/clientFileApi";
 import { getChatHistory } from "../../../api/chatApi";
 import { parseReservationNote } from "../../../utils/reservationNoteUtils";
 import { loadWorkflowEvents } from "../../../utils/workflowProgress";
+import { getSessionOwner } from "../../../utils/authSession";
 import "../../../App.css";
 import "../../admin/admin.css";
 import "../../../styles/my-page-visily.css";
@@ -34,6 +35,29 @@ const FAQ_ITEMS = [
     id: "support",
     title: "일본 현지 법인 설립 지원도 가능한가요?",
     body: "히어링 시트와 상담 내용을 기준으로 법인 형태, 정관 초안, 세무·회계 및 노무 준비 항목을 전문가와 함께 검토할 수 있습니다.",
+  },
+];
+
+const MY_PAGE_GUIDE_STORAGE_PREFIX = "mk:mypage-guide:hidden:";
+
+const MY_PAGE_GUIDE_STEPS = [
+  {
+    tag: "01 · SCHEDULE",
+    title: "상담 일정을 확인하세요",
+    description: "예약 상태와 확정된 일정을 확인하고 상세 내용을 볼 수 있습니다.",
+    points: ["확정 일정", "승인 상태", "상세보기"],
+  },
+  {
+    tag: "02 · MANAGEMENT",
+    title: "상담과 파일을 관리하세요",
+    description: "상담 내역을 확인하고 필요한 서류를 업로드할 수 있습니다.",
+    points: ["상담 내역", "필수 서류", "파일 관리"],
+  },
+  {
+    tag: "03 · PROGRESS & AI",
+    title: "진행 상황과 AI 기록을 확인하세요",
+    description: "일본 진출 준비 단계와 최근 AI 대화 5개를 확인할 수 있습니다.",
+    points: ["준비 현황", "최근 대화 5개", "새 AI 상담"],
   },
 ];
 
@@ -137,6 +161,48 @@ export default function MyPage() {
   const [chatHistoryError, setChatHistoryError] = useState("");
   const [openChatHistoryId, setOpenChatHistoryId] =
     useState(null);
+  const [isGuideOpen, setIsGuideOpen] = useState(false);
+  const [guideStep, setGuideStep] = useState(0);
+
+  const guideStorageKey = useMemo(
+    () => `${MY_PAGE_GUIDE_STORAGE_PREFIX}${getSessionOwner()}`,
+    [],
+  );
+
+  useEffect(() => {
+    if (localStorage.getItem(guideStorageKey) !== "true") {
+      setIsGuideOpen(true);
+    }
+  }, [guideStorageKey]);
+
+  useEffect(() => {
+    document.body.classList.toggle("my-page-guide-lock", isGuideOpen);
+
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") setIsGuideOpen(false);
+    };
+
+    if (isGuideOpen) document.addEventListener("keydown", closeOnEscape);
+
+    return () => {
+      document.body.classList.remove("my-page-guide-lock");
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [isGuideOpen]);
+
+  const openGuide = () => {
+    setGuideStep(0);
+    setIsGuideOpen(true);
+  };
+
+  const closeGuide = () => {
+    setIsGuideOpen(false);
+  };
+
+  const hideGuidePermanently = () => {
+    localStorage.setItem(guideStorageKey, "true");
+    setIsGuideOpen(false);
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -300,18 +366,28 @@ export default function MyPage() {
     () => parseReservationNote(selectedReservation?.note),
     [selectedReservation]
   );
+  const currentGuide = MY_PAGE_GUIDE_STEPS[guideStep];
 
   return (
     <>
       <main className="my-page-dashboard mypage-page-enter">
         <div className="my-page-shell">
           <section className="my-page-heading">
-            <p>MY PAGE</p>
-            <h1>마이페이지</h1>
-            <span>
-              상담 예약, 제출 파일, 전문가 검토 준비를 한 곳에서
-              관리합니다.
-            </span>
+            <div>
+              <p>MY PAGE</p>
+              <h1>마이페이지</h1>
+              <span>
+                상담 예약, 제출 파일, 전문가 검토 준비를 한 곳에서
+                관리합니다.
+              </span>
+            </div>
+            <button
+              type="button"
+              className="my-page-guide-reopen"
+              onClick={openGuide}
+            >
+              사용 설명서 다시 보기
+            </button>
           </section>
 
           <section
@@ -639,6 +715,101 @@ export default function MyPage() {
           </section>
         </div>
       </main>
+
+      {isGuideOpen && (
+        <div
+          className="my-page-guide-backdrop"
+          role="presentation"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) closeGuide();
+          }}
+        >
+          <section
+            className="my-page-guide"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="my-page-guide-title"
+          >
+            <header className="my-page-guide-header">
+              <div>
+                <p>M&K MY PAGE GUIDE</p>
+                <h2 id="my-page-guide-title">마이페이지 사용 설명서</h2>
+              </div>
+              <button
+                type="button"
+                onClick={closeGuide}
+                aria-label="사용 설명서 닫기"
+              >
+                ×
+              </button>
+            </header>
+
+            <div className="my-page-guide-progress" aria-label="안내 진행 단계">
+              {MY_PAGE_GUIDE_STEPS.map((step, index) => (
+                <button
+                  type="button"
+                  className={index === guideStep ? "is-active" : ""}
+                  onClick={() => setGuideStep(index)}
+                  aria-label={`${index + 1}단계: ${step.title}`}
+                  aria-current={index === guideStep ? "step" : undefined}
+                  key={step.tag}
+                >
+                  {index + 1}
+                </button>
+              ))}
+            </div>
+
+            <div className="my-page-guide-content">
+              <span>{currentGuide.tag}</span>
+              <h3>{currentGuide.title}</h3>
+              <p>{currentGuide.description}</p>
+              <ul>
+                {currentGuide.points.map((point) => (
+                  <li key={point}>{point}</li>
+                ))}
+              </ul>
+            </div>
+
+            <footer className="my-page-guide-footer">
+              <button
+                type="button"
+                className="my-page-guide-hide"
+                onClick={hideGuidePermanently}
+              >
+                다시 보지 않기
+              </button>
+
+              <div>
+                <button
+                  type="button"
+                  className="my-page-guide-secondary"
+                  onClick={() => setGuideStep((step) => Math.max(0, step - 1))}
+                  disabled={guideStep === 0}
+                >
+                  이전
+                </button>
+                {guideStep < MY_PAGE_GUIDE_STEPS.length - 1 ? (
+                  <button
+                    type="button"
+                    className="my-page-guide-primary"
+                    onClick={() => setGuideStep((step) => step + 1)}
+                  >
+                    다음
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    className="my-page-guide-primary"
+                    onClick={closeGuide}
+                  >
+                    마이페이지 시작하기
+                  </button>
+                )}
+              </div>
+            </footer>
+          </section>
+        </div>
+      )}
 
       {selectedReservation && (
         <div

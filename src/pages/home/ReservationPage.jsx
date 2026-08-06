@@ -803,26 +803,6 @@ export default function ReservationPage() {
                 <div>
                   <p className="rv-hero-eyebrow">{ui.eyebrow}</p>
                   <h1>{ui.title}</h1>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Link
-                      to="/mypage"
-                      style={{
-                        marginLeft: "auto",
-                        color: "#0a2740",
-                        fontSize: "13px",
-                        fontWeight: "800",
-                        textDecoration: "none",
-                      }}
-                    >
-                      마이페이지로
-                    </Link>
-                  </div>
                   <p>{ui.intro}</p>
                 </div>
               </div>
