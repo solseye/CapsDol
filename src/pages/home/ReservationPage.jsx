@@ -1415,9 +1415,15 @@ export default function ReservationPage() {
         </div>
       )}
       {showRedirectBanner && (
-        <div className="rv-redirect-overlay">
-          <div className="rv-redirect-modal">
-            <h3>예약이 완료되었습니다</h3>
+        <div className="rv-redirect-overlay" role="presentation">
+          <div
+            className="rv-redirect-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="rv-redirect-title"
+          >
+            <span className="rv-redirect-kicker">RESERVATION COMPLETE</span>
+            <h3 id="rv-redirect-title">예약이 완료되었습니다</h3>
 
             <p className="rv-redirect-desc">
               파일 업로드를 위해 마이페이지로 이동하시겠습니까?
@@ -1427,18 +1433,17 @@ export default function ReservationPage() {
             </p>
 
             <div className="rv-redirect-actions">
-              <button onClick={() => navigate("/")} className="btn ghost">
+              <button
+                type="button"
+                onClick={() => navigate("/")}
+                className="rv-redirect-button rv-redirect-cancel"
+              >
                 아니오
               </button>
               <button
+                type="button"
                 onClick={() => navigate("/mypage")}
-                className="btn"
-                style={{
-                  backgroundColor: "#061641",
-                  borderColor: "#061641",
-                  color: "#ffffff",
-                  flex: 1,
-                }}
+                className="rv-redirect-button rv-redirect-confirm"
               >
                 예
               </button>
