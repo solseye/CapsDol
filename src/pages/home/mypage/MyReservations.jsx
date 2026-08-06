@@ -612,7 +612,7 @@ export default function MyReservations() {
             <section className="my-reservation-chat" aria-label="상담 메시지">
               <div className="my-reservation-chat-head">
                 <strong>상담 메시지</strong>
-                <span>관리자와 추가 내용을 주고받을 수 있습니다.</span>
+                <span>*주의: 상담에 필요한 내용만 문의해주시길 바랍니다.</span>
               </div>
               <div
                 className="my-reservation-chat-list"

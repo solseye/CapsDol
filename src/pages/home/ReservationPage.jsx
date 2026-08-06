@@ -1,8 +1,8 @@
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import BrandLogo from "../../components/BrandLogo";
 import { useMemo, useState, useEffect, useRef } from "react";
-import "../../App.css";
 import "../../styles/reservation-visily.css";
+import "../../App.css";
 import {
   createReservation,
   getReservationListByRange,
@@ -135,12 +135,8 @@ function getMonthDateRange(dateValue) {
 
   const formatDate = (targetDate) => {
     const targetYear = targetDate.getFullYear();
-    const targetMonth = String(
-      targetDate.getMonth() + 1
-    ).padStart(2, "0");
-    const targetDay = String(
-      targetDate.getDate()
-    ).padStart(2, "0");
+    const targetMonth = String(targetDate.getMonth() + 1).padStart(2, "0");
+    const targetDay = String(targetDate.getDate()).padStart(2, "0");
 
     return `${targetYear}-${targetMonth}-${targetDay}`;
   };
@@ -314,6 +310,9 @@ export default function ReservationPage() {
   const [, setIsSubmitted] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
+  const [showRedirectBanner, setShowRedirectBanner] = useState(false);
+  const navigate = useNavigate();
+
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     const role = localStorage.getItem("role");
@@ -327,8 +326,7 @@ export default function ReservationPage() {
       try {
         setListError("");
 
-        const { startDate, endDate } =
-          getMonthDateRange(viewDate);
+        const { startDate, endDate } = getMonthDateRange(viewDate);
 
         // 1. 현재 보고 있는 달의 TimeTree 일정을 먼저 동기화
         const syncResult = await syncTimeTreeReservations({
@@ -341,18 +339,13 @@ export default function ReservationPage() {
           Number(syncResult.updatedCount || 0) > 0 ||
           Number(syncResult.deletedCount || 0) > 0;
 
-        const currentMonth = new Date(
-          `${getMonthStartIso(viewDate)}T00:00:00`,
-        );
+        const currentMonth = new Date(`${getMonthStartIso(viewDate)}T00:00:00`);
 
         // 2. 기존 7개월 범위 안이고,
         // TimeTree에서 변경된 내용도 없으면 목록 API 생략
         if (
           !hasTimeTreeChanges &&
-          isDateInLoadedRange(
-            currentMonth,
-            loadedRangeRef.current,
-          )
+          isDateInLoadedRange(currentMonth, loadedRangeRef.current)
         ) {
           return;
         }
@@ -366,44 +359,29 @@ export default function ReservationPage() {
           nextMonthCount: 4,
         });
 
-        setBlocks(
-          Array.isArray(data.blocks) ? data.blocks : [],
-        );
+        setBlocks(Array.isArray(data.blocks) ? data.blocks : []);
 
         const base = new Date(`${baseDate}T00:00:00`);
 
-        const start = new Date(
-          base.getFullYear(),
-          base.getMonth() - 2,
-          1,
-        );
+        const start = new Date(base.getFullYear(), base.getMonth() - 2, 1);
 
-        const end = new Date(
-          base.getFullYear(),
-          base.getMonth() + 5,
-          0,
-        );
+        const end = new Date(base.getFullYear(), base.getMonth() + 5, 0);
 
         loadedRangeRef.current = {
           start: `${start.getFullYear()}-${String(
             start.getMonth() + 1,
           ).padStart(2, "0")}-01`,
 
-          end: `${end.getFullYear()}-${String(
-            end.getMonth() + 1,
-          ).padStart(2, "0")}-${String(
-            end.getDate(),
-          ).padStart(2, "0")}`,
+          end: `${end.getFullYear()}-${String(end.getMonth() + 1).padStart(
+            2,
+            "0",
+          )}-${String(end.getDate()).padStart(2, "0")}`,
         };
       } catch (err) {
         console.error("예약 일정 조회 실패:", err);
 
         setListError(
-          err.message ||
-            translate(
-              language,
-              "reservation.listLoadError",
-            ),
+          err.message || translate(language, "reservation.listLoadError"),
         );
       }
     };
@@ -1344,7 +1322,6 @@ export default function ReservationPage() {
         <div className="rv-feedback" aria-live="polite">
           {listError && <p className="rv-error">{listError}</p>}
           {submitError && <p className="rv-error">{submitError}</p>}
-          {submitSuccess && <p className="rv-success">{submitSuccess}</p>}
         </div>
       )}
 
@@ -1423,9 +1400,10 @@ export default function ReservationPage() {
                 className="rv-step-next"
                 onClick={async () => {
                   const isSuccess = await handleSubmit();
-                  if (isSuccess) setIsConfirmModalOpen(false);
-                  // 기존 동작을 유지하기 위해 예약 후 자동 이동을 비활성화합니다.
-                  // navigate("/mypage");
+                  if (isSuccess) {
+                    setIsConfirmModalOpen(false);
+                    setShowRedirectBanner(true);
+                  }
                 }}
                 disabled={isSubmitting}
               >
@@ -1434,6 +1412,38 @@ export default function ReservationPage() {
               </button>
             </div>
           </section>
+        </div>
+      )}
+      {showRedirectBanner && (
+        <div className="rv-redirect-overlay">
+          <div className="rv-redirect-modal">
+            <h3>예약이 완료되었습니다</h3>
+
+            <p className="rv-redirect-desc">
+              파일 업로드를 위해 마이페이지로 이동하시겠습니까?
+            </p>
+            <p className="rv-redirect-note">
+              *아니오를 누를 시에는 홈 화면으로 갑니다.
+            </p>
+
+            <div className="rv-redirect-actions">
+              <button onClick={() => navigate("/")} className="btn ghost">
+                아니오
+              </button>
+              <button
+                onClick={() => navigate("/mypage")}
+                className="btn"
+                style={{
+                  backgroundColor: "#061641",
+                  borderColor: "#061641",
+                  color: "#ffffff",
+                  flex: 1,
+                }}
+              >
+                예
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </>

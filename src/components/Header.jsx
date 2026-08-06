@@ -2,10 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { logoutUser } from "../api/authApi";
 import LanguageMenu from "./LanguageMenu";
-import {
-  getCurrentLanguage,
-  translate,
-} from "../i18n/translations";
+import { getCurrentLanguage, translate } from "../i18n/translations";
 import { clearSession } from "../utils/authSession";
 import { confirmAction } from "../utils/notifications";
 import BrandLogo from "./BrandLogo";
@@ -30,35 +27,32 @@ export default function Header({ isLoggedIn }) {
   const mainNavItems = isUserWorkspace
     ? [{ to: "/reservation", label: t("common.navReservation") }]
     : isReservationSection
-    ? [
-        { to: "/mypage", label: t("common.navMyPage") },
-        { to: "/hearing-sheet", label: t("common.navHearing") },
-        { to: "/reservation", label: t("common.navReservation") },
-      ]
-    : isHearingSection
-    ? [
-        { to: "/mypage", label: t("common.navMyPage") },
-        { to: "/reservation", label: t("common.navReservation") },
-      ]
-    : isMyPageSection
-    ? [
-        { to: "/mypage", label: t("common.navMyPage") },
-        { to: "/hearing-sheet", label: t("common.navHearing") },
-        { to: "/reservation", label: t("common.navReservation") },
-      ]
-    : [
-        { to: "/#services", label: t("common.navService") },
-        { to: "/#method", label: t("common.navFlow") },
-        { to: "/#experts", label: t("common.navExperts") },
-        { to: "/#standards", label: t("common.navOperation") },
-      ];
+      ? [
+          { to: "/mypage", label: t("common.navMyPage") },
+          { to: "/hearing-sheet", label: t("common.navHearing") },
+          { to: "/reservation", label: t("common.navReservation") },
+        ]
+      : isHearingSection
+        ? [
+            { to: "/mypage", label: t("common.navMyPage") },
+            { to: "/reservation", label: t("common.navReservation") },
+          ]
+        : isMyPageSection
+          ? [
+              { to: "/mypage", label: t("common.navMyPage") },
+              { to: "/hearing-sheet", label: t("common.navHearing") },
+              { to: "/reservation", label: t("common.navReservation") },
+            ]
+          : [
+              { to: "/#services", label: t("common.navService") },
+              { to: "/#method", label: t("common.navFlow") },
+              { to: "/#experts", label: t("common.navExperts") },
+              { to: "/#standards", label: t("common.navOperation") },
+            ];
 
   const isActivePath = (path) => {
     if (path.startsWith("/#")) {
-      return (
-        location.pathname === "/" &&
-        location.hash === path.slice(1)
-      );
+      return location.pathname === "/" && location.hash === path.slice(1);
     }
 
     if (path === "/mypage") {
@@ -151,33 +145,60 @@ export default function Header({ isLoggedIn }) {
         />
 
         <div className="nav-right">
-          <nav className="main-nav" aria-label={t("common.mainMenu")} ref={dropdownAreaRef}>
+          <nav
+            className="main-nav"
+            aria-label={t("common.mainMenu")}
+            ref={dropdownAreaRef}
+          >
             <ul>
               {isUserWorkspace ? (
                 <>
                   <li className="nav-dropdown">
-                  <button
-                    type="button"
-                    className={`nav-dropdown-trigger ${location.pathname.startsWith("/mypage") ? "active" : ""}`}
-                    aria-expanded={openDropdown === "mypage"}
-                    aria-haspopup="menu"
-                    onClick={() => toggleDropdown("mypage")}
-                  >
-                    {t("common.navMyPage")} <span aria-hidden="true">⌄</span>
-                  </button>
-                  <div className={`nav-dropdown-menu ${openDropdown === "mypage" ? "is-open" : ""}`} role="menu">
-                    <Link to="/mypage" role="menuitem" onClick={() => setOpenDropdown(null)}>
-                      {t("common.myPageHome")}
-                    </Link>
-                    <Link to="/mypage/reservations" role="menuitem" onClick={() => setOpenDropdown(null)}>
-                      {t("common.myConsultations")}
-                    </Link>
-                    <Link to="/mypage/files" role="menuitem" onClick={() => setOpenDropdown(null)}>
-                      {t("common.myFiles")}
-                    </Link>
-                  </div>
+                    <button
+                      type="button"
+                      className={`nav-dropdown-trigger ${location.pathname.startsWith("/mypage") ? "active" : ""}`}
+                      aria-expanded={openDropdown === "mypage"}
+                      aria-haspopup="menu"
+                      onClick={() => toggleDropdown("mypage")}
+                    >
+                      {t("common.navMyPage")} <span aria-hidden="true">⌄</span>
+                    </button>
+                    <div
+                      className={`nav-dropdown-menu ${openDropdown === "mypage" ? "is-open" : ""}`}
+                      role="menu"
+                    >
+                      <Link
+                        to="/mypage"
+                        role="menuitem"
+                        onClick={() => setOpenDropdown(null)}
+                      >
+                        {t("common.myPageHome")}
+                      </Link>
+                      <Link
+                        to="/mypage/reservations"
+                        role="menuitem"
+                        onClick={() => setOpenDropdown(null)}
+                      >
+                        {t("common.myConsultations")}
+                      </Link>
+                      <Link
+                        to="/mypage/files"
+                        role="menuitem"
+                        onClick={() => setOpenDropdown(null)}
+                      >
+                        {t("common.myFiles")}
+                      </Link>
+
+                      <Link
+                        to="/reservation"
+                        className={isReservationSection ? "active" : ""}
+                      >
+                        {t("common.navReservation")}
+                      </Link>
+                    </div>
                   </li>
 
+                  {/*
                   <li className="nav-dropdown">
                     <button
                       type="button"
@@ -197,23 +218,48 @@ export default function Header({ isLoggedIn }) {
                       </Link>
                     </div>
                   </li>
+                   */}
+
+                  {/* ----------------------------------------------------------------- */}
+                  <li>
+                    <Link
+                      to="/hearing-sheet"
+                      className={isHearingSection ? "active" : ""}
+                    >
+                      {t("common.hearingWrite")}
+                    </Link>
+                  </li>
 
                   <li>
-                    <Link to="/reservation" className={isReservationSection ? "active" : ""}>
+                    <Link
+                      to="/chat"
+                      className={location.pathname === "/chat" ? "active" : ""}
+                    >
+                      {t("common.aiChat")}
+                    </Link>
+                  </li>
+                  {/* ----------------------------------------------------------------- */}
+                  {/*
+                  <li>
+                    <Link
+                      to="/reservation"
+                      className={isReservationSection ? "active" : ""}
+                    >
                       {t("common.navReservation")}
                     </Link>
                   </li>
+                   */}
                 </>
               ) : (
                 mainNavItems.map((item) => (
-                <li key={item.to}>
-                  <Link
-                    to={item.to}
-                    className={isActivePath(item.to) ? "active" : ""}
-                  >
-                    {item.label}
-                  </Link>
-                </li>
+                  <li key={item.to}>
+                    <Link
+                      to={item.to}
+                      className={isActivePath(item.to) ? "active" : ""}
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
                 ))
               )}
 
@@ -233,26 +279,32 @@ export default function Header({ isLoggedIn }) {
                 </li>
               )}
 
-              {isLoggedIn && !isAdmin && !isUserWorkspace && !isMyPageSection && !isReservationSection && !isHearingSection && (
-                <li>
-                  <Link to="/mypage" className="btn ghost nav-cta">
-                    {t("common.navMyReservations")}
-                  </Link>
-                </li>
-              )}
-
               {isLoggedIn &&
-                !isAdmin && !isUserWorkspace &&
+                !isAdmin &&
+                !isUserWorkspace &&
                 !isMyPageSection &&
                 !isReservationSection &&
                 !isHearingSection && (
-                <li>
-                  {/* 주소를 /reservation 으로 정확히 맞춰줍니다 */}
-                  <Link to="/reservation" className="btn ghost nav-cta">
-                    {t("common.navReservation")}
-                  </Link>
-                </li>
-              )}
+                  <li>
+                    <Link to="/mypage" className="btn ghost nav-cta">
+                      {t("common.navMyReservations")}
+                    </Link>
+                  </li>
+                )}
+
+              {isLoggedIn &&
+                !isAdmin &&
+                !isUserWorkspace &&
+                !isMyPageSection &&
+                !isReservationSection &&
+                !isHearingSection && (
+                  <li>
+                    {/* 주소를 /reservation 으로 정확히 맞춰줍니다 */}
+                    <Link to="/reservation" className="btn ghost nav-cta">
+                      {t("common.navReservation")}
+                    </Link>
+                  </li>
+                )}
 
               {isLoggedIn && (
                 <li>
@@ -278,7 +330,9 @@ export default function Header({ isLoggedIn }) {
           </button>
         </div>
 
-        <div className={`site-mobile-menu ${isMobileMenuOpen ? "is-open" : ""}`}>
+        <div
+          className={`site-mobile-menu ${isMobileMenuOpen ? "is-open" : ""}`}
+        >
           <nav aria-label={t("common.mobileMenu")}>
             {mobileNavItems.map((item) => (
               <Link
@@ -295,10 +349,18 @@ export default function Header({ isLoggedIn }) {
           <div className="site-mobile-actions">
             {!isLoggedIn && (
               <>
-                <Link to="/login" className="btn ghost" onClick={closeMobileMenu}>
+                <Link
+                  to="/login"
+                  className="btn ghost"
+                  onClick={closeMobileMenu}
+                >
                   {t("common.navLogin")}
                 </Link>
-                <Link to="/signup" className="btn primary" onClick={closeMobileMenu}>
+                <Link
+                  to="/signup"
+                  className="btn primary"
+                  onClick={closeMobileMenu}
+                >
                   {t("common.navSignup")}
                 </Link>
               </>
@@ -316,20 +378,30 @@ export default function Header({ isLoggedIn }) {
 
             {isLoggedIn && !isAdmin && (
               <>
-                {!isUserWorkspace && !isMyPageSection && !isReservationSection && !isHearingSection && (
-                  <Link to="/mypage" className="btn ghost" onClick={closeMobileMenu}>
-                    {t("common.navMyReservations")}
-                  </Link>
-                )}
-                {!isUserWorkspace && !isMyPageSection && !isReservationSection && !isHearingSection && (
-                  <Link
-                    to="/reservation"
-                    className="btn ghost"
-                    onClick={closeMobileMenu}
-                  >
-                    {t("common.navReservation")}
-                  </Link>
-                )}
+                {!isUserWorkspace &&
+                  !isMyPageSection &&
+                  !isReservationSection &&
+                  !isHearingSection && (
+                    <Link
+                      to="/mypage"
+                      className="btn ghost"
+                      onClick={closeMobileMenu}
+                    >
+                      {t("common.navMyReservations")}
+                    </Link>
+                  )}
+                {!isUserWorkspace &&
+                  !isMyPageSection &&
+                  !isReservationSection &&
+                  !isHearingSection && (
+                    <Link
+                      to="/reservation"
+                      className="btn ghost"
+                      onClick={closeMobileMenu}
+                    >
+                      {t("common.navReservation")}
+                    </Link>
+                  )}
               </>
             )}
 
