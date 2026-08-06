@@ -276,7 +276,6 @@ const translations = {
       expert1Specialty7: "회계 · 재무 지원",
       expert2Name: "김충황",
       expert2Role: "사법서사 · 행정서사",
-      expert2Career1: "2011년 오사카 체육대학 건강복지학부 졸업",
       expert2Career2: "2016년 한일을 연결하는 사법서사 사무소 근무",
       expert2Career3: "2023년 사법서기 시험 합격",
       expert2Career4: "2024년 히카리 사법서사 사무소 개업",
@@ -572,8 +571,6 @@ const translations = {
       expert1Specialty7: "Accounting and finance support",
       expert2Name: "Mitsuaki Kanemura",
       expert2Role: "Judicial Scrivener · Administrative Scrivener",
-      expert2Career1:
-        "Graduated from Osaka University of Health and Sport Sciences in 2011",
       expert2Career2:
         "Worked at a judicial scrivener office connecting Korea and Japan in 2016",
       expert2Career3: "Passed judicial scrivener exam in 2023",
@@ -846,7 +843,7 @@ const translations = {
       pricingNotice:
         "銀行審査基準により口座開設ができない場合があります。正確な見積もりは相談後に提示します。",
       expertTitle: "専門家紹介",
-      expert1Name: "金明求 公認会計士",
+      expert1Name: "金明究 公認会計士",
       expert1Role: "公認会計士・税理士",
       career: "略歴および経歴",
       specialty: "専門分野",
@@ -864,9 +861,8 @@ const translations = {
       expert1Specialty5: "経営計画策定・事業再生",
       expert1Specialty6: "株式公開（IPO）支援",
       expert1Specialty7: "会計・財務支援",
-      expert2Name: "金村光明",
+      expert2Name: "金充晃",
       expert2Role: "司法書士・行政書士",
-      expert2Career1: "2011年 大阪体育大学 健康福祉学部卒業",
       expert2Career2: "2016年 韓日をつなぐ司法書士事務所勤務",
       expert2Career3: "2023年 司法書士試験合格",
       expert2Career4: "2024年 ひかり司法書士事務所開業",
