@@ -98,7 +98,7 @@ body.my-page-guide-lock {
 
 .my-page-guide-header {
   display: flex;
-  padding: 25px 28px 18px;
+  padding: 18px 28px 12px;
   border-bottom: 1px solid #e0e7ed;
   align-items: flex-start;
   justify-content: space-between;
@@ -131,46 +131,44 @@ body.my-page-guide-lock {
   cursor: pointer;
 }
 
-.my-page-guide-progress {
+.my-page-guide-steprow {
   display: flex;
-  gap: 8px;
-  padding: 18px 28px 0;
+  gap: 16px;
+  padding: 12px 28px 0;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.my-page-guide-progress button {
-  display: grid;
-  width: 30px;
-  height: 30px;
-  border: 1px solid #cbd6df;
-  border-radius: 50%;
-  background: #fff;
-  color: #667588;
-  font: inherit;
-  font-size: 11px;
-  font-weight: 900;
-  cursor: pointer;
-  place-items: center;
-}
-
-.my-page-guide-progress button.is-active {
-  border-color: #0a2a45;
-  background: #0a2a45;
-  color: #fff;
-}
-
-.my-page-guide-content {
-  padding: 22px 28px 26px;
-}
-
-.my-page-guide-content > span {
+.my-page-guide-tag {
   color: #0a4d7c;
   font-size: 11px;
   font-weight: 900;
   letter-spacing: 0.12em;
 }
 
+.my-page-guide-progress {
+  display: flex;
+  gap: 3px;
+  color: #93a3b4;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  align-items: baseline;
+}
+
+.my-page-guide-progress strong {
+  color: #0a2a45;
+  font-size: 17px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.my-page-guide-content {
+  padding: 8px 28px 24px;
+}
+
 .my-page-guide-content h3 {
-  margin: 10px 0 12px;
+  margin: 0 0 12px;
   color: #0a2239;
   font-size: 26px;
   line-height: 1.3;
@@ -189,22 +187,48 @@ body.my-page-guide-lock {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
-  margin: 22px 0 0;
+  margin: 18px 0 0;
   padding: 0;
   list-style: none;
+  align-items: stretch;
 }
 
 .my-page-guide-content li {
   min-height: 48px;
   display: flex;
-  padding: 10px 12px;
+  padding: 12px 14px;
   border: 1px solid #dce5eb;
   border-left: 3px solid #0a2a45;
   background: #f6f9fb;
   color: #31475b;
   font-size: 12px;
   font-weight: 800;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+.my-page-guide-content li:not(:has(p)) {
+  justify-content: center;
+}
+
+.my-page-guide-content li strong {
+  color: #0a2a45;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.01em;
+  word-break: keep-all;
+}
+
+.my-page-guide-content li p {
+  margin: 9px 0 0;
+  padding-top: 9px;
+  border-top: 1px dashed #c8d7e2;
+  color: #5b6b7c;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.7;
+  word-break: keep-all;
 }
 
 .my-page-guide-footer {
@@ -755,12 +779,12 @@ body.my-page-guide-lock {
     font-size: 22px;
   }
 
-  .my-page-guide-progress {
-    padding: 16px 20px 0;
+  .my-page-guide-steprow {
+    padding: 10px 20px 0;
   }
 
   .my-page-guide-content {
-    padding: 19px 20px 22px;
+    padding: 8px 20px 20px;
   }
 
   .my-page-guide-content h3 {

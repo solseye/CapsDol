@@ -44,26 +44,41 @@ const MY_PAGE_GUIDE_STEPS = [
   {
     tag: "01 · SCHEDULE",
     title: "상담 일정을 확인하세요",
-    description: "예약 상태와 확정된 일정을 확인하고 상세 내용을 볼 수 있습니다.",
-    points: ["확정 일정", "승인 상태", "상세보기"],
+    description:
+      "예약 상태와 확정된 일정을 확인하고 상세 내용을 볼 수 있습니다.",
+    points: ["상담 내역", "메일 안내", "상세보기"],
+    comment: [
+      "신청하신 전문가 상담 내역과 현재 승인 진행 상태를 한눈에 확인할 수 있습니다.",
+      "상담 예약이 확정되거나 반려될 경우, 가입하신 이메일로 안내 메일이 발송됩니다.",
+      "상담 상세 내역(일시, 분야, 상태)을 확인하고, 담당 전문가와 채팅창을 통해 직접 소통할 수 있습니다.",
+    ],
   },
   {
     tag: "02 · MANAGEMENT",
-    title: "상담과 파일을 관리하세요",
-    description: "상담 내역을 확인하고 필요한 서류를 업로드할 수 있습니다.",
-    points: ["상담 내역", "필수 서류", "파일 관리"],
+    title: "상담에 필요한 파일을 관리하세요.",
+    description: "상담에 필요한 서류를 확인하고, 업로드할 수 있습니다.",
+    points: ["상담 자료 관리", "필수 서류 확인", "서류 업로드 및 관리"],
+    comment: [
+      "일본 진출 및 전문가 상담에 필요한 서류를 한곳에서 편리하게 관리하세요.",
+      "각 상담 분야에 맞춤화된 필수 준비 서류 목록을 확인할 수 있습니다.",
+      "준비된 필수 서류를 업로드하여 전문가에게 바로 전달하고, 기존에 등록한 파일 목록을 관리할 수 있습니다.",
+    ],
   },
   {
     tag: "03 · PROGRESS & AI",
     title: "진행 상황과 AI 기록을 확인하세요",
     description: "일본 진출 준비 단계와 최근 AI 대화 5개를 확인할 수 있습니다.",
-    points: ["준비 현황", "최근 대화 5개", "새 AI 상담"],
+    points: ["준비 현황", "최근 대화 내역", "AI 상담"],
+    comment: [
+      "현재 일본 진출을 위해 작성 중인 서류와 준비 단계를 체크리스트로 한눈에 확인해 보세요.",
+      "AI 챗봇과 나누었던 최근 상담 내역(최대 5개)을 다시 확인할 수 있습니다.",
+      "대화를 초기화하고 새로운 주제로 AI 챗봇과 기초적인 1:1 상담을 시작할 수 있습니다.",
+    ],
   },
 ];
 
 function getReservationDate(reservation) {
-  const dateValue =
-    reservation.selected_date || reservation.selectedDate;
+  const dateValue = reservation.selected_date || reservation.selectedDate;
 
   if (!dateValue) return null;
 
@@ -71,11 +86,8 @@ function getReservationDate(reservation) {
 
   if (Number.isNaN(date.getTime())) return null;
 
-  const timeValue =
-    reservation.selected_time || reservation.selectedTime || "";
-  const [hours, minutes] = String(timeValue)
-    .split(":")
-    .map(Number);
+  const timeValue = reservation.selected_time || reservation.selectedTime || "";
+  const [hours, minutes] = String(timeValue).split(":").map(Number);
 
   if (Number.isFinite(hours)) {
     date.setHours(hours, Number.isFinite(minutes) ? minutes : 0, 0, 0);
@@ -156,11 +168,9 @@ export default function MyPage() {
   const [selectedReservation, setSelectedReservation] = useState(null);
   const [openFaq, setOpenFaq] = useState("reservation");
   const [chatHistories, setChatHistories] = useState([]);
-  const [chatHistoryLoading, setChatHistoryLoading] =
-    useState(true);
+  const [chatHistoryLoading, setChatHistoryLoading] = useState(true);
   const [chatHistoryError, setChatHistoryError] = useState("");
-  const [openChatHistoryId, setOpenChatHistoryId] =
-    useState(null);
+  const [openChatHistoryId, setOpenChatHistoryId] = useState(null);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
   const [guideStep, setGuideStep] = useState(0);
 
@@ -211,13 +221,9 @@ export default function MyPage() {
       setReservationLoading(false);
       setChatHistoryLoading(false);
 
-      setReservationError(
-        "로그인 후 다음 상담 일정을 확인할 수 있습니다."
-      );
+      setReservationError("로그인 후 다음 상담 일정을 확인할 수 있습니다.");
 
-      setChatHistoryError(
-        "로그인 후 챗봇 대화 기록을 확인할 수 있습니다."
-      );
+      setChatHistoryError("로그인 후 챗봇 대화 기록을 확인할 수 있습니다.");
 
       return;
     }
@@ -229,43 +235,36 @@ export default function MyPage() {
         setReservationError("");
         setChatHistoryError("");
 
-        const [
-          reservationResult,
-          fileResult,
-          chatHistoryResult,
-        ] = await Promise.allSettled([
-          getMyReservations(),
-          getClientFiles({
-            bucket: "users",
-            limit: 100,
-            offset: 0,
-          }),
-          getChatHistory({
-            limit: 5,
-            offset: 0,
-          }),
-        ]);
+        const [reservationResult, fileResult, chatHistoryResult] =
+          await Promise.allSettled([
+            getMyReservations(),
+            getClientFiles({
+              bucket: "users",
+              limit: 100,
+              offset: 0,
+            }),
+            getChatHistory({
+              limit: 5,
+              offset: 0,
+            }),
+          ]);
 
         if (reservationResult.status === "fulfilled") {
           setReservations(
-            Array.isArray(
-              reservationResult.value.reservations
-            )
+            Array.isArray(reservationResult.value.reservations)
               ? reservationResult.value.reservations
-              : []
+              : [],
           );
         } else {
           setReservationError(
             reservationResult.reason?.message ||
-              "예약 목록을 불러오지 못했습니다."
+              "예약 목록을 불러오지 못했습니다.",
           );
         }
 
         if (fileResult.status === "fulfilled") {
           setClientFiles(
-            Array.isArray(fileResult.value.files)
-              ? fileResult.value.files
-              : []
+            Array.isArray(fileResult.value.files) ? fileResult.value.files : [],
           );
         }
 
@@ -273,14 +272,14 @@ export default function MyPage() {
           setChatHistories(
             Array.isArray(chatHistoryResult.value.histories)
               ? chatHistoryResult.value.histories
-              : []
+              : [],
           );
         } else {
           setChatHistories([]);
 
           setChatHistoryError(
             chatHistoryResult.reason?.message ||
-              "챗봇 대화 기록을 불러오지 못했습니다."
+              "챗봇 대화 기록을 불러오지 못했습니다.",
           );
         }
       } finally {
@@ -298,8 +297,8 @@ export default function MyPage() {
     return reservations
       .filter((reservation) =>
         ["pending", "approved", "confirmed"].includes(
-          String(reservation.status || "").toLowerCase()
-        )
+          String(reservation.status || "").toLowerCase(),
+        ),
       )
       .map((reservation) => ({
         ...reservation,
@@ -307,13 +306,9 @@ export default function MyPage() {
       }))
       .filter(
         (reservation) =>
-          reservation.parsedDate &&
-          reservation.parsedDate.getTime() >= now
+          reservation.parsedDate && reservation.parsedDate.getTime() >= now,
       )
-      .sort(
-        (a, b) =>
-          a.parsedDate.getTime() - b.parsedDate.getTime()
-      )[0];
+      .sort((a, b) => a.parsedDate.getTime() - b.parsedDate.getTime())[0];
   }, [reservations]);
 
   const confirmedReservation = useMemo(() => {
@@ -322,8 +317,8 @@ export default function MyPage() {
     return reservations
       .filter((reservation) =>
         ["approved", "confirmed"].includes(
-          String(reservation.status || "").toLowerCase()
-        )
+          String(reservation.status || "").toLowerCase(),
+        ),
       )
       .map((reservation) => ({
         ...reservation,
@@ -331,25 +326,22 @@ export default function MyPage() {
       }))
       .filter(
         (reservation) =>
-          reservation.parsedDate &&
-          reservation.parsedDate.getTime() >= now
+          reservation.parsedDate && reservation.parsedDate.getTime() >= now,
       )
-      .sort(
-        (a, b) =>
-          a.parsedDate.getTime() - b.parsedDate.getTime()
-      )[0];
+      .sort((a, b) => a.parsedDate.getTime() - b.parsedDate.getTime())[0];
   }, [reservations]);
 
-  const displayedReservation =
-    confirmedReservation || upcomingReservation;
+  const displayedReservation = confirmedReservation || upcomingReservation;
 
   const checkedSteps = useMemo(() => {
     const events = loadWorkflowEvents();
-    const hasPendingReview = reservations.some((item) => item.status === "pending");
+    const hasPendingReview = reservations.some(
+      (item) => item.status === "pending",
+    );
     const hasApprovedMeeting = reservations.some((item) =>
       ["approved", "confirmed"].includes(
-        String(item.status || "").toLowerCase()
-      )
+        String(item.status || "").toLowerCase(),
+      ),
     );
 
     return {
@@ -364,7 +356,7 @@ export default function MyPage() {
   const completedStepCount = Object.values(checkedSteps).filter(Boolean).length;
   const selectedNote = useMemo(
     () => parseReservationNote(selectedReservation?.note),
-    [selectedReservation]
+    [selectedReservation],
   );
   const currentGuide = MY_PAGE_GUIDE_STEPS[guideStep];
 
@@ -377,8 +369,7 @@ export default function MyPage() {
               <p>MY PAGE</p>
               <h1>마이페이지</h1>
               <span>
-                상담 예약, 제출 파일, 전문가 검토 준비를 한 곳에서
-                관리합니다.
+                상담 예약, 제출 파일, 전문가 검토 준비를 한 곳에서 관리합니다.
               </span>
             </div>
             <button
@@ -423,7 +414,7 @@ export default function MyPage() {
               ) : upcomingReservation ? (
                 <>
                   <h2>
-                    상담 신청을 확인하고 있습니다: {" "}
+                    상담 신청을 확인하고 있습니다:{" "}
                     {formatReservationDate(upcomingReservation)}
                   </h2>
                   <span>
@@ -455,9 +446,7 @@ export default function MyPage() {
               </button>
               <Link
                 to={
-                  confirmedReservation
-                    ? "/mypage/reservations"
-                    : "/reservation"
+                  confirmedReservation ? "/mypage/reservations" : "/reservation"
                 }
               >
                 {confirmedReservation ? "상담 내역" : "일정 신청"}
@@ -475,13 +464,10 @@ export default function MyPage() {
                   </p>
                   <h2>내 상담 내역</h2>
                   <span>
-                    신청한 상담의 승인 상태와 일정을 확인하고
-                    관리합니다.
+                    신청한 상담의 승인 상태와 일정을 확인하고 관리합니다.
                   </span>
                 </div>
-                <Link to="/mypage/reservations">
-                  상담 내역 보기
-                </Link>
+                <Link to="/mypage/reservations">상담 내역 보기</Link>
               </article>
 
               <article className="my-page-action-card">
@@ -492,7 +478,8 @@ export default function MyPage() {
                   </p>
                   <h2>내 파일 관리</h2>
                   <span>
-                    필요 서류의 준비 상태와 발급일, 제출 파일을 한곳에서 관리합니다.
+                    필요 서류의 준비 상태와 발급일, 제출 파일을 한곳에서
+                    관리합니다.
                   </span>
                 </div>
                 <Link to="/mypage/files">파일 관리하기</Link>
@@ -510,10 +497,7 @@ export default function MyPage() {
                     : "실제 상담과 자료 상태를 기준으로 자동 반영됩니다."}
                 </span>
               </div>
-              <div
-                className="my-page-progress-bar"
-                aria-hidden="true"
-              >
+              <div className="my-page-progress-bar" aria-hidden="true">
                 <span
                   style={{
                     width: `${(completedStepCount / 5) * 100}%`,
@@ -526,14 +510,14 @@ export default function MyPage() {
                     className={checkedSteps[id] ? "is-complete" : ""}
                     key={id}
                   >
-                    <span>
-                      {checkedSteps[id] ? "✓" : index + 1}
-                    </span>
+                    <span>{checkedSteps[id] ? "✓" : index + 1}</span>
                     {label}
                   </div>
                 ))}
               </div>
-              <small>상담 신청, 파일 제출, 승인 상태가 자동으로 반영됩니다.</small>
+              <small>
+                상담 신청, 파일 제출, 승인 상태가 자동으로 반영됩니다.
+              </small>
             </aside>
           </section>
 
@@ -541,9 +525,7 @@ export default function MyPage() {
             <header>
               <p>FAQ</p>
               <h2>자주 묻는 질문</h2>
-              <span>
-                상담과 자료 제출 전에 필요한 내용을 확인하세요.
-              </span>
+              <span>상담과 자료 제출 전에 필요한 내용을 확인하세요.</span>
             </header>
 
             <div>
@@ -555,9 +537,7 @@ export default function MyPage() {
                   <button
                     type="button"
                     onClick={() =>
-                      setOpenFaq(
-                        openFaq === item.id ? "" : item.id
-                      )
+                      setOpenFaq(openFaq === item.id ? "" : item.id)
                     }
                     aria-expanded={openFaq === item.id}
                   >
@@ -577,15 +557,10 @@ export default function MyPage() {
               <div>
                 <p>CHAT HISTORY</p>
                 <h2>챗봇 대화 내역</h2>
-                <span>
-                  최근 챗봇 질문과 답변을 확인할 수 있습니다.
-                </span>
+                <span>최근 챗봇 질문과 답변을 확인할 수 있습니다.</span>
               </div>
 
-              <Link
-                className="my-page-chat-history-button"
-                to="/chat"
-              >
+              <Link className="my-page-chat-history-button" to="/chat">
                 새 상담 시작
               </Link>
             </header>
@@ -627,17 +602,13 @@ export default function MyPage() {
 
                 <strong>아직 저장된 대화가 없습니다.</strong>
 
-                <span>
-                  챗봇 상담을 시작하면 이전 대화가 이곳에
-                  표시됩니다.
-                </span>
+                <span>챗봇 상담을 시작하면 이전 대화가 이곳에 표시됩니다.</span>
               </div>
             ) : (
               <div className="my-page-chat-history-list">
                 {chatHistories.map((history) => {
                   const historyId = String(history.id);
-                  const isOpen =
-                    openChatHistoryId === historyId;
+                  const isOpen = openChatHistoryId === historyId;
 
                   return (
                     <article
@@ -650,9 +621,7 @@ export default function MyPage() {
                         className="my-page-chat-history-question"
                         type="button"
                         onClick={() =>
-                          setOpenChatHistoryId(
-                            isOpen ? null : historyId
-                          )
+                          setOpenChatHistoryId(isOpen ? null : historyId)
                         }
                         aria-expanded={isOpen}
                       >
@@ -665,14 +634,11 @@ export default function MyPage() {
 
                         <span className="my-page-chat-history-summary">
                           <strong>
-                            {history.question ||
-                              "질문 내용이 없습니다."}
+                            {history.question || "질문 내용이 없습니다."}
                           </strong>
 
                           <time dateTime={history.created_at}>
-                            {formatChatHistoryDate(
-                              history.created_at
-                            )}
+                            {formatChatHistoryDate(history.created_at)}
                           </time>
                         </span>
 
@@ -689,10 +655,7 @@ export default function MyPage() {
                           <section>
                             <span>QUESTION</span>
 
-                            <p>
-                              {history.question ||
-                                "질문 내용이 없습니다."}
-                            </p>
+                            <p>{history.question || "질문 내용이 없습니다."}</p>
                           </section>
 
                           <section>
@@ -744,29 +707,32 @@ export default function MyPage() {
               </button>
             </header>
 
-            <div className="my-page-guide-progress" aria-label="안내 진행 단계">
-              {MY_PAGE_GUIDE_STEPS.map((step, index) => (
-                <button
-                  type="button"
-                  className={index === guideStep ? "is-active" : ""}
-                  onClick={() => setGuideStep(index)}
-                  aria-label={`${index + 1}단계: ${step.title}`}
-                  aria-current={index === guideStep ? "step" : undefined}
-                  key={step.tag}
-                >
-                  {index + 1}
-                </button>
-              ))}
+            <div className="my-page-guide-steprow">
+              <span className="my-page-guide-tag">{currentGuide.tag}</span>
+              <span
+                className="my-page-guide-progress"
+                aria-label={`전체 ${MY_PAGE_GUIDE_STEPS.length}단계 중 ${guideStep + 1}단계`}
+              >
+                <strong>{guideStep + 1}</strong>
+                <span aria-hidden="true">/</span>
+                <span>{MY_PAGE_GUIDE_STEPS.length}</span>
+              </span>
             </div>
 
             <div className="my-page-guide-content">
-              <span>{currentGuide.tag}</span>
               <h3>{currentGuide.title}</h3>
               <p>{currentGuide.description}</p>
               <ul>
-                {currentGuide.points.map((point) => (
-                  <li key={point}>{point}</li>
-                ))}
+                {currentGuide.points.map((point, index) => {
+                  const comment = currentGuide.comment?.[index];
+
+                  return (
+                    <li key={point}>
+                      <strong>{point}</strong>
+                      {comment ? <p>{comment}</p> : null}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
 
@@ -830,9 +796,7 @@ export default function MyPage() {
             <header>
               <div>
                 <p>CONSULTATION DETAIL</p>
-                <h2 id="reservation-detail-title">
-                  상담 신청 정보
-                </h2>
+                <h2 id="reservation-detail-title">상담 신청 정보</h2>
               </div>
               <button
                 type="button"
@@ -849,15 +813,11 @@ export default function MyPage() {
               </div>
               <div>
                 <dt>일정</dt>
-                <dd>
-                  {formatReservationDate(selectedReservation)}
-                </dd>
+                <dd>{formatReservationDate(selectedReservation)}</dd>
               </div>
               <div>
                 <dt>상태</dt>
-                <dd>
-                  {getStatusLabel(selectedReservation.status)}
-                </dd>
+                <dd>{getStatusLabel(selectedReservation.status)}</dd>
               </div>
               <div>
                 <dt>예약 번호</dt>
@@ -898,9 +858,7 @@ export default function MyPage() {
                 ))}
               </section>
             )}
-            <Link to="/mypage/reservations">
-              메시지 확인 및 답장
-            </Link>
+            <Link to="/mypage/reservations">메시지 확인 및 답장</Link>
           </section>
         </div>
       )}
