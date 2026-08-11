@@ -9,6 +9,7 @@ import {
 import { Link, useLocation, useParams } from "react-router-dom";
 
 import FormattedChatText from "../../../components/FormattedChatText";
+import AdminChatEvidence from "../components/AdminChatEvidence";
 import { getAdminUsers } from "../../../api/adminApi";
 import { getChatHistoryByPost } from "../../../api/chatApi";
 import {
@@ -1123,6 +1124,11 @@ export default function UsersDetailPage() {
                             fallback="저장된 답변이 없습니다."
                           />
                         </p>
+
+                        <AdminChatEvidence
+                          data={history}
+                          className="admin-chat-history-sources"
+                        />
                       </section>
 
                       {(history.model ||

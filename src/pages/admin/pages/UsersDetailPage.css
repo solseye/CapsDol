@@ -1099,6 +1099,16 @@
   overflow-wrap: anywhere;
 }
 
+.admin-user-detail-page .admin-chat-history-sources {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top-color: rgba(37, 99, 235, 0.16);
+}
+
+.admin-user-detail-page .admin-chat-history-sources .adm-ai-source {
+  background: #ffffff;
+}
+
 .admin-user-detail-page .admin-chat-history-meta {
   display: flex;
   gap: 14px;
