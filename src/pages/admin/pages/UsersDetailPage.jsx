@@ -6,7 +6,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 
 import FormattedChatText from "../../../components/FormattedChatText";
 import AdminChatEvidence from "../components/AdminChatEvidence";
@@ -26,6 +26,13 @@ import {
 import { parseReservationNote } from "../../../utils/reservationNoteUtils";
 
 import "./UsersDetailPage.css";
+
+const USER_DETAIL_TABS = ["reservations", "files", "chat"];
+
+function getUserDetailTab(search) {
+  const tab = new URLSearchParams(search).get("tab");
+  return USER_DETAIL_TABS.includes(tab) ? tab : "reservations";
+}
 
 function formatFileSize(size) {
   const bytes = Number(size || 0);
@@ -128,6 +135,7 @@ function getTimeSlots() {
 export default function UsersDetailPage() {
   const { uuid: encodedUuid } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const uuid = useMemo(
     () =>
       decodeURIComponent(encodedUuid || "") ||
@@ -156,6 +164,9 @@ export default function UsersDetailPage() {
   const [chatHistoryError, setChatHistoryError] = useState("");
   const [openChatHistoryId, setOpenChatHistoryId] =
     useState(null);
+  const [activeDetailTab, setActiveDetailTab] = useState(() =>
+    getUserDetailTab(location.search),
+  );
 
   const [previewLoadingPath, setPreviewLoadingPath] = useState(null);
   const [downloadLoadingPath, setDownloadLoadingPath] = useState(null);
@@ -178,6 +189,51 @@ export default function UsersDetailPage() {
     () => parseReservationNote(selectedReservation?.note),
     [selectedReservation],
   );
+
+  const pendingReservationCount = useMemo(
+    () =>
+      reservations.filter((reservation) =>
+        ["pending", "requested"].includes(reservation.status),
+      ).length,
+    [reservations],
+  );
+
+  const latestFileDate = useMemo(() => {
+    const timestamps = clientFiles
+      .map((file) =>
+        new Date(file.uploadedAt || file.updatedAt || 0).getTime(),
+      )
+      .filter((timestamp) => Number.isFinite(timestamp) && timestamp > 0);
+
+    return timestamps.length > 0 ? new Date(Math.max(...timestamps)) : null;
+  }, [clientFiles]);
+
+  const latestChatDate = useMemo(() => {
+    const timestamps = chatHistories
+      .map((history) => new Date(history.created_at || 0).getTime())
+      .filter((timestamp) => Number.isFinite(timestamp) && timestamp > 0);
+
+    return timestamps.length > 0 ? new Date(Math.max(...timestamps)) : null;
+  }, [chatHistories]);
+
+  useEffect(() => {
+    setActiveDetailTab(getUserDetailTab(location.search));
+  }, [location.search]);
+
+  const handleDetailTabChange = (nextTab) => {
+    if (!USER_DETAIL_TABS.includes(nextTab)) return;
+
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set("tab", nextTab);
+    setActiveDetailTab(nextTab);
+    navigate(
+      {
+        pathname: location.pathname,
+        search: searchParams.toString(),
+      },
+      { replace: true, state: location.state },
+    );
+  };
 
   useEffect(() => {
     const chatList = reservationChatListRef.current;
@@ -650,7 +706,75 @@ export default function UsersDetailPage() {
         )}
       </section>
 
-      <section className="adm-card reservation-card mb-2">
+      <nav
+        className="admin-user-workspace-tabs"
+        aria-label="사용자 활동 내역"
+        role="tablist"
+      >
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeDetailTab === "reservations"}
+          aria-controls="user-reservations-panel"
+          className={activeDetailTab === "reservations" ? "is-active" : ""}
+          onClick={() => handleDetailTabChange("reservations")}
+        >
+          <span className="admin-user-workspace-tab-label">상담 신청</span>
+          <strong>{reservations.length}건</strong>
+          <small>
+            {isReservationsLoading
+              ? "내역 확인 중"
+              : pendingReservationCount > 0
+                ? `승인 대기 ${pendingReservationCount}건`
+                : "대기 중인 신청 없음"}
+          </small>
+        </button>
+
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeDetailTab === "files"}
+          aria-controls="user-files-panel"
+          className={activeDetailTab === "files" ? "is-active" : ""}
+          onClick={() => handleDetailTabChange("files")}
+        >
+          <span className="admin-user-workspace-tab-label">업로드 파일</span>
+          <strong>{clientFiles.length}개</strong>
+          <small>
+            {isLoading
+              ? "파일 확인 중"
+              : latestFileDate
+                ? `최근 ${formatDateOnly(latestFileDate)}`
+                : "업로드된 파일 없음"}
+          </small>
+        </button>
+
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeDetailTab === "chat"}
+          aria-controls="user-chat-panel"
+          className={activeDetailTab === "chat" ? "is-active" : ""}
+          onClick={() => handleDetailTabChange("chat")}
+        >
+          <span className="admin-user-workspace-tab-label">챗봇 대화</span>
+          <strong>{chatHistories.length}건</strong>
+          <small>
+            {isChatHistoryLoading
+              ? "대화 확인 중"
+              : latestChatDate
+                ? `최근 ${formatDateOnly(latestChatDate)}`
+                : "저장된 대화 없음"}
+          </small>
+        </button>
+      </nav>
+
+      {activeDetailTab === "reservations" && (
+      <section
+        id="user-reservations-panel"
+        role="tabpanel"
+        className="adm-card reservation-card admin-user-workspace-panel"
+      >
         <div className="file-list-header">
           <div>
             <h2 className="file-list-title">상담 신청 내역</h2>
@@ -689,6 +813,7 @@ export default function UsersDetailPage() {
           </div>
         )}
       </section>
+      )}
 
       {selectedReservation && (
         <div className="reservation-modal-overlay">
@@ -818,7 +943,12 @@ export default function UsersDetailPage() {
       )}
 
 
-      <section className="adm-card">
+      {activeDetailTab === "files" && (
+      <section
+        id="user-files-panel"
+        role="tabpanel"
+        className="adm-card admin-user-workspace-panel"
+      >
         <div className="file-list-header">
           <div>
             <h2 className="file-list-title">업로드 파일 목록</h2>
@@ -985,8 +1115,14 @@ export default function UsersDetailPage() {
           </div>
         )}
       </section>
+      )}
 
-      <section className="adm-card admin-chat-history-card">
+      {activeDetailTab === "chat" && (
+      <section
+        id="user-chat-panel"
+        role="tabpanel"
+        className="adm-card admin-chat-history-card admin-user-workspace-panel"
+      >
         <div className="admin-chat-history-header">
           <div>
             <p className="admin-chat-history-eyebrow">
@@ -1158,6 +1294,7 @@ export default function UsersDetailPage() {
           </div>
         )}
       </section>
+      )}
     </main>
   );
 }
