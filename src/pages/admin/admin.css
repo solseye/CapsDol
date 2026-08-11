@@ -472,11 +472,112 @@ body.adm-sidebar-lock {
   color: #0d3657;
 }
 .adm-ai-source {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: 12px;
+  background: #f8fafc;
   color: #657185;
   font-weight: 800;
+}
+.adm-ai-source summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 13px;
+  cursor: pointer;
+  list-style: none;
+  color: #26384a;
+}
+.adm-ai-source summary::-webkit-details-marker {
+  display: none;
+}
+.adm-ai-source summary::before {
+  content: "＋";
+  flex: 0 0 auto;
+  color: #0d3657;
+  font-size: 15px;
+}
+.adm-ai-source[open] summary::before {
+  content: "−";
+}
+.adm-ai-source summary span {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.adm-ai-source summary small {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  color: #6b7788;
+  font-size: 11px;
+  white-space: nowrap;
+}
+.adm-ai-source-detail {
+  padding: 13px;
+  border-top: 1px solid rgba(148, 163, 184, 0.24);
+  background: #ffffff;
+}
+.adm-ai-source-detail dl {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+}
+.adm-ai-source-detail dl > div {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: 10px;
+}
+.adm-ai-source-detail dt {
+  color: #657185;
+}
+.adm-ai-source-detail dd {
+  margin: 0;
+  color: #26384a;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.adm-ai-source-content {
+  margin-top: 13px;
+  padding-top: 13px;
+  border-top: 1px solid rgba(148, 163, 184, 0.22);
+}
+.adm-ai-source-content > strong {
+  color: #0d3657;
+}
+.adm-ai-source-content pre {
+  max-height: 320px;
+  margin: 9px 0 0;
+  padding: 12px;
+  overflow: auto;
+  border-radius: 10px;
+  background: #f4f7fa;
+  color: #26384a;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.adm-ai-source-empty {
+  margin: 0;
+  color: #7a8696;
+  font-weight: 650;
+}
+@media (max-width: 720px) {
+  .adm-ai-source summary {
+    align-items: flex-start;
+  }
+  .adm-ai-source summary small {
+    display: none;
+  }
+  .adm-ai-source-detail dl > div {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
 }
 .adm-ai-bottom {
   margin-top: 0;
