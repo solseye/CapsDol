@@ -211,15 +211,29 @@
   min-height: 112px;
   padding: 17px 0;
   display: grid;
-  grid-template-columns: 170px minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
   border-bottom: 1px solid #d8e0e6;
 }
 
-.my-reservation-date {
-  padding-right: 20px;
+.my-reservation-head {
+  display: flex;
+  padding-right: 18px;
   border-right: 1px solid #d8e0e6;
+  gap: 16px;
+  align-items: center;
+}
+
+.my-reservation-title {
+  margin: 0;
+  font-size: 18px;
+  letter-spacing: 0;
+  word-break: keep-all;
+}
+
+.my-reservation-date {
+  flex: 0 0 auto;
 }
 
 .my-reservation-date span {
@@ -227,6 +241,10 @@
   color: #617080;
   font-size: 12px;
   font-weight: 750;
+}
+
+.my-reservation-date strong:first-child {
+  margin-top: 0;
 }
 
 .my-reservation-date strong {
@@ -241,17 +259,12 @@
   min-width: 0;
 }
 
-.my-reservation-info > div {
+.my-reservation-status-line {
   display: flex;
-  align-items: center;
+  margin-top: 6px;
   gap: 10px;
+  align-items: center;
   flex-wrap: wrap;
-}
-
-.my-reservation-info h3 {
-  margin: 0;
-  font-size: 18px;
-  letter-spacing: 0;
 }
 
 .my-reservation-info .status {
@@ -287,7 +300,7 @@
 .my-reservation-info p,
 .my-reservation-info small {
   display: block;
-  margin: 8px 0 0;
+  margin: 0;
   color: #6a7683;
   font-size: 12px;
   font-weight: 700;
@@ -612,7 +625,7 @@
   }
 
   .my-reservation-item {
-    grid-template-columns: 130px minmax(0, 1fr);
+    grid-template-columns: auto minmax(0, 1fr);
   }
 
   .my-reservation-actions {
@@ -667,7 +680,7 @@
     gap: 13px;
   }
 
-  .my-reservation-date {
+  .my-reservation-head {
     padding: 0 0 13px;
     border-right: 0;
     border-bottom: 1px solid #d8e0e6;

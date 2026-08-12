@@ -451,39 +451,46 @@ export default function MyReservations() {
                   const deleting = deleteLoadingId === reservationId;
                   const cancelReason =
                     item.cancel_reason || localCancelReasons[reservationId];
+                  const dateText = formatDate(item.selected_date);
+                  const timeText = formatTime(item.selected_time);
 
                   return (
                     <article
                       className="my-reservation-item"
                       key={reservationId}
                     >
-                      <div className="my-reservation-date">
-                        <span>{formatDate(item.selected_date)}</span>
-                        <strong>{formatTime(item.selected_time)}</strong>
+                      <div className="my-reservation-head">
+                        <div className="my-reservation-date">
+                          {dateText !== "-" && <span>{dateText}</span>}
+                          <strong>{timeText}</strong>
+                        </div>
+
+                        <h3 className="my-reservation-title">
+                          {getFieldLabel(item.field)} 상담
+                        </h3>
                       </div>
 
                       <div className="my-reservation-info">
-                        <div>
-                          <h3>{getFieldLabel(item.field)} 상담</h3>
-                          <span
-                            className={`status ${item.status || "pending"}`}
-                          >
-                            {getStatusLabel(item.status)}
-                          </span>
-                        </div>
                         <p>
                           예약 번호 #{reservationId}
                           {item.requested_at
                             ? ` · ${formatDate(item.requested_at)} 신청`
                             : ""}
                         </p>
-                        {(item.reject_reason || cancelReason) && (
-                          <small>
-                            {item.reject_reason
-                              ? `불허 사유: ${item.reject_reason}`
-                              : `취소 사유: ${cancelReason}`}
-                          </small>
-                        )}
+                        <div className="my-reservation-status-line">
+                          {(item.reject_reason || cancelReason) && (
+                            <small>
+                              {item.reject_reason
+                                ? `불허 사유: ${item.reject_reason}`
+                                : `취소 사유: ${cancelReason}`}
+                            </small>
+                          )}
+                          <span
+                            className={`status ${item.status || "pending"}`}
+                          >
+                            {getStatusLabel(item.status)}
+                          </span>
+                        </div>
                       </div>
 
                       <div className="my-reservation-actions">
