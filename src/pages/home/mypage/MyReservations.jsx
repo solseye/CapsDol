@@ -465,32 +465,23 @@ export default function MyReservations() {
                           <strong>{timeText}</strong>
                         </div>
 
-                        <h3 className="my-reservation-title">
-                          {getFieldLabel(item.field)} 상담
-                        </h3>
+                        <span className={`status ${item.status || "pending"}`}>
+                          {getStatusLabel(item.status)}
+                        </span>
                       </div>
 
                       <div className="my-reservation-info">
-                        <p>
-                          예약 번호 #{reservationId}
-                          {item.requested_at
-                            ? ` · ${formatDate(item.requested_at)} 신청`
-                            : ""}
-                        </p>
-                        <div className="my-reservation-status-line">
-                          {(item.reject_reason || cancelReason) && (
-                            <small>
-                              {item.reject_reason
-                                ? `불허 사유: ${item.reject_reason}`
-                                : `취소 사유: ${cancelReason}`}
-                            </small>
-                          )}
-                          <span
-                            className={`status ${item.status || "pending"}`}
-                          >
-                            {getStatusLabel(item.status)}
-                          </span>
-                        </div>
+                        <h3>{getFieldLabel(item.field)} 상담</h3>
+                        {item.requested_at && (
+                          <p>{formatDate(item.requested_at)} 신청</p>
+                        )}
+                        {(item.reject_reason || cancelReason) && (
+                          <small>
+                            {item.reject_reason
+                              ? `불허 사유: ${item.reject_reason}`
+                              : `취소 사유: ${cancelReason}`}
+                          </small>
+                        )}
                       </div>
 
                       <div className="my-reservation-actions">

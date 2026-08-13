@@ -213,7 +213,7 @@
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 16px;
+  gap: 18px;
   border-bottom: 1px solid #d8e0e6;
 }
 
@@ -225,31 +225,16 @@
   align-items: center;
 }
 
-.my-reservation-title {
+.my-reservation-info h3 {
   margin: 0;
+  flex: 0 0 auto;
   font-size: 18px;
   letter-spacing: 0;
   word-break: keep-all;
 }
 
-.my-reservation-date {
-  flex: 0 0 auto;
-}
-
-.my-reservation-date span {
-  display: block;
-  color: #617080;
-  font-size: 12px;
-  font-weight: 750;
-}
-
-.my-reservation-date strong:first-child {
-  margin-top: 0;
-}
-
-.my-reservation-date strong {
-  display: block;
-  margin-top: 7px;
+.my-reservation-time {
+  flex: 0 0 62px;
   color: #0a2740;
   font-size: 25px;
   line-height: 1;
@@ -257,41 +242,40 @@
 
 .my-reservation-info {
   min-width: 0;
-}
-
-.my-reservation-status-line {
   display: flex;
-  margin-top: 6px;
-  gap: 10px;
+  gap: 18px;
   align-items: center;
   flex-wrap: wrap;
 }
 
-.my-reservation-info .status {
+.my-reservation-item .status {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  min-width: 76px;
   min-height: 24px;
   padding: 0 9px;
   border: 1px solid #aab7c2;
   color: #455565;
   font-size: 11px;
   font-weight: 850;
+  white-space: nowrap;
 }
 
-.my-reservation-info .status.approved {
+.my-reservation-item .status.approved {
   border-color: #729887;
   color: #255b45;
   background: #f1f7f4;
 }
 
-.my-reservation-info .status.pending {
+.my-reservation-item .status.pending {
   border-color: #c7a267;
   color: #79551f;
   background: #fffaf0;
 }
 
-.my-reservation-info .status.rejected,
-.my-reservation-info .status.cancelled {
+.my-reservation-item .status.rejected,
+.my-reservation-item .status.cancelled {
   border-color: #c89a9a;
   color: #8b3434;
   background: #fff5f5;
