@@ -90,20 +90,6 @@ function canDelete(status) {
   return status === "cancelled" || status === "rejected";
 }
 
-const FIELD_FILTERS = [
-  { value: "all", label: "전체" },
-  { value: "law", label: "법무" },
-  { value: "accounting", label: "회계" },
-];
-
-const STATUS_FILTERS = [
-  { value: "all", label: "전체" },
-  { value: "pending", label: "승인 대기" },
-  { value: "approved", label: "승인 완료" },
-  { value: "rejected", label: "불허" },
-  { value: "cancelled", label: "취소 완료" },
-];
-
 function isUpcoming(item) {
   const selectedDate = new Date(item.selected_date);
 
@@ -126,8 +112,9 @@ export default function MyReservations() {
   const [deleteLoadingId, setDeleteLoadingId] = useState(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [fieldFilter, setFieldFilter] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [fieldFilter, setFieldFilter] = useState("all");
   const [selectedReservation, setSelectedReservation] = useState(null);
   const [chatMessage, setChatMessage] = useState("");
   const [isChatSending, setIsChatSending] = useState(false);
@@ -327,19 +314,46 @@ export default function MyReservations() {
     [reservations],
   );
 
-  const filteredReservations = useMemo(
+  const searchableReservations = useMemo(
     () =>
-      sortedReservations.filter((item) => {
+      sortedReservations.map((item) => {
+        const note = parseReservationNote(item.note);
+
+        return {
+          item,
+          haystack: [
+            note.initialRequest,
+            ...note.messages.map(
+              (message) => message.message || message.content || "",
+            ),
+            item.reject_reason || "",
+            item.cancel_reason || "",
+            localCancelReasons[item.reservation_id] || "",
+          ]
+            .join(" ")
+            .toLowerCase(),
+        };
+      }),
+    [localCancelReasons, sortedReservations],
+  );
+
+  const filteredReservations = useMemo(() => {
+    const normalizedSearch = searchTerm.trim().toLowerCase();
+
+    return searchableReservations
+      .filter(({ item, haystack }) => {
+        const matchesSearch =
+          !normalizedSearch || haystack.includes(normalizedSearch);
+        const matchesStatus =
+          statusFilter === "all" || item.status === statusFilter;
         const matchesField =
           fieldFilter === "all" ||
           getFieldLabel(item.field) === getFieldLabel(fieldFilter);
-        const matchesStatus =
-          statusFilter === "all" || item.status === statusFilter;
 
-        return matchesField && matchesStatus;
-      }),
-    [fieldFilter, sortedReservations, statusFilter],
-  );
+        return matchesSearch && matchesStatus && matchesField;
+      })
+      .map(({ item }) => item);
+  }, [fieldFilter, searchableReservations, searchTerm, statusFilter]);
 
   const approvedCount = reservations.filter(
     (item) => item.status === "approved",
@@ -397,42 +411,39 @@ export default function MyReservations() {
             </div>
 
             <div className="my-reservations-filters">
-              <div className="my-reservations-filter-row">
+              <label>
+                <span>상담 검색</span>
+                <input
+                  type="search"
+                  value={searchTerm}
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                  placeholder="상담 노트 내용 검색"
+                />
+              </label>
+              <label>
                 <span>분야</span>
-                <div role="group" aria-label="상담 분야 필터">
-                  {FIELD_FILTERS.map((option) => (
-                    <button
-                      type="button"
-                      key={option.value}
-                      className={
-                        fieldFilter === option.value ? "is-active" : ""
-                      }
-                      aria-pressed={fieldFilter === option.value}
-                      onClick={() => setFieldFilter(option.value)}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="my-reservations-filter-row">
+                <select
+                  value={fieldFilter}
+                  onChange={(event) => setFieldFilter(event.target.value)}
+                >
+                  <option value="all">전체 분야</option>
+                  <option value="law">법무</option>
+                  <option value="accounting">회계</option>
+                </select>
+              </label>
+              <label>
                 <span>상태</span>
-                <div role="group" aria-label="예약 상태 필터">
-                  {STATUS_FILTERS.map((option) => (
-                    <button
-                      type="button"
-                      key={option.value}
-                      className={
-                        statusFilter === option.value ? "is-active" : ""
-                      }
-                      aria-pressed={statusFilter === option.value}
-                      onClick={() => setStatusFilter(option.value)}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
+                <select
+                  value={statusFilter}
+                  onChange={(event) => setStatusFilter(event.target.value)}
+                >
+                  <option value="all">전체 상태</option>
+                  <option value="pending">승인 대기</option>
+                  <option value="approved">승인 완료</option>
+                  <option value="rejected">불허</option>
+                  <option value="cancelled">취소 완료</option>
+                </select>
+              </label>
             </div>
 
             {error && <p className="my-reservations-alert error">{error}</p>}
@@ -640,7 +651,9 @@ export default function MyReservations() {
                     >
                       <strong>
                         {message.sender_name ||
-                          (message.role === "admin" ? "담당 전문가" : "내 질문")}
+                          (message.role === "admin"
+                            ? "담당 전문가"
+                            : "내 질문")}
                       </strong>
                       <p>{message.message || message.content || ""}</p>
                     </article>
