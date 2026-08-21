@@ -474,9 +474,9 @@ export default function UsersDetailPage() {
         ),
       );
       setChatMessage("");
-      setSuccess("채팅 메시지가 등록되었습니다.");
+      setSuccess("상담 노트가 등록되었습니다.");
     } catch (err) {
-      setError(err.message || "채팅 메시지 등록에 실패했습니다.");
+      setError(err.message || "상담 노트 등록에 실패했습니다.");
     } finally {
       setIsChatSending(false);
     }
@@ -894,7 +894,11 @@ export default function UsersDetailPage() {
                 </div>
 
                 <div className="reservation-chat-panel">
-                  <h3>상담 메모 및 채팅</h3>
+                  <h3>상담 노트</h3>
+                  <p className="reservation-chat-guide">
+                    상담 종료 후 정리한 내용을 사용자에게 남기는 공간입니다.
+                    사용자가 남긴 질문에도 이곳에서 답할 수 있습니다.
+                  </p>
                   {selectedNote.initialRequest && (
                     <div className="reservation-initial-request">
                       <strong>고객 추가 요청 사항</strong>
@@ -920,7 +924,7 @@ export default function UsersDetailPage() {
                         </div>
                       ))
                     ) : (
-                      <p className="reservation-chat-empty">등록된 채팅이 없습니다.</p>
+                      <p className="reservation-chat-empty">등록된 상담 노트가 없습니다.</p>
                     )}
                   </div>
 
@@ -928,11 +932,11 @@ export default function UsersDetailPage() {
                     <input
                       value={chatMessage}
                       onChange={(event) => setChatMessage(event.target.value)}
-                      placeholder="메시지를 입력하세요"
+                      placeholder="상담 내용을 정리해 남겨 주세요"
                       disabled={isChatSending}
                     />
                     <button type="submit" className="adm-btn primary" disabled={isChatSending || !chatMessage.trim()}>
-                      {isChatSending ? "전송 중..." : "전송"}
+                      {isChatSending ? "등록 중..." : "노트 남기기"}
                     </button>
                   </form>
                 </div>

@@ -50,7 +50,7 @@ const MY_PAGE_GUIDE_STEPS = [
     comment: [
       "신청하신 전문가 상담 내역과 현재 승인 진행 상태를 한눈에 확인할 수 있습니다.",
       "상담 예약이 확정되거나 반려될 경우, 가입하신 이메일로 안내 메일이 발송됩니다.",
-      "상담 상세 내역(일시, 분야, 상태)을 확인하고, 담당 전문가와 채팅창을 통해 직접 소통할 수 있습니다.",
+      "상담 상세 내역(일시, 분야, 상태)과 함께, 상담 후 담당 전문가가 남긴 상담 노트를 확인할 수 있습니다. 노트 내용에 대한 간단한 질문도 남길 수 있습니다.",
     ],
   },
   {
@@ -846,19 +846,19 @@ export default function MyPage() {
             )}
             {selectedNote.messages.length > 0 && (
               <section className="my-page-reservation-messages">
-                <strong>최근 상담 메시지</strong>
+                <strong>최근 상담 노트</strong>
                 {selectedNote.messages.slice(-2).map((message, index) => (
                   <article key={`${message.created_at || index}-${index}`}>
                     <span>
                       {message.sender_name ||
-                        (message.role === "admin" ? "관리자" : "고객")}
+                        (message.role === "admin" ? "담당 전문가" : "내 질문")}
                     </span>
                     <p>{message.message || message.content || ""}</p>
                   </article>
                 ))}
               </section>
             )}
-            <Link to="/mypage/reservations">메시지 확인 및 답장</Link>
+            <Link to="/mypage/reservations">상담 노트 확인하기</Link>
           </section>
         </div>
       )}

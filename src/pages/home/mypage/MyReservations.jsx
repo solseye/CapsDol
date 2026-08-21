@@ -90,6 +90,20 @@ function canDelete(status) {
   return status === "cancelled" || status === "rejected";
 }
 
+const FIELD_FILTERS = [
+  { value: "all", label: "전체" },
+  { value: "law", label: "법무" },
+  { value: "accounting", label: "회계" },
+];
+
+const STATUS_FILTERS = [
+  { value: "all", label: "전체" },
+  { value: "pending", label: "승인 대기" },
+  { value: "approved", label: "승인 완료" },
+  { value: "rejected", label: "불허" },
+  { value: "cancelled", label: "취소 완료" },
+];
+
 function isUpcoming(item) {
   const selectedDate = new Date(item.selected_date);
 
@@ -112,9 +126,8 @@ export default function MyReservations() {
   const [deleteLoadingId, setDeleteLoadingId] = useState(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [fieldFilter, setFieldFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [periodFilter, setPeriodFilter] = useState("all");
   const [selectedReservation, setSelectedReservation] = useState(null);
   const [chatMessage, setChatMessage] = useState("");
   const [isChatSending, setIsChatSending] = useState(false);
@@ -216,9 +229,9 @@ export default function MyReservations() {
         current ? { ...current, note: nextNote } : current,
       );
       setChatMessage("");
-      setSuccess("메시지가 등록되었습니다.");
+      setSuccess("질문이 등록되었습니다.");
     } catch (err) {
-      setError(err.message || "메시지 등록에 실패했습니다.");
+      setError(err.message || "질문 등록에 실패했습니다.");
     } finally {
       setIsChatSending(false);
     }
@@ -274,7 +287,7 @@ export default function MyReservations() {
     const ok = await confirmAction({
       title: "상담 내역을 삭제할까요?",
       message:
-        "상담 메시지를 포함한 내역이 목록에서 제거되며 복구할 수 없습니다.",
+        "상담 노트를 포함한 내역이 목록에서 제거되며 복구할 수 없습니다.",
       confirmLabel: "내역 삭제",
       tone: "danger",
     });
@@ -314,25 +327,19 @@ export default function MyReservations() {
     [reservations],
   );
 
-  const filteredReservations = useMemo(() => {
-    const normalizedSearch = searchTerm.trim().toLowerCase();
+  const filteredReservations = useMemo(
+    () =>
+      sortedReservations.filter((item) => {
+        const matchesField =
+          fieldFilter === "all" ||
+          getFieldLabel(item.field) === getFieldLabel(fieldFilter);
+        const matchesStatus =
+          statusFilter === "all" || item.status === statusFilter;
 
-    return sortedReservations.filter((item) => {
-      const matchesSearch =
-        !normalizedSearch ||
-        getFieldLabel(item.field).toLowerCase().includes(normalizedSearch) ||
-        formatDate(item.selected_date).includes(normalizedSearch);
-      const matchesStatus =
-        statusFilter === "all" || item.status === statusFilter;
-      const upcoming = isUpcoming(item);
-      const matchesPeriod =
-        periodFilter === "all" ||
-        (periodFilter === "upcoming" && upcoming) ||
-        (periodFilter === "past" && !upcoming);
-
-      return matchesSearch && matchesStatus && matchesPeriod;
-    });
-  }, [periodFilter, searchTerm, sortedReservations, statusFilter]);
+        return matchesField && matchesStatus;
+      }),
+    [fieldFilter, sortedReservations, statusFilter],
+  );
 
   const approvedCount = reservations.filter(
     (item) => item.status === "approved",
@@ -390,39 +397,42 @@ export default function MyReservations() {
             </div>
 
             <div className="my-reservations-filters">
-              <label>
-                <span>상담 검색</span>
-                <input
-                  type="search"
-                  value={searchTerm}
-                  onChange={(event) => setSearchTerm(event.target.value)}
-                  placeholder="분야 또는 날짜 검색"
-                />
-              </label>
-              <label>
-                <span>기간</span>
-                <select
-                  value={periodFilter}
-                  onChange={(event) => setPeriodFilter(event.target.value)}
-                >
-                  <option value="all">전체 기간</option>
-                  <option value="upcoming">예정 상담</option>
-                  <option value="past">지난 상담</option>
-                </select>
-              </label>
-              <label>
+              <div className="my-reservations-filter-row">
+                <span>분야</span>
+                <div role="group" aria-label="상담 분야 필터">
+                  {FIELD_FILTERS.map((option) => (
+                    <button
+                      type="button"
+                      key={option.value}
+                      className={
+                        fieldFilter === option.value ? "is-active" : ""
+                      }
+                      aria-pressed={fieldFilter === option.value}
+                      onClick={() => setFieldFilter(option.value)}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="my-reservations-filter-row">
                 <span>상태</span>
-                <select
-                  value={statusFilter}
-                  onChange={(event) => setStatusFilter(event.target.value)}
-                >
-                  <option value="all">전체 상태</option>
-                  <option value="pending">승인 대기</option>
-                  <option value="approved">승인 완료</option>
-                  <option value="rejected">불허</option>
-                  <option value="cancelled">취소 완료</option>
-                </select>
-              </label>
+                <div role="group" aria-label="예약 상태 필터">
+                  {STATUS_FILTERS.map((option) => (
+                    <button
+                      type="button"
+                      key={option.value}
+                      className={
+                        statusFilter === option.value ? "is-active" : ""
+                      }
+                      aria-pressed={statusFilter === option.value}
+                      onClick={() => setStatusFilter(option.value)}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
 
             {error && <p className="my-reservations-alert error">{error}</p>}
@@ -606,10 +616,14 @@ export default function MyReservations() {
               </div>
             )}
 
-            <section className="my-reservation-chat" aria-label="상담 메시지">
+            <section className="my-reservation-chat" aria-label="상담 노트">
               <div className="my-reservation-chat-head">
-                <strong>상담 메시지</strong>
-                <span>*주의: 상담에 필요한 내용만 문의해주시길 바랍니다.</span>
+                <strong>상담 노트</strong>
+                <span>
+                  담당 전문가가 상담 내용을 정리해 남기는 공간입니다. 실시간
+                  상담 창구가 아니며, 노트 내용에 대한 간단한 질문만 남겨
+                  주세요.
+                </span>
               </div>
               <div
                 className="my-reservation-chat-list"
@@ -626,14 +640,14 @@ export default function MyReservations() {
                     >
                       <strong>
                         {message.sender_name ||
-                          (message.role === "admin" ? "관리자" : "고객")}
+                          (message.role === "admin" ? "담당 전문가" : "내 질문")}
                       </strong>
                       <p>{message.message || message.content || ""}</p>
                     </article>
                   ))
                 ) : (
                   <p className="my-reservation-chat-empty">
-                    아직 등록된 메시지가 없습니다.
+                    아직 등록된 상담 노트가 없습니다.
                   </p>
                 )}
               </div>
@@ -644,14 +658,14 @@ export default function MyReservations() {
                 <input
                   value={chatMessage}
                   onChange={(event) => setChatMessage(event.target.value)}
-                  placeholder="관리자에게 전달할 메시지를 입력하세요"
+                  placeholder="상담 노트에 대한 간단한 질문을 남겨 주세요"
                   disabled={isChatSending}
                 />
                 <button
                   type="submit"
                   disabled={isChatSending || !chatMessage.trim()}
                 >
-                  {isChatSending ? "전송 중..." : "전송"}
+                  {isChatSending ? "등록 중..." : "질문 남기기"}
                 </button>
               </form>
             </section>
