@@ -685,16 +685,6 @@
     border-bottom: 1px solid #d8e0e6;
   }
 
-  .my-reservation-info {
-    gap: 6px;
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .my-reservation-info small {
-    -webkit-line-clamp: 3;
-  }
-
   .my-reservation-actions {
     grid-column: auto;
     justify-content: stretch;
