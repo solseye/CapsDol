@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import logo from "../assets/mk-office-logo-transparent.png";
+import logo from "../assets/rtj-logo.png";
 
 export function BrandMark({ className = "", alt = "" }) {
   return (
