@@ -28,7 +28,7 @@ const HOME_COPY = {
     heroTitle: "일본 진출 준비를",
     heroTitleAccent: "AI와 전문가 상담으로 정리합니다",
     heroCopy:
-      "M&K 사무소는 한국 기업이 일본 법인 설립, 세무·회계, 비자, 노무, 정관 초안 작성, 전문가 상담 예약까지 한 흐름으로 준비할 수 있도록 돕는 일본 진출 파트너입니다.",
+      "RtJ 사무소는 한국 기업이 일본 법인 설립, 세무·회계, 비자, 노무, 정관 초안 작성, 전문가 상담 예약까지 한 흐름으로 준비할 수 있도록 돕는 일본 진출 파트너입니다.",
     searchPlaceholder:
       "일본 법인 설립, 세무, 비자, 정관 작성에 대해 질문해 보세요...",
     aiConsult: "AI 상담",
@@ -68,7 +68,7 @@ const HOME_COPY = {
     heroTitle: "Prepare your Japan expansion",
     heroTitleAccent: "with AI and expert consultation",
     heroCopy:
-      "M&K Office helps Korean companies prepare incorporation, tax and accounting, visas, labor matters, draft articles of incorporation, and expert consultations in one connected workflow.",
+      "RtJ Office helps Korean companies prepare incorporation, tax and accounting, visas, labor matters, draft articles of incorporation, and expert consultations in one connected workflow.",
     searchPlaceholder:
       "Ask about Japanese incorporation, tax, visas, or articles drafting...",
     aiConsult: "Ask AI",
@@ -76,7 +76,7 @@ const HOME_COPY = {
       "Document and consultation workflow for companies entering Japan",
     servicesTitle: "Core Services",
     servicesDesc:
-      "From initial questions to hearing sheets, draft articles of incorporation, and expert review, M&K Office organizes Japan-entry preparation into one workflow.",
+      "From initial questions to hearing sheets, draft articles of incorporation, and expert review, RtJ Office organizes Japan-entry preparation into one workflow.",
     viewMethod: "View Method",
     moveNow: "Open",
     service1Label: "AI Automation",
@@ -109,7 +109,7 @@ const HOME_COPY = {
     heroTitle: "日本進出準備を",
     heroTitleAccent: "AIと専門家相談で整理します",
     heroCopy:
-      "M&K事務所は、韓国企業が日本法人設立、税務・会計、ビザ、労務、定款草案、専門家相談予約まで一つの流れで準備できるよう支援するAIコンサルティングプラットフォームです。",
+      "RtJ事務所は、韓国企業が日本法人設立、税務・会計、ビザ、労務、定款草案、専門家相談予約まで一つの流れで準備できるよう支援するAIコンサルティングプラットフォームです。",
     searchPlaceholder:
       "日本法人設立、税務、ビザ、定款作成について質問してください...",
     aiConsult: "AI相談",
@@ -189,10 +189,10 @@ const CORE_SERVICE_SUMMARIES = [
 
 const HOME_SECTIONS = {
   ko: {
-    brandName: "M&K 사무소",
-    brandHomeAria: "M&K 사무소 홈",
+    brandName: "RtJ 사무소",
+    brandHomeAria: "RtJ 사무소 홈",
     menuOpen: "메뉴 열기",
-    trustAria: "M&K 사무소 소개",
+    trustAria: "RtJ 사무소 소개",
     logoutDialog: {
       title: "로그아웃할까요?",
       message: "작성 중인 히어링 시트 초안은 회원별로 유지됩니다.",
@@ -287,7 +287,7 @@ const HOME_SECTIONS = {
     method: {
       title: "일본 시장으로 이어지는 준비 흐름",
       description:
-        "M&K 사무소는 흩어진 일본 진출 준비 과정을 단계별 워크플로우로 바꿉니다. 기업 정보를 정리하고, 문서 초안을 만들고, 전문가 검토로 최종 방향을 구체화합니다.",
+        "RtJ 사무소는 흩어진 일본 진출 준비 과정을 단계별 워크플로우로 바꿉니다. 기업 정보를 정리하고, 문서 초안을 만들고, 전문가 검토로 최종 방향을 구체화합니다.",
       cta: "히어링 시트 작성하기",
       steps: [
         {
@@ -327,7 +327,7 @@ const HOME_SECTIONS = {
     experts: {
       title: "일본 비즈니스 실무를 아는 전문가",
       description:
-        "M&K 사무소는 AI가 정리한 상담 자료를 바탕으로 일본 현지 실무 경험을 가진 전문가와의 상담으로 이어질 수 있도록 돕습니다.",
+        "RtJ 사무소는 AI가 정리한 상담 자료를 바탕으로 일본 현지 실무 경험을 가진 전문가와의 상담으로 이어질 수 있도록 돕습니다.",
       careerLabel: "주요 경력",
       specialtyLabel: "전문 분야",
       people: [
@@ -378,8 +378,8 @@ const HOME_SECTIONS = {
     standards: {
       title: "일본 진출을 실행으로 바꾸는 기준",
       description:
-        "M&K 사무소는 문서 준비, 다국어 지원, 상담 연결, 실행 워크플로우를 하나로 묶어 일본 진출 준비를 더 명확하게 만듭니다.",
-      badge: "M&K 기준",
+        "RtJ 사무소는 문서 준비, 다국어 지원, 상담 연결, 실행 워크플로우를 하나로 묶어 일본 진출 준비를 더 명확하게 만듭니다.",
+      badge: "RtJ 기준",
       items: STANDARD_ITEMS,
     },
     contact: {
@@ -392,11 +392,11 @@ const HOME_SECTIONS = {
       onlineLink: "상담 예약 및 문의하기",
       onlineDescription:
         "상담 분야와 원하는 일정을 남기면 확인 후 안내해 드립니다.",
-      mapTitle: "M&K 오사카 사무소 Google 지도",
+      mapTitle: "RtJ 오사카 사무소 Google 지도",
       mapLink: "Google 지도에서 보기",
     },
     footer: {
-      copyright: "© 2026 M&K 사무소. All rights reserved.",
+      copyright: "© 2026 RtJ 사무소. All rights reserved.",
       ai: "AI 상담",
       reservation: "상담 예약",
       hearing: "히어링 시트",
@@ -404,10 +404,10 @@ const HOME_SECTIONS = {
     },
   },
   en: {
-    brandName: "M&K Office",
-    brandHomeAria: "M&K Office home",
+    brandName: "RtJ Office",
+    brandHomeAria: "RtJ Office home",
     menuOpen: "Open menu",
-    trustAria: "About M&K Office",
+    trustAria: "About RtJ Office",
     logoutDialog: {
       title: "Log out?",
       message: "Your hearing sheet draft is retained for your account.",
@@ -535,7 +535,7 @@ const HOME_SECTIONS = {
     method: {
       title: "A clear path into the Japanese market",
       description:
-        "M&K Office turns fragmented Japan-entry preparation into a step-by-step workflow: organizing company information, drafting documents, and defining the final direction through expert review.",
+        "RtJ Office turns fragmented Japan-entry preparation into a step-by-step workflow: organizing company information, drafting documents, and defining the final direction through expert review.",
       cta: "Complete the Hearing Sheet",
       steps: [
         {
@@ -583,7 +583,7 @@ const HOME_SECTIONS = {
     experts: {
       title: "Experts who know business in Japan",
       description:
-        "M&K Office connects AI-organized consultation materials with professionals experienced in practical business operations in Japan.",
+        "RtJ Office connects AI-organized consultation materials with professionals experienced in practical business operations in Japan.",
       careerLabel: "Career Highlights",
       specialtyLabel: "Areas of Expertise",
       people: [
@@ -634,8 +634,8 @@ const HOME_SECTIONS = {
     standards: {
       title: "Principles that turn Japan entry into action",
       description:
-        "M&K Office brings document preparation, multilingual support, consultation, and execution workflows together to make Japan-entry planning clearer.",
-      badge: "M&K Standard",
+        "RtJ Office brings document preparation, multilingual support, consultation, and execution workflows together to make Japan-entry planning clearer.",
+      badge: "RtJ Standard",
       items: [
         {
           title: "Structured Core Documents",
@@ -681,11 +681,11 @@ const HOME_SECTIONS = {
       onlineLink: "Book a Consultation or Send an Inquiry",
       onlineDescription:
         "Tell us your consultation field and preferred schedule, and we will follow up.",
-      mapTitle: "Google Map for M&K Osaka Office",
+      mapTitle: "Google Map for RtJ Osaka Office",
       mapLink: "View on Google Maps",
     },
     footer: {
-      copyright: "© 2026 M&K Office. All rights reserved.",
+      copyright: "© 2026 RtJ Office. All rights reserved.",
       ai: "AI Consultation",
       reservation: "Book Consultation",
       hearing: "Hearing Sheet",
@@ -693,10 +693,10 @@ const HOME_SECTIONS = {
     },
   },
   ja: {
-    brandName: "M&K事務所",
-    brandHomeAria: "M&K事務所ホーム",
+    brandName: "RtJ事務所",
+    brandHomeAria: "RtJ事務所ホーム",
     menuOpen: "メニューを開く",
-    trustAria: "M&K事務所について",
+    trustAria: "RtJ事務所について",
     logoutDialog: {
       title: "ログアウトしますか？",
       message: "作成中のヒアリングシート下書きはアカウントごとに保存されます。",
@@ -817,7 +817,7 @@ const HOME_SECTIONS = {
     method: {
       title: "日本市場へつながる準備の流れ",
       description:
-        "M&K事務所は、分散しがちな日本進出準備を段階別のワークフローに変えます。企業情報を整理し、文書草案を作成し、専門家レビューで最終方針を具体化します。",
+        "RtJ事務所は、分散しがちな日本進出準備を段階別のワークフローに変えます。企業情報を整理し、文書草案を作成し、専門家レビューで最終方針を具体化します。",
       cta: "ヒアリングシートを作成",
       steps: [
         {
@@ -857,7 +857,7 @@ const HOME_SECTIONS = {
     experts: {
       title: "日本ビジネスの実務に精通した専門家",
       description:
-        "M&K事務所は、AIが整理した相談資料をもとに、日本現地での実務経験を持つ専門家との相談につなげます。",
+        "RtJ事務所は、AIが整理した相談資料をもとに、日本現地での実務経験を持つ専門家との相談につなげます。",
       careerLabel: "主な経歴",
       specialtyLabel: "専門分野",
       people: [
@@ -908,8 +908,8 @@ const HOME_SECTIONS = {
     standards: {
       title: "日本進出を実行へ変える基準",
       description:
-        "M&K事務所は、文書準備、多言語対応、相談連携、実行ワークフローを一つにまとめ、日本進出準備をより明確にします。",
-      badge: "M&K基準",
+        "RtJ事務所は、文書準備、多言語対応、相談連携、実行ワークフローを一つにまとめ、日本進出準備をより明確にします。",
+      badge: "RtJ基準",
       items: [
         {
           title: "主要文書の構造化",
@@ -943,11 +943,11 @@ const HOME_SECTIONS = {
       onlineLink: "相談予約・お問い合わせ",
       onlineDescription:
         "相談分野とご希望の日程をお知らせいただければ、確認後にご案内します。",
-      mapTitle: "M&K大阪事務所 Googleマップ",
+      mapTitle: "RtJ大阪事務所 Googleマップ",
       mapLink: "Googleマップで見る",
     },
     footer: {
-      copyright: "© 2026 M&K事務所. All rights reserved.",
+      copyright: "© 2026 RtJ事務所. All rights reserved.",
       ai: "AI相談",
       reservation: "相談予約",
       hearing: "ヒアリングシート",
@@ -1627,7 +1627,7 @@ export default function HomeVisilyFrame({ isLoggedIn }) {
         </div>
       </section>
 
-      {/* Standards: M&K 사무소의 운영 방식/강점 카드입니다. 자동 순환과 hover pause가 적용되어 있습니다. */}
+      {/* Standards: RtJ 사무소의 운영 방식/강점 카드입니다. 자동 순환과 hover pause가 적용되어 있습니다. */}
       <section id="standards" className="visily-section visily-standards">
         <div className="visily-centered-head">
           <h2>{sections.standards.title}</h2>

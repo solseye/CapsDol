@@ -15,7 +15,7 @@ export default function BrandLogo({
   className = "",
   markClassName = "brand-logo-mark",
   copyClassName = "brand-logo-copy",
-  name = "M&K 사무소",
+  name = "RtJ 사무소",
   subtitle = "일본 진출 운영 시스템",
   hideSubtitle = false,
   ariaLabel,

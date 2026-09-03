@@ -2,7 +2,7 @@ import { getCurrentLanguage } from "./translations";
 
 const COPY = {
   ko: {
-    brand: "M&K 사무소",
+    brand: "RtJ 사무소",
     os: "일본 진출 운영 시스템",
     search: "문서 또는 전문가 검색...",
     myBookings: "내 예약 보기",
@@ -113,7 +113,7 @@ const COPY = {
     ],
   },
   en: {
-    brand: "M&K Office",
+    brand: "RtJ Office",
     os: "Japan Entry Operating System",
     search: "Search documents or experts...",
     myBookings: "My Bookings",
@@ -227,7 +227,7 @@ const COPY = {
     ],
   },
   ja: {
-    brand: "M&K事務所",
+    brand: "RtJ事務所",
     os: "日本進出オペレーションシステム",
     search: "文書または専門家を検索...",
     myBookings: "予約履歴",

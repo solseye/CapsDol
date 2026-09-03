@@ -2190,7 +2190,7 @@ html[lang="en"] .visily-core-service-item p {
 }
 
 /* Standards
-   M&K 사무소 운영 방식 카드입니다. active 클래스는 React에서 자동 순환/hover 상태로 제어합니다. */
+   RtJ 사무소 운영 방식 카드입니다. active 클래스는 React에서 자동 순환/hover 상태로 제어합니다. */
 .visily-metric-card {
   position: relative;
   min-height: 268px;

@@ -2,8 +2,8 @@ const copy = {
   "계정 정보를": ["Account details", "アカウント情報を"],
   "안전하게 확인하세요": ["Verify them securely", "安全に確認"],
   "가입 시 사용한 이메일을 기준으로 WVA 계정 아이디를 확인할 수 있습니다.": [
-    "Find your M&K account ID using the email address you registered with.",
-    "登録時のメールアドレスからM&KアカウントIDを確認できます。",
+    "Find your RtJ account ID using the email address you registered with.",
+    "登録時のメールアドレスからRtJアカウントIDを確認できます。",
   ],
   "이메일 기반 확인": ["Email verification", "メールで確認"],
   "가입 정보와 연결된 이메일로 계정을 찾습니다.": [
@@ -32,7 +32,7 @@ const copy = {
   "계정 복구": ["Account recovery", "アカウント復旧"],
   "문서 작업 연결": ["Continue document work", "書類作業を継続"],
   "전문가 상담 지원": ["Expert consultation support", "専門家相談サポート"],
-  "WVA 홈으로 이동": ["Go to M&K home", "M&Kホームへ"],
+  "WVA 홈으로 이동": ["Go to RtJ home", "RtJホームへ"],
   "이메일을 입력하세요": ["Enter your email", "メールアドレスを入力"],
   "비밀번호를 잊어도": [
     "Even if you forget your password,",
@@ -89,8 +89,8 @@ const copy = {
     "8文字以上の新しいパスワードでアクセスを復旧します。",
   ],
   "WVA Japan Entry OS 계정 보안 설정": [
-    "M&K Japan Entry System account security",
-    "M&K日本進出システムのアカウント保護",
+    "RtJ Japan Entry System account security",
+    "RtJ日本進出システムのアカウント保護",
   ],
   "비밀번호 재설정": ["Reset password", "パスワード再設定"],
   "새로 사용할 비밀번호를 입력해 주세요.": [
@@ -577,8 +577,8 @@ const copy = {
     "質問に関連する資料がある場合は一緒に表示します。",
   ],
   "안녕하세요. CapsDol 관리자 상담 챗봇입니다. 질문을 입력해 주세요.": [
-    "Hello. I am the M&K admin assistant. Enter a question to begin.",
-    "こんにちは。M&K管理者チャットボットです。質問を入力してください。",
+    "Hello. I am the RtJ admin assistant. Enter a question to begin.",
+    "こんにちは。RtJ管理者チャットボットです。質問を入力してください。",
   ],
   전송: ["Send", "送信"],
   "응답 기준": ["Response sources", "回答基準"],

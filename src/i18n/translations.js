@@ -3,7 +3,7 @@ export const SUPPORTED_LANGUAGES = ["ko", "en", "ja"];
 const translations = {
   ko: {
     common: {
-      brandName: "M&K 사무소",
+      brandName: "RtJ 사무소",
       brandSub: "일본 진출 운영 시스템",
       backHome: "메인으로 돌아가기",
       notSelected: "선택 안 됨",
@@ -293,7 +293,7 @@ const translations = {
   },
   en: {
     common: {
-      brandName: "M&K Office",
+      brandName: "RtJ Office",
       brandSub: "Japan Entry Operating System",
       backHome: "Back to Home",
       notSelected: "Not selected",
@@ -589,7 +589,7 @@ const translations = {
   },
   ja: {
     common: {
-      brandName: "M&K事務所",
+      brandName: "RtJ事務所",
       brandSub: "日本進出オペレーションシステム",
       backHome: "メインへ戻る",
       notSelected: "未選択",

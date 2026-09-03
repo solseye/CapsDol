@@ -3,8 +3,8 @@ import { getCurrentLanguage } from "./translations";
 const PAGE_COPY = {
   ko: {
     auth: {
-      brandName: "M&K 사무소",
-      brandHome: "M&K 사무소 홈으로 이동",
+      brandName: "RtJ 사무소",
+      brandHome: "RtJ 사무소 홈으로 이동",
       heroTitle: "AI로 일본 진출 준비를",
       heroAccent: "더 빠르고 정확하게",
       heroBody:
@@ -13,7 +13,7 @@ const PAGE_COPY = {
       proof1Body: "기업 정보와 법무 자료를 업무 단위로 정리합니다.",
       proof2Title: "전문가 연결",
       proof2Body: "AI가 정리한 내용을 상담 예약으로 이어갑니다.",
-      trust: "일본 시장 진출을 준비하는 기업을 위한 M&K 업무 플랫폼",
+      trust: "일본 시장 진출을 준비하는 기업을 위한 RtJ 업무 플랫폼",
       welcome: "다시 오신 것을 환영합니다",
       loginIntro: "일본 진출 운영 시스템에 접속하려면 로그인해 주세요.",
       googleLoading: "구글 로그인 처리 중...",
@@ -27,7 +27,7 @@ const PAGE_COPY = {
       findPassword: "비밀번호 찾기",
       publicDevice: "공용 기기에서는 이용 후 반드시 로그아웃해 주세요.",
       loggingIn: "로그인 중...",
-      loginButton: "로그인", //M&K에 로그인
+      loginButton: "로그인", //RtJ에 로그인
       findId: "아이디 찾기",
       needHelp: "도움이 필요하신가요?",
       expertInfo: "전문가 안내",
@@ -41,7 +41,7 @@ const PAGE_COPY = {
     },
     signup: {
       heroTitle: "일본 진출 준비를",
-      heroAccent: "M&K 계정으로 시작하세요",
+      heroAccent: "RtJ 계정으로 시작하세요",
       heroBody:
         "AI 챗봇 상담, 히어링 시트 작성, 정관 초안 확인, 전문가 상담 예약을 하나의 계정으로 이용할 수 있습니다.",
       proof1Title: "히어링 시트",
@@ -50,7 +50,7 @@ const PAGE_COPY = {
       proof2Body: "전문가 상담 일정을 신청하고 상태를 확인합니다.",
       trust: "일본 법무·세무 상담 준비를 위한 AI 워크플로우",
       title: "계정 만들기",
-      intro: "M&K의 AI 상담과 전문가 연결 기능을 이용할 계정을 생성합니다.",
+      intro: "RtJ의 AI 상담과 전문가 연결 기능을 이용할 계정을 생성합니다.",
       googleLoading: "구글 계정 생성 중...",
       continueEmail: "또는 이메일로 계정 만들기",
       email: "업무 이메일",
@@ -62,7 +62,7 @@ const PAGE_COPY = {
       passwordPlaceholder: "비밀번호를 입력하세요",
       consent: "서비스 이용을 위한 계정 생성에 동의합니다",
       signingUp: "가입 중...",
-      signupButton: "M&K 계정 생성",
+      signupButton: "RtJ 계정 생성",
       haveAccount: "이미 계정이 있으신가요?",
       login: "로그인하기",
       compliance1: "문서 기반 상담",
@@ -78,8 +78,8 @@ const PAGE_COPY = {
     },
     chat: {
       system:
-        "너는 M&K 사무소의 상담 보조 챗봇이다. 한국어로 명확하고 실무적으로 답변하며 법률·판례·사실관계를 지어내지 않는다.",
-      greeting: "안녕하세요. M&K 상담 챗봇입니다. 질문을 입력해 주세요.",
+        "너는 RtJ 사무소의 상담 보조 챗봇이다. 한국어로 명확하고 실무적으로 답변하며 법률·판례·사실관계를 지어내지 않는다.",
+      greeting: "안녕하세요. RtJ 상담 챗봇입니다. 질문을 입력해 주세요.",
       answerFallback: "답변을 생성하지 못했습니다.",
       error: "챗봇 응답 생성에 실패했습니다.",
       apology: "죄송합니다. 현재 답변을 생성하지 못했습니다.",
@@ -117,8 +117,8 @@ const PAGE_COPY = {
   },
   en: {
     auth: {
-      brandName: "M&K Office",
-      brandHome: "Go to M&K Office home",
+      brandName: "RtJ Office",
+      brandHome: "Go to RtJ Office home",
       heroTitle: "Prepare for Japan with AI",
       heroAccent: "faster and more accurately",
       heroBody:
@@ -127,7 +127,7 @@ const PAGE_COPY = {
       proof1Body: "Company and legal information is organized by task.",
       proof2Title: "Expert connection",
       proof2Body: "Turn AI-organized information into an expert booking.",
-      trust: "The M&K workflow platform for companies entering Japan",
+      trust: "The RtJ workflow platform for companies entering Japan",
       welcome: "Welcome back",
       loginIntro: "Log in to access your Japan-entry operating system.",
       googleLoading: "Signing in with Google...",
@@ -141,7 +141,7 @@ const PAGE_COPY = {
       findPassword: "Forgot password?",
       publicDevice: "Always log out after using a shared device.",
       loggingIn: "Logging in...",
-      loginButton: "Log in to M&K",
+      loginButton: "Log in to RtJ",
       findId: "Find User ID",
       needHelp: "Need help?",
       expertInfo: "Meet the Experts",
@@ -155,7 +155,7 @@ const PAGE_COPY = {
     },
     signup: {
       heroTitle: "Prepare for Japan",
-      heroAccent: "with your M&K account",
+      heroAccent: "with your RtJ account",
       heroBody:
         "Use AI consultation, hearing sheets, draft-articles review, and expert bookings with one account.",
       proof1Title: "Hearing Sheet",
@@ -165,7 +165,7 @@ const PAGE_COPY = {
       trust: "An AI workflow for Japanese legal and tax consultation",
       title: "Create an account",
       intro:
-        "Create an account to use M&K AI consultation and expert matching.",
+        "Create an account to use RtJ AI consultation and expert matching.",
       googleLoading: "Creating account with Google...",
       continueEmail: "Or create an account with email",
       email: "Work Email",
@@ -177,7 +177,7 @@ const PAGE_COPY = {
       passwordPlaceholder: "Enter a password",
       consent: "I agree to create an account for use of the service",
       signingUp: "Creating account...",
-      signupButton: "Create M&K Account",
+      signupButton: "Create RtJ Account",
       haveAccount: "Already have an account?",
       login: "Log in",
       compliance1: "Document-based consultation",
@@ -193,9 +193,9 @@ const PAGE_COPY = {
     },
     chat: {
       system:
-        "You are M&K Office's consultation assistant. Reply clearly and practically in English. Do not invent laws, precedents, or facts.",
+        "You are RtJ Office's consultation assistant. Reply clearly and practically in English. Do not invent laws, precedents, or facts.",
       greeting:
-        "Hello. I am the M&K consultation assistant. Enter your question.",
+        "Hello. I am the RtJ consultation assistant. Enter your question.",
       answerFallback: "A response could not be generated.",
       error: "The chatbot could not generate a response.",
       apology: "Sorry, a response cannot be generated right now.",
@@ -235,8 +235,8 @@ const PAGE_COPY = {
   },
   ja: {
     auth: {
-      brandName: "M&K事務所",
-      brandHome: "M&K事務所ホームへ移動",
+      brandName: "RtJ事務所",
+      brandHome: "RtJ事務所ホームへ移動",
       heroTitle: "AIで日本進出準備を",
       heroAccent: "より速く、より正確に",
       heroBody:
@@ -245,7 +245,7 @@ const PAGE_COPY = {
       proof1Body: "企業情報と法務資料を業務単位で整理します。",
       proof2Title: "専門家連携",
       proof2Body: "AIが整理した内容を相談予約につなげます。",
-      trust: "日本市場進出を準備する企業のためのM&K業務プラットフォーム",
+      trust: "日本市場進出を準備する企業のためのRtJ業務プラットフォーム",
       welcome: "おかえりなさい",
       loginIntro: "日本進出オペレーションシステムへログインしてください。",
       googleLoading: "Googleログイン処理中...",
@@ -259,7 +259,7 @@ const PAGE_COPY = {
       findPassword: "パスワードをお忘れですか？",
       publicDevice: "共用端末では利用後に必ずログアウトしてください。",
       loggingIn: "ログイン中...",
-      loginButton: "M&Kにログイン",
+      loginButton: "RtJにログイン",
       findId: "ユーザーIDを確認",
       needHelp: "お困りですか？",
       expertInfo: "専門家紹介",
@@ -273,7 +273,7 @@ const PAGE_COPY = {
     },
     signup: {
       heroTitle: "日本進出準備を",
-      heroAccent: "M&Kアカウントで始めましょう",
+      heroAccent: "RtJアカウントで始めましょう",
       heroBody:
         "AI相談、ヒアリングシート作成、定款草案確認、専門家相談予約を一つのアカウントで利用できます。",
       proof1Title: "ヒアリングシート",
@@ -282,7 +282,7 @@ const PAGE_COPY = {
       proof2Body: "専門家相談を申請し、状況を確認します。",
       trust: "日本の法務・税務相談準備のためのAIワークフロー",
       title: "アカウント作成",
-      intro: "M&KのAI相談と専門家連携を利用するアカウントを作成します。",
+      intro: "RtJのAI相談と専門家連携を利用するアカウントを作成します。",
       googleLoading: "Googleアカウント作成中...",
       continueEmail: "またはメールでアカウントを作成",
       email: "業務用メール",
@@ -294,7 +294,7 @@ const PAGE_COPY = {
       passwordPlaceholder: "パスワードを入力",
       consent: "サービス利用のためのアカウント作成に同意します",
       signingUp: "登録中...",
-      signupButton: "M&Kアカウントを作成",
+      signupButton: "RtJアカウントを作成",
       haveAccount: "すでにアカウントをお持ちですか？",
       login: "ログイン",
       compliance1: "文書ベースの相談",
@@ -310,8 +310,8 @@ const PAGE_COPY = {
     },
     chat: {
       system:
-        "あなたはM&K事務所の相談アシスタントです。日本語で明確かつ実務的に回答し、法律・判例・事実を捏造しないでください。",
-      greeting: "こんにちは。M&K相談チャットです。質問を入力してください。",
+        "あなたはRtJ事務所の相談アシスタントです。日本語で明確かつ実務的に回答し、法律・判例・事実を捏造しないでください。",
+      greeting: "こんにちは。RtJ相談チャットです。質問を入力してください。",
       answerFallback: "回答を生成できませんでした。",
       error: "チャットボットの回答生成に失敗しました。",
       apology: "申し訳ありません。現在回答を生成できません。",

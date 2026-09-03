@@ -49,7 +49,7 @@ export default function LostId() {
           as="button"
           className="authv-brand"
           onClick={() => navigate("/")}
-          ariaLabel="M&K 사무소 홈으로 이동"
+          ariaLabel="RtJ 사무소 홈으로 이동"
           markClassName="authv-brand-mark"
           copyClassName="authv-brand-label"
           hideSubtitle

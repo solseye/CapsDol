@@ -695,7 +695,7 @@ export default function MyPage() {
           >
             <header className="my-page-guide-header">
               <div>
-                <p>M&K MY PAGE GUIDE</p>
+                <p>RtJ MY PAGE GUIDE</p>
                 <h2 id="my-page-guide-title">마이페이지 사용 설명서</h2>
               </div>
               <button
